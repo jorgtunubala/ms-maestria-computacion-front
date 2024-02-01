@@ -1,10 +1,10 @@
-import { MenuItem } from "primeng/api";
+import { MenuItem } from 'primeng/api';
 
 export const menuItems: MenuItem[] = [
     {
         label: 'INICIO',
         icon: 'pi pi-fw pi-home',
-        routerLink: '/'
+        routerLink: '/',
     },
     {
         label: 'GESTIÓN',
@@ -20,7 +20,12 @@ export const menuItems: MenuItem[] = [
                 icon: 'pi pi-user',
                 routerLink: '/docentes',
             },
-        ]
+            {
+                label: 'SOLICITUDES',
+                icon: 'pi pi-fw pi-inbox',
+                routerLink: '/gestionsolicitudes',
+            },
+        ],
     },
     {
         label: 'MATRICULAS',
@@ -29,11 +34,11 @@ export const menuItems: MenuItem[] = [
     {
         label: 'SOLICITUDES',
         icon: 'pi pi-fw pi-inbox',
-
+        routerLink: '/gestionsolicitudes/creacion/selector',
     },
     {
         label: 'PRESUPUESTO',
-        icon: 'pi pi-fw pi-chart-line'
+        icon: 'pi pi-fw pi-chart-line',
     },
     { separator: true },
     {
@@ -55,6 +60,6 @@ export const menuItems: MenuItem[] = [
                 icon: 'pi pi-user',
                 routerLink: '/seguimiento-a-egresados',
             },
-        ]
-    }
+        ],
+    },
 ];

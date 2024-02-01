@@ -21,6 +21,13 @@ import { HomeComponent } from './core/components/home/home.component';
                                     './modules/examen-de-valoracion/examen-de-valoracion.module'
                                 ).then((m) => m.ExamenDeValoracionModule),
                         },
+                        {
+                            path: 'gestionsolicitudes',
+                            loadChildren: () =>
+                                import(
+                                    './modules/gestion-solicitudes/gestion-solicitudes.module'
+                                ).then((m) => m.GestionSolicitudesModule),
+                        },
                     ],
                 },
                 { path: 'pages/error', component: ErrorComponent },

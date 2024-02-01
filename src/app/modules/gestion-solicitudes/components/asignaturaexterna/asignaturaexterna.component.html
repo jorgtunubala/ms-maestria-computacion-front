@@ -1,0 +1,191 @@
+<div class="grid">
+    <div class="col-12 mt-3">
+        <span class="p-float-label">
+            <input
+                class="w-full"
+                id="nomasigna"
+                type="text"
+                pInputText
+                (change)="actualizarDatos()"
+                [(ngModel)]="nombre"
+            />
+            <label for="nomasigna"
+                >Nombre de la Asignatura {{ indice + 1 }}</label
+            >
+        </span>
+    </div>
+
+    <div class="col-12 md:col-6 mt-3">
+        <span class="p-float-label">
+            <input
+                class="w-full"
+                id="progasigna"
+                type="text"
+                pInputText
+                (change)="actualizarDatos()"
+                [(ngModel)]="institucion"
+            />
+            <label for="progasigna">Institución</label>
+        </span>
+    </div>
+
+    <div class="col-12 md:col-6 mt-3">
+        <span class="p-float-label">
+            <input
+                class="w-full"
+                id="nomprog"
+                type="text"
+                pInputText
+                (change)="actualizarDatos()"
+                [(ngModel)]="programa"
+            />
+            <label for="nomprog">Programa</label>
+        </span>
+    </div>
+    <div class="col-12 md:col-6 lg:col-3 mt-3">
+        <span class="p-float-label">
+            <input
+                class="w-full"
+                id="numcredi"
+                type="text"
+                pInputText
+                (change)="actualizarDatos()"
+                [(ngModel)]="creditos"
+            />
+            <label for="numcredi">No. de creditos</label>
+        </span>
+    </div>
+    <div class="col-12 md:col-6 lg:col-3 mt-3">
+        <span class="p-float-label">
+            <input
+                class="w-full"
+                id="intensidad"
+                type="text"
+                pInputText
+                (change)="actualizarDatos()"
+                [(ngModel)]="intensidad"
+            />
+            <label for="intensidad">Intensidad horaria</label>
+        </span>
+    </div>
+    <div class="col-12 md:col-6 lg:col-3 mt-3">
+        <span class="p-float-label">
+            <input
+                class="w-full"
+                id="codasig"
+                type="text"
+                pInputText
+                (change)="actualizarDatos()"
+                [(ngModel)]="codigo"
+            />
+            <label for="codasig">Código Asignatura</label>
+        </span>
+    </div>
+
+    <div class="col-12 md:col-6 lg:col-3 mt-3">
+        <span class="p-float-label">
+            <input
+                class="w-full"
+                id="grupasig"
+                type="text"
+                pInputText
+                (change)="actualizarDatos()"
+                [(ngModel)]="grupo"
+            />
+            <label for="grupasig">Grupo</label>
+        </span>
+    </div>
+
+    <div class="col-12 md:col-9 mt-3">
+        <span class="p-float-label">
+            <input
+                class="w-full"
+                id="docente"
+                type="text"
+                pInputText
+                (change)="actualizarDatos()"
+                [(ngModel)]="docente"
+            />
+            <label for="docente">Docente (Nombres y Apellidos)</label>
+        </span>
+    </div>
+
+    <div class="col-12 md:col-3 mt-3">
+        <span class="p-float-label">
+            <input
+                class="w-full"
+                id="titulo"
+                type="text"
+                pInputText
+                (change)="actualizarDatos()"
+                [(ngModel)]="tituloDocente"
+            />
+            <label for="titulo">Título Docente</label>
+        </span>
+    </div>
+
+    <div class="col-12 sm:col-6 mt-3">
+        <p-fileUpload
+            #fubauto
+            mode="basic"
+            name="file[]"
+            [auto]="true"
+            [customUpload]="true"
+            (uploadHandler)="onUpload($event, fubauto)"
+            multiple="multiple"
+            accept=".pdf, .png"
+            chooseIcon="pi pi-upload"
+            maxFileSize="1000000"
+            [auto]="true"
+            chooseLabel="Contenido programático"
+            [style]="{ width: '100%' }"
+        >
+        </p-fileUpload>
+    </div>
+    <div class="col-12 sm:col-6 mt-3">
+        <p-fileUpload
+            #fubauto
+            mode="basic"
+            name="file[]"
+            [auto]="true"
+            [customUpload]="true"
+            (uploadHandler)="onUpload($event, fubauto)"
+            multiple="multiple"
+            accept=".pdf, .png"
+            chooseIcon="pi pi-upload"
+            maxFileSize="1000000"
+            [auto]="true"
+            chooseLabel="Carta de Aceptación"
+            [style]="{ width: '100%' }"
+        >
+        </p-fileUpload>
+    </div>
+    <div class="col-12 pt-0 mb-2">
+        <ng-container *ngIf="radicar.datosAsignaturasExternas[indice]">
+            <span
+                class="text-xs"
+                *ngFor="
+                    let archivo of radicar.datosAsignaturasExternas[indice]
+                        .contenidos;
+                    let last = last
+                "
+            >
+                <i class="pi pi-paperclip mr-1 text-xs"></i>{{ archivo.name
+                }}{{ !last ? ", " : "" }}
+            </span>
+        </ng-container>
+        <ng-container *ngIf="radicar.datosAsignaturasExternas[indice]">
+            <span
+                class="text-xs"
+                *ngFor="
+                    let archivo of radicar.datosAsignaturasExternas[indice]
+                        .cartaAceptacion;
+                    let last = last
+                "
+            >
+                <i class="pi pi-paperclip mr-1 text-xs"></i>{{ archivo.name
+                }}{{ !last ? ", " : "" }}
+            </span>
+        </ng-container>
+    </div>
+</div>
