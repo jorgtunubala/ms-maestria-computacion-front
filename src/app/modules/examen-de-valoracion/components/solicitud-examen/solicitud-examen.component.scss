@@ -1,0 +1,63 @@
+::ng-deep.p-steps .p-steps-item .p-menuitem-link:not(.p-disabled):focus {
+    outline: 0 none !important;
+    outline-offset: 0 !important;
+    box-shadow: 0 0 0 0 !important;
+}
+
+@media (max-width: 1240px) {
+    ::ng-deep.p-dialog {
+        width: 60% !important;
+    }
+    .col-steps {
+        display: none;
+    }
+}
+
+@media (max-width: 1024px) {
+    ::ng-deep.p-dialog {
+        width: 70% !important;
+    }
+}
+
+@media (max-width: 900px) {
+    ::ng-deep.p-dialog {
+        width: 80% !important;
+    }
+}
+
+@media (max-width: 768px) {
+    ::ng-deep.p-dialog {
+        width: 90% !important;
+        top: -10% !important;
+    }
+    .col-label,
+    .col-input {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    .col-label {
+        text-align: left !important;
+        margin-bottom: 10px;
+    }
+}
+
+@media (max-width: 425px) {
+    ::ng-deep.p-card .p-card-title {
+        text-align: center;
+    }
+
+    .card-data {
+        flex-direction: column;
+        margin-bottom: 2rem;
+        align-items: center;
+    }
+
+    .card-data > span:first-of-type {
+        font-weight: bold;
+    }
+
+    .card-data:last-of-type {
+        margin-bottom: 0;
+    }
+}

@@ -1,0 +1,79 @@
+.preview-image {
+    max-width: 300px;
+    max-height: 130px;
+    width: auto;
+    height: auto;
+}
+
+.p-show {
+    display: none;
+}
+
+@media (max-width: 1440px) {
+    .card-title {
+        font-size: 18px;
+        font-weight: bold;
+    }
+}
+
+@media (max-width: 1024px) {
+    .col-label--firma {
+        text-align: left !important;
+        margin-bottom: 10px;
+    }
+
+    .col-label--firma,
+    .col-input--firma {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .p-inputwrapper {
+        width: 100%;
+    }
+
+    .btn-roles {
+        flex-direction: column;
+        gap: 2rem;
+        align-self: center;
+        width: 100%;
+    }
+
+    .col-label {
+        text-align: left !important;
+        margin-bottom: 10px;
+    }
+
+    .col-label,
+    .col-input {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    .field-evaluador {
+        width: 100%;
+    }
+}
+
+@media (max-width: 425px) {
+    .card-title {
+        text-align: center;
+        font-size: 1.5rem;
+    }
+
+    .card-data {
+        flex-direction: column;
+        margin-bottom: 1rem;
+        align-items: center;
+    }
+
+    .card-data > span:first-of-type {
+        font-weight: bold;
+    }
+
+    .card-data:last-of-type {
+        margin-bottom: 0;
+    }
+}
