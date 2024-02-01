@@ -21,13 +21,6 @@ import { HomeComponent } from './core/components/home/home.component';
                                     './modules/examen-de-valoracion/examen-de-valoracion.module'
                                 ).then((m) => m.ExamenDeValoracionModule),
                         },
-                        {
-                            path: 'seguimiento-a-egresados',
-                            loadChildren: () =>
-                                import(
-                                    './modules/seguimiento-a-egresados/seguimiento-a-egresados.module'
-                                ).then((m) => m.SeguimientoAEgresadosModule),
-                        },
                     ],
                 },
                 { path: 'pages/error', component: ErrorComponent },
