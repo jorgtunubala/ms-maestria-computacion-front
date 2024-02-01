@@ -1,12 +1,18 @@
 .layout-main-container {
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    min-height: 10vh;
     justify-content: space-between;
-    padding: 16rem 2rem 2rem 4rem;
+    padding: 0rem 3rem 3rem 4rem;
     transition: margin-left $transitionDuration;
 }
 
 .layout-main {
     flex: 1 1 auto;
+}
+
+@media (max-width: 425px) {
+    .layout-main-container {
+        padding: 0;
+    }
 }
