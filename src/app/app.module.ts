@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
@@ -18,7 +18,10 @@ import { AppMenuitemComponent } from './core/components/menu-item/app.menuitem.c
 import { AppConfigComponent } from './core/components/config/app.config.component';
 import { PrimenNgModule } from './modules/primen-ng/primen-ng.module';
 import { HomeComponent } from './core/components/home/home.component';
-import { SharedModule } from 'primeng/api';
+import { ConfirmationService, MessageService, SharedModule } from 'primeng/api';
+import { AppBreadcrumbComponent } from './core/components/breadcrumb/app.breadcrumb.component';
+import { BreadcrumbService } from './core/components/breadcrumb/app.breadcrumb.service';
+import { DialogService } from 'primeng/dynamicdialog';
 
 @NgModule({
     imports: [
@@ -29,6 +32,7 @@ import { SharedModule } from 'primeng/api';
         BrowserAnimationsModule,
         PrimenNgModule,
         SharedModule,
+        ReactiveFormsModule,
     ],
     declarations: [
         AppComponent,
@@ -38,13 +42,18 @@ import { SharedModule } from 'primeng/api';
         AppMenuComponent,
         AppMenuitemComponent,
         AppConfigComponent,
-        HomeComponent
+        AppBreadcrumbComponent,
+        HomeComponent,
     ],
     providers: [
-        {provide: LocationStrategy, useClass: HashLocationStrategy},
+        { provide: LocationStrategy, useClass: HashLocationStrategy },
+        MessageService,
         MenuService,
-        ConfigService
+        ConfigService,
+        ConfirmationService,
+        DialogService,
+        BreadcrumbService,
     ],
-    bootstrap: [AppComponent]
+    bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

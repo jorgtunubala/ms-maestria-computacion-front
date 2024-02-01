@@ -7,20 +7,30 @@ import { AccessComponent } from './core/components/access/access.component';
 import { HomeComponent } from './core/components/home/home.component';
 @NgModule({
     imports: [
-        RouterModule.forRoot([
-            {
-                path: '', component: AppMainComponent,
-                children: [
-                    {path: '', component: HomeComponent},
-                ],
-            },
-            {path:'pages/error', component: ErrorComponent},
-            {path:'pages/notfound', component: NotfoundComponent},
-            {path:'pages/access', component: AccessComponent},
-            {path: '**', redirectTo: 'pages/notfound'},
-        ], {scrollPositionRestoration: 'enabled', anchorScrolling:'enabled'})
+        RouterModule.forRoot(
+            [
+                {
+                    path: '',
+                    component: AppMainComponent,
+                    children: [
+                        { path: '', component: HomeComponent },
+                        {
+                            path: 'examen-de-valoracion',
+                            loadChildren: () =>
+                                import(
+                                    './modules/examen-de-valoracion/examen-de-valoracion.module'
+                                ).then((m) => m.ExamenDeValoracionModule),
+                        },
+                    ],
+                },
+                { path: 'pages/error', component: ErrorComponent },
+                { path: 'pages/notfound', component: NotfoundComponent },
+                { path: 'pages/access', component: AccessComponent },
+                { path: '**', redirectTo: 'pages/notfound' },
+            ],
+            { scrollPositionRestoration: 'enabled', anchorScrolling: 'enabled' }
+        ),
     ],
-    exports: [RouterModule]
+    exports: [RouterModule],
 })
-export class AppRoutingModule {
-}
+export class AppRoutingModule {}

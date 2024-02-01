@@ -2,7 +2,7 @@ import { MenuItem } from "primeng/api";
 
 export const menuItems: MenuItem[] = [
     {
-        label: 'INICO',
+        label: 'INICIO',
         icon: 'pi pi-fw pi-home',
         routerLink: '/'
     },
@@ -11,14 +11,15 @@ export const menuItems: MenuItem[] = [
         icon: 'pi pi-fw pi-user',
         items: [
             {
-                label: 'Opcion 1',
-                icon: 'pi pi-fw pi-list'
+                label: 'ESTUDIANTES',
+                icon: 'pi pi-user',
+                routerLink: '/estudiantes',
             },
             {
-                label: 'Opcion 2',
-                icon: 'pi pi-fw pi-search'
-            }
-
+                label: 'DOCENTES',
+                icon: 'pi pi-user',
+                routerLink: '/docentes',
+            },
         ]
     },
     {
@@ -37,6 +38,23 @@ export const menuItems: MenuItem[] = [
     { separator: true },
     {
         label: 'TRABAJOS DE GRADO',
-        icon: 'pi pi-fw pi-book'
+        icon: 'pi pi-fw pi-book',
+        items: [
+            {
+                label: 'Examen de valoracion',
+                icon: 'pi pi-user',
+                routerLink: '/examen-de-valoracion',
+            },
+            {
+                label: 'Generar Hoja de Vida',
+                icon: 'pi pi-user',
+                routerLink: '/hoja-de-vida',
+            },
+            {
+                label: 'Seguimiento a egresados',
+                icon: 'pi pi-user',
+                routerLink: '/seguimiento-a-egresados',
+            },
+        ]
     }
 ];

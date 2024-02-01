@@ -1,0 +1,44 @@
+@media (max-width: 1240px) {
+    ::ng-deep.p-dialog {
+        width: 60% !important;
+    }
+}
+
+@media (max-width: 1024px) {
+    ::ng-deep.p-dialog {
+        width: 70% !important;
+    }
+}
+
+@media (max-width: 900px) {
+    ::ng-deep.p-dialog {
+        width: 80% !important;
+    }
+}
+
+@media (max-width: 768px) {
+    ::ng-deep.p-dialog {
+        width: 90% !important;
+        top: -10% !important;
+    }
+}
+
+@media (max-width: 425px) {
+    ::ng-deep.p-card .p-card-title {
+        text-align: center;
+    }
+
+    .card-data {
+        flex-direction: column;
+        margin-bottom: 2rem;
+        align-items: center;
+    }
+
+    .card-data > span:first-of-type {
+        font-weight: bold;
+    }
+
+    .card-data:last-of-type {
+        margin-bottom: 0;
+    }
+}

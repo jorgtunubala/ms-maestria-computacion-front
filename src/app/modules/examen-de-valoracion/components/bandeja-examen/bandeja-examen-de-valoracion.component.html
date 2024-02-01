@@ -1,0 +1,125 @@
+<p-panel>
+    <ng-template pTemplate="header">
+        <span class="font-medium" *ngIf="!estudianteSeleccionado"
+            >Por favor, seleccione el estudiante que se encuentra bajo su
+            dirección</span
+        >
+        <span class="font-bold" *ngIf="estudianteSeleccionado"
+            >Informacion General</span
+        >
+    </ng-template>
+    <ng-template pTemplate="content">
+        <div
+            class="flex flex-column align-items-center justify-content-center gap-2"
+        >
+            <button
+                pButton
+                icon="pi pi-plus"
+                label="Seleccionar Estudiante"
+                (click)="onSeleccionarEstudiante()"
+                *ngIf="!estudianteSeleccionado"
+            ></button>
+            <p-card
+                class="m-2 w-full max-w-30rem"
+                *ngIf="estudianteSeleccionado"
+            >
+                <div class="flex justify-content-between">
+                    <span style="font-size: 18px; font-weight: bold"
+                        >Datos del Estudiante</span
+                    >
+                    <button
+                        pButton
+                        icon="pi pi-times"
+                        style="border: none; font-size: 1.2rem"
+                        (click)="limpiarEstudiante()"
+                    ></button>
+                </div>
+                <div class="mt-2 card-data flex justify-content-between">
+                    <span>Codigo</span>
+                    <span>{{ estudianteSeleccionado.codigo }}</span>
+                </div>
+                <div class="mt-2 card-data flex justify-content-between">
+                    <span>Numero de Identificacion</span>
+                    <span>{{ estudianteSeleccionado.identificacion }}</span>
+                </div>
+                <div class="mt-2 card-data flex justify-content-between">
+                    <span>Nombres y Apellidos</span>
+                    <span
+                        >{{ estudianteSeleccionado.nombre }}
+                        {{ estudianteSeleccionado.apellido }}</span
+                    >
+                </div>
+            </p-card>
+        </div>
+    </ng-template>
+    <ng-template pTemplate="footer">
+        <div
+            class="col flex flex-column align-items-center justify-content-center w-full"
+            *ngIf="estudianteSeleccionado"
+        >
+            <div class="flex justify-content-center mb-3 w-full">
+                <button
+                    pButton
+                    icon="pi pi-plus"
+                    label="Crear Examen de Valoracion"
+                    (click)="onProcesoExamen()"
+                ></button>
+            </div>
+            <p-table
+                [value]="solicitudes"
+                [paginator]="true"
+                [loading]="loading"
+                [rows]="5"
+                [tableStyle]="{ width: '100%', 'max-width': '50rem' }"
+                [showCurrentPageReport]="true"
+                [scrollable]="true"
+                currentPageReportTemplate="{first} - {last} de {totalRecords}"
+            >
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th scope="col" style="min-width: 200px">Titulo</th>
+                        <th scope="col" style="min-width: 200px">
+                            Fecha creacion de Examen de Valoracion
+                        </th>
+                        <th scope="col" style="min-width: 200px">
+                            Estado Actual
+                        </th>
+                        <th scope="col" style="min-width: 200px">Opciones</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-solicitud>
+                    <tr>
+                        <td style="min-width: 200px">{{ solicitud.titulo }}</td>
+                        <td style="min-width: 200px">{{ solicitud.fecha }}</td>
+                        <td style="min-width: 200px">{{ solicitud.estado }}</td>
+                        <td style="min-width: 200px">
+                            <button
+                                pButton
+                                pTooltip="Editar"
+                                type="button"
+                                icon="pi pi-pencil"
+                                class="p-button-rounded p-button-text p-button-warning"
+                                (click)="onEditar(solicitud.id)"
+                            ></button>
+                            <button
+                                pButton
+                                pTooltip="Eliminar"
+                                type="button"
+                                icon="pi pi-trash"
+                                class="p-button-rounded p-button-text p-button-danger"
+                                (click)="onDelete($event, solicitud.id)"
+                            ></button>
+                            <p-confirmPopup></p-confirmPopup>
+                        </td>
+                    </tr>
+                </ng-template>
+                <!-- Mensaje sin registros -->
+                <ng-template pTemplate="emptymessage" let-columns>
+                    <tr>
+                        <td [attr.colspan]="6">No se encontraron registros</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </ng-template>
+</p-panel>
