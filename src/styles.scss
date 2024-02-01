@@ -7,16 +7,20 @@
 @import "assets/sass/layout/_variables";
 @import "assets/sass/layout/_layout";
 @import "assets/sass/overrides/_overrides";
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400;700&display=swap");
 
 :root {
-    --blue: #1B3357;
+    --blue: #1b3357;
+}
+
+body {
+    overflow-x: hidden;
 }
 
 .titulo-logo {
     position: relative;
-    font-family: 'Roboto Condensed', sans-serif;
-    color: #1B3357;
+    font-family: "Roboto Condensed", sans-serif;
+    color: #1b3357;
     font-size: 30px;
     font-weight: bold;
     text-transform: uppercase;
@@ -24,8 +28,8 @@
 }
 
 .titulo-logo::before {
-    content: '';
-    border-right: 3px solid #C8161F;
+    content: "";
+    border-right: 3px solid #c8161f;
     height: 25px;
     padding-top: 8px;
     padding-bottom: 10px;
@@ -47,7 +51,7 @@ p-menubarsub {
     text-align: center;
     border-top: 1px solid var(--surface-border);
     padding: 20px;
-    background-color: #1B3357;
+    background-color: #1b3357;
     color: white;
 }
 
@@ -59,5 +63,24 @@ p-menubarsub {
 }
 
 .text-blue {
-    color:  var(--blue);
+    color: var(--blue);
+}
+
+.label-required:after {
+    content: "*";
+    color: red;
+}
+
+.h-36px {
+    height: 36px;
+}
+
+.footer-modal {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 1rem;
+}
+
+.footer-modal .p-button {
+    margin-left: 0.5rem;
 }
