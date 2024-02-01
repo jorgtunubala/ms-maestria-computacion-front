@@ -1,0 +1,52 @@
+<div class="flex flex-wrap">
+    <div class="flex flex-row">
+        <div class="mr-5 mb-5">
+            <p class="text-lg font-semibold mb-0">Solicitante</p>
+            <p class="text-base m-0">
+                Nombre:
+                {{ gestor.getSolicitudSeleccionada().nombresSolicitante }}
+                {{ gestor.getSolicitudSeleccionada().apellidosSolicitante }}
+            </p>
+            <p class="text-base m-0">
+                Identificación:
+                {{ gestor.getSolicitudSeleccionada().identificacion }}
+            </p>
+            <p class="text-base m-0">
+                Código: {{ gestor.getSolicitudSeleccionada().codigoAcademico }}
+            </p>
+        </div>
+
+        <div class="mr-5 mb-5">
+            <p class="text-lg font-semibold mb-0">Solicitud</p>
+            <p class="text-base m-0">
+                Tipo: {{ gestor.getSolicitudSeleccionada().tipo }}
+            </p>
+            <p class="text-base m-0">
+                Fecha Recepción:
+                {{ gestor.getSolicitudSeleccionada().fechaEnvio }}
+            </p>
+            <p class="text-base m-0">
+                Estado:
+                <p-tag
+                    severity="info"
+                    value="{{ gestor.getSolicitudSeleccionada().estado }}"
+                ></p-tag>
+            </p>
+        </div>
+    </div>
+
+    <div class="mb-5">
+        <p class="text-lg font-semibold mb-0">Documentos Adjuntos</p>
+
+        <p
+            class="cursor-pointer mb-0"
+            *ngFor="let archivo of gestor.getSolicitudSeleccionada().adjuntos"
+        >
+            <a (click)="mostrarArhivo(archivo)">
+                <i class="pi pi-file-pdf"></i> {{ archivo.name }}</a
+            >
+        </p>
+
+        <p></p>
+    </div>
+</div>

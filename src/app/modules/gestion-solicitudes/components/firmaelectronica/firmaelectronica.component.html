@@ -1,0 +1,35 @@
+<div class="grid">
+    <div class="col-5">
+        <p class="text-center text-lg font-semibold">Dibuje su firma</p>
+    </div>
+    <div class="col-2">
+        <p-divider layout="vertical">
+            <b>O</b>
+        </p-divider>
+    </div>
+    <div class="col-5">
+        <p class="text-center text-lg font-semibold">
+            Cargue una imagen de su firma
+        </p>
+
+        <p-fileUpload
+            #fsigSolicitante
+            mode="basic"
+            name="file[]"
+            [auto]="true"
+            [customUpload]="true"
+            (uploadHandler)="onUpload($event, fsigSolicitante)"
+            accept="image/*"
+            chooseIcon="pi pi-upload"
+            maxFileSize="1000000"
+            [auto]="true"
+            chooseLabel="Cargar imagen"
+            [style]="{ width: '100%' }"
+        >
+        </p-fileUpload>
+
+        <div class="col-12 mt-3">
+            <img #firmaImage class="max-w-full" />
+        </div>
+    </div>
+</div>
