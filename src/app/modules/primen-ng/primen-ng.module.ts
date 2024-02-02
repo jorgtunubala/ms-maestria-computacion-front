@@ -25,6 +25,7 @@ import { DataViewModule } from 'primeng/dataview';
 import { DialogModule } from 'primeng/dialog';
 import { DividerModule } from 'primeng/divider';
 import { DropdownModule } from 'primeng/dropdown';
+import { DynamicDialogModule } from 'primeng/dynamicdialog';
 import { FieldsetModule } from 'primeng/fieldset';
 import { FileUploadModule } from 'primeng/fileupload';
 import { GalleriaModule } from 'primeng/galleria';
@@ -81,7 +82,7 @@ import { TreeModule } from 'primeng/tree';
 import { TreeSelectModule } from 'primeng/treeselect';
 import { TreeTableModule } from 'primeng/treetable';
 import { VirtualScrollerModule } from 'primeng/virtualscroller';
-
+import {KeyFilterModule} from 'primeng/keyfilter';
 
 @NgModule({
   declarations: [],
@@ -110,6 +111,7 @@ import { VirtualScrollerModule } from 'primeng/virtualscroller';
     DialogModule,
     DividerModule,
     DropdownModule,
+    DynamicDialogModule,
     FieldsetModule,
     FileUploadModule,
     GalleriaModule,
@@ -137,6 +139,7 @@ import { VirtualScrollerModule } from 'primeng/virtualscroller';
     PanelMenuModule,
     PasswordModule,
     PickListModule,
+    KeyFilterModule,
     ProgressBarModule,
     RadioButtonModule,
     RatingModule,
