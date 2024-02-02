@@ -1,10 +1,10 @@
-import { MenuItem } from "primeng/api";
+import { MenuItem } from 'primeng/api';
 
 export const menuItems: MenuItem[] = [
     {
         label: 'INICIO',
         icon: 'pi pi-fw pi-home',
-        routerLink: '/'
+        routerLink: '/',
     },
     {
         label: 'GESTIÓN',
@@ -23,14 +23,19 @@ export const menuItems: MenuItem[] = [
             {
                 label: 'ASIGNATURAS',
                 icon: 'pi pi-fw pi-clone',
-                routerLink:'/gestion-asignaturas',
+                routerLink: '/gestion-asignaturas',
             },
             {
                 label: 'DOCUMENTOS',
                 icon: 'pi pi-fw pi-clone',
-                routerLink:'/gestion-documentos',
-            }
-        ]
+                routerLink: '/gestion-documentos',
+            },
+            {
+                label: 'SOLICITUDES',
+                icon: 'pi pi-fw pi-inbox',
+                routerLink: '/gestionsolicitudes',
+            },
+        ],
     },
     {
         label: 'MATRICULAS',
@@ -39,15 +44,15 @@ export const menuItems: MenuItem[] = [
     {
         label: 'SOLICITUDES',
         icon: 'pi pi-fw pi-inbox',
-
+        routerLink: '/gestionsolicitudes/creacion/selector',
     },
     {
         label: 'PRESUPUESTO',
-        icon: 'pi pi-fw pi-chart-line'
+        icon: 'pi pi-fw pi-chart-line',
     },
     { separator: true },
     {
         label: 'TRABAJOS DE GRADO',
-        icon: 'pi pi-fw pi-book'
-    }
+        icon: 'pi pi-fw pi-book',
+    },
 ];

@@ -1,0 +1,74 @@
+<div class="card">
+    <div class="col-12 mb-4">
+        <p class="text-xl font-bold mb-0">
+            <i class="pi pi-paperclip mr-2"></i>Documentos adjuntos
+        </p>
+        <p>Cargue la documentación adicional requerida</p>
+    </div>
+
+    <div
+        class="mb-4"
+        *ngFor="
+            let documento of radicar.requisitosSolicitudEscogida
+                .documentosRequeridos;
+            let i = index
+        "
+    >
+        <p-panel header="{{ i + 1 }}.  {{ documento }}">
+            <div class="grid">
+                <div class="col-10 lg:col-2">
+                    <p-fileUpload
+                        #fubauto
+                        mode="basic"
+                        name="file[]"
+                        [auto]="true"
+                        [customUpload]="true"
+                        (uploadHandler)="onUpload($event, fubauto, i)"
+                        multiple="multiple"
+                        accept=".pdf, .png"
+                        chooseIcon="pi pi-upload"
+                        maxFileSize="1000000"
+                        [auto]="true"
+                        chooseLabel="Cargar Archivo"
+                        [style]="{ width: '100%' }"
+                    >
+                    </p-fileUpload>
+                </div>
+                <div
+                    class="col-2 lg:col-1"
+                    *ngIf="radicar.documentosAdjuntos[i]"
+                >
+                    <button
+                        pButton
+                        icon="pi pi-times"
+                        (click)="eliminarDocumento(i)"
+                        type="button"
+                        class="p-button-danger"
+                    ></button>
+                </div>
+                <div
+                    class="col-12 lg:col-9 text-lg pt-3"
+                    *ngIf="radicar.documentosAdjuntos[i]"
+                >
+                    <i class="pi pi-paperclip mr-1 text-lg"></i
+                    >{{ radicar.documentosAdjuntos[i].name }}
+                </div>
+            </div>
+        </p-panel>
+    </div>
+
+    <div class="grid grid-nogutter mt-4 justify-content-end">
+        <p-button
+            class="mr-2"
+            label="Atras"
+            (click)="navigateToBack()"
+            icon="pi pi-angle-left"
+        ></p-button>
+        <p-button
+            label="Siguiente"
+            (click)="navigateToNext()"
+            icon="pi pi-angle-right"
+            iconPos="right"
+        ></p-button>
+    </div>
+</div>

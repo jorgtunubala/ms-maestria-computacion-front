@@ -1,0 +1,42 @@
+<div>
+    <p-divider>
+        <div class="inline-flex align-items-center">
+            <i class="pi pi-arrow-down mr-2"></i>
+            <b>Bandeja de entrada</b>
+        </div>
+    </p-divider>
+    <p-table
+        [value]="solicitudes"
+        selectionMode="single"
+        (onRowSelect)="mostrarDetalles($event)"
+        [(selection)]="seleccionada"
+        responsiveLayout="scroll"
+    >
+        <ng-template pTemplate="header">
+            <tr>
+                <th>Remitente</th>
+                <th>Tipo</th>
+                <th>Recibido</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-solicitud>
+            <tr [pSelectableRow]="solicitud">
+                <td>
+                    <p-avatar
+                        icon="pi pi-user"
+                        styleClass="mr-2"
+                        shape="circle"
+                    ></p-avatar>
+                    {{ solicitud.nombresSolicitante }}
+                    {{ solicitud.apellidosSolicitante }}
+                </td>
+                <td>
+                    <p-tag value="{{ solicitud.tipo }}"></p-tag>
+                </td>
+                <td>
+                    {{ solicitud.fechaEnvio }}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>

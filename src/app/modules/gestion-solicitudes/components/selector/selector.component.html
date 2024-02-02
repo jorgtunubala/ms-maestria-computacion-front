@@ -1,0 +1,76 @@
+<div class="card">
+    <div class="mb-4">
+        <p class="text-xl font-bold mb-0">
+            <i class="pi pi-inbox mr-2"></i>Tipo de solicitud
+        </p>
+        <p>Escoja el tipo de solicitud que va a presentar</p>
+    </div>
+
+    <div class="grid">
+        <div class="col-12 lg:col-3">
+            <p-listbox
+                [options]="tiposDeSolicitud"
+                optionLabel="nombreSolicitud"
+                (onChange)="obtenerRequisitosDeSolicitud()"
+                [(ngModel)]="tipoSolicitudEscogida"
+                [listStyle]="{ 'max-height': '300px' }"
+                styleClass="bg-bluegray-50 "
+            >
+                <ng-template let-solicitud pTemplate="item">
+                    <div><i class="pi pi pi-info-circle mr-2"></i></div>
+                    <div class="font-semibold">
+                        {{ solicitud.nombreSolicitud }}
+                    </div>
+                </ng-template>
+            </p-listbox>
+        </div>
+        <div class="col-12 lg:col-9">
+            <p-panel
+                header="Información y requisitos"
+                *ngIf="requisitosSolicitudEscogida"
+            >
+                <div *ngIf="requisitosSolicitudEscogida.documentosRequeridos">
+                    <p class="font-semibold">
+                        {{ requisitosSolicitudEscogida.tituloDocumento }}
+                    </p>
+                    <p
+                        class="pl-3"
+                        *ngFor="
+                            let documento of requisitosSolicitudEscogida.documentosRequeridos;
+                            let i = index
+                        "
+                    >
+                        {{ i + 1 }}. {{ documento }}
+                    </p>
+                </div>
+
+                <div *ngIf="requisitosSolicitudEscogida.descripcion">
+                    <p>{{ requisitosSolicitudEscogida.descripcion }}</p>
+                </div>
+
+                <div *ngIf="requisitosSolicitudEscogida.articulo">
+                    <p>{{ requisitosSolicitudEscogida.articulo }}</p>
+                </div>
+
+                <div *ngIf="requisitosSolicitudEscogida.tenerEnCuenta">
+                    <p class="font-semibold">Tener en cuenta:</p>
+                    <p>{{ requisitosSolicitudEscogida.tenerEnCuenta }}</p>
+                </div>
+            </p-panel>
+        </div>
+    </div>
+    <div class="flex justify-content-end mt-4">
+        <p-button
+            label="Siguiente"
+            icon="pi pi-angle-right"
+            iconPos="right"
+            (click)="navigateToNext()"
+        ></p-button>
+    </div>
+</div>
+
+<div class="block sm:flex">
+    <div class="mb-5 sm:mr-5"></div>
+
+    <div class="w-full"></div>
+</div>
