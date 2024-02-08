@@ -4,18 +4,18 @@ import {
     TiposSolicitudResponse,
     RequisitosSolicitudResponse,
     TutoresYDirectoresResponse,
-    DatosSolHomologPostSave,
-    DatosSolHomologPostGuardada,
+    SolicitudSave,
+    SolicitudPendienteAval,
 } from '../models';
 import { Observable, catchError, map } from 'rxjs';
 import { InfoPersonalResponse } from '../models/infoPersonalResponse';
+import { DatosSolicitudRequest } from '../models/solicitudes/datosSolicitudRequest';
 
 @Injectable({
     providedIn: 'root',
 })
 export class HttpService {
-    private apiUrl =
-        'http://localhost:8095/msmaestriac/gestionSolicitudHomologacion/save';
+    private apiUrl = 'http://localhost:8095/msmaestriac/gestionSolicitud/save';
 
     constructor(private http: HttpClient) {}
 
@@ -61,20 +61,24 @@ export class HttpService {
         );
     }
 
-    guardarSolHomologPost(objeto: DatosSolHomologPostSave): Observable<any> {
+    guardarSolHomologPost(objeto: SolicitudSave): Observable<any> {
+        console.log(objeto);
         return this.http.post(this.apiUrl, objeto);
     }
 
-    /** 
-    obtenerDatosSolHomologPost(correo: string) {
+    obtenerListaSolPendientesAval(
+        correo: string
+    ): Observable<SolicitudPendienteAval[]> {
         const url =
-            'http://localhost:8095/msmaestriac/gestionSolicitudHomologacion/obtener-homologaciones/hgonz@unicauca.edu.co';
-        return this.http.get<DatosSolHomologPostGuardada>(url, correo).pipe(
-            map((respuesta) => {
-                return respuesta.tutores;
-            })
-        );
+            'http://localhost:8095/msmaestriac/gestionSolicitud/obtener-solicitudes-pendientes/' +
+            correo;
+        return this.http.get<SolicitudPendienteAval[]>(url);
     }
 
-    */
+    obtenerInfoSolGuardada(id: number): Observable<DatosSolicitudRequest> {
+        const url =
+            'http://localhost:8095/msmaestriac/gestionSolicitud/obtener-datos-solicitud/' +
+            id;
+        return this.http.get<DatosSolicitudRequest>(url);
+    }
 }

@@ -1,0 +1,337 @@
+<!-- Ciudad y Fecha -->
+<p class="mb-5">
+    <ng-container *ngIf="radicar.fechaEnvio == null">
+        Popayán, {{ fechaActual.getDate() }} de
+        {{ nombresMes[fechaActual.getMonth()] }} del
+        {{ fechaActual.getFullYear() }}
+    </ng-container>
+    <ng-container *ngIf="radicar.fechaEnvio != null">
+        Popayán, {{ radicar.fechaEnvio.split("/")[0] }} de
+        {{ nombresMes[+radicar.fechaEnvio.split("/")[1] - 1] }} del
+        {{ radicar.fechaEnvio.split("/")[2] }}
+    </ng-container>
+</p>
+
+<!-- Destinatario -->
+<p class="line-height-1 mb-4">
+    Señores<br />
+    Comité de Programa Maestría en Computación<br />
+    Atte: Dra Luz Marina Sierra<br />
+    Coordinadora programa<br />
+    Universidad del Cauca
+</p>
+
+<!-- Asunto -->
+<p class="font-bold">
+    Asunto: Solicitud
+    <ng-container
+        *ngIf="
+            [
+                'AD_ASIG',
+                'CA_ASIG',
+                'HO_ASIG_ESP',
+                'HO_ASIG_POS',
+                'AP_SEME'
+            ].includes(radicar.tipoSolicitudEscogida.codigoSolicitud)
+        "
+    >
+        de</ng-container
+    >
+    <ng-container
+        *ngIf="
+            ['CU_ASIG'].includes(radicar.tipoSolicitudEscogida.codigoSolicitud)
+        "
+    >
+        para</ng-container
+    >
+
+    {{ radicar.tipoSolicitudEscogida.nombreSolicitud | lowercase }}
+</p>
+
+<!-- Contenido de la solicitud -->
+
+<div class="text-justify">
+    <!-- Saludo -->
+    <p>Reciban cordial saludo,</p>
+    Comedidamente me dirijo a ustedes con el fin de solicitar
+
+    <!-- Mension de la tabla de asignaturas para Adición/Cancelación/Homologación Postgrados -->
+    <ng-container
+        *ngIf="
+            ['AD_ASIG', 'CA_ASIG', 'HO_ASIG_POS', 'HO_ASIG_ESP'].includes(
+                radicar.tipoSolicitudEscogida.codigoSolicitud
+            )
+        "
+    >
+        la
+        {{
+            obtenerPalabra(radicar.tipoSolicitudEscogida.nombreSolicitud, 0)
+                | lowercase
+        }}
+        de las asignaturas relacionadas en la tabla a continuación,
+    </ng-container>
+
+    <!-- Mensión de semestre a aplazar -->
+    <ng-container
+        *ngIf="
+            ['AP_SEME'].includes(radicar.tipoSolicitudEscogida.codigoSolicitud)
+        "
+    >
+        el aplazamiento del
+        {{
+            radicar.semestreAplazamiento.split("-")[1] === "1"
+                ? "primer"
+                : radicar.semestreAplazamiento.split("-")[1] === "2"
+                ? "segundo"
+                : radicar.semestreAplazamiento.split("-")[1]
+        }}
+        semestre de
+        {{ radicar.semestreAplazamiento.split("-")[0] }}.
+    </ng-container>
+
+    <!-- Mension de institución y programa de procedencia -->
+    <ng-container
+        *ngIf="
+            ['HO_ASIG_POS'].includes(
+                radicar.tipoSolicitudEscogida.codigoSolicitud
+            )
+        "
+    >
+        las cuales fueron cursadas en el progama de posgrado:
+        {{ radicar.datosInstitucionHomologar.programa }} de la
+        {{ radicar.datosInstitucionHomologar.institucion }}.
+    </ng-container>
+
+    <ng-container
+        *ngIf="
+            ['HO_ASIG_ESP'].includes(
+                radicar.tipoSolicitudEscogida.codigoSolicitud
+            )
+        "
+    >
+        las cuales fueron cursadas en el progama de posgrado:
+        {{ radicar.datosInstitucionHomologar[0].programa }} de la
+        {{ radicar.datosInstitucionHomologar[0].institucion }}.
+    </ng-container>
+
+    <!-- Tabla de asignaturas a cursar en otros programas -->
+    <ng-container
+        *ngIf="
+            ['CU_ASIG'].includes(radicar.tipoSolicitudEscogida.codigoSolicitud)
+        "
+    >
+        se me permita cursar las asignaturas relacionadas en la tabla a
+        continuación y en los programas en mension.
+
+        <table class="border-1 mt-3 w-full">
+            <tr>
+                <th class="border-right-1 text-center border-bottom-1">No.</th>
+                <th class="border-right-1 border-bottom-1 text-center">
+                    Asignatura
+                </th>
+                <th class="border-right-1 border-bottom-1 text-center">
+                    Código
+                </th>
+                <th class="border-right-1 border-bottom-1 text-center">
+                    Créditos
+                </th>
+                <th class="border-right-1 border-bottom-1 text-center">
+                    Intensidad
+                </th>
+                <th class="border-right-1 border-bottom-1 text-center">
+                    Grupo
+                </th>
+                <th class="border-right-1 border-bottom-1 text-center">
+                    Programa
+                </th>
+                <th class="border-bottom-1 text-center">Docente</th>
+            </tr>
+            <tr
+                *ngFor="
+                    let asignatura of radicar.datosAsignaturasExternas;
+                    let i = index
+                "
+            >
+                <td class="border-right-1 text-center">
+                    {{ i + 1 }}
+                </td>
+                <td class="border-right-1 text-center">
+                    {{ asignatura.nombre }}
+                </td>
+                <td class="border-right-1 text-center">
+                    {{ asignatura.codigo }}
+                </td>
+                <td class="border-right-1 text-center">
+                    {{ asignatura.creditos }}
+                </td>
+                <td class="border-right-1 text-center">
+                    {{ asignatura.intensidad }}
+                </td>
+                <td class="border-right-1 text-center">
+                    {{ asignatura.grupo }}
+                </td>
+                <td class="border-right-1 text-center">
+                    {{ asignatura.programa }}
+                </td>
+                <td class="text-center">
+                    {{ asignatura.tituloDocente }} {{ asignatura.docente }}
+                </td>
+            </tr>
+        </table>
+    </ng-container>
+
+    <!-- Tabla de asignaturas para Adicionar/Cancelar -->
+    <div class="mt-3">
+        <ng-container
+            *ngIf="
+                ['AD_ASIG', 'CA_ASIG'].includes(
+                    radicar.tipoSolicitudEscogida.codigoSolicitud
+                )
+            "
+        >
+            <table class="border-1 w-full">
+                <tr>
+                    <th class="border-right-1 text-center border-bottom-1">
+                        No.
+                    </th>
+
+                    <th class="border-bottom-1 text-center">Asignatura</th>
+                    <th class="border-bottom-1 text-center">Grupo</th>
+                </tr>
+                <tr
+                    *ngFor="
+                        let materia of radicar.asignaturasAdicCancel;
+                        let i = index
+                    "
+                >
+                    <td class="border-right-1 text-center">
+                        {{ i + 1 }}
+                    </td>
+
+                    <td class="border-right-1 text-center">
+                        {{ materia.nombre }}
+                    </td>
+                    <td class="text-center">
+                        {{ materia.grupo }}
+                    </td>
+                </tr>
+            </table>
+        </ng-container>
+    </div>
+
+    <!-- Tabla de asignaturas para Homologar -->
+    <div class="mt-3">
+        <ng-container
+            *ngIf="
+                ['HO_ASIG_POS', 'HO_ASIG_ESP'].includes(
+                    radicar.tipoSolicitudEscogida.codigoSolicitud
+                )
+            "
+        >
+            <table class="border-1 w-full">
+                <tr>
+                    <th class="border-right-1 text-center border-bottom-1">
+                        No.
+                    </th>
+                    <th class="border-bottom-1 text-center">Asignatura</th>
+                    <th class="border-bottom-1 text-center">Créditos</th>
+                    <th class="border-bottom-1 text-center">
+                        Intensidad (h/semana)
+                    </th>
+                    <th class="border-bottom-1 text-center">Calificación</th>
+                </tr>
+                <tr
+                    *ngFor="
+                        let asignatura of radicar.datosAsignaturasAHomologar;
+                        let i = index
+                    "
+                >
+                    <td class="border-right-1 text-center">
+                        {{ i + 1 }}
+                    </td>
+                    <td class="text-center">
+                        {{ asignatura.asignatura }}
+                    </td>
+                    <td class="text-center">
+                        {{ asignatura.creditos }}
+                    </td>
+                    <td class="text-center">
+                        {{ asignatura.intensidad }}
+                    </td>
+                    <td class="text-center">
+                        {{ asignatura.calificacion }}
+                    </td>
+                </tr>
+            </table>
+        </ng-container>
+    </div>
+    <!-- Motivo en caso de Cancelación/Aplazamiento/Prorroga/CursoExterno -->
+    <ng-container
+        *ngIf="
+            ['CA_ASIG', 'AP_SEME', 'PR_EXAM', 'CU_ASIG'].includes(
+                radicar.tipoSolicitudEscogida.codigoSolicitud
+            )
+        "
+    >
+        La presente solicitud obedece a que
+        {{ radicar.motivoDeSolicitud | lowercase }}
+    </ng-container>
+</div>
+
+<!-- Despedida -->
+<p class="mt-2">
+    Sin otro motivo en particular, gradezco la atencion brindada y quedo a la
+    espera de su respuesta.
+</p>
+
+<p class="mt-5 mb-6">Universitariamente,</p>
+
+<div class="grid">
+    <!-- Firma del remitente -->
+    <div class="col-6">
+        <div>
+            <img
+                *ngIf="radicar.firmaSolicitante"
+                class="w-7"
+                [src]="radicar.firmaSolicitanteUrl"
+            />
+        </div>
+    </div>
+    <!-- Firma del Tutor -->
+    <div class="col-6 flex justify-content-end">
+        <img
+            *ngIf="radicar.firmaTutor"
+            class="w-7"
+            [src]="radicar.firmaTutorUrl"
+        />
+    </div>
+    <!-- Remitente -->
+    <div class="col-6 line-height-1">
+        {{ radicar.datosSolicitante.nombres }}
+        {{ radicar.datosSolicitante.apellidos }}<br />
+        Codigo: {{ radicar.datosSolicitante.codigoAcademico }}<br />
+        email: {{ radicar.datosSolicitante.correo }}<br />
+        Celular: {{ radicar.datosSolicitante.celular }}<br />
+    </div>
+
+    <!-- VoBo Tutor -->
+    <div class="col-6 text-right">
+        <ng-container *ngIf="!radicar.firmaTutor">
+            VoBo. Pendiente:
+            <ng-container class="line-through">
+                {{ radicar.tutor.nombreTutor }}</ng-container
+            >
+        </ng-container>
+
+        <ng-container *ngIf="radicar.firmaTutor">
+            VoBo. Tutor:
+            <ng-container class="line-through">
+                {{ radicar.tutor.nombreTutor }}</ng-container
+            >
+            <br />
+            Fecha: {{ fechaActual.getDate() }}/{{
+                fechaActual.getMonth() + 1
+            }}/{{ fechaActual.getFullYear() }}
+        </ng-container>
+    </div>
+</div>
