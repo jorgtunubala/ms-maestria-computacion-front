@@ -1,15 +1,15 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { GestionComponent } from './pages/gestion/gestion.component';
-import { BuzonComponent } from './components/buzon/buzon.component';
-import { SelectorComponent } from './components/selector/selector.component';
-import { CreadorComponent } from './components/creador/creador.component';
-import { DocumentosComponent } from './components/documentos/documentos.component';
-import { ResumenComponent } from './components/resumen/ResumenComponent';
-import { VisorComponent } from './components/visor/visor.component';
-import { DatosComponent } from './components/datos/datos.component';
-import { BuzondeavalesComponent } from './components/buzondeavales/buzondeavales.component';
-import { PendientesavalComponent } from './components/pendientesaval/pendientesaval.component';
+import { BuzonComponent } from './components/gestion-coordinacion/buzon/buzon.component';
+import { SelectorComponent } from './components/presentacion-solicitudes/selector/selector.component';
+import { ContenedorPasosComponent } from './components/presentacion-solicitudes/contenedorpasos/contenedorpasos.component';
+import { DocsAdjuntosComponent } from './components/presentacion-solicitudes/docsadjuntos/docsadjuntos.component';
+import { ResumenComponent } from './components/presentacion-solicitudes/resumen/ResumenComponent';
+import { VisorComponent } from './components/gestion-coordinacion/visor/visor.component';
+import { BuzondeavalesComponent } from './components/aval-tutores-directores/buzondeavales/buzondeavales.component';
+import { PendientesavalComponent } from './components/aval-tutores-directores/pendientesaval/pendientesaval.component';
+import { FormulariosComponent } from './components/presentacion-solicitudes/formularios/formularios.component';
 
 const routes: Routes = [
     {
@@ -22,11 +22,11 @@ const routes: Routes = [
     },
     {
         path: 'creacion',
-        component: CreadorComponent,
+        component: ContenedorPasosComponent,
         children: [
             { path: 'selector', component: SelectorComponent },
-            { path: 'datos', component: DatosComponent },
-            { path: 'documentos', component: DocumentosComponent },
+            { path: 'datos', component: FormulariosComponent },
+            { path: 'documentos', component: DocsAdjuntosComponent },
             { path: 'resumen', component: ResumenComponent },
         ],
     },

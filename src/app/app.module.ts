@@ -48,15 +48,15 @@ import { CargarDocentesComponent } from './modules/gestion-docentes/components/c
         AppBreadcrumbComponent,
         HomeComponent,
         BandejaDocentesComponent,
-        CargarDocentesComponent
+        CargarDocentesComponent,
     ],
     providers: [
-        {provide: LocationStrategy, useClass: HashLocationStrategy},
+        { provide: LocationStrategy, useClass: HashLocationStrategy },
         MessageService,
         MenuService,
         ConfigService,
         BreadcrumbService,
     ],
-    bootstrap: [AppComponent]
+    bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

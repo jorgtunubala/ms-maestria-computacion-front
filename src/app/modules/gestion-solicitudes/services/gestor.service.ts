@@ -5,15 +5,15 @@ import { Solicitud } from '../models/solicitud.model';
     providedIn: 'root',
 })
 export class GestorService {
-    solicitudSeleccionada: Solicitud;
+    solicitudSeleccionada: any;
 
     constructor() {}
 
-    setSolicitudSeleccionada(prmSolicitud: Solicitud) {
+    setSolicitudSeleccionada(prmSolicitud: any) {
         this.solicitudSeleccionada = prmSolicitud;
     }
 
-    getSolicitudSeleccionada(): Solicitud {
+    getSolicitudSeleccionada(): any {
         return this.solicitudSeleccionada;
     }
 }

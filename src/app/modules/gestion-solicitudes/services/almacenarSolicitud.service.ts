@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 
 import {
-    AsignaturasHologPost,
-    DatosAsigHomologPost,
+    AsignaturaHomologPost,
     DatosSolHomologPostSave,
+    FormHomologPost,
+    SolicitudSave,
 } from '../models';
 import { HttpService } from './http.service';
 import { RadicarService } from './radicar.service';
@@ -42,8 +43,8 @@ export class AlmacenarSolicitudService {
         });
     }
 
-    async reunirDatosSolHomologPost(): Promise<DatosSolHomologPostSave> {
-        const asignaturasAHomologar: DatosAsigHomologPost[] = [];
+    async reunirDatosSolHomologPost(): Promise<SolicitudSave> {
+        const asignaturasAHomologar: AsignaturaHomologPost[] = [];
         const conversionesBase64: Promise<string>[] = [];
 
         for (
@@ -66,7 +67,7 @@ export class AlmacenarSolicitudService {
             index < this.radicar.datosAsignaturasAHomologar.length;
             index++
         ) {
-            const datos: DatosAsigHomologPost = {
+            const datos: AsignaturaHomologPost = {
                 nombreAsignatura:
                     this.radicar.datosAsignaturasAHomologar[index].asignatura,
                 numeroCreditos:
@@ -75,12 +76,12 @@ export class AlmacenarSolicitudService {
                     this.radicar.datosAsignaturasAHomologar[index].intensidad,
                 calificacion:
                     this.radicar.datosAsignaturasAHomologar[index].calificacion,
-                contenidoProgramatico: base64Contents[index], // Usar el contenido ya convertido
+                contenidoProgramatico: base64Contents[index],
             };
             asignaturasAHomologar.push(datos);
         }
 
-        const datosHomologacion: AsignaturasHologPost = {
+        const datosHomologacion: FormHomologPost = {
             programaProcedencia:
                 this.radicar.datosInstitucionHomologar.programa,
             institucionProcedencia:
@@ -90,12 +91,16 @@ export class AlmacenarSolicitudService {
 
         const documentosAdjuntos = await this.convertirDocumentosAdjuntos();
 
-        const infoSolicitud: DatosSolHomologPostSave = {
-            idSolicitud: this.radicar.tipoSolicitudEscogida.idSolicitud,
-            idEstudiante: this.radicar.datosSolicitante.id,
+        const datosSolHomologPost: DatosSolHomologPostSave = {
             datosHomologacionDto: datosHomologacion,
-            idTutor: this.radicar.tutor.id,
             documentosAdjuntos: documentosAdjuntos,
+        };
+
+        const infoSolicitud: SolicitudSave = {
+            idTipoSolicitud: this.radicar.tipoSolicitudEscogida.idSolicitud,
+            idEstudiante: this.radicar.datosSolicitante.id,
+            idTutor: this.radicar.tutor.id,
+            datosHomologacion: datosSolHomologPost,
         };
 
         return infoSolicitud;

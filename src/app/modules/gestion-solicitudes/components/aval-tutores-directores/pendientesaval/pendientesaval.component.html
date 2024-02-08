@@ -1,0 +1,41 @@
+<div>
+    <p-divider>
+        <div class="inline-flex align-items-center">
+            <i class="pi pi-pencil mr-2"></i>
+            <b>Solicitudes pendientes de aval</b>
+        </div>
+    </p-divider>
+    <p-table
+        [value]="solicitudes"
+        selectionMode="single"
+        (onRowSelect)="mostrarDetalles($event)"
+        [(selection)]="solicitudSeleccionada"
+        responsiveLayout="scroll"
+    >
+        <ng-template pTemplate="header">
+            <tr>
+                <th>Remitente</th>
+                <th>Tipo</th>
+                <th>Recibido</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-solicitud>
+            <tr [pSelectableRow]="solicitud">
+                <td>
+                    <p-avatar
+                        icon="pi pi-user"
+                        styleClass="mr-2"
+                        shape="circle"
+                    ></p-avatar>
+                    {{ solicitud.nombreEstudiante }}
+                </td>
+                <td>
+                    <p-tag value="{{ solicitud.abreviatura }}"></p-tag>
+                </td>
+                <td>
+                    {{ solicitud.fecha }}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
