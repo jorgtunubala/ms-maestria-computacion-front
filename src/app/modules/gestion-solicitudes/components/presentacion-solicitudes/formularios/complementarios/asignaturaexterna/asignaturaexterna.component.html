@@ -132,13 +132,13 @@
             [auto]="true"
             [customUpload]="true"
             (uploadHandler)="onUpload($event, fubauto)"
-            multiple="multiple"
-            accept=".pdf, .png"
+            accept=".pdf"
             chooseIcon="pi pi-upload"
-            maxFileSize="1000000"
+            maxFileSize="5000000"
             [auto]="true"
             chooseLabel="Contenido programático"
             [style]="{ width: '100%' }"
+            invalidFileSizeMessageDetail="Maximo 5MB"
         >
         </p-fileUpload>
     </div>

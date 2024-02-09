@@ -123,4 +123,29 @@ export class VisoravalComponent implements OnInit {
             this.componenteHijo.crearPDF();
         }
     }
+
+    abrirArchivo(nombreDocumento: string) {
+        // Buscar el archivo por su nombre
+        const documento = this.radicar.documentosAdjuntos.find(
+            (doc) => doc.name === nombreDocumento
+        );
+
+        if (documento) {
+            // Crear un objeto URL para el archivo
+            const url = URL.createObjectURL(documento);
+
+            // Crear un enlace de descarga
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = nombreDocumento;
+
+            // Simular un clic en el enlace para iniciar la descarga
+            link.click();
+
+            // Liberar el objeto URL
+            URL.revokeObjectURL(url);
+        } else {
+            console.error('El documento no se encontró');
+        }
+    }
 }

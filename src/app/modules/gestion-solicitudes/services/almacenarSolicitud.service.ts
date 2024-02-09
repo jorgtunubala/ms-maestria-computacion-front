@@ -114,7 +114,10 @@ export class AlmacenarSolicitudService {
 
             lector.onload = () => {
                 if (typeof lector.result === 'string') {
-                    resolve(lector.result);
+                    const nombre = archivo.name;
+                    const contenidoBase64 = lector.result.split(',')[1];
+                    const base64ConNombre = `${nombre}:${contenidoBase64}`;
+                    resolve(base64ConNombre);
                 } else {
                     reject(null);
                 }

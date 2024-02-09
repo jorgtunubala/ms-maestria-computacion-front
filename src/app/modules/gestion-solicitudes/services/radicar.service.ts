@@ -147,7 +147,9 @@ export class RadicarService {
         return this.clickSubject.asObservable();
     }
 
-    poblarConDatosSolicitudGuardada(infoSolicitud: DatosSolicitudRequest) {
+    async poblarConDatosSolicitudGuardada(
+        infoSolicitud: DatosSolicitudRequest
+    ) {
         switch (this.tipoSolicitudEscogida.codigoSolicitud) {
             case 'HO_ASIG_POS':
                 this.estadoSolicitud =
@@ -212,6 +214,9 @@ export class RadicarService {
                 );
 
                 //Docs Adjuntos
+                await this.asignarDocumentosAdjuntos(
+                    infoSolicitud.datosSolicitudHomologacion.documentosAdjuntos
+                );
 
                 break;
 
@@ -224,5 +229,46 @@ export class RadicarService {
             default:
                 break;
         }
+    }
+
+    convertirBase64AFile(base64String: string): File | null {
+        // Divide la cadena base64 en nombre y contenido
+        const partes = base64String.split(':');
+        if (partes.length !== 2) {
+            return null; // La cadena base64 no tiene el formato esperado
+        }
+
+        const nombre = partes[0];
+        const contenidoBase64 = partes[1];
+
+        // Decodifica el contenido base64 en un ArrayBuffer
+        const binaryString = window.atob(contenidoBase64);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+        }
+
+        // Crea un nuevo archivo Blob a partir del ArrayBuffer
+        const blob = new Blob([bytes]);
+
+        // Crea un nuevo objeto File a partir del Blob y asigna el nombre del archivo
+        const archivo = new File([blob], nombre);
+
+        return archivo;
+    }
+
+    async asignarDocumentosAdjuntos(docs: string[]): Promise<void> {
+        this.documentosAdjuntos = await Promise.all(
+            docs.map(async (cadenaBase64) => {
+                const archivo = this.convertirBase64AFile(cadenaBase64);
+                if (archivo) {
+                    return archivo;
+                } else {
+                    throw new Error(
+                        'Error al convertir la cadena base64 a archivo.'
+                    );
+                }
+            })
+        );
     }
 }
