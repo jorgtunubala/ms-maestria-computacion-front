@@ -105,38 +105,6 @@ export class ResumenComponent implements OnInit {
         }, 100);
     }
 
-    crearPDF() {
-        const div = this.vistaPreviaSolicitud.nativeElement;
-        const scale = 3;
-
-        html2canvas(div, { scale: scale }).then((canvas) => {
-            const imgData = canvas.toDataURL('image/jpeg', 1.0);
-            const pdf = new jsPDF('p', 'mm', 'letter');
-
-            const imgWidth = 216; // Ancho de la imagen en mm (ajústalo según tus necesidades)
-            const pageHeight = 279; // Altura de la página en mm
-
-            let position = 0;
-
-            for (
-                let index = 0;
-                index < this.segmentosContenido.length;
-                index++
-            ) {
-                pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, 0);
-
-                if (index != this.segmentosContenido.length - 1) {
-                    pdf.addPage();
-                }
-
-                position -= pageHeight;
-            }
-
-            // Guarda el PDF
-            pdf.save('Oficio de Solicitud.pdf');
-        });
-    }
-
     enviarSolicitud() {
         this.deshabilitarEnvio = true;
         this.guardadoEnProceso = true;
