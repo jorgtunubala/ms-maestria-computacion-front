@@ -24,6 +24,8 @@ import { AppBreadcrumbComponent } from './core/components/breadcrumb/app.breadcr
 import { BreadcrumbService } from './core/components/breadcrumb/app.breadcrumb.service';
 import { BandejaDocentesComponent } from './modules/gestion-docentes/components/bandeja-docentes/bandeja-docentes.component';
 import { CargarDocentesComponent } from './modules/gestion-docentes/components/cargar-docentes/cargar-docentes.component';
+import { BandejaExpertosComponent } from './modules/gestion-expertos/components/bandeja-expertos/bandeja-expertos.component';
+import { CargarExpertosComponent } from './modules/gestion-expertos/components/cargar-expertos/cargar-expertos.component';
 
 @NgModule({
     imports: [
@@ -49,14 +51,16 @@ import { CargarDocentesComponent } from './modules/gestion-docentes/components/c
         HomeComponent,
         BandejaDocentesComponent,
         CargarDocentesComponent,
+        BandejaExpertosComponent,
+        CargarExpertosComponent,
     ],
     providers: [
-        { provide: LocationStrategy, useClass: HashLocationStrategy },
+        {provide: LocationStrategy, useClass: HashLocationStrategy},
         MessageService,
         MenuService,
         ConfigService,
         BreadcrumbService,
     ],
-    bootstrap: [AppComponent],
+    bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule { }

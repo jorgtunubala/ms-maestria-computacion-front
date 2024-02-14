@@ -11,4 +11,7 @@ export enum Mensaje {
     CONFIRMAR_ELIMINAR_DOCENTE = "¿Está seguro de eliminar este docente?",
     ACTUALIZACION_EXITOSA= "El registro fue actualizado exitosamente",
     GUARDADO_EXITOSO  =  "Los datos han sido guardados exitosamente",
+    REGISTRO_EXPERTOS_EXITOSO = "Expertos cargados exitosamente",
+    ERROR_CARGAR_EXPERTOS = "Carga de docentes fallida. Verifica los datos e intenta nuevamente",
+
 }

@@ -29,25 +29,25 @@ import { HomeComponent } from './core/components/home/home.component';
                                 ).then((m) => m.GestionDocentesModule),
                         },
                         {
+                            path: 'expertos',
+                            loadChildren: () =>
+                                import(
+                                    './modules/gestion-expertos/gestion-expertos.module'
+                                ).then((m) => m.GestionExpertosModule),
+                        },
+                        {
                             path: 'gestion-asignaturas',
                             loadChildren: () =>
                                 import(
                                     './modules/gestion-asignaturas/gestion-asignaturas.module'
-                                ).then((m) => m.GestionAsignaturasModule),
+                                ).then((m) => m.GestionAsignaturasModule)
                         },
                         {
                             path: 'gestion-documentos',
                             loadChildren: () =>
                                 import(
                                     './modules/gestion-documentos/gestion-documentos.module'
-                                ).then((m) => m.GestionDocumentosModule),
-                        },
-                        {
-                            path: 'gestionsolicitudes',
-                            loadChildren: () =>
-                                import(
-                                    './modules/gestion-solicitudes/gestion-solicitudes.module'
-                                ).then((m) => m.GestionSolicitudesModule),
+                                ).then((m) => m.GestionDocumentosModule)
                         },
                     ],
                 },
