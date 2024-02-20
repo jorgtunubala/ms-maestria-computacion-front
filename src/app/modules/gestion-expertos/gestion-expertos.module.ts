@@ -8,12 +8,14 @@ import { PrincipalGestionExpertosComponent } from './pages/principal-gestion-exp
 import { GestionExpertosRoutingModule } from './gestion-expertos-routing.module';
 import { CrearEditarExpertoComponent } from './components/crear-editar-experto/crear-editar-experto.component';
 import { InformacionPersonalComponent } from './components/crear-editar-experto/informacion-personal/informacion-personal.component';
+import { InformacionTituloComponent } from './components/crear-editar-experto/informacion-titulo/informacion-titulo.component';
 
 @NgModule({
     declarations: [
         PrincipalGestionExpertosComponent,
         CrearEditarExpertoComponent,
         InformacionPersonalComponent,
+        InformacionTituloComponent,
     ],
     imports: [
       CommonModule,
