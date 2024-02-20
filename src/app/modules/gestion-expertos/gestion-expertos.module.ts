@@ -9,6 +9,7 @@ import { GestionExpertosRoutingModule } from './gestion-expertos-routing.module'
 import { CrearEditarExpertoComponent } from './components/crear-editar-experto/crear-editar-experto.component';
 import { InformacionPersonalComponent } from './components/crear-editar-experto/informacion-personal/informacion-personal.component';
 import { InformacionTituloComponent } from './components/crear-editar-experto/informacion-titulo/informacion-titulo.component';
+import { InformacionVinculacionComponent } from './components/crear-editar-experto/informacion-vinculacion/informacion-vinculacion.component';
 
 @NgModule({
     declarations: [
@@ -16,6 +17,7 @@ import { InformacionTituloComponent } from './components/crear-editar-experto/in
         CrearEditarExpertoComponent,
         InformacionPersonalComponent,
         InformacionTituloComponent,
+        InformacionVinculacionComponent
     ],
     imports: [
       CommonModule,

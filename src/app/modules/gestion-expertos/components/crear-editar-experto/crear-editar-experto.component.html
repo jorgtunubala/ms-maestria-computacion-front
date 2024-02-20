@@ -2,6 +2,7 @@
     <p-header>
         <b>{{ editMode ? "EDITAR" : "REGISTRAR" }} EXPERTO</b>
     </p-header>
-    <app-informacion-personal></app-informacion-personal>
-    <app-informacion-titulo></app-informacion-titulo>
+    <app-informacion-personal (formReady)="addForm('personal',$event)"></app-informacion-personal>
+    <app-informacion-titulo (formReady)="addForm('titulo',$event)"></app-informacion-titulo>
+    <app-informacion-vinculacion (formReady)="addForm('universidad',$event)"></app-informacion-vinculacion>
 </p-panel>

@@ -1,0 +1,61 @@
+<br />
+
+<form [formGroup]="universidadForm">
+    <!-- Informacion Titluo -->
+    <div class="col-4 text-right font-medium">
+        <p><b>Información sobre vinculación</b></p>
+    </div>
+    <br />
+    <div class="field grid">
+        <div class="col-4 text-right font-medium align-self-center">
+            <label>Empresa a la cual pertenece</label>
+        </div>
+        <div class="col-8">
+            <input
+                pInputText
+                [maxLength]="250"
+                class="p-inputtext-sm w-25rem"
+                formControlName="empresa"
+            />
+        </div>
+    </div>
+    <div class="field grid">
+        <div class="col-4 text-right font-medium align-self-center">
+            <label>Universidad</label>
+        </div>
+        <div class="col-8">
+            <input
+                pInputText
+                [maxLength]="250"
+                class="p-inputtext-sm w-25rem"
+                formControlName="universidad"
+            />
+        </div>
+    </div>
+    <div class="field grid">
+      <div class="col-4 text-right font-medium align-self-center">
+          <label>Facultad a la que pertenece</label>
+      </div>
+      <div class="col-8">
+          <input
+              pInputText
+              [maxLength]="250"
+              class="p-inputtext-sm w-25rem"
+              formControlName="facultad"
+          />
+      </div>
+  </div>
+    <div class="field grid">
+        <div class="col-4 text-right font-medium align-self-center">
+            <label>Observación</label>
+        </div>
+        <div class="col-8">
+            <input
+                pInputText
+                [maxLength]="250"
+                class="p-inputtext-sm w-25rem"
+                formControlName="observacion"
+            />
+        </div>
+    </div>
+</form>

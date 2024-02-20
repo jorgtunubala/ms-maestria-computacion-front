@@ -1,10 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup,FormBuilder } from '@angular/forms';
+import { FormGroup, FormBuilder } from '@angular/forms';
 import { BreadcrumbService } from 'src/app/core/components/breadcrumb/app.breadcrumb.service';
 import { ExpertoService } from '../../services/experto.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Experto } from '../../models/experto';
+import { confirmMessage, errorMessage, infoMessage, warnMessage } from 'src/app/core/utils/message-util';
+import { Mensaje } from 'src/app/core/enums/enums';
+import { mapResponseException } from 'src/app/core/utils/exception-util';
+
+
 
 @Component({
   selector: 'app-crear-editar-experto',
@@ -23,43 +28,148 @@ export class CrearEditarExpertoComponent implements OnInit {
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
     private route: ActivatedRoute,
-    private router:Router,
+    private router: Router,
     private fb: FormBuilder,
   ) { }
 
-  ngOnInit():void {
+  ngOnInit(): void {
     this.initForm();
-    if(this.router.url.includes('editar')){
+    if (this.router.url.includes('editar')) {
       this.enableEditMode();
     }
     this.setBreadcrumb();
   }
 
-  setBreadcrumb(){
+  setBreadcrumb() {
     this.breadcrumbService.setItems([
       { label: 'Gestión' },
-      { label: 'Expertos', routerLink:'expertos' },
+      { label: 'Expertos', routerLink: 'expertos' },
       { label: this.editMode ? 'Editar' : 'Registrar' },
     ]);
   }
 
-  enableEditMode(){
+  enableEditMode() {
     this.editMode = true;
     this.loadExperto();
   }
 
-  loadExperto(){
+  loadExperto() {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.expertoService.getExperto(id).subscribe({
       next: (response) => this.setValuesForm(response),
     });
   }
 
-  setValuesForm(experto:Experto){
+  setValuesForm(experto: Experto) {
+    this.personalForm.patchValue({
+      ...experto.persona
+    });
+    this.tituloForm.patchValue({
+      ...experto.titulos[0]
+    })
+    this.universidadForm.patchValue({
+      ...experto
+    })
   }
 
-  initForm():void{
+  onCancel() {
+    if (this.form.pristine) {
+      this.redirectToExpertos();
+      return;
+    }
+    this.confirmationService.confirm({
+      ...confirmMessage(Mensaje.CONFIRMAR_SALIR_SIN_GUARDAR),
+      accept: () => this.redirectToExpertos(),
+    });
+  }
+
+  onSave() {
+    if (this.form.invalid) {
+      this.personalForm.markAllAsTouched();
+      this.tituloForm.markAllAsTouched();
+      this.universidadForm.markAllAsTouched();
+      this.messageService.clear();
+      this.messageService.add(warnMessage(Mensaje.REGISTRE_CAMPOS_OBLIGATORIOS));
+      return;
+    }
+    this.editMode ? this.updateExperto() : this.createExperto();
+  }
+
+  redirectToExpertos() {
+    this.router.navigate(['expertos'])
+  }
+
+  createExperto() {
+
+    const request = this.mapRequest();
+    this.loading = true;
+    this.expertoService.createExperto(request).subscribe({
+      next: () => this.messageService.add(infoMessage(Mensaje.GUARDADO_EXITOSO)),
+      error: (e) => this.handlerResponseException(e),
+      complete: () => this.redirectToExpertos()
+    }).add(() => this.loading = false);
+
+  }
+
+  updateExperto() {
+    const id = Number(this.route.snapshot.paramMap.get('id'));
+    const request = this.mapRequest();
+    this.loading = true;
+    this.expertoService.updateExperto(id, request).subscribe({
+      next: () => this.messageService.add(infoMessage(Mensaje.ACTUALIZACION_EXITOSA)),
+      error: (e) => this.handlerResponseException(e),
+      complete: () => this.redirectToExpertos()
+    }).add(() => this.loading = false);
+  }
+
+  handlerResponseException(response: any) {
+    if (response.status != 501) return;
+    const mapException = mapResponseException(response.error);
+    mapException.forEach((value, _) => {
+      this.messageService.add(errorMessage(value))
+    });
+
+  }
+
+  initForm(): void {
+    this.form = this.fb.group({
+      personal:this.fb.group({}),
+      titulo: this.fb.group({}),
+      universidad: this.fb.group({}),
+    });
+  }
+
+  addForm(name: string, group: FormGroup) {
+    this.form.setControl(name, group);
+  }
+
+  mapRequest():Experto{
+    const personalValues = this.personalForm.getRawValue();
+    const tituloValue = this.tituloForm.getRawValue();
+    const universidadValue = this.universidadForm.getRawValue();
+
+    return{
+      persona:{...personalValues},
+      titulos:[{...tituloValue}],
+      ...universidadValue
+    }
     
   }
+
+
+  get personalForm() {
+    return this.form.get('personal') as FormGroup;
+  }
+
+  get tituloForm() {
+    return this.form.get('titulo') as FormGroup;
+  }
+
+  get universidadForm() {
+    return this.form.get('universidad') as FormGroup;
+  }
+
+
+
 
 }
