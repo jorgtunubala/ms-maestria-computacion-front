@@ -73,58 +73,49 @@
         </div>
     </div>
 
-    <!-- ------------------------------------------------------------------------------------------------------------------------------------------------------------ -->
-
     <div class="field grid">
         <div class="col-4 text-right font-medium align-self-center">
-            <label class="label-required"
-                >Copia del documento<br />de identificacion (.pdf)</label>
+            <label class="labelFile"
+                >Copia del documento <br />
+                de identificacion (.pdf)</label
+            >
         </div>
-        <div class="field grid">
-            <div class="col-8">
-                <div class="p-inputgroup">
-                    <input
-                        pInputText
-                        type="text"
-                        id="labelFile"
-                        class="p-inputtext-sm w-full"
-                        placeholder="No se ha seleccionado un archivo"
-                        [disabled]="true"
-                        [value]="labelFile"
-                        [ngClass]="{ 'font-bold border-primary': file }"
-                    />
-                    <button
-                        *ngIf="file"
-                        type="button"
-                        pButton
-                        icon="pi pi-times"
-                        styleClass="p-button-warn"
-                        (click)="onReset()"
-                    ></button>
-                </div>
-            </div>
-            <div class="col-4">
-                <p-button
-                    *ngIf="!file"
-                    label="Seleccionar"
-                    
-                    icon="pi pi-file-pdf"
-                    styleClass="p-button-outlined w-full h-full"
-                    (click)="fileInput.click()"
-                    [disabled]="loading"
-                ></p-button>
-                <input
-                    #fileInput
-                    hidden
-                    accept=".pdf"
-                    type="file"
-                    (change)="onFileSelected($event)"
-                />
-            </div>
+        <div class="col-8">
+            <input
+                pInputText
+                type="text"
+                id="labelFile"
+                class="p-inputtext-sm w-auto"
+                placeholder="No se ha seleccionado un archivo"
+                [disabled]="true"
+                [value]="labelFile"
+                [ngClass]="{ 'font-bold border-primary': file }"
+            />
+            <button
+                *ngIf="file"
+                type="button"
+                pButton
+                icon="pi pi-times"
+                class="p-button-warn"
+                (click)="onReset()"
+            ></button>
+            <p-button
+                *ngIf="!file"
+                label="Seleccionar"
+                icon="pi pi-file-pdf"
+                styleClass="p-button-outlined w-auto h-full ml-4"
+                (click)="fileInput.click()"
+                [disabled]="loading"
+            ></p-button>
+            <input
+                #fileInput
+                hidden
+                accept=".pdf"
+                type="file"
+                (change)="onFileSelected($event)"
+            />
         </div>
     </div>
-
-    <!-- ------------------------------------------------------------------------------------------------------------------------------------------------------------ -->
 
     <div class="field grid">
         <div class="col-4 text-right font-medium align-self-center">
