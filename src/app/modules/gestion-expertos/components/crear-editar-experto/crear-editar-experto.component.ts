@@ -64,9 +64,9 @@ export class CrearEditarExpertoComponent implements OnInit {
     this.personalForm.patchValue({
       ...experto.persona
     });
-    this.tituloForm.patchValue({
-      ...experto.titulos[0]
-    })
+    // this.tituloForm.patchValue({
+    //   ...experto.titulos[0]
+    // })
     this.universidadForm.patchValue({
       ...experto
     })

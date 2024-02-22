@@ -1,17 +1,30 @@
-import { LineaInvestigacion } from "./linea-investigacion";
+
 import { Persona } from "./persona";
-import { Titulo } from "./titulo";
 
 export interface Experto {
+    // id?: number;
+    // estado?: string;
+    // persona?: Persona;
+    // codigo?: string;
+    // facultad?: string;
+    // departamento?: string;
+    // escalafon?: string;
+    // observacion?: string;
+    // lineasInvestigacion?: LineaInvestigacion[];
+    // tipoVinculacion?: string;
+    // titulos?: Titulo[];
+
     id?: number;
-    estado?: string;
     persona?: Persona;
-    codigo?: string;
-    facultad?: string;
-    departamento?: string;
-    escalafon?: string;
-    observacion?: string;
-    lineasInvestigacion?: LineaInvestigacion[];
-    tipoVinculacion?: string;
-    titulos?: Titulo[];
+    tituloexper?: string;
+    universidadtitexp?: string;
+    copiadocidentidad?: string;
+    universidadexp?: string;
+    facultadexp?: string;
+    grupoinvexp?: string;
+    lineainvexp?: string;
+    observacionexp?: string;
+    estado?:string;
+
+    
 }

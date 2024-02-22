@@ -21,6 +21,10 @@ const routes: Routes = [
             {
                 path: 'editar/:id',
                 component: CrearEditarExpertoComponent,
+            },
+            {
+                path: 'movilidad/:id',
+                //TODO: Crear componente de movilidad
             }
         ]
     }
