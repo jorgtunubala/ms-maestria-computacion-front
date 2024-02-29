@@ -1,4 +1,5 @@
 
+import { Movilidad } from "./movilidad";
 import { Persona } from "./persona";
 
 export interface Experto {
@@ -25,6 +26,7 @@ export interface Experto {
     lineainvexp?: string;
     observacionexp?: string;
     estado?:string;
+    movilidad?:Movilidad;
 
     
 }

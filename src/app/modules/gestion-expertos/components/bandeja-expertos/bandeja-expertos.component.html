@@ -51,7 +51,7 @@
     >
         <ng-template pTemplate="header">
             <tr>
-                <th scope="col">Indetificación</th>
+                <th scope="col">Identificación</th>
                 <th scope="col">Nombres</th>
                 <th scope="col">Apellidos</th>
                 <th scope="col">Universidad/Empresa</th>
@@ -66,17 +66,10 @@
                 <td>{{ experto.persona.identificacion }}</td>
                 <td>{{ experto.persona.nombre }}</td>
                 <td>{{ experto.persona.apellido }}</td>
-                <td>{{ experto.persona.apellido }}</td>
-                <td>{{ experto.persona.apellido }}</td>
-                <td>{{ experto.persona.apellido }}</td>
+                <td>{{ experto.universidadEmpresa }}</td>
+                <td>{{ experto.movilidad.fechaentradamov}}</td>
+                <td>{{ experto.movilidad.fechasalidamov}}</td>
                 <td class="text-center">
-                    <button
-                        *ngIf="false"
-                        pButton
-                        type="button"
-                        icon="pi pi-search"
-                        class="p-button-rounded p-button-text"
-                    ></button>
                     <button
                         pButton
                         pTooltip="Editar"
@@ -100,10 +93,11 @@
         <!-- Mensaje sin registros -->
         <ng-template pTemplate="emptymessage" let-columns>
             <tr>
-                <td [attr.colspan]="6">
+                <td [attr.colspan]="7">
                     No se encontraron registros
                 </td>
             </tr>
         </ng-template>
     </p-table>
+
 </p-panel>

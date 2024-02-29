@@ -13,5 +13,7 @@ export enum Mensaje {
     GUARDADO_EXITOSO  =  "Los datos han sido guardados exitosamente",
     REGISTRO_EXPERTOS_EXITOSO = "Expertos cargados exitosamente",
     ERROR_CARGAR_EXPERTOS = "Carga de docentes fallida. Verifica los datos e intenta nuevamente",
+    CONFIRMAR_ELIMINAR_EXPERTO = "¿Está seguro de eliminar este experto?",
+    EXPERTO_ELIMINADO_CORRECTAMENTE = "Experto eliminado correctamente",
 
 }
