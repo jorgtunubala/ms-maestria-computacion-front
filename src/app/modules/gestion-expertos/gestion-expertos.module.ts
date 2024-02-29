@@ -12,6 +12,8 @@ import { InformacionTituloComponent } from './components/crear-editar-experto/in
 import { InformacionVinculacionComponent } from './components/crear-editar-experto/informacion-vinculacion/informacion-vinculacion.component';
 import { RegistrarEditarMovilidadComponent } from './components/registrar-editar-movilidad/registrar-editar-movilidad.component';
 import { InformacionUsuarioComponent } from './components/registrar-editar-movilidad/informacion-usuario/informacion-usuario.component';
+import { InformacionOrigenComponent } from './components/registrar-editar-movilidad/informacion-origen/informacion-origen.component';
+import { InformacionFinanciacionComponent } from './components/registrar-editar-movilidad/informacion-financiacion/informacion-financiacion.component';
 
 @NgModule({
     declarations: [
@@ -21,7 +23,9 @@ import { InformacionUsuarioComponent } from './components/registrar-editar-movil
         InformacionTituloComponent,
         InformacionVinculacionComponent,
         RegistrarEditarMovilidadComponent,    
-        InformacionUsuarioComponent
+        InformacionUsuarioComponent,
+        InformacionOrigenComponent,
+        InformacionFinanciacionComponent,
     ],
     imports: [
       CommonModule,
