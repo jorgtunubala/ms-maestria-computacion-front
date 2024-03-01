@@ -10,7 +10,7 @@ import { getRandomNumber } from 'src/app/core/utils/util';
 export class InformacionVinculacionComponent implements OnInit {
 
   @Output() formReady = new EventEmitter<FormGroup>();
-  universidadForm: FormGroup;
+  vinculacionForm: FormGroup;
   
   constructor(private fb:FormBuilder) { }
 
@@ -18,7 +18,7 @@ export class InformacionVinculacionComponent implements OnInit {
     this.initForm();
   }
   initForm():void {
-    this.universidadForm = this.fb.group({
+    this.vinculacionForm = this.fb.group({
       codigo: [getRandomNumber().toString()],
       // empresa: [''],
       universidad: [''],
@@ -28,6 +28,12 @@ export class InformacionVinculacionComponent implements OnInit {
       grupodeInvestigacion: [''],
       idLineasInvestigacion: [''],
     });
+    this.formReady.emit(this.vinculacionForm);
   }
+
+  getFormControl(formControlName: string): FormControl {
+    return this.vinculacionForm.get(formControlName) as FormControl;
+  }
+  
 
 }

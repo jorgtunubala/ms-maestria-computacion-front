@@ -67,7 +67,7 @@ export class CrearEditarExpertoComponent implements OnInit {
     // this.tituloForm.patchValue({
     //   ...experto.titulos[0]
     // })
-    this.universidadForm.patchValue({
+    this.vinculacionForm.patchValue({
       ...experto
     })
   }
@@ -87,7 +87,7 @@ export class CrearEditarExpertoComponent implements OnInit {
     if (this.form.invalid) {
       this.personalForm.markAllAsTouched();
       this.tituloForm.markAllAsTouched();
-      this.universidadForm.markAllAsTouched();
+      this.vinculacionForm.markAllAsTouched();
       this.messageService.clear();
       this.messageService.add(warnMessage(Mensaje.REGISTRE_CAMPOS_OBLIGATORIOS));
       return;
@@ -135,7 +135,7 @@ export class CrearEditarExpertoComponent implements OnInit {
     this.form = this.fb.group({
       personal:this.fb.group({}),
       titulo: this.fb.group({}),
-      universidad: this.fb.group({}),
+      vinculacion: this.fb.group({}),
     });
   }
 
@@ -146,12 +146,12 @@ export class CrearEditarExpertoComponent implements OnInit {
   mapRequest():Experto{
     const personalValues = this.personalForm.getRawValue();
     const tituloValue = this.tituloForm.getRawValue();
-    const universidadValue = this.universidadForm.getRawValue();
+    const vinculacionValue = this.vinculacionForm.getRawValue();
 
     return{
       persona:{...personalValues},
       titulos:[{...tituloValue}],
-      ...universidadValue
+      ...vinculacionValue
     }
     
   }
@@ -165,8 +165,8 @@ export class CrearEditarExpertoComponent implements OnInit {
     return this.form.get('titulo') as FormGroup;
   }
 
-  get universidadForm() {
-    return this.form.get('universidad') as FormGroup;
+  get vinculacionForm() {
+    return this.form.get('vinculacion') as FormGroup;
   }
 
 
