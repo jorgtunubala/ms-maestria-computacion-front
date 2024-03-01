@@ -25,22 +25,16 @@ export class BandejaExpertosComponent implements OnInit {
         private confirmationService: ConfirmationService
     ) {}
 
-    ngOnInit() {
+    ngOnInit():void {
         this.setBreadcrumb();
         this.listExpertos();
     }
 
     listExpertos() {
         this.loading = true;
-        this.expertoService
-            .listExpertos()
-            .subscribe({
-                next: (response) =>
-                    (this.expertos = response.filter(
-                        (d) => d.estado === 'ACTIVO'
-                    )),
-            })
-            .add(() => (this.loading = false));
+        this.expertoService.listExpertos().subscribe({
+            next: (response) => this.expertos = response.filter((d) => d.estado === 'ACTIVO'),
+        }).add(() => this.loading = false);
     }
 
     setBreadcrumb() {

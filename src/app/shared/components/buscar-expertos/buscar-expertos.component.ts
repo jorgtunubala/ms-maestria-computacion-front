@@ -27,7 +27,7 @@ export class BuscarExpertosComponent implements OnInit {
 
   listExpertos() {
     this.loading = true;
-    this.expertoService.listDocentes().subscribe({
+    this.expertoService.listExpertos().subscribe({
       next: (response) => (this.expertos = this.getExpertosActivos(response)),
     })
       .add(() => this.loading = false);

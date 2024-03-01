@@ -54,9 +54,7 @@
                 <th scope="col">Identificación</th>
                 <th scope="col">Nombres</th>
                 <th scope="col">Apellidos</th>
-                <th scope="col">Universidad/Empresa</th>
-                <th scope="col">Fecha entrada</th>
-                <th scope="col">Fecha salida</th>
+                <th scope="col">Correo electronico</th>
                 <th scope="col" class="text-center w-2">Opciones</th>
             </tr>
         </ng-template>
@@ -66,9 +64,7 @@
                 <td>{{ experto.persona.identificacion }}</td>
                 <td>{{ experto.persona.nombre }}</td>
                 <td>{{ experto.persona.apellido }}</td>
-                <td>{{ experto.universidadEmpresa }}</td>
-                <td>{{ experto.movilidad.fechaentradamov}}</td>
-                <td>{{ experto.movilidad.fechasalidamov}}</td>
+                <td>{{ experto.persona.correoElectronico }}</td>
                 <td class="text-center">
                     <button
                         pButton

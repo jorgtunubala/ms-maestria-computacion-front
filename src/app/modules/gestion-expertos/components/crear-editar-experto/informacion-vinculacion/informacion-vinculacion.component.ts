@@ -20,11 +20,13 @@ export class InformacionVinculacionComponent implements OnInit {
   initForm():void {
     this.universidadForm = this.fb.group({
       codigo: [getRandomNumber().toString()],
-      empresa: [''],
+      // empresa: [''],
       universidad: [''],
       facultad: [''],
       departamento: [''],
       observacion: [''],
+      grupodeInvestigacion: [''],
+      idLineasInvestigacion: [''],
     });
   }
 

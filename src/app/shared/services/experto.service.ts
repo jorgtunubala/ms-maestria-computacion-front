@@ -19,7 +19,7 @@ export class ExpertoService {
         );
     }
 
-    listDocentes(): Observable<Experto[]> {
+    listExpertos(): Observable<Experto[]> {
         return this.http.get<Experto[]>(
             backend('expertos'),
             { headers: getHeaders() }
