@@ -20,12 +20,10 @@ export class InformacionVinculacionComponent implements OnInit {
   initForm():void {
     this.vinculacionForm = this.fb.group({
       codigo: [getRandomNumber().toString()],
-      // empresa: [''],
-      universidad: [''],
-      facultad: [''],
-      departamento: [''],
-      observacion: [''],
-      grupodeInvestigacion: [''],
+      universidadexp: [''],
+      facultadexp: [''],
+      observacionexp: [''],
+      grupoinvexp: [''],
       idLineasInvestigacion: [''],
     });
     this.formReady.emit(this.vinculacionForm);
