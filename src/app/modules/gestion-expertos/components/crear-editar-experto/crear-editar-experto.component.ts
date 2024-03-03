@@ -150,7 +150,7 @@ export class CrearEditarExpertoComponent implements OnInit {
 
     return{
       persona:{...personalValues},
-      titulos:[{...tituloValue}],
+      ...tituloValue,
       ...vinculacionValue
     }
     

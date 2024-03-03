@@ -22,8 +22,8 @@ export class InformacionTituloComponent implements OnInit {
 
   initForm():void{
     this.tituloForm=this.fb.group({
+      tituloexper: [''],
       "id":[''],
-      "titulo":[''],
       "universidad":['', Validators.required],  
     });
     this.formReady.emit(this.tituloForm);
