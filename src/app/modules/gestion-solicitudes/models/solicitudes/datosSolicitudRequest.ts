@@ -1,4 +1,5 @@
 import { DatosComunSolicitud } from '../datosComunSolicitud';
+import { DatosSolicitudAdicionCancelacionAsignatura } from '../solicitud-adic-cancel-asig/datosSolicitudAdicionCancelacionAsignatura';
 import { DatosSolHomologPostRequest } from '../solicitud-homolog-post/datosSolHomologPostRequest';
 
 export class DatosSolicitudRequest {
@@ -6,15 +7,15 @@ export class DatosSolicitudRequest {
         return new DatosSolicitudRequest(
             obj['datosComunSolicitud'],
             obj['datosSolicitudHomologacion'],
-            obj['datosSolicitudAplazarSemestre'],
-            obj['dadicionCancelacionAsignatura']
+            obj['dadicionCancelacionAsignatura'],
+            obj['datosSolicitudAplazarSemestre']
         );
     }
 
     constructor(
         public datosComunSolicitud: DatosComunSolicitud,
         public datosSolicitudHomologacion: DatosSolHomologPostRequest,
-        public datosSolicitudAplazarSemestre: any,
-        public dadicionCancelacionAsignatura: any
+        public dadicionCancelacionAsignatura: DatosSolicitudAdicionCancelacionAsignatura,
+        public datosSolicitudAplazarSemestre: any
     ) {}
 }

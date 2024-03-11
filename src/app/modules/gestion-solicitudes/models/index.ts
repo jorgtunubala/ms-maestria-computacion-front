@@ -1,5 +1,3 @@
-import { from } from 'rxjs';
-
 export { DatosSolicitante } from './datosSolicitante';
 export { TiposSolicitudResponse } from './tiposSolicitudResponse';
 export { TipoSolicitud } from './tipoSolicitud';
@@ -16,3 +14,7 @@ export { DatosSolHomologPostRequest } from './solicitud-homolog-post/datosSolHom
 export { DatosComunSolicitud } from './datosComunSolicitud';
 export { DatosSolHomologPostSave } from './solicitud-homolog-post/datosSolHomologPostSave';
 export { SolicitudPendienteAval } from './avales-tutor-director/solicitudPendienteAval';
+export { DatosAvalSolicitud } from './avales-tutor-director/datosAvalSolicitud';
+export { DatosAsignaturaAdicion } from './solicitud-adic-cancel-asig/datosAsignaturaAdicion';
+export { DatosSolicitudAdicionCancelacionAsignatura } from './solicitud-adic-cancel-asig/datosSolicitudAdicionCancelacionAsignatura';
+export { InfoAdicionCancelacion } from './solicitud-adic-cancel-asig/infoAdicionCancelacion';

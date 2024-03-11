@@ -11,7 +11,12 @@ export class DatosComunSolicitud {
             obj['tipoIdentSolicitante'],
             obj['numeroIdentSolicitante'],
             obj['nombreTutor'],
-            obj['nombreDirector']
+            obj['nombreDirector'],
+            obj['requiereFirmaDirector'],
+            obj['firmaSolicitante'],
+            obj['firmaTutor'],
+            obj['firmaDirector'],
+            obj['estadoSolicitud']
         );
     }
 
@@ -26,6 +31,11 @@ export class DatosComunSolicitud {
         public tipoIdentSolicitante: string,
         public numeroIdentSolicitante: string,
         public nombreTutor: string,
-        public nombreDirector: string
+        public nombreDirector: string,
+        public requiereFirmaDirector: boolean,
+        public firmaSolicitante: string,
+        public firmaTutor: string,
+        public firmaDirector: string,
+        public estadoSolicitud: string
     ) {}
 }

@@ -1,6 +1,8 @@
-import { Injectable } from '@angular/core';
+import { ElementRef, Injectable, ViewChild } from '@angular/core';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
 import {
+    DatosAsignaturaAdicion,
     DatosSolicitante,
     InfoPersonal,
     RequisitosSolicitud,
@@ -27,12 +29,14 @@ export class RadicarService {
         null,
         null
     );
+
+    oficioDeSolicitud: File = null;
     documentosAdjuntos: File[] = [];
     motivoDeSolicitud: string = '';
     tutor: TutorYDirector;
     director: any;
     firmaSolicitante: File = null;
-    firmaSolicitanteUrl: string = '';
+    firmaSolicitanteUrl: SafeUrl = '';
     firmaTutor: File = null;
     firmaTutorUrl: string = '';
     firmaDirector: File = null;
@@ -49,7 +53,7 @@ export class RadicarService {
     cedulaCuentaBanco: string = null;
     direccion: string = '';
 
-    asignaturasAdicCancel: any[] = [];
+    asignaturasAdicCancel: DatosAsignaturaAdicion[] = [];
 
     numeroInstanciasAsignExterna: number = 1;
     instanciasAsignExterna: any[] = [{}];
@@ -84,7 +88,7 @@ export class RadicarService {
     estadoSolicitud: string = '';
     esperando: boolean = false;
 
-    constructor() {}
+    constructor(private sanitizer: DomSanitizer) {}
 
     restrablecerValores() {
         this.datosSolicitante = new InfoPersonal(
@@ -102,6 +106,7 @@ export class RadicarService {
         this.documentosAdjuntos = [];
         this.tutor = null;
         this.director = null;
+        this.oficioDeSolicitud = null;
         this.motivoDeSolicitud = '';
         this.numeroInstAsignHomologar = 1;
         this.instanciasAsignHomologar = [{}];
@@ -150,38 +155,73 @@ export class RadicarService {
     async poblarConDatosSolicitudGuardada(
         infoSolicitud: DatosSolicitudRequest
     ) {
+        //Datos del Solicitante
+        this.datosSolicitante = {
+            id: '',
+            nombres: infoSolicitud.datosComunSolicitud.nombreSolicitante,
+            apellidos: infoSolicitud.datosComunSolicitud.apellidoSolicitante,
+            correo: infoSolicitud.datosComunSolicitud.emailSolicitante,
+            celular: infoSolicitud.datosComunSolicitud.celularSolicitante,
+            codigoAcademico:
+                infoSolicitud.datosComunSolicitud.codigoSolicitante,
+            tipoDocumento:
+                infoSolicitud.datosComunSolicitud.tipoIdentSolicitante,
+            numeroDocumento:
+                infoSolicitud.datosComunSolicitud.numeroIdentSolicitante,
+        };
+
+        //Datos Tutor
+        this.tutor = {
+            id: 'ID TUT PROVISIONAL',
+            codigoTutor: 'COD TUT PROVISIONAL',
+            nombreTutor: infoSolicitud.datosComunSolicitud.nombreTutor,
+        };
+
+        //Estado de solicitud
+        this.estadoSolicitud =
+            infoSolicitud.datosComunSolicitud.estadoSolicitud;
+
+        //Fecha de radicado
+        this.fechaEnvio = infoSolicitud.datosComunSolicitud.fechaEnvioSolicitud;
+
+        //Firma Solicitante
+        this.firmaSolicitante = this.convertirBase64AFile(
+            infoSolicitud.datosComunSolicitud.firmaSolicitante
+        );
+
+        // Convertir la firma del solicitante a URL segura
+        if (this.firmaSolicitante) {
+            this.firmaSolicitanteUrl = this.sanitizer.bypassSecurityTrustUrl(
+                URL.createObjectURL(this.firmaSolicitante)
+            );
+        }
+
         switch (this.tipoSolicitudEscogida.codigoSolicitud) {
+            case 'AD_ASIG':
+                for (
+                    let index = 0;
+                    index <
+                    infoSolicitud.dadicionCancelacionAsignatura.listaAsignaturas
+                        .length;
+                    index++
+                ) {
+                    const asignatura: DatosAsignaturaAdicion = {
+                        id: null,
+                        nombreAsignatura:
+                            infoSolicitud.dadicionCancelacionAsignatura
+                                .listaAsignaturas[index].nombreAsignatura,
+                        codigoAsignatura:
+                            infoSolicitud.dadicionCancelacionAsignatura
+                                .listaAsignaturas[index].grupo,
+                        nombreDocente: null,
+                        infoAsignatura: null,
+                    };
+
+                    this.asignaturasAdicCancel.push(asignatura);
+                }
+
+                break;
             case 'HO_ASIG_POS':
-                this.estadoSolicitud =
-                    infoSolicitud.datosSolicitudHomologacion.estadoSolicitud;
-                //Datos solicitante
-                const datosSolicitante: InfoPersonal = {
-                    id: '',
-                    nombres:
-                        infoSolicitud.datosComunSolicitud.nombreSolicitante,
-                    apellidos:
-                        infoSolicitud.datosComunSolicitud.apellidoSolicitante,
-                    correo: infoSolicitud.datosComunSolicitud.emailSolicitante,
-                    celular:
-                        infoSolicitud.datosComunSolicitud.celularSolicitante,
-                    codigoAcademico:
-                        infoSolicitud.datosComunSolicitud.codigoSolicitante,
-                    tipoDocumento:
-                        infoSolicitud.datosComunSolicitud.tipoIdentSolicitante,
-                    numeroDocumento:
-                        infoSolicitud.datosComunSolicitud
-                            .numeroIdentSolicitante,
-                };
-                this.datosSolicitante = datosSolicitante;
-
-                //Datos Tutor/Director
-
-                this.tutor = {
-                    id: 'ID TUT PROVISIONAL',
-                    codigoTutor: 'COD TUT PROVISIONAL',
-                    nombreTutor: infoSolicitud.datosComunSolicitud.nombreTutor,
-                };
-
                 //Datos institucion externa
                 this.datosInstitucionHomologar = {
                     institucion:
@@ -192,9 +232,40 @@ export class RadicarService {
                             .programaProcedencia,
                 };
 
-                //Fecha envio
-                this.fechaEnvio =
-                    infoSolicitud.datosComunSolicitud.fechaEnvioSolicitud;
+                //Datos asignaturas a homologar
+                infoSolicitud.datosSolicitudHomologacion.datosAsignatura.forEach(
+                    (asignatura: any) => {
+                        let asignaturaAHomologar = {
+                            asignatura: asignatura.nombreAsignatura,
+                            creditos: asignatura.creditos,
+                            intensidad: asignatura.intensidadHoraria,
+                            calificacion: asignatura.calificacion,
+                            contenidos: asignatura.contenidoProgramatico,
+                        };
+
+                        this.datosAsignaturasAHomologar.push(
+                            asignaturaAHomologar
+                        );
+                    }
+                );
+
+                //Docs Adjuntos
+                await this.asignarDocumentosAdjuntos(
+                    infoSolicitud.datosSolicitudHomologacion.documentosAdjuntos
+                );
+
+                break;
+
+            case 'HO_ASIG_ESP':
+                //Datos institucion externa
+                this.datosInstitucionHomologar = {
+                    institucion:
+                        infoSolicitud.datosSolicitudHomologacion
+                            .institutoProcedencia,
+                    programa:
+                        infoSolicitud.datosSolicitudHomologacion
+                            .programaProcedencia,
+                };
 
                 //Datos asignaturas a homologar
                 infoSolicitud.datosSolicitudHomologacion.datosAsignatura.forEach(
@@ -204,7 +275,7 @@ export class RadicarService {
                             creditos: asignatura.creditos,
                             intensidad: asignatura.intensidadHoraria,
                             calificacion: asignatura.calificacion,
-                            contenidos: asignatura.contenidoProgramatico, //Cambiar nombre cuando se defina
+                            contenidos: asignatura.contenidoProgramatico,
                         };
 
                         this.datosAsignaturasAHomologar.push(

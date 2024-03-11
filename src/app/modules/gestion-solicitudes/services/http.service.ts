@@ -6,6 +6,8 @@ import {
     TutoresYDirectoresResponse,
     SolicitudSave,
     SolicitudPendienteAval,
+    DatosAvalSolicitud,
+    DatosAsignaturaAdicion,
 } from '../models';
 import { Observable, catchError, map } from 'rxjs';
 import { InfoPersonalResponse } from '../models/infoPersonalResponse';
@@ -16,6 +18,8 @@ import { DatosSolicitudRequest } from '../models/solicitudes/datosSolicitudReque
 })
 export class HttpService {
     private apiUrl = 'http://localhost:8095/msmaestriac/gestionSolicitud/save';
+    private url =
+        'http://localhost:8095/msmaestriac/gestionSolicitud/save/firmas';
 
     constructor(private http: HttpClient) {}
 
@@ -61,9 +65,12 @@ export class HttpService {
         );
     }
 
-    guardarSolHomologPost(objeto: SolicitudSave): Observable<any> {
-        console.log(objeto);
+    guardarSolicitud(objeto: SolicitudSave): Observable<any> {
         return this.http.post(this.apiUrl, objeto);
+    }
+
+    guardarAvalesSolicitud(objeto: DatosAvalSolicitud): Observable<any> {
+        return this.http.post(this.url, objeto);
     }
 
     obtenerListaSolPendientesAval(
@@ -80,5 +87,11 @@ export class HttpService {
             'http://localhost:8095/msmaestriac/gestionSolicitud/obtener-datos-solicitud/' +
             id;
         return this.http.get<DatosSolicitudRequest>(url);
+    }
+
+    obtenerListaAsigOfertadas(): Observable<DatosAsignaturaAdicion[]> {
+        const url =
+            'http://localhost:8095/msmaestriac/gestionAdicionAsignaturas/lista-asignaturas-adicionar';
+        return this.http.get<DatosAsignaturaAdicion[]>(url);
     }
 }

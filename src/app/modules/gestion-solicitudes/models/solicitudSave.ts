@@ -6,7 +6,10 @@ export class SolicitudSave {
             obj['idTipoSolicitud'],
             obj['idEstudiante'],
             obj['idTutor'],
-            obj['datosHomologacion']
+            obj['datosHomologacion'],
+            obj['datosAdicionAsignatura'],
+            obj['requiereFirmaDirector'],
+            obj['firmaEstudiante']
         );
     }
 
@@ -14,6 +17,9 @@ export class SolicitudSave {
         public idTipoSolicitud: number,
         public idEstudiante: string,
         public idTutor: string,
-        public datosHomologacion: DatosSolHomologPostSave
+        public datosHomologacion: DatosSolHomologPostSave,
+        public datosAdicionAsignatura: number[],
+        public requiereFirmaDirector: boolean,
+        public firmaEstudiante: string
     ) {}
 }

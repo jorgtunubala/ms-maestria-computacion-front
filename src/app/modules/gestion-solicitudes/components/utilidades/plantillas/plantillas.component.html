@@ -92,26 +92,14 @@
     <!-- Mension de institución y programa de procedencia -->
     <ng-container
         *ngIf="
-            ['HO_ASIG_POS'].includes(
+            ['HO_ASIG_POS', 'HO_ASIG_ESP'].includes(
                 radicar.tipoSolicitudEscogida.codigoSolicitud
             )
         "
     >
-        las cuales fueron cursadas en el progama de posgrado:
+        las cuales fueron cursadas en el progama de posgrado,
         {{ radicar.datosInstitucionHomologar.programa }} de la
         {{ radicar.datosInstitucionHomologar.institucion }}.
-    </ng-container>
-
-    <ng-container
-        *ngIf="
-            ['HO_ASIG_ESP'].includes(
-                radicar.tipoSolicitudEscogida.codigoSolicitud
-            )
-        "
-    >
-        las cuales fueron cursadas en el progama de posgrado:
-        {{ radicar.datosInstitucionHomologar[0].programa }} de la
-        {{ radicar.datosInstitucionHomologar[0].institucion }}.
     </ng-container>
 
     <!-- Tabla de asignaturas a cursar en otros programas -->
@@ -195,7 +183,9 @@
                         No.
                     </th>
 
-                    <th class="border-bottom-1 text-center">Asignatura</th>
+                    <th class="border-bottom-1 border-right-1 text-center">
+                        Asignatura
+                    </th>
                     <th class="border-bottom-1 text-center">Grupo</th>
                 </tr>
                 <tr
@@ -209,10 +199,10 @@
                     </td>
 
                     <td class="border-right-1 text-center">
-                        {{ materia.nombre }}
+                        {{ materia.nombreAsignatura }}
                     </td>
                     <td class="text-center">
-                        {{ materia.grupo }}
+                        {{ materia.codigoAsignatura }}
                     </td>
                 </tr>
             </table>
@@ -288,24 +278,24 @@
 
 <div class="grid">
     <!-- Firma del remitente -->
-    <div class="col-6">
-        <div>
-            <img
-                *ngIf="radicar.firmaSolicitante"
-                class="w-7"
-                [src]="radicar.firmaSolicitanteUrl"
-            />
-        </div>
+    <div class="col-6 flex justify-content-start align-items-end">
+        <img
+            *ngIf="radicar.firmaSolicitante"
+            class="w-7"
+            [src]="radicar.firmaSolicitanteUrl"
+        />
     </div>
+
     <!-- Firma del Tutor -->
-    <div class="col-6 flex justify-content-end">
+    <div class="col-6 flex justify-content-end align-items-end">
         <img
             *ngIf="radicar.firmaTutor"
             class="w-7"
             [src]="radicar.firmaTutorUrl"
         />
     </div>
-    <!-- Remitente -->
+
+    <!-- Info Remitente -->
     <div class="col-6 line-height-1">
         {{ radicar.datosSolicitante.nombres }}
         {{ radicar.datosSolicitante.apellidos }}<br />
@@ -314,7 +304,7 @@
         Celular: {{ radicar.datosSolicitante.celular }}<br />
     </div>
 
-    <!-- VoBo Tutor -->
+    <!-- Info VoBo Tutor -->
     <div class="col-6 text-right">
         <ng-container *ngIf="!radicar.firmaTutor">
             VoBo. Pendiente:
@@ -329,9 +319,11 @@
                 {{ radicar.tutor.nombreTutor }}</ng-container
             >
             <br />
+            <!--
             Fecha: {{ fechaActual.getDate() }}/{{
                 fechaActual.getMonth() + 1
             }}/{{ fechaActual.getFullYear() }}
+            -->
         </ng-container>
     </div>
 </div>
