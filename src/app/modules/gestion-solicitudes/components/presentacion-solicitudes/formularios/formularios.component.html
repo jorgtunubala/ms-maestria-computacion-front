@@ -262,19 +262,17 @@
                     <span class="p-float-label mt-3">
                         <p-multiSelect
                             inputId="adasig"
-                            [options]="ofertaAcademica"
-                            optionLabel="nombre"
+                            [options]="ofertaAcademicaAdiciones"
+                            optionLabel="nombreAsignatura"
                             [(ngModel)]="radicar.asignaturasAdicCancel"
                             [filter]="false"
                             [style]="{ width: '100%' }"
-                            [maxSelectedLabels]="3"
+                            [maxSelectedLabels]="4"
                             [selectedItemsLabel]="'{0} Materias seleccionadas'"
                         >
-                            >
                             <ng-template let-item pTemplate="item">
                                 <div>
-                                    {{ item.nombre }} {{ item.grupo }} -
-                                    {{ item.docente }}
+                                    {{ item.infoAsignatura }}
                                 </div>
                             </ng-template>
                         </p-multiSelect>

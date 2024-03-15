@@ -1,30 +1,36 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { GestorService } from '../../../services/gestor.service';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
 import { RadicarService } from '../../../services/radicar.service';
 import { HttpService } from '../../../services/http.service';
 import { DatosSolicitudRequest } from '../../../models/solicitudes/datosSolicitudRequest';
 import { OficioComponent } from '../../utilidades/oficio/oficio.component';
+import { DatosAvalSolicitud } from '../../../models';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-visoraval',
     templateUrl: './visoraval.component.html',
     styleUrls: ['./visoraval.component.scss'],
+    providers: [ConfirmationService, MessageService],
 })
 export class VisoravalComponent implements OnInit {
-    @ViewChild(OficioComponent) componenteHijo: OficioComponent;
+    @ViewChild(OficioComponent) oficio: OficioComponent;
     @ViewChild('firmaImage') firmaImage: ElementRef;
 
     segmentosContenido: HTMLImageElement[];
     mostrarOficio: boolean = false;
     mostrarBtnFirmar: boolean = false;
     firmaEnProceso: boolean = false;
+    mostrarBtnAvalar: boolean = false;
+    mostrarPFSet: boolean = true;
 
     constructor(
         public gestor: GestorService,
         public radicar: RadicarService,
-        public http: HttpService
+        public http: HttpService,
+        private router: Router,
+        private confirmationService: ConfirmationService
     ) {}
 
     ngOnInit(): void {
@@ -94,11 +100,59 @@ export class VisoravalComponent implements OnInit {
                 this.mostrarOficio = true;
                 this.firmaEnProceso = false;
                 this.mostrarBtnFirmar = false;
+                this.mostrarBtnAvalar = true;
             }, 100);
         }, 100);
     }
 
-    guardarOficioAvalado() {}
+    async enviarOficioAvalado() {
+        this.convertirOficioEnPDF();
+
+        const aval: DatosAvalSolicitud = {
+            idSolicitud: this.radicar.tipoSolicitudEscogida.idSolicitud,
+            firmaTutor: await this.convertirABase64(this.radicar.firmaTutor),
+            firmaDirector: await this.convertirABase64(
+                this.radicar.firmaDirector
+            ),
+            documentoPdfSolicitud: await this.convertirABase64(
+                this.radicar.oficioDeSolicitud
+            ),
+        };
+
+        this.http.guardarAvalesSolicitud(aval).subscribe(
+            (resultado) => {
+                if (resultado) {
+                    this.gestor.ejecutarCargarSolicitudes();
+                    this.confirmationService.confirm({
+                        message: 'La solicitud se ha avalado exitosamente',
+                        header: 'Solicitud avalada',
+                        icon: 'pi pi-exclamation-circle',
+                        acceptLabel: 'Aceptar',
+                        rejectVisible: false,
+                        accept: () => {
+                            this.mostrarBtnAvalar = false;
+                            this.mostrarPFSet = false;
+                        },
+                    });
+                } else {
+                    this.confirmationService.confirm({
+                        message:
+                            'Ha ocurrido un error inesperado al avalar la solicitud, intentelo nuevamente.',
+                        header: 'Error de aval',
+                        icon: 'pi pi-exclamation-triangle',
+                        acceptLabel: 'Aceptar',
+                        rejectVisible: false,
+                        accept: () => {},
+                    });
+                }
+            },
+            (error) => {
+                // Manejar errores en caso de que ocurran durante la solicitud HTTP
+                console.error('Error al enviar la solicitud:', error);
+                // Mostrar mensaje de error u otras acciones necesarias
+            }
+        );
+    }
 
     renderizarImagen(imagen: File, firmante: any): void {
         const reader = new FileReader();
@@ -118,9 +172,9 @@ export class VisoravalComponent implements OnInit {
         reader.readAsDataURL(imagen);
     }
 
-    ejecutarMetodoDelComponenteHijo() {
-        if (this.componenteHijo) {
-            this.componenteHijo.crearPDF();
+    convertirOficioEnPDF() {
+        if (this.oficio) {
+            this.oficio.crearPDF();
         }
     }
 
@@ -147,5 +201,33 @@ export class VisoravalComponent implements OnInit {
         } else {
             console.error('El documento no se encontró');
         }
+    }
+
+    async convertirABase64(archivo: File | null): Promise<string | null> {
+        return new Promise((resolve, reject) => {
+            if (!archivo) {
+                resolve(null);
+                return;
+            }
+
+            const lector = new FileReader();
+
+            lector.readAsDataURL(archivo);
+
+            lector.onload = () => {
+                if (typeof lector.result === 'string') {
+                    const nombre = archivo.name;
+                    const contenidoBase64 = lector.result.split(',')[1];
+                    const base64ConNombre = `${nombre}:${contenidoBase64}`;
+                    resolve(base64ConNombre);
+                } else {
+                    reject(null);
+                }
+            };
+
+            lector.onerror = () => {
+                reject(null);
+            };
+        });
     }
 }

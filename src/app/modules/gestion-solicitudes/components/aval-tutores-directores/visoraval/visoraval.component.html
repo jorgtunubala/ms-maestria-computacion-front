@@ -1,13 +1,19 @@
+<p-confirmDialog
+    [style]="{ width: '50vw' }"
+    [baseZIndex]="10000"
+    rejectButtonStyleClass="p-button-text"
+></p-confirmDialog>
+
 <p-tabView>
     <p-tabPanel
-        header="Solicitante"
-        leftIcon="pi pi-user"
+        header="Información"
+        leftIcon="pi pi-id-card"
         tooltip="Información del solicitante"
     >
         <div class="grid" style="height: 100px">
             <div class="col-4">
                 <p class="text-base m-0">
-                    Nombre:
+                    Solicitante:
 
                     {{ radicar.datosSolicitante.nombres }}
                     {{ radicar.datosSolicitante.apellidos }}
@@ -31,15 +37,6 @@
                     {{ radicar.datosSolicitante.celular }}
                 </p>
             </div>
-            <div class="col-4"></div>
-        </div>
-    </p-tabPanel>
-    <p-tabPanel
-        header="Solicitud"
-        leftIcon="pi pi-file"
-        tooltip="Información de la solicitud"
-    >
-        <div class="grid" style="height: 100px">
             <div class="col-4">
                 <p class="text-base m-0">
                     Tipo: {{ radicar.tipoSolicitudEscogida.nombreSolicitud }}
@@ -58,11 +55,9 @@
                     ></p-tag>
                 </p>
             </div>
-
-            <div class="col-4"></div>
-            <div class="col-4"></div>
         </div>
     </p-tabPanel>
+
     <p-tabPanel
         header="Adjuntos"
         leftIcon="pi pi-paperclip"
@@ -104,7 +99,7 @@
     </div>
 
     <div
-        *ngIf="!radicar.esperando"
+        *ngIf="!radicar.esperando && mostrarPFSet"
         class="w-full md:w-9 mt-4"
         style="margin-left: auto; margin-right: auto"
     >
@@ -150,13 +145,16 @@
         </p-fieldset>
     </div>
 
-    <div class="grid grid-nogutter mt-4 justify-content-end">
-        <p-button
-            label="Generar PDF"
-            (click)="ejecutarMetodoDelComponenteHijo()"
-            icon="pi pi-file-pdf"
-            iconPos="left"
-            [(disabled)]="radicar.esperando"
-        ></p-button>
+    <div class="mt-4" *ngIf="mostrarBtnAvalar" style="text-align: center">
+        <button
+            pButton
+            pRipple
+            type="button"
+            (click)="enviarOficioAvalado()"
+            label="Avalar la solicitud"
+            class="p-button-success"
+            style="width: 70%; margin-left: auto; margin-right: auto"
+            [disabled]="radicar.esperando"
+        ></button>
     </div>
 </div>

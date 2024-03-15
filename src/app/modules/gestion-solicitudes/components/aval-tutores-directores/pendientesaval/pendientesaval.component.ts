@@ -34,6 +34,10 @@ export class PendientesavalComponent implements OnInit {
 
     ngOnInit(): void {
         this.cargarSolicitudes();
+
+        this.gestor.cargarSolicitudes$.subscribe(() => {
+            this.cargarSolicitudes();
+        });
     }
 
     cargarSolicitudes() {

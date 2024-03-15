@@ -1,7 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { RadicarService } from '../../../services/radicar.service';
-import { InfoPersonal, TutorYDirector } from '../../../models';
+import {
+    DatosAsignaturaAdicion,
+    InfoPersonal,
+    TutorYDirector,
+} from '../../../models';
 import { HttpService } from '../../../services/http.service';
 
 @Component({
@@ -13,7 +17,7 @@ export class FormulariosComponent implements OnInit {
     identificadorSolicitante: string = 'ctorres@unicauca.edu.co';
     tiposIdentificacion: string[];
     tiposCuentaBancaria: string[];
-    ofertaAcademica: any[];
+    ofertaAcademicaAdiciones: DatosAsignaturaAdicion[];
     listadoTutoresYDirectores: TutorYDirector[];
     tutorSeleccionado: any;
 
@@ -54,7 +58,14 @@ export class FormulariosComponent implements OnInit {
             this.obtenerInfoDeSolicitante();
         }
 
-        this.recuperarOfertaAcademica();
+        if (
+            ['AD_ASIG'].includes(
+                this.radicar.tipoSolicitudEscogida.codigoSolicitud
+            )
+        ) {
+            this.recuperarOfertaAcademica();
+        }
+
         this.recuperarListadoTutores();
     }
 
@@ -87,33 +98,14 @@ export class FormulariosComponent implements OnInit {
     }
 
     recuperarOfertaAcademica() {
-        this.ofertaAcademica = [
-            {
-                grupo: 'TC34',
-                nombre: 'Teoria de la Computación',
-                docente: 'Juan Esteban Guarnizo Erazo',
+        this.gestorHttp.obtenerListaAsigOfertadas().subscribe(
+            (asignaturas: DatosAsignaturaAdicion[]) => {
+                this.ofertaAcademicaAdiciones = asignaturas;
             },
-            {
-                grupo: 'QC835',
-                nombre: 'Computacion Cauntica',
-                docente: 'Maria Camila Gomez Barrera',
-            },
-            {
-                grupo: 'ALG546',
-                nombre: 'Algoritmia',
-                docente: 'Diego Alexander Asprilla Paz',
-            },
-            {
-                grupo: 'TPD342',
-                nombre: 'Pedagogia',
-                docente: 'Ines Alexandra Muñoz Andrade',
-            },
-            {
-                grupo: 'ESL657',
-                nombre: 'Estructura de lenguajes',
-                docente: 'Silvana Sarmiento Ramirez',
-            },
-        ];
+            (error) => {
+                console.error('Error al cargar la oferta academica:', error);
+            }
+        );
     }
 
     recuperarListadoTutores() {

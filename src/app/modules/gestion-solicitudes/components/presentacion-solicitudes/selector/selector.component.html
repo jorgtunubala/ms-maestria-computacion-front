@@ -30,7 +30,7 @@
                 *ngIf="requisitosSolicitudEscogida"
             >
                 <div *ngIf="requisitosSolicitudEscogida.documentosRequeridos">
-                    <p class="font-semibold">
+                    <p class="font-semibold text-justify">
                         {{ requisitosSolicitudEscogida.tituloDocumento }}
                     </p>
                     <p
@@ -43,18 +43,35 @@
                         {{ i + 1 }}. {{ documento }}
                     </p>
                 </div>
+                <br />
 
                 <div *ngIf="requisitosSolicitudEscogida.descripcion">
-                    <p>{{ requisitosSolicitudEscogida.descripcion }}</p>
+                    <p class="text-justify">
+                        {{ requisitosSolicitudEscogida.descripcion }}
+                    </p>
                 </div>
 
                 <div *ngIf="requisitosSolicitudEscogida.articulo">
-                    <p>{{ requisitosSolicitudEscogida.articulo }}</p>
+                    <br />
+                    <p class="text-justify">
+                        {{ requisitosSolicitudEscogida.articulo }}
+                    </p>
                 </div>
 
                 <div *ngIf="requisitosSolicitudEscogida.tenerEnCuenta">
+                    <br />
                     <p class="font-semibold">Tener en cuenta:</p>
-                    <p>{{ requisitosSolicitudEscogida.tenerEnCuenta }}</p>
+                    <p class="text-justify">
+                        {{ requisitosSolicitudEscogida.tenerEnCuenta }}
+                    </p>
+                </div>
+
+                <div *ngIf="requisitosSolicitudEscogida.notas.length > 0">
+                    <br />
+                    <p class="font-semibold">Nota:</p>
+                    <p class="text-justify">
+                        {{ requisitosSolicitudEscogida.notas }}
+                    </p>
                 </div>
             </p-panel>
         </div>

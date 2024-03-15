@@ -25,11 +25,27 @@ export class AlmacenarSolicitudService {
             let resultado: boolean = false;
 
             switch (this.radicar.tipoSolicitudEscogida.codigoSolicitud) {
+                case 'AD_ASIG':
+                    this.http
+                        .guardarSolicitud(await this.reunirDatosSolAdicion())
+                        .subscribe((respuesta) => {
+                            resultado = respuesta;
+                            resolve(resultado);
+                        });
+                    break;
+
                 case 'HO_ASIG_POS':
                     this.http
-                        .guardarSolHomologPost(
-                            await this.reunirDatosSolHomologPost()
-                        )
+                        .guardarSolicitud(await this.reunirDatosSolHomolog())
+                        .subscribe((respuesta) => {
+                            resultado = respuesta;
+                            resolve(resultado);
+                        });
+                    break;
+
+                case 'HO_ASIG_ESP':
+                    this.http
+                        .guardarSolicitud(await this.reunirDatosSolHomolog())
                         .subscribe((respuesta) => {
                             resultado = respuesta;
                             resolve(resultado);
@@ -43,20 +59,49 @@ export class AlmacenarSolicitudService {
         });
     }
 
-    async reunirDatosSolHomologPost(): Promise<SolicitudSave> {
+    async reunirDatosSolAdicion(): Promise<SolicitudSave> {
+        const firmaSolicitante = await this.convertirABase64(
+            this.radicar.firmaSolicitante
+        );
+
+        const asignaturasParaAdicionar = this.radicar.asignaturasAdicCancel.map(
+            (asignatura) => asignatura.id
+        );
+
+        const infoSolicitud: SolicitudSave = {
+            idTipoSolicitud: this.radicar.tipoSolicitudEscogida.idSolicitud,
+            idEstudiante: this.radicar.datosSolicitante.id,
+            idTutor: this.radicar.tutor.id,
+            datosHomologacion: null,
+            datosAdicionAsignatura: asignaturasParaAdicionar,
+            requiereFirmaDirector: false,
+            firmaEstudiante: firmaSolicitante,
+        };
+
+        console.log(asignaturasParaAdicionar);
+
+        return infoSolicitud;
+    }
+
+    async reunirDatosSolHomolog(): Promise<SolicitudSave> {
         const asignaturasAHomologar: AsignaturaHomologPost[] = [];
         const conversionesBase64: Promise<string>[] = [];
 
-        for (
-            let index = 0;
-            index < this.radicar.datosAsignaturasAHomologar.length;
-            index++
-        ) {
-            const conversionPromise = this.convertirABase64(
-                this.radicar.datosAsignaturasAHomologar[index].contenidos
-            ).then((base64String) => base64String.toString());
-
-            conversionesBase64.push(conversionPromise);
+        for (const asignatura of this.radicar.datosAsignaturasAHomologar) {
+            const contenido = asignatura?.contenidos;
+            if (contenido) {
+                conversionesBase64.push(
+                    this.convertirABase64(contenido)
+                        .then((base64String) => base64String?.toString())
+                        .catch((error) => {
+                            console.error(
+                                'Error al convertir a base64:',
+                                error
+                            );
+                            return null;
+                        })
+                );
+            }
         }
 
         // Esperar a que todas las conversiones se completen
@@ -91,6 +136,10 @@ export class AlmacenarSolicitudService {
 
         const documentosAdjuntos = await this.convertirDocumentosAdjuntos();
 
+        const firmaSolicitante = await this.convertirABase64(
+            this.radicar.firmaSolicitante
+        );
+
         const datosSolHomologPost: DatosSolHomologPostSave = {
             datosHomologacionDto: datosHomologacion,
             documentosAdjuntos: documentosAdjuntos,
@@ -101,6 +150,9 @@ export class AlmacenarSolicitudService {
             idEstudiante: this.radicar.datosSolicitante.id,
             idTutor: this.radicar.tutor.id,
             datosHomologacion: datosSolHomologPost,
+            datosAdicionAsignatura: null,
+            requiereFirmaDirector: false,
+            firmaEstudiante: firmaSolicitante,
         };
 
         return infoSolicitud;
@@ -132,7 +184,11 @@ export class AlmacenarSolicitudService {
     async convertirDocumentosAdjuntos(): Promise<string[]> {
         const documentosAdjuntosPromises: Promise<string>[] =
             this.radicar.documentosAdjuntos.map(async (adjunto) => {
-                return await this.convertirABase64(adjunto);
+                if (adjunto instanceof File) {
+                    return await this.convertirABase64(adjunto);
+                } else {
+                    return Promise.resolve(null);
+                }
             });
 
         return Promise.all(documentosAdjuntosPromises);

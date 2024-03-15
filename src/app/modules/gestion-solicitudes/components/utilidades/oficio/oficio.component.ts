@@ -286,8 +286,19 @@ export class OficioComponent implements OnInit {
                 position -= pageHeight;
             }
 
-            // Guarda el PDF
-            pdf.save('Oficio de Solicitud.pdf');
+            // Convierte el PDF a Blob
+            const blob = pdf.output('blob');
+
+            // Crea un objeto File a partir del Blob
+            const pdfFile = new File([blob], 'Oficio de Solicitud.pdf', {
+                type: 'application/pdf',
+            });
+
+            // Guarda el PDF en una variable de tipo File
+            this.radicar.oficioDeSolicitud = pdfFile;
+
+            // Opcional: descargar el PDF también, descomenta la línea siguiente
+            //pdf.save('Oficio de Solicitud.pdf');
         });
     }
 }
