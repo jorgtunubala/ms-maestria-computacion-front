@@ -58,14 +58,6 @@ export class FormulariosComponent implements OnInit {
             this.obtenerInfoDeSolicitante();
         }
 
-        if (
-            ['AD_ASIG'].includes(
-                this.radicar.tipoSolicitudEscogida.codigoSolicitud
-            )
-        ) {
-            this.recuperarOfertaAcademica();
-        }
-
         this.recuperarListadoTutores();
     }
 
@@ -97,15 +89,14 @@ export class FormulariosComponent implements OnInit {
         this.radicar.instanciasAsignExterna.splice(index, 1);
     }
 
-    recuperarOfertaAcademica() {
-        this.gestorHttp.obtenerListaAsigOfertadas().subscribe(
-            (asignaturas: DatosAsignaturaAdicion[]) => {
-                this.ofertaAcademicaAdiciones = asignaturas;
-            },
-            (error) => {
-                console.error('Error al cargar la oferta academica:', error);
-            }
-        );
+    agregarInstanciaAsigAdiCancel() {
+        this.radicar.numeroInstanciasAsignAdiCancel++;
+        this.radicar.instanciasAsignAdiCancel.push({});
+    }
+
+    eliminarInstanciaAsigAdiCancel(index: number) {
+        this.radicar.datosAsignAdiCancel.splice(index, 1);
+        this.radicar.instanciasAsignAdiCancel.splice(index, 1);
     }
 
     recuperarListadoTutores() {

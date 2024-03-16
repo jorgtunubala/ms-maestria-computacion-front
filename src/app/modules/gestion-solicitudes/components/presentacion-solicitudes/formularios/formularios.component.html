@@ -249,36 +249,49 @@
         </p-fieldset>
     </div>
 
-    <!-- Formulario para seleccionar asignaturas para Adición -->
+    <!-- Formulario para agregar asignaturas para Adición o Cancelación -->
+
     <div
         class="mt-4"
         *ngIf="
-            ['AD_ASIG'].includes(radicar.tipoSolicitudEscogida.codigoSolicitud)
+            ['AD_ASIG', 'CA_ASIG'].includes(
+                radicar.tipoSolicitudEscogida.codigoSolicitud
+            )
         "
     >
-        <p-fieldset legend="Adiciones" styleClass="bg-bluegray-50">
-            <div class="grid">
-                <div class="col-12">
-                    <span class="p-float-label mt-3">
-                        <p-multiSelect
-                            inputId="adasig"
-                            [options]="ofertaAcademicaAdiciones"
-                            optionLabel="nombreAsignatura"
-                            [(ngModel)]="radicar.asignaturasAdicCancel"
-                            [filter]="false"
-                            [style]="{ width: '100%' }"
-                            [maxSelectedLabels]="4"
-                            [selectedItemsLabel]="'{0} Materias seleccionadas'"
-                        >
-                            <ng-template let-item pTemplate="item">
-                                <div>
-                                    {{ item.infoAsignatura }}
-                                </div>
-                            </ng-template>
-                        </p-multiSelect>
-                        <label for="adasig">Materias a Adicionar</label>
-                    </span>
+        <p-fieldset legend="Asignaturas" styleClass="bg-bluegray-50">
+            <div
+                class="grid"
+                *ngFor="
+                    let instancia of radicar.instanciasAsignAdiCancel;
+                    let i = index
+                "
+            >
+                <div class="col-11">
+                    <app-asignaturadicioncancel
+                        [indice]="i"
+                    ></app-asignaturadicioncancel>
                 </div>
+                <div class="col-1 mt-3">
+                    <button
+                        pButton
+                        icon="pi pi-times"
+                        (click)="eliminarInstanciaAsigAdiCancel(i)"
+                        type="button"
+                        class="p-button-danger"
+                    ></button>
+                </div>
+            </div>
+
+            <div class="mt-3">
+                <button
+                    pButton
+                    type="button"
+                    (click)="agregarInstanciaAsigAdiCancel()"
+                    label="Agregar otra asignatura"
+                    icon="pi pi-plus"
+                    class="p-button-outlined"
+                ></button>
             </div>
         </p-fieldset>
     </div>
@@ -301,42 +314,6 @@
                             [style]="{ width: '100%' }"
                         ></p-inputMask>
                         <label for="semestre">Semestre</label>
-                    </span>
-                </div>
-            </div>
-        </p-fieldset>
-    </div>
-
-    <!-- Formulario para seleccionar asignaturas para Cancelación -->
-    <div
-        class="mt-4"
-        *ngIf="
-            ['CA_ASIG'].includes(radicar.tipoSolicitudEscogida.codigoSolicitud)
-        "
-    >
-        <p-fieldset class="" legend="Cancelaciones" styleClass="bg-bluegray-50">
-            <div class="grid">
-                <div class="col-12">
-                    <span class="p-float-label mt-3">
-                        <p-multiSelect
-                            inputId="cancasig"
-                            [options]="ofertaAcademica"
-                            optionLabel="nombre"
-                            [(ngModel)]="radicar.asignaturasAdicCancel"
-                            [filter]="false"
-                            [style]="{ width: '100%' }"
-                            [maxSelectedLabels]="3"
-                            [selectedItemsLabel]="'{0} Materias seleccionadas'"
-                        >
-                            >
-                            <ng-template let-item pTemplate="item">
-                                <div>
-                                    {{ item.nombre }} {{ item.grupo }} -
-                                    {{ item.docente }}
-                                </div>
-                            </ng-template></p-multiSelect
-                        >
-                        <label for="cancasig">Materias a Cancelar</label>
                     </span>
                 </div>
             </div>

@@ -1,5 +1,6 @@
 import { DatosComunSolicitud } from '../datosComunSolicitud';
-import { DatosSolicitudAdicionCancelacionAsignatura } from '../solicitud-adic-cancel-asig/datosSolicitudAdicionCancelacionAsignatura';
+import { DatosSolicitudCancelacionAsignatura } from '../solicitud-adic-cancel-asig/datosSolicitudCancelacionAsignatura';
+import { InfoAsingSimple } from '../solicitud-adic-cancel-asig/infoAsignSimple';
 import { DatosSolHomologPostRequest } from '../solicitud-homolog-post/datosSolHomologPostRequest';
 
 export class DatosSolicitudRequest {
@@ -15,7 +16,7 @@ export class DatosSolicitudRequest {
     constructor(
         public datosComunSolicitud: DatosComunSolicitud,
         public datosSolicitudHomologacion: DatosSolHomologPostRequest,
-        public dadicionCancelacionAsignatura: DatosSolicitudAdicionCancelacionAsignatura,
+        public dadicionCancelacionAsignatura: InfoAsingSimple,
         public datosSolicitudAplazarSemestre: any
     ) {}
 }

@@ -88,10 +88,4 @@ export class HttpService {
             id;
         return this.http.get<DatosSolicitudRequest>(url);
     }
-
-    obtenerListaAsigOfertadas(): Observable<DatosAsignaturaAdicion[]> {
-        const url =
-            'http://localhost:8095/msmaestriac/gestionAdicionAsignaturas/lista-asignaturas-adicionar';
-        return this.http.get<DatosAsignaturaAdicion[]>(url);
-    }
 }
