@@ -45,6 +45,29 @@
             />
         </div>
     </div>
+    
+    <div class="field grid">
+        <div class="col-4 text-right font-medium align-self-center">
+            <label>Lineas de investigación</label>
+        </div>
+        <div class="col-8">
+            <p-card [style]="{width: '80%'}" >
+
+                <div formArrayName="lineainvexp">
+                    <div *ngFor="let grupo of lineas">
+                        <label class="group-name">{{grupo.groupName}}</label>
+                        <div class="checkbox-group">
+                            <div *ngFor="let item of grupo.items; let i = index" class="checkbox-item">
+                                <p-checkbox [value]="item.name" [label]="item.label" binary="true"></p-checkbox>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </p-card>
+        </div>
+    </div>
+
     <div class="field grid">
         <div class="col-4 text-right font-medium align-self-center">
             <label>Observación</label>

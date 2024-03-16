@@ -57,4 +57,16 @@ export class ExpertoService {
       { headers: getHeaders() }
     );
   }
+
+  // buscarExpertos(termino: string): Observable<Experto[]> {
+  //   return this.http.get<Experto[]>(
+  //     backend(`expertos/buscar`),
+  //     {
+  //       headers: getHeaders(),
+  //       params: { termino }
+  //     }
+  //   );
+  // }
+
+
 }

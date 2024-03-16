@@ -193,6 +193,9 @@
                         getFormControl('correoElectronico').touched
                 }"
             />
+            <div *ngIf="getFormControl('correoElectronico').errors?.email">
+                <small class="p-error">Formato de correo electrónico no válido.</small>
+            </div>
         </div>
     </div>
 </form>
