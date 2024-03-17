@@ -22,6 +22,7 @@ export class GestionComponent implements OnInit {
             {
                 label: 'Buzón',
                 icon: 'pi pi-pw pi-inbox',
+                expanded: true,
                 items: [
                     {
                         label: 'Bandeja de entrada',
@@ -37,7 +38,7 @@ export class GestionComponent implements OnInit {
                 ],
             },
             {
-                label: 'Edit',
+                label: 'Archivo',
                 icon: 'pi pi-fw pi-pencil',
                 items: [
                     { label: 'Delete', icon: 'pi pi-fw pi-trash' },
@@ -73,7 +74,7 @@ export class GestionComponent implements OnInit {
                 ],
             },
             {
-                label: 'Actions',
+                label: 'Ajustes',
                 icon: 'pi pi-fw pi-cog',
                 items: [
                     {

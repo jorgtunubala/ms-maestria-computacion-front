@@ -186,11 +186,11 @@
                     <th class="border-bottom-1 border-right-1 text-center">
                         Asignatura
                     </th>
-                    <th class="border-bottom-1 text-center">Grupo</th>
+                    <th class="border-bottom-1 text-center">Docente</th>
                 </tr>
                 <tr
                     *ngFor="
-                        let materia of radicar.asignaturasAdicCancel;
+                        let materia of radicar.datosAsignAdiCancel;
                         let i = index
                     "
                 >
@@ -202,7 +202,7 @@
                         {{ materia.nombreAsignatura }}
                     </td>
                     <td class="text-center">
-                        {{ materia.codigoAsignatura }}
+                        {{ materia.docente.nombreTutor }}
                     </td>
                 </tr>
             </table>
@@ -270,7 +270,7 @@
 
 <!-- Despedida -->
 <p class="mt-2">
-    Sin otro motivo en particular, gradezco la atencion brindada y quedo a la
+    Sin otro motivo en particular, agradezco la atención brindada y quedo a la
     espera de su respuesta.
 </p>
 

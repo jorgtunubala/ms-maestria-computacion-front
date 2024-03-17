@@ -10,6 +10,7 @@ import {
     TutorYDirector,
 } from '../models';
 import { DatosSolicitudRequest } from '../models/solicitudes/datosSolicitudRequest';
+import { InfoAsingAdicionCancelacion } from '../models/solicitud-adic-cancel-asig/infoAsignAdicionCancelacion';
 
 @Injectable({
     providedIn: 'root',
@@ -53,7 +54,7 @@ export class RadicarService {
     cedulaCuentaBanco: string = null;
     direccion: string = '';
 
-    asignaturasAdicCancel: DatosAsignaturaAdicion[] = [];
+    asignaturasAdicCancel: InfoAsingAdicionCancelacion[] = [];
 
     numeroInstanciasAsignExterna: number = 1;
     instanciasAsignExterna: any[] = [{}];
@@ -69,6 +70,13 @@ export class RadicarService {
         tituloDocente: string;
         contenidos: File[];
         cartaAceptacion: File[];
+    }[] = [];
+
+    numeroInstanciasAsignAdiCancel: number = 1;
+    instanciasAsignAdiCancel: any[] = [{}];
+    datosAsignAdiCancel: {
+        nombreAsignatura: string;
+        docente: TutorYDirector;
     }[] = [];
 
     numeroInstAsignHomologar: number = 1;
@@ -116,6 +124,9 @@ export class RadicarService {
         this.numeroInstanciasAsignExterna = 1;
         this.instanciasAsignExterna = [{}];
         this.datosAsignaturasExternas = [];
+        this.numeroInstanciasAsignAdiCancel = 1;
+        this.instanciasAsignAdiCancel = [{}];
+        this.datosAsignAdiCancel = [];
         this.fechasEstancia = [];
         this.lugarEstancia = '';
         this.grupoInvestigacion = '';
@@ -198,27 +209,34 @@ export class RadicarService {
 
         switch (this.tipoSolicitudEscogida.codigoSolicitud) {
             case 'AD_ASIG':
-                for (
-                    let index = 0;
-                    index <
-                    infoSolicitud.dadicionCancelacionAsignatura.listaAsignaturas
-                        .length;
-                    index++
-                ) {
-                    const asignatura: DatosAsignaturaAdicion = {
-                        id: null,
-                        nombreAsignatura:
-                            infoSolicitud.dadicionCancelacionAsignatura
-                                .listaAsignaturas[index].nombreAsignatura,
-                        codigoAsignatura:
-                            infoSolicitud.dadicionCancelacionAsignatura
-                                .listaAsignaturas[index].grupo,
-                        nombreDocente: null,
-                        infoAsignatura: null,
-                    };
+                this.datosAsignAdiCancel =
+                    infoSolicitud.dadicionCancelacionAsignatura.listaAsignaturas.map(
+                        (asignatura) => ({
+                            nombreAsignatura: asignatura.nombreAsignatura,
+                            docente: {
+                                id: null,
+                                codigoTutor: null,
+                                nombreTutor: asignatura.docenteAsignatura,
+                            },
+                        })
+                    );
 
-                    this.asignaturasAdicCancel.push(asignatura);
-                }
+                break;
+            case 'CA_ASIG':
+                this.datosAsignAdiCancel =
+                    infoSolicitud.dadicionCancelacionAsignatura.listaAsignaturas.map(
+                        (asignatura) => ({
+                            nombreAsignatura: asignatura.nombreAsignatura,
+                            docente: {
+                                id: null,
+                                codigoTutor: null,
+                                nombreTutor: asignatura.docenteAsignatura,
+                            },
+                        })
+                    );
+
+                this.motivoDeSolicitud =
+                    infoSolicitud.dadicionCancelacionAsignatura.motivo;
 
                 break;
             case 'HO_ASIG_POS':

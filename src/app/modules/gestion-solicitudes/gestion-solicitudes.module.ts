@@ -20,6 +20,7 @@ import { PendientesavalComponent } from './components/aval-tutores-directores/pe
 import { VisoravalComponent } from './components/aval-tutores-directores/visoraval/visoraval.component';
 import { AsignaturaexternaComponent } from './components/presentacion-solicitudes/formularios/complementarios/asignaturaexterna/asignaturaexterna.component';
 import { OficioComponent } from './components/utilidades/oficio/oficio.component';
+import { AsignaturadicioncancelComponent } from './components/presentacion-solicitudes/formularios/complementarios/asignaturadicioncancel/asignaturadicioncancel.component';
 
 @NgModule({
     declarations: [
@@ -39,6 +40,7 @@ import { OficioComponent } from './components/utilidades/oficio/oficio.component
         VisoravalComponent,
         AsignaturaexternaComponent,
         OficioComponent,
+        AsignaturadicioncancelComponent,
     ],
     imports: [
         CommonModule,

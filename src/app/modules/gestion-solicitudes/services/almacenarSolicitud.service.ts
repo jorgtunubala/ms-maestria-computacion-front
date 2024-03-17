@@ -3,12 +3,14 @@ import { Injectable } from '@angular/core';
 import {
     AsignaturaHomologPost,
     DatosSolHomologPostSave,
+    DatosSolicitudCancelacionAsignatura,
     FormHomologPost,
     SolicitudSave,
 } from '../models';
 import { HttpService } from './http.service';
 import { RadicarService } from './radicar.service';
 import { HttpClient } from '@angular/common/http';
+import { InfoAsingAdicionCancelacion } from '../models/solicitud-adic-cancel-asig/infoAsignAdicionCancelacion';
 
 @Injectable({
     providedIn: 'root',
@@ -32,6 +34,17 @@ export class AlmacenarSolicitudService {
                             resultado = respuesta;
                             resolve(resultado);
                         });
+
+                    break;
+
+                case 'CA_ASIG':
+                    this.http
+                        .guardarSolicitud(await this.reunirDatosSolCancelAsig())
+                        .subscribe((respuesta) => {
+                            resultado = respuesta;
+                            resolve(resultado);
+                        });
+
                     break;
 
                 case 'HO_ASIG_POS':
@@ -64,9 +77,11 @@ export class AlmacenarSolicitudService {
             this.radicar.firmaSolicitante
         );
 
-        const asignaturasParaAdicionar = this.radicar.asignaturasAdicCancel.map(
-            (asignatura) => asignatura.id
-        );
+        const asignaturasParaAdicionar: InfoAsingAdicionCancelacion[] =
+            this.radicar.datosAsignAdiCancel.map((item) => ({
+                nombreAsignatura: item.nombreAsignatura,
+                idDocente: item.docente.id,
+            }));
 
         const infoSolicitud: SolicitudSave = {
             idTipoSolicitud: this.radicar.tipoSolicitudEscogida.idSolicitud,
@@ -74,11 +89,42 @@ export class AlmacenarSolicitudService {
             idTutor: this.radicar.tutor.id,
             datosHomologacion: null,
             datosAdicionAsignatura: asignaturasParaAdicionar,
+            datosCancelarAsignatura: null,
             requiereFirmaDirector: false,
             firmaEstudiante: firmaSolicitante,
         };
 
         console.log(asignaturasParaAdicionar);
+
+        return infoSolicitud;
+    }
+
+    async reunirDatosSolCancelAsig(): Promise<SolicitudSave> {
+        const firmaSolicitante = await this.convertirABase64(
+            this.radicar.firmaSolicitante
+        );
+
+        const asignaturas: InfoAsingAdicionCancelacion[] =
+            this.radicar.datosAsignAdiCancel.map((item) => ({
+                nombreAsignatura: item.nombreAsignatura,
+                idDocente: item.docente.id,
+            }));
+
+        const infoCancelacion: DatosSolicitudCancelacionAsignatura = {
+            listaAsignaturas: asignaturas,
+            motivo: this.radicar.motivoDeSolicitud,
+        };
+
+        const infoSolicitud: SolicitudSave = {
+            idTipoSolicitud: this.radicar.tipoSolicitudEscogida.idSolicitud,
+            idEstudiante: this.radicar.datosSolicitante.id,
+            idTutor: this.radicar.tutor.id,
+            datosHomologacion: null,
+            datosAdicionAsignatura: null,
+            datosCancelarAsignatura: infoCancelacion,
+            requiereFirmaDirector: false,
+            firmaEstudiante: firmaSolicitante,
+        };
 
         return infoSolicitud;
     }
@@ -151,6 +197,7 @@ export class AlmacenarSolicitudService {
             idTutor: this.radicar.tutor.id,
             datosHomologacion: datosSolHomologPost,
             datosAdicionAsignatura: null,
+            datosCancelarAsignatura: null,
             requiereFirmaDirector: false,
             firmaEstudiante: firmaSolicitante,
         };
