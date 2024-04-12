@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Solicitud } from '../models/solicitud.model';
+import { Solicitud } from '../models/solicitudes/solicitud.model';
 import { HttpService } from './http.service';
 import { Subject } from 'rxjs';
 

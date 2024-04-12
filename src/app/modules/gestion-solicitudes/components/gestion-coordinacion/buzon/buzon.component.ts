@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DialogService } from 'primeng/dynamicdialog';
-import { Solicitud } from '../../../models/solicitud.model';
+import { Solicitud } from '../../../models/solicitudes/solicitud.model';
 import { VisorComponent } from '../visor/visor.component';
 import { GestorService } from '../../../services/gestor.service';
 

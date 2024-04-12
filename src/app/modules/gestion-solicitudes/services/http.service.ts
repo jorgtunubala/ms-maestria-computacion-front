@@ -8,9 +8,9 @@ import {
     SolicitudPendienteAval,
     DatosAvalSolicitud,
     DatosAsignaturaAdicion,
-} from '../models';
+} from '../models/indiceModelos';
 import { Observable, catchError, map } from 'rxjs';
-import { InfoPersonalResponse } from '../models/infoPersonalResponse';
+import { InfoPersonalResponse } from '../models/solicitante/infoPersonalResponse';
 import { DatosSolicitudRequest } from '../models/solicitudes/datosSolicitudRequest';
 
 @Injectable({

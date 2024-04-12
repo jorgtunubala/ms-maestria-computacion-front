@@ -1,5 +1,11 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { TutorYDirector } from 'src/app/modules/gestion-solicitudes/models/tutorYDirector';
+import {
+    AbstractControl,
+    FormBuilder,
+    FormGroup,
+    Validators,
+} from '@angular/forms';
+import { TutorYDirector } from 'src/app/modules/gestion-solicitudes/models/tutores/tutorYDirector';
 import { HttpService } from 'src/app/modules/gestion-solicitudes/services/http.service';
 import { RadicarService } from 'src/app/modules/gestion-solicitudes/services/radicar.service';
 
@@ -10,30 +16,37 @@ import { RadicarService } from 'src/app/modules/gestion-solicitudes/services/rad
 })
 export class AsignaturadicioncancelComponent implements OnInit {
     @Input() indice: number;
-    nombreAsignatura: string = '';
-    docente: TutorYDirector = null;
-    listadoDocentes: TutorYDirector[];
+    formAsigAdiCancel: FormGroup;
 
-    constructor(
-        public radicar: RadicarService,
-        private gestorHttp: HttpService
-    ) {}
+    constructor(public radicar: RadicarService, private fb: FormBuilder) {
+        this.formAsigAdiCancel = this.fb.group({
+            nombreAsignatura: ['', Validators.required],
+            docenteAsig: ['', this.customValidator()],
+        });
+    }
 
     ngOnInit(): void {
         if (this.radicar.datosAsignAdiCancel[this.indice]) {
-            this.nombreAsignatura =
-                this.radicar.datosAsignAdiCancel[this.indice].nombreAsignatura;
-            this.docente =
-                this.radicar.datosAsignAdiCancel[this.indice].docente;
+            this.formAsigAdiCancel.patchValue({
+                nombreAsignatura:
+                    this.radicar.datosAsignAdiCancel[this.indice]
+                        .nombreAsignatura,
+                docenteAsig:
+                    this.radicar.datosAsignAdiCancel[this.indice].docente,
+            });
         }
 
-        this.recuperarListadoDocentes();
-    }
+        if (!this.radicar.datosAsignAdiCancel[this.indice]) {
+            const nuevoTutor: TutorYDirector = {
+                id: '-1',
+                codigoTutor: 'codigoNuevoTutor',
+                nombreTutor: 'Seleccione un docente',
+            };
 
-    recuperarListadoDocentes() {
-        this.gestorHttp.obtenerTutoresYDirectores().subscribe((respuesta) => {
-            this.listadoDocentes = respuesta;
-        });
+            this.formAsigAdiCancel.patchValue({
+                docenteAsig: nuevoTutor,
+            });
+        }
     }
 
     actualizarDatos() {
@@ -41,10 +54,27 @@ export class AsignaturadicioncancelComponent implements OnInit {
             nombreAsignatura: string;
             docente: TutorYDirector;
         } = {
-            nombreAsignatura: this.nombreAsignatura,
-            docente: this.docente,
+            nombreAsignatura: this.formAsigAdiCancel.value.nombreAsignatura,
+            docente: this.formAsigAdiCancel.value.docenteAsig,
         };
 
         this.radicar.datosAsignAdiCancel[this.indice] = datos;
+    }
+
+    customValidator() {
+        return (control: AbstractControl) => {
+            const docenteSeleccionado: TutorYDirector = control.value;
+            if (
+                !docenteSeleccionado ||
+                docenteSeleccionado.nombreTutor === 'Seleccione un docente'
+            ) {
+                return { invalidTutor: true };
+            }
+            return null;
+        };
+    }
+
+    obtenerEstadoFormulario(): boolean {
+        return this.formAsigAdiCancel.valid;
     }
 }

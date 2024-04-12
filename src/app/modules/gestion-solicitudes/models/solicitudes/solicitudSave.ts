@@ -1,6 +1,10 @@
-import { DatosSolicitudCancelacionAsignatura } from './solicitud-adic-cancel-asig/datosSolicitudCancelacionAsignatura';
-import { InfoAsingAdicionCancelacion } from './solicitud-adic-cancel-asig/infoAsignAdicionCancelacion';
-import { DatosSolHomologPostSave } from './solicitud-homolog-post/datosSolHomologPostSave';
+import {
+    DatosSolicitudCancelacionAsignatura,
+    InfoAsingAdicionCancelacion,
+    DatosSolicitudAplazamiento,
+    DatosSolHomologPostSave,
+    DatosSolicitudCursarAsignatura,
+} from '../indiceModelos';
 
 export class SolicitudSave {
     static nuevoSolicitudSave(obj: Object) {
@@ -11,6 +15,8 @@ export class SolicitudSave {
             obj['datosHomologacion'],
             obj['datosAdicionAsignatura'],
             obj['datosCancelarAsignatura'],
+            obj['datosAplazarSemestre'],
+            obj['datosCursarAsignatura'],
             obj['requiereFirmaDirector'],
             obj['firmaEstudiante']
         );
@@ -23,6 +29,8 @@ export class SolicitudSave {
         public datosHomologacion: DatosSolHomologPostSave,
         public datosAdicionAsignatura: InfoAsingAdicionCancelacion[],
         public datosCancelarAsignatura: DatosSolicitudCancelacionAsignatura,
+        public datosAplazarSemestre: DatosSolicitudAplazamiento,
+        public datosCursarAsignatura: DatosSolicitudCursarAsignatura,
         public requiereFirmaDirector: boolean,
         public firmaEstudiante: string
     ) {}

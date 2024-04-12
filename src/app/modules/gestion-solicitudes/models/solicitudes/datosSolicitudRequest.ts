@@ -1,22 +1,28 @@
-import { DatosComunSolicitud } from '../datosComunSolicitud';
-import { DatosSolicitudCancelacionAsignatura } from '../solicitud-adic-cancel-asig/datosSolicitudCancelacionAsignatura';
-import { InfoAsingSimple } from '../solicitud-adic-cancel-asig/infoAsignSimple';
-import { DatosSolHomologPostRequest } from '../solicitud-homolog-post/datosSolHomologPostRequest';
+import {
+    DatosSolicitudAplazamiento,
+    DatosSolHomologPostRequest,
+    InfoAsingSimple,
+    DatosComunSolicitud,
+    DatosSolicitudCursarAsignatura,
+    DatosAsignaturaProgramasExt,
+} from '../indiceModelos';
 
 export class DatosSolicitudRequest {
     static nuevoDatosSolicitudRequest(obj: Object) {
         return new DatosSolicitudRequest(
             obj['datosComunSolicitud'],
             obj['datosSolicitudHomologacion'],
-            obj['dadicionCancelacionAsignatura'],
-            obj['datosSolicitudAplazarSemestre']
+            obj['datosSolicitudAplazarSemestre'],
+            obj['datosSolicitudCursarAsignaturas'],
+            obj['dadicionCancelacionAsignatura']
         );
     }
 
     constructor(
         public datosComunSolicitud: DatosComunSolicitud,
         public datosSolicitudHomologacion: DatosSolHomologPostRequest,
-        public dadicionCancelacionAsignatura: InfoAsingSimple,
-        public datosSolicitudAplazarSemestre: any
+        public datosSolicitudAplazarSemestre: DatosSolicitudAplazamiento,
+        public datosSolicitudCursarAsignaturas: DatosAsignaturaProgramasExt,
+        public dadicionCancelacionAsignatura: InfoAsingSimple
     ) {}
 }

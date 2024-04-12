@@ -1,9 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { Solicitud } from '../../../models/solicitud.model';
+import { Solicitud } from '../../../models/solicitudes/solicitud.model';
 import { DialogService } from 'primeng/dynamicdialog';
 import { GestorService } from '../../../services/gestor.service';
 import { VisoravalComponent } from '../visoraval/visoraval.component';
-import { SolicitudPendienteAval, TipoSolicitud } from '../../../models';
+import {
+    SolicitudPendienteAval,
+    TipoSolicitud,
+} from '../../../models/indiceModelos';
 import { HttpService } from '../../../services/http.service';
 import { RadicarService } from '../../../services/radicar.service';
 

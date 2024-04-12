@@ -6,7 +6,7 @@ import {
     TipoSolicitud,
     RequisitosSolicitud,
     InfoPersonal,
-} from '../../../models';
+} from '../../../models/indiceModelos';
 
 @Component({
     selector: 'app-selector',

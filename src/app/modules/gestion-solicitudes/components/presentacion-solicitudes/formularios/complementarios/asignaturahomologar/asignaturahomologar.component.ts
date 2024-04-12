@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { RadicarService } from '../../../../../services/radicar.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
     selector: 'app-asignaturahomologar',
@@ -8,26 +9,40 @@ import { RadicarService } from '../../../../../services/radicar.service';
 })
 export class AsignaturahomologarComponent implements OnInit {
     @Input() indice: number;
+    formAsigHomologar: FormGroup;
     asignatura: string = '';
     creditos: number = null;
     intensidad: number = null;
     calificacion: number = null;
-    contenidos: File;
+    contenidos: File = null;
+    binding: any;
 
-    constructor(public radicar: RadicarService) {}
+    constructor(public radicar: RadicarService, private fb: FormBuilder) {
+        this.formAsigHomologar = this.fb.group({
+            nombreAsignatura: ['', Validators.required],
+            numeroCreditos: ['', Validators.required],
+            intensidadHoraria: ['', Validators.required],
+            calificacion: ['', Validators.required],
+        });
+    }
 
     ngOnInit(): void {
         if (this.radicar.datosAsignaturasAHomologar[this.indice]) {
-            this.asignatura =
-                this.radicar.datosAsignaturasAHomologar[this.indice].asignatura;
-            this.creditos =
-                this.radicar.datosAsignaturasAHomologar[this.indice].creditos;
-            this.intensidad =
-                this.radicar.datosAsignaturasAHomologar[this.indice].intensidad;
-            this.calificacion =
-                this.radicar.datosAsignaturasAHomologar[
-                    this.indice
-                ].calificacion;
+            this.formAsigHomologar.patchValue({
+                nombreAsignatura:
+                    this.radicar.datosAsignaturasAHomologar[this.indice]
+                        .asignatura,
+                numeroCreditos:
+                    this.radicar.datosAsignaturasAHomologar[this.indice]
+                        .creditos,
+                intensidadHoraria:
+                    this.radicar.datosAsignaturasAHomologar[this.indice]
+                        .intensidad,
+                calificacion:
+                    this.radicar.datosAsignaturasAHomologar[this.indice]
+                        .calificacion,
+            });
+
             this.contenidos =
                 this.radicar.datosAsignaturasAHomologar[this.indice].contenidos;
         }
@@ -41,10 +56,10 @@ export class AsignaturahomologarComponent implements OnInit {
             calificacion: number;
             contenidos: File;
         } = {
-            asignatura: this.asignatura,
-            creditos: this.creditos,
-            intensidad: this.intensidad,
-            calificacion: this.calificacion,
+            asignatura: this.formAsigHomologar.value.nombreAsignatura,
+            creditos: this.formAsigHomologar.value.numeroCreditos,
+            intensidad: this.formAsigHomologar.value.intensidadHoraria,
+            calificacion: this.formAsigHomologar.value.calificacion,
             contenidos: this.contenidos,
         };
 
@@ -58,5 +73,13 @@ export class AsignaturahomologarComponent implements OnInit {
 
         this.actualizarDatos();
         fubauto.clear();
+    }
+
+    obtenerEstadoFormulario(): boolean {
+        return this.formAsigHomologar.valid;
+    }
+
+    validarDocumentoCargado(): boolean {
+        return !!this.contenidos;
     }
 }

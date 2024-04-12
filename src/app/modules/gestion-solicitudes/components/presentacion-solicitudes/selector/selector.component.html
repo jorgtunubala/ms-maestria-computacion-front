@@ -11,7 +11,10 @@
             <p-listbox
                 [options]="tiposDeSolicitud"
                 optionLabel="nombreSolicitud"
-                (onChange)="obtenerRequisitosDeSolicitud()"
+                (onChange)="
+                    obtenerRequisitosDeSolicitud();
+                    radicar.restrablecerValores()
+                "
                 [(ngModel)]="tipoSolicitudEscogida"
                 [listStyle]="{ 'max-height': '300px' }"
                 styleClass="bg-bluegray-50 "
