@@ -1,6 +1,7 @@
 import {
     Component,
     ElementRef,
+    HostListener,
     OnInit,
     Renderer2,
     ViewChild,
@@ -10,6 +11,7 @@ import {
     ConfirmEventType,
     MessageService,
 } from 'primeng/api';
+
 import { Router } from '@angular/router';
 import { RadicarService } from '../../../services/radicar.service';
 import html2canvas from 'html2canvas';
@@ -36,6 +38,15 @@ export class ResumenComponent implements OnInit {
     imgDivPiePagina: HTMLImageElement;
     imgDivContenido: HTMLImageElement;
     imgDivProporcionContenido: HTMLImageElement;
+
+    codTipoSolicitudEscogida: string;
+
+    @HostListener('window:beforeunload', ['$event'])
+    beforeUnloadHander(event: Event) {
+        // Mostrar un mensaje al usuario antes de que se actualice la página
+        event.returnValue = true; // Esto es necesario para que algunos navegadores muestren el mensaje personalizado
+        return '¿Estás seguro de que quieres salir de la página?';
+    }
 
     mostrarOficio: boolean = true;
 
@@ -75,6 +86,20 @@ export class ResumenComponent implements OnInit {
     ) {
         this.segmentosContenido = [];
         this.espacioVacioEnPaginas = [];
+
+        try {
+            this.codTipoSolicitudEscogida =
+                this.radicar.tipoSolicitudEscogida.codigoSolicitud;
+        } catch (error) {
+            if (
+                error instanceof TypeError &&
+                error.message.includes('codigoSolicitud')
+            ) {
+                this.router.navigate(['/gestionsolicitudes/creacion/selector']);
+            } else {
+                console.error('Error no esperado:', error);
+            }
+        }
     }
 
     ngOnInit() {}
@@ -143,9 +168,17 @@ export class ResumenComponent implements OnInit {
         //this.crearPDF();
     }
 
+    renderizarImagen(imagen: File): void {
+        const reader = new FileReader();
+        reader.onload = () => {
+            this.radicar.firmaSolicitanteUrl = reader.result as string;
+        };
+        reader.readAsDataURL(imagen);
+    }
+
     navigateToBack() {
         if (
-            ['AD_ASIG', 'CA_ASIG'].includes(
+            ['AD_ASIG', 'CA_ASIG', 'AP_SEME', 'CU_ASIG'].includes(
                 this.radicar.tipoSolicitudEscogida.codigoSolicitud
             )
         ) {
@@ -153,13 +186,5 @@ export class ResumenComponent implements OnInit {
         } else {
             this.router.navigate(['/gestionsolicitudes/creacion/documentos']);
         }
-    }
-
-    renderizarImagen(imagen: File): void {
-        const reader = new FileReader();
-        reader.onload = () => {
-            this.radicar.firmaSolicitanteUrl = reader.result as string;
-        };
-        reader.readAsDataURL(imagen);
     }
 }

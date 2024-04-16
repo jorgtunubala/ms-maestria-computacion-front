@@ -8,15 +8,17 @@ import {
     RequisitosSolicitud,
     TipoSolicitud,
     TutorYDirector,
-} from '../models';
+} from '../models/indiceModelos';
 import { DatosSolicitudRequest } from '../models/solicitudes/datosSolicitudRequest';
-import { InfoAsingAdicionCancelacion } from '../models/solicitud-adic-cancel-asig/infoAsignAdicionCancelacion';
+import { InfoAsingAdicionCancelacion } from '../models/solicitudes/solicitud-adic-cancel-asig/infoAsignAdicionCancelacion';
+import { NullVisitor } from '@angular/compiler/src/render3/r3_ast';
 
 @Injectable({
     providedIn: 'root',
 })
 export class RadicarService {
     private clickSubject = new Subject<void>();
+    listadoTutoresYDirectores: TutorYDirector[];
     fechaEnvio: Date = null;
     tipoSolicitudEscogida: TipoSolicitud;
     requisitosSolicitudEscogida: RequisitosSolicitud;
@@ -64,12 +66,12 @@ export class RadicarService {
         institucion: string;
         creditos: number;
         intensidad: number;
-        codigo: number;
+        codigo: string;
         grupo: string;
         docente: string;
         tituloDocente: string;
-        contenidos: File[];
-        cartaAceptacion: File[];
+        contenidos: File;
+        cartaAceptacion: File;
     }[] = [];
 
     numeroInstanciasAsignAdiCancel: number = 1;
@@ -309,10 +311,56 @@ export class RadicarService {
 
                 break;
 
-            case 'CA_ASIG':
+            case 'AP_SEME':
+                this.semestreAplazamiento =
+                    infoSolicitud.datosSolicitudAplazarSemestre.semestre;
+                this,
+                    (this.motivoDeSolicitud =
+                        infoSolicitud.datosSolicitudAplazarSemestre.motivo);
+
                 break;
 
-            case 'AP_SEME':
+            case 'CU_ASIG':
+                this.motivoDeSolicitud =
+                    infoSolicitud.datosSolicitudCursarAsignaturas.motivo;
+
+                for (
+                    let index = 0;
+                    index <
+                    infoSolicitud.datosSolicitudCursarAsignaturas
+                        .datosAsignaturaOtroProgramas.length;
+                    index++
+                ) {
+                    const asignatura = {
+                        nombre: infoSolicitud.datosSolicitudCursarAsignaturas
+                            .datosAsignaturaOtroProgramas[index].nombre,
+                        programa:
+                            infoSolicitud.datosSolicitudCursarAsignaturas
+                                .datosAsignaturaOtroProgramas[index]
+                                .nombrePrograma,
+                        institucion: 'FALTA',
+                        creditos:
+                            infoSolicitud.datosSolicitudCursarAsignaturas
+                                .datosAsignaturaOtroProgramas[index].creditos,
+                        intensidad:
+                            infoSolicitud.datosSolicitudCursarAsignaturas
+                                .datosAsignaturaOtroProgramas[index]
+                                .intensidadHoraria,
+                        codigo: infoSolicitud.datosSolicitudCursarAsignaturas
+                            .datosAsignaturaOtroProgramas[index].codigo,
+                        grupo: infoSolicitud.datosSolicitudCursarAsignaturas
+                            .datosAsignaturaOtroProgramas[index].grupo,
+                        docente:
+                            infoSolicitud.datosSolicitudCursarAsignaturas
+                                .datosAsignaturaOtroProgramas[index]
+                                .nombreDocente,
+                        tituloDocente: 'FALTA',
+                        contenidos: null,
+                        cartaAceptacion: null,
+                    };
+
+                    this.datosAsignaturasExternas.push(asignatura);
+                }
                 break;
 
             default:

@@ -1,31 +1,34 @@
-<div class="grid">
-    <div class="col-6 mt-3">
-        <span class="p-float-label">
-            <input
-                class="w-full"
-                id="nomasignadcan"
-                type="text"
-                pInputText
-                (change)="actualizarDatos()"
-                [(ngModel)]="nombreAsignatura"
-            />
-            <label for="nomasignadcan"
-                >Nombre de la Asignatura {{ indice + 1 }}</label
-            >
-        </span>
+<form [formGroup]="formAsigAdiCancel">
+    <div class="grid">
+        <div class="col-6 mt-3">
+            <span class="p-float-label">
+                <input
+                    formControlName="nombreAsignatura"
+                    class="w-full"
+                    id="nomasignadcan"
+                    type="text"
+                    pInputText
+                    spellcheck="true"
+                    (change)="actualizarDatos()"
+                />
+                <label for="nomasignadcan"
+                    >Nombre de la Asignatura {{ indice + 1 }}</label
+                >
+            </span>
+        </div>
+        <div class="col-6 mt-3">
+            <span class="p-float-label">
+                <p-dropdown
+                    formControlName="docenteAsig"
+                    inputId="docenteAdCan"
+                    [autoDisplayFirst]="false"
+                    [options]="radicar.listadoTutoresYDirectores"
+                    (onChange)="actualizarDatos()"
+                    optionLabel="nombreTutor"
+                    [style]="{ width: '100%' }"
+                ></p-dropdown>
+                <label for="docenteAdCan">Docente a cargo</label>
+            </span>
+        </div>
     </div>
-    <div class="col-6 mt-3">
-        <span class="p-float-label">
-            <p-dropdown
-                inputId="tutor"
-                [autoDisplayFirst]="false"
-                [options]="listadoDocentes"
-                (onChange)="actualizarDatos()"
-                [(ngModel)]="docente"
-                optionLabel="nombreTutor"
-                [style]="{ width: '100%' }"
-            ></p-dropdown>
-            <label for="tutor">Docente a cargo</label>
-        </span>
-    </div>
-</div>
+</form>

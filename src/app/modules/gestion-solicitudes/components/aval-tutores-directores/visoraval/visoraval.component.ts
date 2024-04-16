@@ -4,7 +4,7 @@ import { RadicarService } from '../../../services/radicar.service';
 import { HttpService } from '../../../services/http.service';
 import { DatosSolicitudRequest } from '../../../models/solicitudes/datosSolicitudRequest';
 import { OficioComponent } from '../../utilidades/oficio/oficio.component';
-import { DatosAvalSolicitud } from '../../../models';
+import { DatosAvalSolicitud } from '../../../models/indiceModelos';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 

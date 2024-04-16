@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
 
 import { GestionSolicitudesRoutingModule } from './gestion-solicitudes-routing.module';
 import { PrimenNgModule } from '../primen-ng/primen-ng.module';
@@ -21,6 +22,10 @@ import { VisoravalComponent } from './components/aval-tutores-directores/visorav
 import { AsignaturaexternaComponent } from './components/presentacion-solicitudes/formularios/complementarios/asignaturaexterna/asignaturaexterna.component';
 import { OficioComponent } from './components/utilidades/oficio/oficio.component';
 import { AsignaturadicioncancelComponent } from './components/presentacion-solicitudes/formularios/complementarios/asignaturadicioncancel/asignaturadicioncancel.component';
+import { InfopersonalComponent } from './components/presentacion-solicitudes/formularios/complementarios/infopersonal/infopersonal.component';
+import { ListatutoresComponent } from './components/presentacion-solicitudes/formularios/complementarios/listatutores/listatutores.component';
+import { MotivosolicitudComponent } from './components/presentacion-solicitudes/formularios/complementarios/motivosolicitud/motivosolicitud.component';
+import { SemestreaplazarComponent } from './components/presentacion-solicitudes/formularios/complementarios/semestreaplazar/semestreaplazar.component';
 
 @NgModule({
     declarations: [
@@ -41,9 +46,14 @@ import { AsignaturadicioncancelComponent } from './components/presentacion-solic
         AsignaturaexternaComponent,
         OficioComponent,
         AsignaturadicioncancelComponent,
+        InfopersonalComponent,
+        ListatutoresComponent,
+        MotivosolicitudComponent,
+        SemestreaplazarComponent,
     ],
     imports: [
         CommonModule,
+        ReactiveFormsModule,
         PrimenNgModule,
         SharedModule,
         GestionSolicitudesRoutingModule,

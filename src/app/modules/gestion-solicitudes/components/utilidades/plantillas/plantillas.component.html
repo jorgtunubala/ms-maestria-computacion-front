@@ -83,7 +83,7 @@
                 ? "primer"
                 : radicar.semestreAplazamiento.split("-")[1] === "2"
                 ? "segundo"
-                : radicar.semestreAplazamiento.split("-")[1]
+                : "proximo"
         }}
         semestre de
         {{ radicar.semestreAplazamiento.split("-")[0] }}.
@@ -121,10 +121,10 @@
                     Código
                 </th>
                 <th class="border-right-1 border-bottom-1 text-center">
-                    Créditos
+                    Créd.
                 </th>
                 <th class="border-right-1 border-bottom-1 text-center">
-                    Intensidad
+                    Intens.
                 </th>
                 <th class="border-right-1 border-bottom-1 text-center">
                     Grupo
@@ -264,7 +264,7 @@
         "
     >
         La presente solicitud obedece a que
-        {{ radicar.motivoDeSolicitud | lowercase }}
+        {{ " " + radicar.motivoDeSolicitud | lowercase }}
     </ng-container>
 </div>
 

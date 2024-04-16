@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { RadicarService } from '../../../../../services/radicar.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
     selector: 'app-asignaturaexterna',
@@ -9,42 +10,60 @@ import { RadicarService } from '../../../../../services/radicar.service';
 export class AsignaturaexternaComponent implements OnInit {
     @Input() indice: number;
 
+    formAsigExterna: FormGroup;
+
     nombre: string = '';
     institucion: string = '';
     programa: string = '';
     creditos: number = null;
     intensidad: number = null;
-    codigo: number = null;
+    codigo: string = '';
     grupo: string = '';
     docente: string = '';
     tituloDocente: string = '';
-    contenidos: File[] = [];
-    cartaAceptacion: File[] = [];
+    contenidos: File = null;
+    cartaAceptacion: File = null;
 
-    constructor(public radicar: RadicarService) {}
+    constructor(public radicar: RadicarService, private fb: FormBuilder) {
+        this.formAsigExterna = this.fb.group({
+            nombreAsignatura: ['', Validators.required],
+            institucion: ['', Validators.required],
+            programa: ['', Validators.required],
+            numCreditos: ['', Validators.required],
+            intensidadHoraria: ['', Validators.required],
+            codigoAsignatura: ['', Validators.required],
+            grupoAsignatura: ['', Validators.required],
+            nombreDocente: ['', Validators.required],
+            tituloDocente: ['', Validators.required],
+        });
+    }
 
     ngOnInit(): void {
         if (this.radicar.datosAsignaturasExternas[this.indice]) {
-            this.nombre =
-                this.radicar.datosAsignaturasExternas[this.indice].nombre;
-            this.programa =
-                this.radicar.datosAsignaturasExternas[this.indice].programa;
-            this.institucion =
-                this.radicar.datosAsignaturasExternas[this.indice].institucion;
-            this.creditos =
-                this.radicar.datosAsignaturasExternas[this.indice].creditos;
-            this.intensidad =
-                this.radicar.datosAsignaturasExternas[this.indice].intensidad;
-            this.codigo =
-                this.radicar.datosAsignaturasExternas[this.indice].codigo;
-            this.grupo =
-                this.radicar.datosAsignaturasExternas[this.indice].grupo;
-            this.docente =
-                this.radicar.datosAsignaturasExternas[this.indice].docente;
-            this.tituloDocente =
-                this.radicar.datosAsignaturasExternas[
-                    this.indice
-                ].tituloDocente;
+            this.formAsigExterna.patchValue({
+                nombreAsignatura:
+                    this.radicar.datosAsignaturasExternas[this.indice].nombre,
+                programa:
+                    this.radicar.datosAsignaturasExternas[this.indice].programa,
+                institucion:
+                    this.radicar.datosAsignaturasExternas[this.indice]
+                        .institucion,
+                numCreditos:
+                    this.radicar.datosAsignaturasExternas[this.indice].creditos,
+                intensidadHoraria:
+                    this.radicar.datosAsignaturasExternas[this.indice]
+                        .intensidad,
+                codigoAsignatura:
+                    this.radicar.datosAsignaturasExternas[this.indice].codigo,
+                grupoAsignatura:
+                    this.radicar.datosAsignaturasExternas[this.indice].grupo,
+                nombreDocente:
+                    this.radicar.datosAsignaturasExternas[this.indice].docente,
+                tituloDocente:
+                    this.radicar.datosAsignaturasExternas[this.indice]
+                        .tituloDocente,
+            });
+
             this.contenidos =
                 this.radicar.datosAsignaturasExternas[this.indice].contenidos;
             this.cartaAceptacion =
@@ -61,22 +80,22 @@ export class AsignaturaexternaComponent implements OnInit {
             programa: string;
             creditos: number;
             intensidad: number;
-            codigo: number;
+            codigo: string;
             grupo: string;
             docente: string;
             tituloDocente: string;
-            contenidos: File[];
-            cartaAceptacion: File[];
+            contenidos: File;
+            cartaAceptacion: File;
         } = {
-            nombre: this.nombre,
-            institucion: this.institucion,
-            programa: this.programa,
-            creditos: this.creditos,
-            intensidad: this.intensidad,
-            codigo: this.codigo,
-            grupo: this.grupo,
-            docente: this.docente,
-            tituloDocente: this.tituloDocente,
+            nombre: this.formAsigExterna.value.nombreAsignatura,
+            institucion: this.formAsigExterna.value.institucion,
+            programa: this.formAsigExterna.value.programa,
+            creditos: this.formAsigExterna.value.numCreditos,
+            intensidad: this.formAsigExterna.value.intensidadHoraria,
+            codigo: this.formAsigExterna.value.codigoAsignatura,
+            grupo: this.formAsigExterna.value.grupoAsignatura,
+            docente: this.formAsigExterna.value.nombreDocente,
+            tituloDocente: this.formAsigExterna.value.tituloDocente,
             contenidos: this.contenidos,
             cartaAceptacion: this.cartaAceptacion,
         };
@@ -84,12 +103,28 @@ export class AsignaturaexternaComponent implements OnInit {
         this.radicar.datosAsignaturasExternas[this.indice] = datos;
     }
 
-    onUpload(event, fubauto) {
+    onUploadConten(event, fubautocont) {
         for (let contenido of event.files) {
-            this.contenidos.push(contenido);
+            this.contenidos = contenido;
         }
 
         this.actualizarDatos();
-        fubauto.clear();
+        fubautocont.clear();
+    }
+
+    onUploadCarta(event, fubautocarta) {
+        for (let carta of event.files) {
+            this.cartaAceptacion = carta;
+        }
+
+        this.actualizarDatos();
+        fubautocarta.clear();
+    }
+
+    obtenerEstadoFormulario(): boolean {
+        return this.formAsigExterna.valid;
+    }
+    validarDocumentosCargados(): boolean {
+        return this.contenidos !== null && this.cartaAceptacion !== null;
     }
 }
