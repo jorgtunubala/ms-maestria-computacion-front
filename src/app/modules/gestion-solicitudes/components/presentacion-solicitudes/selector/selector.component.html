@@ -16,7 +16,7 @@
                     radicar.restrablecerValores()
                 "
                 [(ngModel)]="tipoSolicitudEscogida"
-                [listStyle]="{ 'max-height': '300px' }"
+                [listStyle]="{ 'max-height': '385px' }"
                 styleClass="bg-bluegray-50 "
             >
                 <ng-template let-solicitud pTemplate="item">
@@ -32,50 +32,54 @@
                 header="Información y requisitos"
                 *ngIf="requisitosSolicitudEscogida"
             >
-                <div *ngIf="requisitosSolicitudEscogida.documentosRequeridos">
-                    <p class="font-semibold text-justify">
-                        {{ requisitosSolicitudEscogida.tituloDocumento }}
-                    </p>
-                    <p
-                        class="pl-3"
-                        *ngFor="
-                            let documento of requisitosSolicitudEscogida.documentosRequeridos;
-                            let i = index
-                        "
+                <p-scrollPanel [style]="{ width: '100%', height: '300px' }">
+                    <div
+                        *ngIf="requisitosSolicitudEscogida.documentosRequeridos"
                     >
-                        {{ i + 1 }}. {{ documento }}
-                    </p>
-                </div>
-                <br />
-
-                <div *ngIf="requisitosSolicitudEscogida.descripcion">
-                    <p class="text-justify">
-                        {{ requisitosSolicitudEscogida.descripcion }}
-                    </p>
-                </div>
-
-                <div *ngIf="requisitosSolicitudEscogida.articulo">
+                        <p class="font-semibold text-justify">
+                            {{ requisitosSolicitudEscogida.tituloDocumento }}
+                        </p>
+                        <p
+                            class="pl-3"
+                            *ngFor="
+                                let documento of requisitosSolicitudEscogida.documentosRequeridos;
+                                let i = index
+                            "
+                        >
+                            {{ i + 1 }}. {{ documento }}
+                        </p>
+                    </div>
                     <br />
-                    <p class="text-justify">
-                        {{ requisitosSolicitudEscogida.articulo }}
-                    </p>
-                </div>
 
-                <div *ngIf="requisitosSolicitudEscogida.tenerEnCuenta">
-                    <br />
-                    <p class="font-semibold">Tener en cuenta:</p>
-                    <p class="text-justify">
-                        {{ requisitosSolicitudEscogida.tenerEnCuenta }}
-                    </p>
-                </div>
+                    <div *ngIf="requisitosSolicitudEscogida.descripcion">
+                        <p class="text-justify">
+                            {{ requisitosSolicitudEscogida.descripcion }}
+                        </p>
+                    </div>
 
-                <div *ngIf="requisitosSolicitudEscogida.notas.length > 0">
-                    <br />
-                    <p class="font-semibold">Nota:</p>
-                    <p class="text-justify">
-                        {{ requisitosSolicitudEscogida.notas }}
-                    </p>
-                </div>
+                    <div *ngIf="requisitosSolicitudEscogida.articulo">
+                        <br />
+                        <p class="text-justify">
+                            {{ requisitosSolicitudEscogida.articulo }}
+                        </p>
+                    </div>
+
+                    <div *ngIf="requisitosSolicitudEscogida.tenerEnCuenta">
+                        <br />
+                        <p class="font-semibold">Tener en cuenta:</p>
+                        <p class="text-justify">
+                            {{ requisitosSolicitudEscogida.tenerEnCuenta }}
+                        </p>
+                    </div>
+
+                    <div *ngIf="requisitosSolicitudEscogida.notas.length > 0">
+                        <br />
+                        <p class="font-semibold">Nota:</p>
+                        <p class="text-justify">
+                            {{ requisitosSolicitudEscogida.notas }}
+                        </p>
+                    </div>
+                </p-scrollPanel>
             </p-panel>
         </div>
     </div>

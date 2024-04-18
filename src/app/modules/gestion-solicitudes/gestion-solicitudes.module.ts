@@ -26,6 +26,9 @@ import { InfopersonalComponent } from './components/presentacion-solicitudes/for
 import { ListatutoresComponent } from './components/presentacion-solicitudes/formularios/complementarios/listatutores/listatutores.component';
 import { MotivosolicitudComponent } from './components/presentacion-solicitudes/formularios/complementarios/motivosolicitud/motivosolicitud.component';
 import { SemestreaplazarComponent } from './components/presentacion-solicitudes/formularios/complementarios/semestreaplazar/semestreaplazar.component';
+import { PasantiainvestComponent } from './components/presentacion-solicitudes/formularios/complementarios/pasantiainvest/pasantiainvest.component';
+import { ApyeconomicoestanciaComponent } from './components/presentacion-solicitudes/formularios/complementarios/apyeconomicoestancia/apyeconomicoestancia.component';
+import { ListadirectoresComponent } from './components/presentacion-solicitudes/formularios/complementarios/listadirectores/listadirectores.component';
 
 @NgModule({
     declarations: [
@@ -50,6 +53,9 @@ import { SemestreaplazarComponent } from './components/presentacion-solicitudes/
         ListatutoresComponent,
         MotivosolicitudComponent,
         SemestreaplazarComponent,
+        PasantiainvestComponent,
+        ApyeconomicoestanciaComponent,
+        ListadirectoresComponent,
     ],
     imports: [
         CommonModule,

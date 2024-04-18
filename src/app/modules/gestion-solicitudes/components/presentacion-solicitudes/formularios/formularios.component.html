@@ -198,40 +198,12 @@
     <div
         class="mt-4"
         *ngIf="
-            ['RLZR_PAS_INVST'].includes(
+            ['AV_PASA_INV'].includes(
                 radicar.tipoSolicitudEscogida.codigoSolicitud
             )
         "
     >
-        <p-fieldset legend="Información Pasantia" styleClass="bg-bluegray-50">
-            <div class="grid">
-                <div class="col-12 md:col-6">
-                    <span class="p-float-label mt-3">
-                        <input
-                            class="w-full"
-                            id="lugpasantia"
-                            type="text"
-                            pInputText
-                            [(ngModel)]="radicar.lugarInstancia"
-                        />
-                        <label for="lugpasantia">Lugar de Pansantia</label>
-                    </span>
-                </div>
-
-                <div class="col-12 md:col-6">
-                    <span class="p-float-label mt-3">
-                        <p-calendar
-                            selectionMode="range"
-                            [readonlyInput]="true"
-                            inputId="fpasantia"
-                            [style]="{ width: '100%' }"
-                            [(ngModel)]="radicar.fechasInstancia"
-                        ></p-calendar>
-                        <label for="fpasantia">Fechas de Estancia</label>
-                    </span>
-                </div>
-            </div>
-        </p-fieldset>
+        <app-pasantiainvest></app-pasantiainvest>
     </div>
 
     <!-- Formulario para apoyo economico estancia de investigacion -->
@@ -239,136 +211,12 @@
     <div
         class="mt-4"
         *ngIf="
-            ['APY_ECON_ESTANC'].includes(
+            ['AP_ECON_INV'].includes(
                 radicar.tipoSolicitudEscogida.codigoSolicitud
             )
         "
     >
-        <p-fieldset
-            legend="Información para apoyo económico"
-            styleClass="bg-bluegray-50"
-        >
-            <div class="grid p-fluid">
-                <div class="col-12 md:col-6">
-                    <span class="p-float-label mt-3">
-                        <input
-                            class="w-full"
-                            id="lugpasantia"
-                            type="text"
-                            pInputText
-                            [(ngModel)]="radicar.lugarEstancia"
-                        />
-                        <label for="lugpasantia">Lugar de Estancia</label>
-                    </span>
-                </div>
-
-                <div class="col-12 md:col-6">
-                    <span class="p-float-label mt-3">
-                        <p-calendar
-                            selectionMode="range"
-                            [readonlyInput]="true"
-                            inputId="fpasantia"
-                            [style]="{ width: '100%' }"
-                            [(ngModel)]="radicar.fechasEstancia"
-                        ></p-calendar>
-                        <label for="fpasantia">Fechas de la Estancia</label>
-                    </span>
-                </div>
-
-                <div class="col-12">
-                    <span class="p-float-label mt-3">
-                        <input
-                            class="w-full"
-                            id="nomgrupivst"
-                            type="text"
-                            pInputText
-                            [(ngModel)]="radicar.grupoInvestigacion"
-                        />
-                        <label for="nomgrupivst">Grupo de Investigación</label>
-                    </span>
-                </div>
-
-                <div class="col-12 md:col-6 lg:col-3">
-                    <span class="p-float-label mt-3">
-                        <p-inputNumber
-                            [(ngModel)]="radicar.valorApoyoEcon"
-                            inputId="valorapoyo"
-                            [minFractionDigits]="2"
-                            prefix="COP "
-                            [style]="{ width: '100%' }"
-                        >
-                        </p-inputNumber>
-
-                        <label for="valorapoyo">Valor del Apoyo</label>
-                    </span>
-                </div>
-
-                <div class="col-12 md:col-6 lg:col-3">
-                    <span class="p-float-label mt-3">
-                        <input
-                            class="w-full"
-                            id="banco"
-                            type="text"
-                            pInputText
-                            [(ngModel)]="radicar.banco"
-                        />
-                        <label for="banco">Entidad Bancaria</label>
-                    </span>
-                </div>
-
-                <div class="col-12 md:col-6 lg:col-3">
-                    <span class="p-float-label mt-3">
-                        <p-dropdown
-                            inputId="tipocuenta"
-                            [autoDisplayFirst]="false"
-                            [options]="tiposCuentaBancaria"
-                            [(ngModel)]="radicar.tipoCuenta"
-                            [style]="{ width: '100%' }"
-                        ></p-dropdown>
-                        <label for="tipocuenta">Tipo de Cuenta</label>
-                    </span>
-                </div>
-
-                <div class="col-12 md:col-6 lg:col-3">
-                    <span class="p-float-label mt-3">
-                        <input
-                            class="w-full"
-                            id="cuentabanco"
-                            type="text"
-                            pInputText
-                            [(ngModel)]="radicar.numeroCuenta"
-                        />
-                        <label for="cuentabanco">Número de Cuenta</label>
-                    </span>
-                </div>
-
-                <div class="col-12 md:col-4">
-                    <span class="p-float-label mt-3">
-                        <input
-                            class="w-full"
-                            id="cedubanco"
-                            type="text"
-                            pInputText
-                            [(ngModel)]="radicar.cedulaCuentaBanco"
-                        />
-                        <label for="cedubanco">Número de Cédula Asociada</label>
-                    </span>
-                </div>
-
-                <div class="col-12 md:col-8">
-                    <span class="p-float-label mt-3">
-                        <input
-                            class="w-full"
-                            id="direccion"
-                            type="text"
-                            pInputText
-                            [(ngModel)]="radicar.direccion"
-                        />
-                        <label for="direccion">Dirección de Residencia</label>
-                    </span>
-                </div>
-            </div>
-        </p-fieldset>
+        <app-apyeconomicoestancia></app-apyeconomicoestancia>
     </div>
 
     <!-- Formulario para incluir el motivo de la solicitud -->
@@ -390,33 +238,12 @@
     <div
         class="mt-4"
         *ngIf="
-            ['APY_ECON_ESTANC'].includes(
+            ['AP_ECON_INV'].includes(
                 radicar.tipoSolicitudEscogida.codigoSolicitud
             )
         "
     >
-        <p-fieldset
-            legend="Director Grupo de Investicación"
-            styleClass="bg-bluegray-50"
-        >
-            <div class="grid">
-                <div class="col-12">
-                    <span class="p-float-label mt-3">
-                        <p-dropdown
-                            inputId="director"
-                            [autoDisplayFirst]="false"
-                            [options]="listadoTutores"
-                            [(ngModel)]="radicar.director"
-                            optionLabel="nombre"
-                            [style]="{ width: '100%' }"
-                        ></p-dropdown>
-                        <label for="director"
-                            >Director que Avala la Solicitud</label
-                        >
-                    </span>
-                </div>
-            </div>
-        </p-fieldset>
+        <app-listadirectores></app-listadirectores>
     </div>
 
     <div class="grid grid-nogutter mt-4 justify-content-end">

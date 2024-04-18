@@ -1,24 +1,45 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { RadicarService } from '../../../services/radicar.service';
+import { MessageService } from 'primeng/api';
 
 @Component({
     selector: 'app-docsadjuntos',
     templateUrl: './docsadjuntos.component.html',
     styleUrls: ['./docsadjuntos.component.scss'],
+    providers: [MessageService],
 })
 export class DocsAdjuntosComponent implements OnInit {
-    msgs1: any[];
-    constructor(public radicar: RadicarService, private router: Router) {}
+    @HostListener('window:beforeunload', ['$event'])
+    beforeUnloadHander(event: Event) {
+        event.returnValue = true;
+        return '¿Estás seguro de que quieres salir de la página?';
+    }
+
+    constructor(
+        public radicar: RadicarService,
+        private router: Router,
+        private messageService: MessageService
+    ) {}
 
     ngOnInit(): void {
-        this.msgs1 = [
-            {
-                severity: 'info',
-                summary: 'Información',
-                detail: 'No se requiere adjuntar documentos adicionales para esta solicitud, continua con el siguiente paso',
-            },
-        ];
+        try {
+            this.radicar.requisitosSolicitudEscogida.documentosRequeridos;
+        } catch (error) {
+            console.error('Se produjo un error:', error);
+
+            // Verificar si el error es del tipo TypeError y si contiene la cadena 'documentosRequeridos'
+            if (
+                error instanceof TypeError &&
+                error.message.includes('documentosRequeridos')
+            ) {
+                // Redirigir al usuario a una ruta específica
+                this.router.navigate(['/gestionsolicitudes/creacion/selector']);
+            } else {
+                // Manejar otros errores de manera apropiada
+                console.error('Error no esperado:', error);
+            }
+        }
     }
 
     onUpload(event, fubauto, indice) {
@@ -33,8 +54,59 @@ export class DocsAdjuntosComponent implements OnInit {
         this.radicar.documentosAdjuntos[indice] = undefined;
     }
 
+    validarDocsCompletos(): boolean {
+        if (
+            ['RE_CRED_PAS', 'RE_CRED_DIS', 'PR_CURS_TEO'].includes(
+                this.radicar.tipoSolicitudEscogida.codigoSolicitud
+            )
+        ) {
+            if (
+                this.radicar.documentosAdjuntos.length !==
+                this.radicar.requisitosSolicitudEscogida.documentosRequeridos
+                    .length -
+                    1
+            ) {
+                return false;
+            }
+
+            if (this.radicar.enlaceMaterialAudiovisual == '') {
+                return false;
+            }
+        } else {
+            // Verifica si los tamaños son iguales
+            if (
+                this.radicar.documentosAdjuntos.length !==
+                this.radicar.requisitosSolicitudEscogida.documentosRequeridos
+                    .length
+            ) {
+                return false;
+            }
+        }
+
+        // Verifica si todas las casillas de documentosAdjuntos están llenas
+        for (const documento of this.radicar.documentosAdjuntos) {
+            if (!documento) {
+                return false;
+            }
+        }
+
+        return true; // Si pasa ambas verificaciones, devuelve true
+    }
+
+    showWarn() {
+        this.messageService.add({
+            severity: 'warn',
+            summary: 'Documentación Incompleta',
+            detail: 'Cargue todos los documentos requeridos',
+        });
+    }
+
     navigateToNext() {
-        this.router.navigate(['/gestionsolicitudes/creacion/resumen']);
+        if (this.validarDocsCompletos()) {
+            this.router.navigate(['/gestionsolicitudes/creacion/resumen']);
+        } else {
+            this.showWarn();
+        }
     }
 
     navigateToBack() {

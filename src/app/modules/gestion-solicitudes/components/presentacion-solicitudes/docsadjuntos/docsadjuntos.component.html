@@ -1,3 +1,5 @@
+<p-toast></p-toast>
+
 <div class="card">
     <div class="col-12 mb-4">
         <p class="text-xl font-bold mb-0">
@@ -16,35 +18,73 @@
     >
         <p-panel header="{{ i + 1 }}.  {{ documento }}">
             <div class="grid">
-                <div class="col-10 lg:col-2">
-                    <p-fileUpload
-                        #fubauto
-                        mode="basic"
-                        name="file[]"
-                        [auto]="true"
-                        [customUpload]="true"
-                        (uploadHandler)="onUpload($event, fubauto, i)"
-                        accept=".pdf"
-                        chooseIcon="pi pi-upload"
-                        maxFileSize="5000000"
-                        chooseLabel="Cargar Archivo"
-                        [style]="{ width: '100%' }"
-                        invalidFileSizeMessageDetail="Maximo 5MB"
-                    >
-                    </p-fileUpload>
-                </div>
-                <div
-                    class="col-2 lg:col-1"
-                    *ngIf="radicar.documentosAdjuntos[i]"
+                <ng-container
+                    *ngIf="
+                        !['RE_CRED_PAS', 'RE_CRED_DIS', 'PR_CURS_TEO'].includes(
+                            radicar.tipoSolicitudEscogida.codigoSolicitud
+                        ) ||
+                        i !==
+                            radicar.requisitosSolicitudEscogida
+                                .documentosRequeridos.length -
+                                1
+                    "
                 >
-                    <button
-                        pButton
-                        icon="pi pi-times"
-                        (click)="eliminarDocumento(i)"
-                        type="button"
-                        class="p-button-danger"
-                    ></button>
-                </div>
+                    <div class="col-10 lg:col-2">
+                        <p-fileUpload
+                            #fubauto
+                            mode="basic"
+                            name="file[]"
+                            [auto]="true"
+                            [customUpload]="true"
+                            (uploadHandler)="onUpload($event, fubauto, i)"
+                            accept=".pdf"
+                            chooseIcon="pi pi-upload"
+                            maxFileSize="5000000"
+                            chooseLabel="Cargar Archivo"
+                            [style]="{ width: '100%' }"
+                            invalidFileSizeMessageDetail="Maximo 5MB"
+                        ></p-fileUpload>
+                    </div>
+
+                    <div
+                        class="col-2 lg:col-1"
+                        *ngIf="radicar.documentosAdjuntos[i]"
+                    >
+                        <button
+                            pButton
+                            icon="pi pi-times"
+                            (click)="eliminarDocumento(i)"
+                            type="button"
+                            class="p-button-danger"
+                        ></button>
+                    </div>
+                </ng-container>
+
+                <ng-container
+                    *ngIf="
+                        ['RE_CRED_PAS', 'RE_CRED_DIS', 'PR_CURS_TEO'].includes(
+                            radicar.tipoSolicitudEscogida.codigoSolicitud
+                        ) &&
+                        i ===
+                            radicar.requisitosSolicitudEscogida
+                                .documentosRequeridos.length -
+                                1
+                    "
+                >
+                    <div class="col-12">
+                        <div class="p-inputgroup">
+                            <span class="p-inputgroup-addon">www</span>
+                            <input
+                                id="enlaceMultimedia"
+                                type="text"
+                                pInputText
+                                placeholder="Enlace publico al repositorio donde se aloja el material"
+                                [(ngModel)]="radicar.enlaceMaterialAudiovisual"
+                            />
+                        </div>
+                    </div>
+                </ng-container>
+
                 <div
                     class="col-12 lg:col-9 text-lg pt-3"
                     *ngIf="radicar.documentosAdjuntos[i]"
