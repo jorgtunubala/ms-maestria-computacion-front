@@ -94,7 +94,9 @@ export class ResumenComponent implements OnInit {
                 error instanceof TypeError &&
                 error.message.includes('codigoSolicitud')
             ) {
-                this.router.navigate(['/gestionsolicitudes/creacion/selector']);
+                this.router.navigate([
+                    '/gestionsolicitudes/portafolio/radicar/selector',
+                ]);
             } else {
                 console.error('Error no esperado:', error);
             }
@@ -161,7 +163,7 @@ export class ResumenComponent implements OnInit {
                         accept: () => {
                             this.radicar.restrablecerValores();
                             this.router.navigate([
-                                '/gestionsolicitudes/creacion/selector',
+                                '/gestionsolicitudes/portafolio/opciones',
                             ]);
                         },
                     });
@@ -200,9 +202,13 @@ export class ResumenComponent implements OnInit {
                 this.radicar.tipoSolicitudEscogida.codigoSolicitud
             )
         ) {
-            this.router.navigate(['/gestionsolicitudes/creacion/datos']);
+            this.router.navigate([
+                '/gestionsolicitudes/portafolio/radicar/formulario',
+            ]);
         } else {
-            this.router.navigate(['/gestionsolicitudes/creacion/documentos']);
+            this.router.navigate([
+                '/gestionsolicitudes/portafolio/radicar/adjuntos',
+            ]);
         }
     }
 }

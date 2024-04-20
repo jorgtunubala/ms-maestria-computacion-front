@@ -1,0 +1,81 @@
+<div>
+    <div class="grid">
+        <div class="col-12 md:col-6 md:p-2">
+            <div class="col-12 card" style="height: 100%">
+                <div class="text-center text-2xl font-medium mt-3">
+                    Presentar una nueva solicitud
+                </div>
+                <div class="grid flex flex-column align-items-center">
+                    <div class="col-8">
+                        <img
+                            id="imgPresentarSolic"
+                            src="../../../../../assets/layout/images/radicarsolicitud.svg"
+                            alt="Presentar Solicitud"
+                            style="width: 100%; height: auto"
+                        />
+                    </div>
+                    <div class="col-12 flex justify-content-center">
+                        <p-button
+                            label="Presentar"
+                            icon="pi pi-arrow-right"
+                            iconPos="right"
+                            (click)="cargarPagina()"
+                        ></p-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 md:col-6 md:p-2">
+            <div class="col-12 card" style="height: 100%">
+                <div class="text-center text-2xl font-medium mt-3">
+                    Consultar el estado de una solicitud
+                </div>
+
+                <div class="grid grid flex flex-column align-items-center">
+                    <div class="col-8">
+                        <img
+                            id="imgSeguirSolic"
+                            src="../../../../../assets/layout/images/consultarsolicitud.svg"
+                            alt="Seguimiento Solicitud"
+                            style="width: 100%; height: auto"
+                        />
+                    </div>
+                    <div class="grid">
+                        <div class="col-12 mt-3">
+                            <span class="p-float-label">
+                                <input
+                                    class="w-full"
+                                    id="mailSolicit"
+                                    type="text"
+                                    pInputText
+                                />
+                                <label for="mailSolicit"
+                                    >Correo del solicitante</label
+                                >
+                            </span>
+                        </div>
+                        <div class="col-12 mt-3">
+                            <span class="p-float-label">
+                                <input
+                                    id="numRad"
+                                    type="text"
+                                    style="width: 100%"
+                                    pInputText
+                                />
+                                <label for="numRad">Número de radicado </label>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-12 flex justify-content-center">
+                        <p-button
+                            label="Consultar"
+                            icon="pi pi-search"
+                            iconPos="right"
+                            (click)="buscarSolicitud()"
+                        ></p-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

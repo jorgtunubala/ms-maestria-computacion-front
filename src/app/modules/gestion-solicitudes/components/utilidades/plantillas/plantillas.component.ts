@@ -8,6 +8,7 @@ import { Subscription } from 'rxjs';
     styleUrls: ['./plantillas.component.scss'],
 })
 export class PlantillasComponent implements OnInit {
+    nombreArchivosAdjuntos: string[] = [];
     rangoFechas: string = '';
     fechaActual: Date = new Date();
     nombresMes: string[] = [
@@ -35,6 +36,8 @@ export class PlantillasComponent implements OnInit {
         ) {
             this.convertirFechas();
         }
+
+        this.obtenerNombreArchivosAdjuntos();
     }
 
     obtenerPalabra(texto: string, posicion: number): string {
@@ -66,5 +69,55 @@ export class PlantillasComponent implements OnInit {
         const fechaEstanciaStr = `${fechaInicioStr} - ${fechaFinStr}`;
 
         this.rangoFechas = fechaEstanciaStr;
+    }
+
+    obtenerNombreArchivosAdjuntos(): void {
+        if (
+            this.radicar.datosAsignaturasExternas &&
+            this.radicar.datosAsignaturasExternas.length > 0
+        ) {
+            // Recorre cada elemento de datosAsignaturasExternas
+            this.radicar.datosAsignaturasExternas.forEach((asignatura) => {
+                // Verifica si hay información en 'contenidos'
+                if (asignatura.contenidos) {
+                    // Si hay información, extrae el nombre y guárdalo en el arreglo nombresArchivos
+                    this.nombreArchivosAdjuntos.push(
+                        asignatura.contenidos.name
+                    );
+                }
+                // Verifica si hay información en 'cartaAceptacion'
+                if (asignatura.cartaAceptacion) {
+                    // Si hay información, extrae el nombre y guárdalo en el arreglo nombresArchivos
+                    this.nombreArchivosAdjuntos.push(
+                        asignatura.cartaAceptacion.name
+                    );
+                }
+            });
+        }
+
+        if (
+            this.radicar.datosAsignaturasAHomologar &&
+            this.radicar.datosAsignaturasAHomologar.length > 0
+        ) {
+            // Recorre cada elemento de datosAsignaturasAHomologar
+            this.radicar.datosAsignaturasAHomologar.forEach((asignatura) => {
+                // Verifica si hay información en 'contenidos'
+                if (asignatura.contenidos) {
+                    // Si hay información, extrae el nombre y guárdalo en el arreglo nombresArchivos
+                    this.nombreArchivosAdjuntos.push(
+                        asignatura.contenidos.name
+                    );
+                }
+            });
+        }
+
+        if (
+            this.radicar.documentosAdjuntos &&
+            this.radicar.documentosAdjuntos.length > 0
+        ) {
+            this.radicar.documentosAdjuntos.forEach((doc) => {
+                this.nombreArchivosAdjuntos.push(doc.name);
+            });
+        }
     }
 }

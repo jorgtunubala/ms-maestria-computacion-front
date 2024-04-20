@@ -197,6 +197,61 @@
         documentación y soportes requeridos para su revisión.
     </ng-container>
 
+    <!--Solicitud de aval seminario de actualización-->
+    <ng-container
+        *ngIf="
+            ['AV_SEMI_ACT'].includes(
+                radicar.tipoSolicitudEscogida.codigoSolicitud
+            )
+        "
+    >
+        el aval para la realización de un curso corto (seminario de
+        actualización). Adjunto a esta solicitud, la documentación y soportes
+        requeridos para su revisión.
+    </ng-container>
+
+    <!--Solicitud reconocimiento de creditos seminario de actualización-->
+    <ng-container
+        *ngIf="
+            ['RE_CRED_SEM'].includes(
+                radicar.tipoSolicitudEscogida.codigoSolicitud
+            )
+        "
+    >
+        el reconocimiento y asignación de los créditos que corresponden a la
+        realización de un curso corto (seminario de actualización). Adjunto a
+        esta solicitud, la documentación y soportes requeridos para su revisión.
+    </ng-container>
+
+    <!--Solicitud reconocimiento de creditos por monitorias de cursos-->
+    <ng-container
+        *ngIf="
+            ['AS_CRED_MON'].includes(
+                radicar.tipoSolicitudEscogida.codigoSolicitud
+            )
+        "
+    >
+        el reconocimiento y asignación de los créditos que corresponden a la
+        realización de una monitoria de cursos. Adjunto a esta solicitud, la
+        documentación y soportes requeridos para su revisión.
+    </ng-container>
+    <!--Solicitud reconocimiento de creditos por monitorias de cursos-->
+    <ng-container
+        *ngIf="
+            ['AS_CRED_MAT'].includes(
+                radicar.tipoSolicitudEscogida.codigoSolicitud
+            )
+        "
+    >
+        el reconocimiento y asignación de los créditos que corresponden a la
+        elaboración de material de apoyo para pregrado/posgrado. Adjunto a esta
+        solicitud, la documentación y soportes requeridos para su revisión. Asi
+        como tambien el material de apoyo elaborado para el curso, que esta
+        disponible en el siguiente enlace:
+
+        <br /><br />Material: {{ radicar.enlaceMaterialAudiovisual }}
+    </ng-container>
+
     <!-- Tabla de asignaturas a cursar en otros programas -->
     <ng-container
         *ngIf="
@@ -369,7 +424,7 @@
     espera de su respuesta.
 </p>
 
-<p class="mt-5 mb-6">Universitariamente,</p>
+<p class="mt-5 mb-5">Universitariamente,</p>
 
 <div class="grid">
     <!-- Firma del remitente -->
@@ -475,3 +530,26 @@
         </div>
     </div>
 </ng-container>
+
+<ng-container
+    *ngIf="
+        !['AD_ASIG', 'CA_ASIG', 'AP_SEME'].includes(
+            radicar.tipoSolicitudEscogida.codigoSolicitud
+        )
+    "
+>
+    <div class="mt-5">
+        <p>Anexos:</p>
+        <div
+            class="text-sm"
+            *ngFor="let nombreArchivo of nombreArchivosAdjuntos"
+        >
+            - {{ nombreArchivo }}
+        </div>
+    </div>
+</ng-container>
+
+<p class="text-center text-sm">
+    ----------------------------------------------- Fin documento
+    -----------------------------------------------
+</p>

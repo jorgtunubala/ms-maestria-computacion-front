@@ -44,7 +44,7 @@ export const menuItems: MenuItem[] = [
     {
         label: 'SOLICITUDES',
         icon: 'pi pi-fw pi-inbox',
-        routerLink: '/gestionsolicitudes/creacion/selector',
+        routerLink: '/gestionsolicitudes/portafolio/opciones',
     },
     {
         label: 'PRESUPUESTO',

@@ -126,7 +126,9 @@ export class FormulariosComponent implements OnInit {
                 error.message.includes('codigoSolicitud')
             ) {
                 // Redirigir al usuario a una ruta específica
-                this.router.navigate(['/gestionsolicitudes/creacion/selector']);
+                this.router.navigate([
+                    '/gestionsolicitudes/portafolio/radicar/selector',
+                ]);
             } else {
                 // Manejar otros errores de manera apropiada
                 console.error('Error no esperado:', error);
@@ -350,10 +352,12 @@ export class FormulariosComponent implements OnInit {
                     this.radicar.tipoSolicitudEscogida.codigoSolicitud
                 )
             ) {
-                this.router.navigate(['/gestionsolicitudes/creacion/resumen']);
+                this.router.navigate([
+                    '/gestionsolicitudes/portafolio/radicar/resumen',
+                ]);
             } else {
                 this.router.navigate([
-                    '/gestionsolicitudes/creacion/documentos',
+                    '/gestionsolicitudes/portafolio/radicar/adjuntos',
                 ]);
             }
         } else {
@@ -366,6 +370,8 @@ export class FormulariosComponent implements OnInit {
         this.radicar.setDatosSolicitante(this.datosSolicitante);
         this.radicar.setMaterias(this.materiasSeleccionadas);
         */
-        this.router.navigate(['/gestionsolicitudes/creacion/selector']);
+        this.router.navigate([
+            '/gestionsolicitudes/portafolio/radicar/selector',
+        ]);
     }
 }

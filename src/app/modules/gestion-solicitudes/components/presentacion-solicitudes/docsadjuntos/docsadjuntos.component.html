@@ -3,7 +3,7 @@
 <div class="card">
     <div class="col-12 mb-4">
         <p class="text-xl font-bold mb-0">
-            <i class="pi pi-paperclip mr-2"></i>Documentos adjuntos
+            <i class="pi pi-paperclip mr-2"></i>Paso 3 - Documentos adjuntos
         </p>
         <p>Cargue la documentación adicional requerida</p>
     </div>
@@ -20,7 +20,12 @@
             <div class="grid">
                 <ng-container
                     *ngIf="
-                        !['RE_CRED_PAS', 'RE_CRED_DIS', 'PR_CURS_TEO'].includes(
+                        ![
+                            'RE_CRED_PAS',
+                            'RE_CRED_DIS',
+                            'PR_CURS_TEO',
+                            'AS_CRED_MAT'
+                        ].includes(
                             radicar.tipoSolicitudEscogida.codigoSolicitud
                         ) ||
                         i !==
@@ -62,7 +67,12 @@
 
                 <ng-container
                     *ngIf="
-                        ['RE_CRED_PAS', 'RE_CRED_DIS', 'PR_CURS_TEO'].includes(
+                        [
+                            'RE_CRED_PAS',
+                            'RE_CRED_DIS',
+                            'PR_CURS_TEO',
+                            'AS_CRED_MAT'
+                        ].includes(
                             radicar.tipoSolicitudEscogida.codigoSolicitud
                         ) &&
                         i ===

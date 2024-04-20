@@ -34,7 +34,9 @@ export class DocsAdjuntosComponent implements OnInit {
                 error.message.includes('documentosRequeridos')
             ) {
                 // Redirigir al usuario a una ruta específica
-                this.router.navigate(['/gestionsolicitudes/creacion/selector']);
+                this.router.navigate([
+                    '/gestionsolicitudes/portafolio/radicar/selector',
+                ]);
             } else {
                 // Manejar otros errores de manera apropiada
                 console.error('Error no esperado:', error);
@@ -56,9 +58,12 @@ export class DocsAdjuntosComponent implements OnInit {
 
     validarDocsCompletos(): boolean {
         if (
-            ['RE_CRED_PAS', 'RE_CRED_DIS', 'PR_CURS_TEO'].includes(
-                this.radicar.tipoSolicitudEscogida.codigoSolicitud
-            )
+            [
+                'RE_CRED_PAS',
+                'RE_CRED_DIS',
+                'PR_CURS_TEO',
+                'AS_CRED_MAT',
+            ].includes(this.radicar.tipoSolicitudEscogida.codigoSolicitud)
         ) {
             if (
                 this.radicar.documentosAdjuntos.length !==
@@ -103,13 +108,17 @@ export class DocsAdjuntosComponent implements OnInit {
 
     navigateToNext() {
         if (this.validarDocsCompletos()) {
-            this.router.navigate(['/gestionsolicitudes/creacion/resumen']);
+            this.router.navigate([
+                '/gestionsolicitudes/portafolio/radicar/resumen',
+            ]);
         } else {
             this.showWarn();
         }
     }
 
     navigateToBack() {
-        this.router.navigate(['/gestionsolicitudes/creacion/datos']);
+        this.router.navigate([
+            '/gestionsolicitudes/portafolio/radicar/formulario',
+        ]);
     }
 }
