@@ -3,13 +3,15 @@ import { RouterModule, Routes } from '@angular/router';
 import { GestionComponent } from './pages/gestion/gestion.component';
 import { BuzonComponent } from './components/gestion-coordinacion/buzon/buzon.component';
 import { SelectorComponent } from './components/presentacion-solicitudes/selector/selector.component';
-import { ContenedorPasosComponent } from './components/presentacion-solicitudes/contenedorpasos/contenedorpasos.component';
 import { DocsAdjuntosComponent } from './components/presentacion-solicitudes/docsadjuntos/docsadjuntos.component';
 import { ResumenComponent } from './components/presentacion-solicitudes/resumen/ResumenComponent';
 import { VisorComponent } from './components/gestion-coordinacion/visor/visor.component';
 import { BuzondeavalesComponent } from './components/aval-tutores-directores/buzondeavales/buzondeavales.component';
 import { PendientesavalComponent } from './components/aval-tutores-directores/pendientesaval/pendientesaval.component';
 import { FormulariosComponent } from './components/presentacion-solicitudes/formularios/formularios.component';
+import { HistorialComponent } from './components/seguimiento-solicitudes/historial/historial.component';
+import { PortafolioComponent } from './pages/portafolio/portafolio.component';
+import { OpcionesComponent } from './pages/opciones/opciones.component';
 
 const routes: Routes = [
     {
@@ -21,19 +23,27 @@ const routes: Routes = [
         ],
     },
     {
-        path: 'creacion',
-        component: ContenedorPasosComponent,
+        path: 'portafolio',
+        component: PortafolioComponent,
         children: [
-            { path: 'selector', component: SelectorComponent },
-            { path: 'datos', component: FormulariosComponent },
-            { path: 'documentos', component: DocsAdjuntosComponent },
-            { path: 'resumen', component: ResumenComponent },
+            { path: 'opciones', component: OpcionesComponent },
+            { path: 'seguimiento/historial', component: HistorialComponent },
+            { path: 'radicar/selector', component: SelectorComponent },
+            { path: 'radicar/formulario', component: FormulariosComponent },
+            { path: 'radicar/adjuntos', component: DocsAdjuntosComponent },
+            { path: 'radicar/resumen', component: ResumenComponent },
         ],
     },
+
     {
         path: 'avales',
         component: BuzondeavalesComponent,
         children: [{ path: 'pendientes', component: PendientesavalComponent }],
+    },
+    {
+        path: 'seguimiento',
+        component: HistorialComponent,
+        children: [{ path: 'historial', component: HistorialComponent }],
     },
 ];
 

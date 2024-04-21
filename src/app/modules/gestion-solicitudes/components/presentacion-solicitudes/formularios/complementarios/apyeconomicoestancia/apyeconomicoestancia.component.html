@@ -1,0 +1,130 @@
+<form [formGroup]="formApoyoEconEstancia">
+    <p-fieldset
+        legend="Información para apoyo económico"
+        styleClass="bg-bluegray-50"
+    >
+        <div class="grid p-fluid">
+            <div class="col-12 md:col-6">
+                <span class="p-float-label mt-3">
+                    <input
+                        formControlName="lugar"
+                        class="w-full"
+                        id="lugpasantia"
+                        type="text"
+                        pInputText
+                    />
+                    <label for="lugpasantia">Lugar de Estancia</label>
+                </span>
+            </div>
+
+            <div class="col-12 md:col-6">
+                <span class="p-float-label mt-3">
+                    <p-calendar
+                        formControlName="fechas"
+                        selectionMode="range"
+                        [readonlyInput]="true"
+                        inputId="fpasantia"
+                        dateFormat="dd/mm/yy"
+                        [style]="{ width: '100%' }"
+                    ></p-calendar>
+                    <label for="fpasantia"
+                        >Periodo de Estancia (fecha inicio - fecha fin)</label
+                    >
+                </span>
+            </div>
+
+            <div class="col-12">
+                <span class="p-float-label mt-3">
+                    <input
+                        formControlName="grupoInvestigacion"
+                        class="w-full"
+                        id="nomgrupivst"
+                        type="text"
+                        pInputText
+                    />
+                    <label for="nomgrupivst">Grupo de Investigación</label>
+                </span>
+            </div>
+
+            <div class="col-12 md:col-6 lg:col-3">
+                <span class="p-float-label mt-3">
+                    <p-inputNumber
+                        formControlName="valorApoyo"
+                        inputId="valorapoyo"
+                        [minFractionDigits]="2"
+                        prefix="COP "
+                        [style]="{ width: '100%' }"
+                    >
+                    </p-inputNumber>
+
+                    <label for="valorapoyo">Valor del Apoyo</label>
+                </span>
+            </div>
+
+            <div class="col-12 md:col-6 lg:col-3">
+                <span class="p-float-label mt-3">
+                    <input
+                        formControlName="nombreBanco"
+                        class="w-full"
+                        id="banco"
+                        type="text"
+                        pInputText
+                    />
+                    <label for="banco">Entidad Bancaria</label>
+                </span>
+            </div>
+
+            <div class="col-12 md:col-6 lg:col-3">
+                <span class="p-float-label mt-3">
+                    <p-dropdown
+                        formControlName="tipoCuenta"
+                        inputId="tipocuenta"
+                        [autoDisplayFirst]="false"
+                        [options]="tiposCuentaBancaria"
+                        [style]="{ width: '100%' }"
+                    ></p-dropdown>
+                    <label for="tipocuenta">Tipo de Cuenta</label>
+                </span>
+            </div>
+
+            <div class="col-12 md:col-6 lg:col-3">
+                <span class="p-float-label mt-3">
+                    <input
+                        formControlName="numeroCuenta"
+                        class="w-full"
+                        id="cuentabanco"
+                        type="text"
+                        pInputText
+                    />
+                    <label for="cuentabanco">Número de Cuenta</label>
+                </span>
+            </div>
+
+            <div class="col-12 md:col-4">
+                <span class="p-float-label mt-3">
+                    <input
+                        formControlName="cedulaEnBanco"
+                        class="w-full"
+                        id="cedubanco"
+                        type="text"
+                        pInputText
+                    />
+                    <label for="cedubanco">Número de Cédula Asociada</label>
+                </span>
+            </div>
+
+            <div class="col-12 md:col-8">
+                <span class="p-float-label mt-3">
+                    <input
+                        formControlName="direccionRecidencia"
+                        class="w-full"
+                        id="direccion"
+                        type="text"
+                        pInputText
+                    />
+                    <label for="direccion">Dirección de Residencia</label>
+                </span>
+            </div>
+        </div>
+    </p-fieldset>
+</form>

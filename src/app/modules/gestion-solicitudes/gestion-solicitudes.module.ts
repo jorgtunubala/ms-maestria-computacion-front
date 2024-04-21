@@ -8,7 +8,7 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { GestionComponent } from './pages/gestion/gestion.component';
 import { BuzonComponent } from './components/gestion-coordinacion/buzon/buzon.component';
 import { SelectorComponent } from './components/presentacion-solicitudes/selector/selector.component';
-import { ContenedorPasosComponent } from './components/presentacion-solicitudes/contenedorpasos/contenedorpasos.component';
+
 import { DocsAdjuntosComponent } from './components/presentacion-solicitudes/docsadjuntos/docsadjuntos.component';
 import { ResumenComponent } from './components/presentacion-solicitudes/resumen/ResumenComponent';
 import { VisorComponent } from './components/gestion-coordinacion/visor/visor.component';
@@ -26,6 +26,12 @@ import { InfopersonalComponent } from './components/presentacion-solicitudes/for
 import { ListatutoresComponent } from './components/presentacion-solicitudes/formularios/complementarios/listatutores/listatutores.component';
 import { MotivosolicitudComponent } from './components/presentacion-solicitudes/formularios/complementarios/motivosolicitud/motivosolicitud.component';
 import { SemestreaplazarComponent } from './components/presentacion-solicitudes/formularios/complementarios/semestreaplazar/semestreaplazar.component';
+import { PasantiainvestComponent } from './components/presentacion-solicitudes/formularios/complementarios/pasantiainvest/pasantiainvest.component';
+import { ApyeconomicoestanciaComponent } from './components/presentacion-solicitudes/formularios/complementarios/apyeconomicoestancia/apyeconomicoestancia.component';
+import { ListadirectoresComponent } from './components/presentacion-solicitudes/formularios/complementarios/listadirectores/listadirectores.component';
+import { HistorialComponent } from './components/seguimiento-solicitudes/historial/historial.component';
+import { PortafolioComponent } from './pages/portafolio/portafolio.component';
+import { OpcionesComponent } from './pages/opciones/opciones.component';
 
 @NgModule({
     declarations: [
@@ -33,7 +39,6 @@ import { SemestreaplazarComponent } from './components/presentacion-solicitudes/
         BuzonComponent,
         SelectorComponent,
         FormulariosComponent,
-        ContenedorPasosComponent,
         DocsAdjuntosComponent,
         ResumenComponent,
         VisorComponent,
@@ -50,6 +55,13 @@ import { SemestreaplazarComponent } from './components/presentacion-solicitudes/
         ListatutoresComponent,
         MotivosolicitudComponent,
         SemestreaplazarComponent,
+        PasantiainvestComponent,
+        ApyeconomicoestanciaComponent,
+        ListadirectoresComponent,
+        HistorialComponent,
+
+        PortafolioComponent,
+        OpcionesComponent,
     ],
     imports: [
         CommonModule,

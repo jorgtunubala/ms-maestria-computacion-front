@@ -23,6 +23,9 @@ import { AsignaturahomologarComponent } from './complementarios/asignaturahomolo
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SemestreaplazarComponent } from './complementarios/semestreaplazar/semestreaplazar.component';
 import { AsignaturaexternaComponent } from './complementarios/asignaturaexterna/asignaturaexterna.component';
+import { PasantiainvestComponent } from './complementarios/pasantiainvest/pasantiainvest.component';
+import { ListadirectoresComponent } from './complementarios/listadirectores/listadirectores.component';
+import { ApyeconomicoestanciaComponent } from './complementarios/apyeconomicoestancia/apyeconomicoestancia.component';
 
 @Component({
     selector: 'app-formularios',
@@ -47,10 +50,16 @@ export class FormulariosComponent implements OnInit {
     formAplzSemestre: SemestreaplazarComponent;
     @ViewChildren(AsignaturaexternaComponent)
     formsAsigExt: QueryList<AsignaturaexternaComponent>;
+    @ViewChild(PasantiainvestComponent)
+    formPasInvest: PasantiainvestComponent;
+    @ViewChild(ListadirectoresComponent)
+    formDirectores: ListadirectoresComponent;
+    @ViewChild(ApyeconomicoestanciaComponent)
+    formApyEconEst: ApyeconomicoestanciaComponent;
 
     identificadorSolicitante: string = 'ctorres@unicauca.edu.co';
     tiposIdentificacion: string[];
-    tiposCuentaBancaria: string[];
+
     ofertaAcademicaAdiciones: DatosAsignaturaAdicion[];
 
     formAsigHomologarCont: FormGroup;
@@ -117,7 +126,9 @@ export class FormulariosComponent implements OnInit {
                 error.message.includes('codigoSolicitud')
             ) {
                 // Redirigir al usuario a una ruta específica
-                this.router.navigate(['/gestionsolicitudes/creacion/selector']);
+                this.router.navigate([
+                    '/gestionsolicitudes/portafolio/radicar/selector',
+                ]);
             } else {
                 // Manejar otros errores de manera apropiada
                 console.error('Error no esperado:', error);
@@ -131,8 +142,6 @@ export class FormulariosComponent implements OnInit {
             'Pasaporte',
             'CC',
         ];
-
-        this.tiposCuentaBancaria = ['Ahorros', 'Corriente'];
     }
 
     ngOnInit(): void {
@@ -243,11 +252,21 @@ export class FormulariosComponent implements OnInit {
                     this.formListaTutores.obtenerEstadoFormulario();
 
                 break;
-            case 'RLZR_PAS_INVST':
-                estadoGeneral = true;
+            case 'AV_PASA_INV':
+                estadoGeneral =
+                    this.formPasInvest.obtenerEstadoFormulario() &&
+                    this.formPasInvest.validarFechas() &&
+                    this.formListaTutores.obtenerEstadoFormulario();
                 break;
-            case 'APY_ECON_ESTANC':
-                estadoGeneral = true;
+            case 'AP_ECON_INV':
+                estadoGeneral =
+                    this.formApyEconEst.obtenerEstadoFormulario() &&
+                    this.formApyEconEst.validarFechas() &&
+                    this.formListaTutores.obtenerEstadoFormulario() &&
+                    this.formDirectores.obtenerEstadoFormulario();
+                break;
+            default:
+                estadoGeneral = this.formListaTutores.obtenerEstadoFormulario();
                 break;
         }
 
@@ -333,10 +352,12 @@ export class FormulariosComponent implements OnInit {
                     this.radicar.tipoSolicitudEscogida.codigoSolicitud
                 )
             ) {
-                this.router.navigate(['/gestionsolicitudes/creacion/resumen']);
+                this.router.navigate([
+                    '/gestionsolicitudes/portafolio/radicar/resumen',
+                ]);
             } else {
                 this.router.navigate([
-                    '/gestionsolicitudes/creacion/documentos',
+                    '/gestionsolicitudes/portafolio/radicar/adjuntos',
                 ]);
             }
         } else {
@@ -349,6 +370,8 @@ export class FormulariosComponent implements OnInit {
         this.radicar.setDatosSolicitante(this.datosSolicitante);
         this.radicar.setMaterias(this.materiasSeleccionadas);
         */
-        this.router.navigate(['/gestionsolicitudes/creacion/selector']);
+        this.router.navigate([
+            '/gestionsolicitudes/portafolio/radicar/selector',
+        ]);
     }
 }

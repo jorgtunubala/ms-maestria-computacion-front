@@ -62,6 +62,8 @@ export class SelectorComponent implements OnInit {
         this.radicar.tipoSolicitudEscogida = this.tipoSolicitudEscogida;
         this.radicar.requisitosSolicitudEscogida =
             this.requisitosSolicitudEscogida;
-        this.router.navigate(['/gestionsolicitudes/creacion/datos']);
+        this.router.navigate([
+            '/gestionsolicitudes/portafolio/radicar/formulario',
+        ]);
     }
 }

@@ -37,7 +37,7 @@ export class RadicarService {
     documentosAdjuntos: File[] = [];
     motivoDeSolicitud: string = '';
     tutor: TutorYDirector;
-    director: any;
+    director: TutorYDirector;
     firmaSolicitante: File = null;
     firmaSolicitanteUrl: SafeUrl = '';
     firmaTutor: File = null;
@@ -49,10 +49,10 @@ export class RadicarService {
     lugarEstancia: string = '';
 
     grupoInvestigacion: string = '';
-    valorApoyoEcon: number = null;
+    valorApoyoEcon: number = 0;
     banco: string = '';
-    tipoCuenta: string = null;
-    numeroCuenta: number = null;
+    tipoCuenta: string = 'Seleccione una opción';
+    numeroCuenta: string = '';
     cedulaCuentaBanco: string = null;
     direccion: string = '';
 
@@ -98,6 +98,8 @@ export class RadicarService {
     estadoSolicitud: string = '';
     esperando: boolean = false;
 
+    enlaceMaterialAudiovisual = '';
+
     constructor(private sanitizer: DomSanitizer) {}
 
     restrablecerValores() {
@@ -132,10 +134,10 @@ export class RadicarService {
         this.fechasEstancia = [];
         this.lugarEstancia = '';
         this.grupoInvestigacion = '';
-        this.valorApoyoEcon = null;
+        this.valorApoyoEcon = 0;
         this.banco = '';
-        this.tipoCuenta = null;
-        this.numeroCuenta = null;
+        this.tipoCuenta = 'Seleccione una opción';
+        this.numeroCuenta = '';
         this.cedulaCuentaBanco = '';
         this.direccion = '';
         this.firmaSolicitante = null;
@@ -146,6 +148,7 @@ export class RadicarService {
         this.firmaDirectorUrl = '';
         this.esperando = false;
         this.fechaEnvio = null;
+        this.enlaceMaterialAudiovisual = '';
     }
 
     agregarInstancia() {

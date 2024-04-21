@@ -43,8 +43,7 @@ export class ResumenComponent implements OnInit {
 
     @HostListener('window:beforeunload', ['$event'])
     beforeUnloadHander(event: Event) {
-        // Mostrar un mensaje al usuario antes de que se actualice la página
-        event.returnValue = true; // Esto es necesario para que algunos navegadores muestren el mensaje personalizado
+        event.returnValue = true;
         return '¿Estás seguro de que quieres salir de la página?';
     }
 
@@ -95,7 +94,9 @@ export class ResumenComponent implements OnInit {
                 error instanceof TypeError &&
                 error.message.includes('codigoSolicitud')
             ) {
-                this.router.navigate(['/gestionsolicitudes/creacion/selector']);
+                this.router.navigate([
+                    '/gestionsolicitudes/portafolio/radicar/selector',
+                ]);
             } else {
                 console.error('Error no esperado:', error);
             }
@@ -130,40 +131,59 @@ export class ResumenComponent implements OnInit {
         }, 100);
     }
 
-    enviarSolicitud() {
-        this.deshabilitarEnvio = true;
-        this.guardadoEnProceso = true;
-        this.almacenar.almacenarSolicitudEnBD().then((resultado) => {
-            if (resultado) {
-                this.guardadoEnProceso = false;
-                this.confirmationService.confirm({
-                    message:
-                        'La solicitud se ha enviado al tutor/director seleccionado para su revisión y aval.',
-                    header: 'Solicitud enviada',
-                    icon: 'pi pi-exclamation-circle',
-                    acceptLabel: 'Aceptar',
-                    rejectVisible: false,
-                    accept: () => {
-                        this.radicar.restrablecerValores();
-                        this.router.navigate([
-                            '/gestionsolicitudes/creacion/selector',
-                        ]);
-                    },
-                });
-            } else {
-                this.guardadoEnProceso = false;
-                this.deshabilitarEnvio = false;
-                this.confirmationService.confirm({
-                    message:
-                        'Ha ocurrido un error inesperado al enviar la solicitud, revisela e intentelo nuevamente.',
-                    header: 'Error de envio',
-                    icon: 'pi pi-exclamation-triangle',
-                    acceptLabel: 'Aceptar',
-                    rejectVisible: false,
-                    accept: () => {},
-                });
-            }
+    showWarn() {
+        this.messageService.add({
+            severity: 'warn',
+            summary: 'Oficio no firmado',
+            detail: 'Firme el oficio de la solicitud',
         });
+    }
+
+    validarFirmaCargada() {
+        if (this.radicar.firmaSolicitanteUrl) {
+            return true;
+        }
+        return false;
+    }
+
+    enviarSolicitud() {
+        if (this.validarFirmaCargada()) {
+            this.deshabilitarEnvio = true;
+            this.guardadoEnProceso = true;
+            this.almacenar.almacenarSolicitudEnBD().then((resultado) => {
+                if (resultado) {
+                    this.guardadoEnProceso = false;
+                    this.confirmationService.confirm({
+                        message:
+                            'La solicitud se ha enviado al tutor/director seleccionado para su revisión y aval.',
+                        header: 'Solicitud enviada',
+                        icon: 'pi pi-exclamation-circle',
+                        acceptLabel: 'Aceptar',
+                        rejectVisible: false,
+                        accept: () => {
+                            this.radicar.restrablecerValores();
+                            this.router.navigate([
+                                '/gestionsolicitudes/portafolio/opciones',
+                            ]);
+                        },
+                    });
+                } else {
+                    this.guardadoEnProceso = false;
+                    this.deshabilitarEnvio = false;
+                    this.confirmationService.confirm({
+                        message:
+                            'Ha ocurrido un error inesperado al enviar la solicitud, revisela e intentelo nuevamente.',
+                        header: 'Error de envio',
+                        icon: 'pi pi-exclamation-triangle',
+                        acceptLabel: 'Aceptar',
+                        rejectVisible: false,
+                        accept: () => {},
+                    });
+                }
+            });
+        } else {
+            this.showWarn();
+        }
 
         //this.crearPDF();
     }
@@ -182,9 +202,13 @@ export class ResumenComponent implements OnInit {
                 this.radicar.tipoSolicitudEscogida.codigoSolicitud
             )
         ) {
-            this.router.navigate(['/gestionsolicitudes/creacion/datos']);
+            this.router.navigate([
+                '/gestionsolicitudes/portafolio/radicar/formulario',
+            ]);
         } else {
-            this.router.navigate(['/gestionsolicitudes/creacion/documentos']);
+            this.router.navigate([
+                '/gestionsolicitudes/portafolio/radicar/adjuntos',
+            ]);
         }
     }
 }
