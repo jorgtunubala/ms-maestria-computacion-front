@@ -32,6 +32,8 @@ import { ListadirectoresComponent } from './components/presentacion-solicitudes/
 import { HistorialComponent } from './components/seguimiento-solicitudes/historial/historial.component';
 import { PortafolioComponent } from './pages/portafolio/portafolio.component';
 import { OpcionesComponent } from './pages/opciones/opciones.component';
+import { ApyasistenciaeventoComponent } from './components/presentacion-solicitudes/formularios/complementarios/apyasistenciaevento/apyasistenciaevento.component';
+import { ApypublicacionComponent } from './components/presentacion-solicitudes/formularios/complementarios/apypublicacion/apypublicacion.component';
 
 @NgModule({
     declarations: [
@@ -62,6 +64,8 @@ import { OpcionesComponent } from './pages/opciones/opciones.component';
 
         PortafolioComponent,
         OpcionesComponent,
+        ApyasistenciaeventoComponent,
+        ApypublicacionComponent,
     ],
     imports: [
         CommonModule,

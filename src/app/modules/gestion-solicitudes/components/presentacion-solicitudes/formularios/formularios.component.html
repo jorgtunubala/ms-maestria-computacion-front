@@ -220,6 +220,30 @@
         <app-apyeconomicoestancia></app-apyeconomicoestancia>
     </div>
 
+    <!-- Formulario para apoyo economico asistencia a congresos -->
+    <div
+        class="mt-4"
+        *ngIf="
+            ['AP_ECON_ASI'].includes(
+                radicar.tipoSolicitudEscogida.codigoSolicitud
+            )
+        "
+    >
+        <app-apyasistenciaevento></app-apyasistenciaevento>
+    </div>
+
+    <!-- Formulario para apoyo economico pago publicacion inscripcion evento -->
+    <div
+        class="mt-4"
+        *ngIf="
+            ['PA_PUBL_EVE'].includes(
+                radicar.tipoSolicitudEscogida.codigoSolicitud
+            )
+        "
+    >
+        <app-apypublicacion></app-apypublicacion>
+    </div>
+
     <!-- Formulario para incluir el motivo de la solicitud -->
     <div
         class="mt-4"
@@ -239,7 +263,7 @@
     <div
         class="mt-4"
         *ngIf="
-            ['AP_ECON_INV'].includes(
+            ['AP_ECON_INV', 'AP_ECON_ASI', 'PA_PUBL_EVE'].includes(
                 radicar.tipoSolicitudEscogida.codigoSolicitud
             )
         "

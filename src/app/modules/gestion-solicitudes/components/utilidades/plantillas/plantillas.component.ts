@@ -30,9 +30,12 @@ export class PlantillasComponent implements OnInit {
 
     ngOnInit(): void {
         if (
-            ['AV_PASA_INV', 'AP_ECON_INV'].includes(
-                this.radicar.tipoSolicitudEscogida.codigoSolicitud
-            )
+            [
+                'AV_PASA_INV',
+                'AP_ECON_INV',
+                'AP_ECON_ASI',
+                'PA_PUBL_EVE',
+            ].includes(this.radicar.tipoSolicitudEscogida.codigoSolicitud)
         ) {
             this.convertirFechas();
         }
