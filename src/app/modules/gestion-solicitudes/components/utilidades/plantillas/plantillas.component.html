@@ -235,7 +235,8 @@
         realización de una monitoria de cursos. Adjunto a esta solicitud, la
         documentación y soportes requeridos para su revisión.
     </ng-container>
-    <!--Solicitud reconocimiento de creditos por monitorias de cursos-->
+
+    <!--Solicitud reconocimiento de creditos por elaboración de material de apoyo-->
     <ng-container
         *ngIf="
             ['AS_CRED_MAT'].includes(
@@ -250,6 +251,161 @@
         disponible en el siguiente enlace:
 
         <br /><br />Material: {{ radicar.enlaceMaterialAudiovisual }}
+    </ng-container>
+
+    <!--Solicitud reconocimiento de creditos por dirección de trabajo de grado-->
+    <ng-container
+        *ngIf="
+            ['TG_PREG_POS'].includes(
+                radicar.tipoSolicitudEscogida.codigoSolicitud
+            )
+        "
+    >
+        el reconocimiento y asignación de los créditos que corresponden a la
+        dirección de trabajo de grado en pregrado o posgrado. Adjunto a esta
+        solicitud, la documentación y soportes requeridos para su revisión.
+    </ng-container>
+
+    <!--Solicitud reconocimiento de creditos por ser jurado de trabajo de grado-->
+    <ng-container
+        *ngIf="
+            ['JU_PREG_POS'].includes(
+                radicar.tipoSolicitudEscogida.codigoSolicitud
+            )
+        "
+    >
+        el reconocimiento y asignación de los créditos que corresponden por ser
+        jurado de trabajo de grado de pregrado o posgrado. Adjunto a esta
+        solicitud, la documentación y soportes requeridos para su revisión.
+    </ng-container>
+
+    <!--Solicitud reconocimiento de creditos por evaluación de anteproyecto de pregrado o jurado de anteproyecto de posgrado-->
+    <ng-container
+        *ngIf="
+            ['EV_ANTE_PRE'].includes(
+                radicar.tipoSolicitudEscogida.codigoSolicitud
+            )
+        "
+    >
+        el reconocimiento y asignación de los créditos que corresponden por
+        evaluación de anteproyecto de pregrado o jurado de anteproyecto de
+        posgrado. Adjunto a esta solicitud, la documentación y soportes
+        requeridos para su revisión.
+    </ng-container>
+
+    <!--Solicitud reconocimiento de creditos por evaluación de productividad intelectual-->
+    <ng-container
+        *ngIf="
+            ['EV_PROD_INT'].includes(
+                radicar.tipoSolicitudEscogida.codigoSolicitud
+            )
+        "
+    >
+        el reconocimiento y asignación de los créditos que corresponden a la
+        evaluación de productividad intelectual. Adjunto a esta solicitud, la
+        documentación y soportes requeridos para su revisión.
+    </ng-container>
+
+    <!--Solicitud reconocimiento de creditos por evaluación informe sabático-->
+    <ng-container
+        *ngIf="
+            ['EV_INFO_SAB'].includes(
+                radicar.tipoSolicitudEscogida.codigoSolicitud
+            )
+        "
+    >
+        el reconocimiento y asignación de los créditos que corresponden por la
+        evaluación de informe sabático. Adjunto a esta solicitud, la
+        documentación y soportes requeridos para su revisión.
+    </ng-container>
+
+    <!--Solicitud reconocimiento de creditos por participación en el comité de programa-->
+    <ng-container
+        *ngIf="
+            ['PA_COMI_PRO'].includes(
+                radicar.tipoSolicitudEscogida.codigoSolicitud
+            )
+        "
+    >
+        el reconocimiento y asignación de los créditos que corresponden por la
+        participación en el comité de programa. Adjunto a esta solicitud, la
+        documentación y soportes requeridos para su revisión.
+    </ng-container>
+
+    <!--Solicitud reconocimiento de creditos por realización de otras actividades de apoyo al departamento-->
+    <ng-container
+        *ngIf="
+            ['OT_ACTI_APO'].includes(
+                radicar.tipoSolicitudEscogida.codigoSolicitud
+            )
+        "
+    >
+        el reconocimiento y asignación de los créditos que corresponden por la
+        por realización de actividades de apoyo al departamento. Adjunto a esta
+        solicitud, la documentación y soportes requeridos para su revisión.
+    </ng-container>
+
+    <!--Solicitud reconocimiento de creditos por publicaciones-->
+    <ng-container
+        *ngIf="
+            ['RE_CRED_PUB'].includes(
+                radicar.tipoSolicitudEscogida.codigoSolicitud
+            )
+        "
+    >
+        el reconocimiento y asignación de los créditos que corresponden por la
+        publicacion en eventos o revistas. Adjunto a esta solicitud, la
+        documentación y soportes requeridos para su revisión.
+    </ng-container>
+
+    <!--Solicitud apoyo economico para asistencia a congresos, presentando artículos-->
+    <ng-container
+        *ngIf="
+            ['AP_ECON_ASI'].includes(
+                radicar.tipoSolicitudEscogida.codigoSolicitud
+            )
+        "
+    >
+        un apoyo economico para la asistencia al evento: "{{
+            radicar.nombreCongreso
+        }}" que se llevara a cabo en las fechas {{ rangoFechas }} y donde se
+        hara la publicación del trabajo titulado "{{
+            radicar.tituloPublicacion
+        }}". Anexo a esta solicitud la documentacion e informacion requerida
+        para su estudio. <br /><br />Valor apoyo economico: COP ${{
+            radicar.valorApoyoEcon | number : "."
+        }}
+        <br />Entidad Bancaria: {{ radicar.banco }} <br />Tipo de Cuenta:
+        {{ radicar.tipoCuenta }} <br />Numero de Cuenta:
+        {{ radicar.numeroCuenta }} <br />Titular:
+        {{ radicar.datosSolicitante.nombres }}
+        {{ radicar.datosSolicitante.apellidos }} <br />Celdula:
+        {{ radicar.cedulaCuentaBanco }} <br />Dirección: {{ radicar.direccion }}
+    </ng-container>
+
+    <!--Solicitud apoyo economico para pago de publicación o inscripción a eventos-->
+    <ng-container
+        *ngIf="
+            ['PA_PUBL_EVE'].includes(
+                radicar.tipoSolicitudEscogida.codigoSolicitud
+            )
+        "
+    >
+        un apoyo economico para la inscripcion al evento: "{{
+            radicar.nombreCongreso
+        }}" que se llevara a cabo en las fechas {{ rangoFechas }} y donde se
+        hara la publicación del trabajo titulado "{{
+            radicar.tituloPublicacion
+        }}". Anexo a esta solicitud la documentacion e informacion requerida
+        para su estudio. <br /><br />Valor apoyo economico: COP ${{
+            radicar.valorApoyoEcon | number : "."
+        }}
+        <br />Entidad Bancaria: {{ radicar.banco }} <br />Tipo de Cuenta:
+        {{ radicar.tipoCuenta }} <br />Numero de Cuenta:
+        {{ radicar.numeroCuenta }} <br />Titular:
+        {{ radicar.datosSolicitante.nombres }}
+        {{ radicar.datosSolicitante.apellidos }} <br />Celdula:
+        {{ radicar.cedulaCuentaBanco }} <br />Dirección: {{ radicar.direccion }}
     </ng-container>
 
     <!-- Tabla de asignaturas a cursar en otros programas -->
@@ -484,7 +640,9 @@
 
 <ng-container
     *ngIf="
-        ['AP_ECON_INV'].includes(radicar.tipoSolicitudEscogida.codigoSolicitud)
+        ['AP_ECON_INV', 'AP_ECON_ASI', 'PA_PUBL_EVE'].includes(
+            radicar.tipoSolicitudEscogida.codigoSolicitud
+        )
     "
 >
     <div class="grid">

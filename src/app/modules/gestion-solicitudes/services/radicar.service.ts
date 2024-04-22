@@ -48,6 +48,10 @@ export class RadicarService {
     fechasEstancia: Date[] = [];
     lugarEstancia: string = '';
 
+    nombreCongreso: string = '';
+    tipoCongreso: string = 'Seleccione una opción';
+    tituloPublicacion: string = '';
+
     grupoInvestigacion: string = '';
     valorApoyoEcon: number = 0;
     banco: string = '';
@@ -140,6 +144,9 @@ export class RadicarService {
         this.numeroCuenta = '';
         this.cedulaCuentaBanco = '';
         this.direccion = '';
+        this.nombreCongreso = '';
+        this.tipoCongreso = 'Seleccione una opción';
+        this.tituloPublicacion = '';
         this.firmaSolicitante = null;
         this.firmaSolicitanteUrl = '';
         this.firmaTutor = null;

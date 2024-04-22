@@ -16,7 +16,6 @@ import { HostListener } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
 import { AsignaturadicioncancelComponent } from './complementarios/asignaturadicioncancel/asignaturadicioncancel.component';
-import { InfopersonalComponent } from './complementarios/infopersonal/infopersonal.component';
 import { ListatutoresComponent } from './complementarios/listatutores/listatutores.component';
 import { MotivosolicitudComponent } from './complementarios/motivosolicitud/motivosolicitud.component';
 import { AsignaturahomologarComponent } from './complementarios/asignaturahomologar/asignaturahomologar.component';
@@ -26,6 +25,8 @@ import { AsignaturaexternaComponent } from './complementarios/asignaturaexterna/
 import { PasantiainvestComponent } from './complementarios/pasantiainvest/pasantiainvest.component';
 import { ListadirectoresComponent } from './complementarios/listadirectores/listadirectores.component';
 import { ApyeconomicoestanciaComponent } from './complementarios/apyeconomicoestancia/apyeconomicoestancia.component';
+import { ApyasistenciaeventoComponent } from './complementarios/apyasistenciaevento/apyasistenciaevento.component';
+import { ApypublicacionComponent } from './complementarios/apypublicacion/apypublicacion.component';
 
 @Component({
     selector: 'app-formularios',
@@ -36,8 +37,7 @@ import { ApyeconomicoestanciaComponent } from './complementarios/apyeconomicoest
 export class FormulariosComponent implements OnInit {
     @HostListener('window:beforeunload', ['$event'])
     beforeUnloadHander(event: Event) {
-        // Mostrar un mensaje al usuario antes de que se actualice la página
-        event.returnValue = true; // Esto es necesario para que algunos navegadores muestren el mensaje personalizado
+        event.returnValue = true;
         return '¿Estás seguro de que quieres salir de la página?';
     }
     @ViewChildren(AsignaturadicioncancelComponent)
@@ -56,6 +56,10 @@ export class FormulariosComponent implements OnInit {
     formDirectores: ListadirectoresComponent;
     @ViewChild(ApyeconomicoestanciaComponent)
     formApyEconEst: ApyeconomicoestanciaComponent;
+    @ViewChild(ApyasistenciaeventoComponent)
+    formApyAsistEvnt: ApyasistenciaeventoComponent;
+    @ViewChild(ApypublicacionComponent)
+    formApyPagoPublic: ApypublicacionComponent;
 
     identificadorSolicitante: string = 'ctorres@unicauca.edu.co';
     tiposIdentificacion: string[];
@@ -262,6 +266,20 @@ export class FormulariosComponent implements OnInit {
                 estadoGeneral =
                     this.formApyEconEst.obtenerEstadoFormulario() &&
                     this.formApyEconEst.validarFechas() &&
+                    this.formListaTutores.obtenerEstadoFormulario() &&
+                    this.formDirectores.obtenerEstadoFormulario();
+                break;
+            case 'AP_ECON_ASI':
+                estadoGeneral =
+                    this.formApyAsistEvnt.obtenerEstadoFormulario() &&
+                    this.formApyAsistEvnt.validarFechas() &&
+                    this.formListaTutores.obtenerEstadoFormulario() &&
+                    this.formDirectores.obtenerEstadoFormulario();
+                break;
+            case 'PA_PUBL_EVE':
+                estadoGeneral =
+                    this.formApyPagoPublic.obtenerEstadoFormulario() &&
+                    this.formApyPagoPublic.validarFechas() &&
                     this.formListaTutores.obtenerEstadoFormulario() &&
                     this.formDirectores.obtenerEstadoFormulario();
                 break;
