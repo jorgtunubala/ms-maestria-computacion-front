@@ -78,6 +78,24 @@
                         class="p-button-rounded p-button-secondary mr-2 mb-2 text-sm"
                     ></button>
                 </ng-container>
+
+                <ng-container
+                    *ngIf="
+                        ['RE_CRED_PAS', 'RE_CRED_DIS'].includes(
+                            radicar.tipoSolicitudEscogida.codigoSolicitud
+                        )
+                    "
+                >
+                    <button
+                        pButton
+                        pRipple
+                        type="button"
+                        icon="pi pi-external-link"
+                        label="Enlace a material complementario"
+                        (click)="abrirEnlace()"
+                        class="p-button-rounded p-button-secondary mr-2 mb-2 text-sm"
+                    ></button>
+                </ng-container>
             </div>
         </div>
     </p-tabPanel>
