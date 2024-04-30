@@ -112,7 +112,8 @@
     >
         el aval para la realización de una estancia de investigacion en
         {{ radicar.lugarEstancia }} en el periodo comprendido entre las fechas:
-        {{ rangoFechas }}.
+        {{ rangoFechas }}. Adjunto a esta solicitud la documentación y formatos
+        requeridos para su revisión.
     </ng-container>
 
     <!--Solicitud apoyo economico para estancia de investigacion-->
@@ -151,6 +152,10 @@
         el reconocimiento y asignación de los créditos que corresponden a la
         culminación satisfactoria de mi estancia de investigación. Adjunto a
         esta solicitud, la documentación y soportes requeridos para su revisión.
+        asi como el enlace al repositorio donde se aloja el video de
+        socialización de la pasantía realizada.
+
+        <br /><br />Enlace video: {{ radicar.enlaceMaterialAudiovisual }}
     </ng-container>
 
     <!--Solicitud de reconocimiento creditos diseño curricular-->
@@ -670,10 +675,10 @@
                     Director(a) Grupo de Investigación
                 </ng-container>
 
-                <ng-container *ngIf="radicar.firmaTutor">
+                <ng-container *ngIf="radicar.firmaDirector">
                     VoBo.
                     <ng-container class="line-through">
-                        {{ radicar.tutor.nombreTutor }}
+                        {{ radicar.director.nombreTutor }}
                         <br />
                         Director(a) Grupo de Investigación</ng-container
                     >

@@ -5,6 +5,9 @@ import {
     DatosComunSolicitud,
     DatosSolicitudCursarAsignatura,
     DatosAsignaturaProgramasExt,
+    DatosSolicitudAvalPasantia,
+    DatosApoyoPasantia,
+    DatosReconoCreditos,
 } from '../indiceModelos';
 
 export class DatosSolicitudRequest {
@@ -14,7 +17,10 @@ export class DatosSolicitudRequest {
             obj['datosSolicitudHomologacion'],
             obj['datosSolicitudAplazarSemestre'],
             obj['datosSolicitudCursarAsignaturas'],
-            obj['dadicionCancelacionAsignatura']
+            obj['dadicionCancelacionAsignatura'],
+            obj['datoAvalPasantiaInv'],
+            obj['datosApoyoEconomico'],
+            obj['datosRecCreditosPasantia']
         );
     }
 
@@ -23,6 +29,9 @@ export class DatosSolicitudRequest {
         public datosSolicitudHomologacion: DatosSolHomologPostRequest,
         public datosSolicitudAplazarSemestre: DatosSolicitudAplazamiento,
         public datosSolicitudCursarAsignaturas: DatosAsignaturaProgramasExt,
-        public dadicionCancelacionAsignatura: InfoAsingSimple
+        public dadicionCancelacionAsignatura: InfoAsingSimple,
+        public datoAvalPasantiaInv: DatosSolicitudAvalPasantia,
+        public datosApoyoEconomico: DatosApoyoPasantia,
+        public datosReconocimientoCreditos: DatosReconoCreditos
     ) {}
 }

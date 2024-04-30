@@ -203,6 +203,16 @@ export class VisoravalComponent implements OnInit {
         }
     }
 
+    abrirEnlace(): void {
+        const enlace = this.radicar.enlaceMaterialAudiovisual;
+        if (enlace) {
+            const enlaceCompleto = enlace.startsWith('http')
+                ? enlace
+                : 'http://' + enlace;
+            window.open(enlaceCompleto, '_blank');
+        }
+    }
+
     async convertirABase64(archivo: File | null): Promise<string | null> {
         return new Promise((resolve, reject) => {
             if (!archivo) {

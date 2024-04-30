@@ -4,6 +4,9 @@ import {
     DatosSolicitudAplazamiento,
     DatosSolHomologPostSave,
     DatosSolicitudCursarAsignatura,
+    DatosSolicitudAvalPasantia,
+    DatosApoyoPasantia,
+    DatosReconoCreditos,
 } from '../indiceModelos';
 
 export class SolicitudSave {
@@ -17,6 +20,9 @@ export class SolicitudSave {
             obj['datosCancelarAsignatura'],
             obj['datosAplazarSemestre'],
             obj['datosCursarAsignatura'],
+            obj['datoAvalPasantiaInv'],
+            obj['datosApoyoEconomico'],
+            obj['datosRecCreditosPasantia'],
             obj['requiereFirmaDirector'],
             obj['firmaEstudiante']
         );
@@ -31,6 +37,9 @@ export class SolicitudSave {
         public datosCancelarAsignatura: DatosSolicitudCancelacionAsignatura,
         public datosAplazarSemestre: DatosSolicitudAplazamiento,
         public datosCursarAsignatura: DatosSolicitudCursarAsignatura,
+        public datosAvalPasantiaInv: DatosSolicitudAvalPasantia,
+        public datosApoyoEconomico: DatosApoyoPasantia,
+        public datosReconocimientoCreditos: DatosReconoCreditos,
         public requiereFirmaDirector: boolean,
         public firmaEstudiante: string
     ) {}

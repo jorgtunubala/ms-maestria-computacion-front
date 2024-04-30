@@ -221,19 +221,6 @@ export class RadicarService {
 
         switch (this.tipoSolicitudEscogida.codigoSolicitud) {
             case 'AD_ASIG':
-                this.datosAsignAdiCancel =
-                    infoSolicitud.dadicionCancelacionAsignatura.listaAsignaturas.map(
-                        (asignatura) => ({
-                            nombreAsignatura: asignatura.nombreAsignatura,
-                            docente: {
-                                id: null,
-                                codigoTutor: null,
-                                nombreTutor: asignatura.docenteAsignatura,
-                            },
-                        })
-                    );
-
-                break;
             case 'CA_ASIG':
                 this.datosAsignAdiCancel =
                     infoSolicitud.dadicionCancelacionAsignatura.listaAsignaturas.map(
@@ -247,45 +234,13 @@ export class RadicarService {
                         })
                     );
 
-                this.motivoDeSolicitud =
-                    infoSolicitud.dadicionCancelacionAsignatura.motivo;
+                if (this.tipoSolicitudEscogida.codigoSolicitud === 'CA_ASIG') {
+                    this.motivoDeSolicitud =
+                        infoSolicitud.dadicionCancelacionAsignatura.motivo;
+                }
 
                 break;
             case 'HO_ASIG_POS':
-                //Datos institucion externa
-                this.datosInstitucionHomologar = {
-                    institucion:
-                        infoSolicitud.datosSolicitudHomologacion
-                            .institutoProcedencia,
-                    programa:
-                        infoSolicitud.datosSolicitudHomologacion
-                            .programaProcedencia,
-                };
-
-                //Datos asignaturas a homologar
-                infoSolicitud.datosSolicitudHomologacion.datosAsignatura.forEach(
-                    (asignatura: any) => {
-                        let asignaturaAHomologar = {
-                            asignatura: asignatura.nombreAsignatura,
-                            creditos: asignatura.creditos,
-                            intensidad: asignatura.intensidadHoraria,
-                            calificacion: asignatura.calificacion,
-                            contenidos: asignatura.contenidoProgramatico,
-                        };
-
-                        this.datosAsignaturasAHomologar.push(
-                            asignaturaAHomologar
-                        );
-                    }
-                );
-
-                //Docs Adjuntos
-                await this.asignarDocumentosAdjuntos(
-                    infoSolicitud.datosSolicitudHomologacion.documentosAdjuntos
-                );
-
-                break;
-
             case 'HO_ASIG_ESP':
                 //Datos institucion externa
                 this.datosInstitucionHomologar = {
@@ -334,43 +289,111 @@ export class RadicarService {
                 this.motivoDeSolicitud =
                     infoSolicitud.datosSolicitudCursarAsignaturas.motivo;
 
-                for (
-                    let index = 0;
-                    index <
-                    infoSolicitud.datosSolicitudCursarAsignaturas
-                        .datosAsignaturaOtroProgramas.length;
-                    index++
-                ) {
-                    const asignatura = {
-                        nombre: infoSolicitud.datosSolicitudCursarAsignaturas
-                            .datosAsignaturaOtroProgramas[index].nombre,
-                        programa:
-                            infoSolicitud.datosSolicitudCursarAsignaturas
-                                .datosAsignaturaOtroProgramas[index]
-                                .nombrePrograma,
-                        institucion: 'FALTA',
-                        creditos:
-                            infoSolicitud.datosSolicitudCursarAsignaturas
-                                .datosAsignaturaOtroProgramas[index].creditos,
-                        intensidad:
-                            infoSolicitud.datosSolicitudCursarAsignaturas
-                                .datosAsignaturaOtroProgramas[index]
-                                .intensidadHoraria,
-                        codigo: infoSolicitud.datosSolicitudCursarAsignaturas
-                            .datosAsignaturaOtroProgramas[index].codigo,
-                        grupo: infoSolicitud.datosSolicitudCursarAsignaturas
-                            .datosAsignaturaOtroProgramas[index].grupo,
-                        docente:
-                            infoSolicitud.datosSolicitudCursarAsignaturas
-                                .datosAsignaturaOtroProgramas[index]
-                                .nombreDocente,
-                        tituloDocente: 'FALTA',
-                        contenidos: null,
-                        cartaAceptacion: null,
-                    };
+                this.datosAsignaturasExternas =
+                    infoSolicitud.datosSolicitudCursarAsignaturas.datosAsignaturaOtroProgramas.map(
+                        (asignatura) => ({
+                            nombre: asignatura.nombre,
+                            programa: asignatura.nombrePrograma,
+                            institucion: 'FALTA',
+                            creditos: asignatura.creditos,
+                            intensidad: asignatura.intensidadHoraria,
+                            codigo: asignatura.codigo,
+                            grupo: asignatura.grupo,
+                            docente: asignatura.nombreDocente,
+                            tituloDocente: 'FALTA',
+                            contenidos: null,
+                            cartaAceptacion: null,
+                        })
+                    );
 
-                    this.datosAsignaturasExternas.push(asignatura);
-                }
+                break;
+
+            case 'AV_PASA_INV':
+                this.lugarEstancia =
+                    infoSolicitud.datoAvalPasantiaInv.lugarPasantia;
+                this.fechasEstancia[0] = this.parseFecha(
+                    infoSolicitud.datoAvalPasantiaInv.fechaInicio
+                );
+                this.fechasEstancia[1] = this.parseFecha(
+                    infoSolicitud.datoAvalPasantiaInv.fechaFin
+                );
+                await this.asignarDocumentosAdjuntos(
+                    infoSolicitud.datoAvalPasantiaInv.documentosAdjuntos
+                );
+
+                break;
+
+            case 'AP_ECON_INV':
+                this.lugarEstancia =
+                    infoSolicitud.datosApoyoEconomico.lugarPasantia;
+                this.fechasEstancia[0] = this.parseFecha(
+                    infoSolicitud.datosApoyoEconomico.fechaInicio
+                );
+                this.fechasEstancia[1] = this.parseFecha(
+                    infoSolicitud.datosApoyoEconomico.fechaFin
+                );
+                this.director = {
+                    id: infoSolicitud.datosApoyoEconomico.idDirectorGrupo,
+                    codigoTutor: 'COD DIR PROVISIONAL',
+                    nombreTutor:
+                        infoSolicitud.datosApoyoEconomico.nombreDirectorGrupo,
+                };
+
+                this.grupoInvestigacion =
+                    infoSolicitud.datosApoyoEconomico.grupoInvestigacion;
+                this.valorApoyoEcon =
+                    infoSolicitud.datosApoyoEconomico.valorApoyo;
+                this.banco = infoSolicitud.datosApoyoEconomico.entidadBancaria;
+                this.tipoCuenta = infoSolicitud.datosApoyoEconomico.tipoCuenta;
+                this.numeroCuenta =
+                    infoSolicitud.datosApoyoEconomico.numeroCuenta;
+                this.cedulaCuentaBanco =
+                    infoSolicitud.datosApoyoEconomico.numeroCedulaAsociada;
+                this.direccion =
+                    infoSolicitud.datosApoyoEconomico.direccionResidencia;
+
+                await this.asignarDocumentosAdjuntos(
+                    infoSolicitud.datosApoyoEconomico.documentosAdjuntos
+                );
+
+                break;
+
+            case 'RE_CRED_PAS':
+            case 'RE_CRED_DIS':
+            case 'PR_CURS_TEO':
+            case 'AS_CRED_MAT':
+                this.documentosAdjuntos = await Promise.all(
+                    infoSolicitud.datosReconocimientoCreditos.documentosAdjuntos
+                        .slice(0, -1)
+                        .map(
+                            async (documento: any) =>
+                                await this.convertirBase64AFile(documento)
+                        )
+                );
+
+                this.enlaceMaterialAudiovisual =
+                    infoSolicitud.datosReconocimientoCreditos.documentosAdjuntos[
+                        infoSolicitud.datosReconocimientoCreditos
+                            .documentosAdjuntos.length - 1
+                    ];
+
+                break;
+
+            case 'AS_CRED_DO':
+            case 'RE_CRED_SEM':
+            case 'AS_CRED_MON':
+            case 'TG_PREG_POS':
+            case 'JU_PREG_POS':
+            case 'EV_ANTE_PRE':
+            case 'EV_PROD_INT':
+            case 'EV_INFO_SAB':
+            case 'PA_COMI_PRO':
+            case 'OT_ACTI_APO':
+            case 'RE_CRED_PUB':
+                this.asignarDocumentosAdjuntos(
+                    infoSolicitud.datosReconocimientoCreditos.documentosAdjuntos
+                );
+
                 break;
 
             default:
@@ -417,5 +440,10 @@ export class RadicarService {
                 }
             })
         );
+    }
+
+    parseFecha(fechaString) {
+        const [day, month, year] = fechaString.split('/').map(Number);
+        return new Date(year, month - 1, day);
     }
 }

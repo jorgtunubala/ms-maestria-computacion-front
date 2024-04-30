@@ -25,3 +25,6 @@ export { DatosCursarAsignaturaDto } from './solicitudes/solicitud-cur-asign-exte
 export { AsignaturaExterna } from './solicitudes/solicitud-cur-asign-extern/asignaturaExterna';
 export { DatosAsignaturaProgramasExt } from './solicitudes/solicitud-cur-asign-extern/DatosAsignaturaProgramasExt';
 export { AsignaturaExternaResp } from './solicitudes/solicitud-cur-asign-extern/asignaturaExternaResp';
+export { DatosSolicitudAvalPasantia } from './solicitudes/solicitud-aval-pasantia/datosSolicitudAvalPasantia';
+export { DatosApoyoPasantia } from './solicitudes/solicitud-apoyo-pasantia/datosApoyoPasantia';
+export { DatosReconoCreditos } from './solicitudes/solicitud-rec-creditos/datosReconoCreditos';
