@@ -2,7 +2,9 @@ import { Injectable } from '@angular/core';
 import {
     AsignaturaExterna,
     AsignaturaHomologPost,
+    DatosApoyoCongreso,
     DatosApoyoPasantia,
+    DatosApoyoPublicacion,
     DatosCursarAsignaturaDto,
     DatosReconoCreditos,
     DatosSolHomologPostSave,
@@ -111,6 +113,28 @@ export class AlmacenarSolicitudService {
                         });
                     break;
 
+                case 'AP_ECON_ASI':
+                    this.http
+                        .guardarSolicitud(
+                            await this.reunirDatosSolApoyoCongreso()
+                        )
+                        .subscribe((respuesta) => {
+                            resultado = respuesta;
+                            resolve(resultado);
+                        });
+                    break;
+
+                case 'PA_PUBL_EVE':
+                    this.http
+                        .guardarSolicitud(
+                            await this.reunirDatosSolApoyoPublicacion()
+                        )
+                        .subscribe((respuesta) => {
+                            resultado = respuesta;
+                            resolve(resultado);
+                        });
+                    break;
+
                 case 'RE_CRED_PAS':
                 case 'RE_CRED_DIS':
                 case 'PR_CURS_TEO':
@@ -139,6 +163,17 @@ export class AlmacenarSolicitudService {
                     this.http
                         .guardarSolicitud(
                             await this.reunirDatosSolRecCreditosSinLink()
+                        )
+                        .subscribe((respuesta) => {
+                            resultado = respuesta;
+                            resolve(resultado);
+                        });
+                    break;
+
+                case 'AV_SEMI_ACT':
+                    this.http
+                        .guardarSolicitud(
+                            await this.reunirDatosSolAvalSeminario()
                         )
                         .subscribe((respuesta) => {
                             resultado = respuesta;
@@ -271,6 +306,62 @@ export class AlmacenarSolicitudService {
         return this.construirObjAGuardar('AP_ECON_INV', datos);
     }
 
+    async reunirDatosSolApoyoCongreso() {
+        const docsAdjuntos = await this.convertirDocumentosAdjuntos();
+
+        const datos: DatosApoyoCongreso = {
+            nombreCongreso: this.radicar.nombreCongreso,
+            tipoCongreso: this.radicar.tipoCongreso,
+            fechaInicio: this.formatearDate(this.radicar.fechasEstancia[0]),
+            fechaFin: this.formatearDate(this.radicar.fechasEstancia[1]),
+            idDirectorGrupo: this.radicar.director.id,
+            nombreDirectorGrupo: null,
+            tituloPublicacion: this.radicar.tituloPublicacion,
+            valorApoyo: this.radicar.valorApoyoEcon,
+            entidadBancaria: this.radicar.banco,
+            tipoCuenta: this.radicar.tipoCuenta,
+            numeroCuenta: this.radicar.numeroCuenta,
+            numeroCedulaAsociada: this.radicar.cedulaCuentaBanco,
+            direccionResidencia: this.radicar.direccion,
+            documentosAdjuntos: docsAdjuntos,
+        };
+
+        return this.construirObjAGuardar('AP_ECON_ASI', datos);
+    }
+
+    async reunirDatosSolApoyoPublicacion() {
+        const docsAdjuntos = await this.convertirDocumentosAdjuntos();
+
+        const datos: DatosApoyoPublicacion = {
+            nombreEvento: this.radicar.nombreCongreso,
+            tipoEvento: this.radicar.tipoCongreso,
+            fechaInicio: this.formatearDate(this.radicar.fechasEstancia[0]),
+            fechaFin: this.formatearDate(this.radicar.fechasEstancia[1]),
+            idDirectorGrupo: this.radicar.director.id,
+            nombreDirectorGrupo: null,
+            tituloPublicacion: this.radicar.tituloPublicacion,
+            valorApoyo: this.radicar.valorApoyoEcon,
+            entidadBancaria: this.radicar.banco,
+            tipoCuenta: this.radicar.tipoCuenta,
+            numeroCuenta: this.radicar.numeroCuenta,
+            numeroCedulaAsociada: this.radicar.cedulaCuentaBanco,
+            direccionResidencia: this.radicar.direccion,
+            documentosAdjuntos: docsAdjuntos,
+        };
+
+        return this.construirObjAGuardar('PA_PUBL_EVE', datos);
+    }
+
+    async reunirDatosSolAvalSeminario() {
+        const docsAdjuntos = await this.convertirDocumentosAdjuntos();
+
+        const datos = {
+            documentosAdjuntos: docsAdjuntos,
+        };
+
+        return this.construirObjAGuardar('AV_SEMI_ACT', datos);
+    }
+
     async reunirDatosSolRecCreditosSinLink() {
         const docsAdjuntos = await this.convertirDocumentosAdjuntos();
 
@@ -398,6 +489,11 @@ export class AlmacenarSolicitudService {
             datosApoyoEconomico: tipo === 'AP_ECON_INV' ? infoEspecifica : null,
             datosReconocimientoCreditos:
                 tipo === 'RE_CRED' ? infoEspecifica : null,
+            datosAvalSeminario: tipo === 'AV_SEMI_ACT' ? infoEspecifica : null,
+            datosApoyoEconomicoCongreso:
+                tipo === 'AP_ECON_ASI' ? infoEspecifica : null,
+            datosApoyoEconomicoPublicacion:
+                tipo === 'PA_PUBL_EVE' ? infoEspecifica : null,
             requiereFirmaDirector:
                 tipo === 'AP_ECON_INV' || tipo === 'ApoyoEconomico'
                     ? true

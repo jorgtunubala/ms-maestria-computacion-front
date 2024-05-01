@@ -358,6 +358,89 @@ export class RadicarService {
 
                 break;
 
+            case 'AP_ECON_ASI':
+                this.nombreCongreso =
+                    infoSolicitud.datosApoyoEconomicoCongreso.nombreCongreso;
+                this.tipoCongreso =
+                    infoSolicitud.datosApoyoEconomicoCongreso.tipoCongreso;
+                this.fechasEstancia[0] = this.parseFecha(
+                    infoSolicitud.datosApoyoEconomicoCongreso.fechaInicio
+                );
+                this.fechasEstancia[1] = this.parseFecha(
+                    infoSolicitud.datosApoyoEconomicoCongreso.fechaFin
+                );
+                this.tituloPublicacion =
+                    infoSolicitud.datosApoyoEconomicoCongreso.tituloPublicacion;
+                this.director = {
+                    id: infoSolicitud.datosApoyoEconomicoCongreso
+                        .idDirectorGrupo,
+                    codigoTutor: 'COD DIR PROVISIONAL',
+                    nombreTutor:
+                        infoSolicitud.datosApoyoEconomicoCongreso
+                            .nombreDirectorGrupo,
+                };
+
+                this.valorApoyoEcon =
+                    infoSolicitud.datosApoyoEconomicoCongreso.valorApoyo;
+                this.banco =
+                    infoSolicitud.datosApoyoEconomicoCongreso.entidadBancaria;
+                this.tipoCuenta =
+                    infoSolicitud.datosApoyoEconomicoCongreso.tipoCuenta;
+                this.numeroCuenta =
+                    infoSolicitud.datosApoyoEconomicoCongreso.numeroCuenta;
+                this.cedulaCuentaBanco =
+                    infoSolicitud.datosApoyoEconomicoCongreso.numeroCedulaAsociada;
+                this.direccion =
+                    infoSolicitud.datosApoyoEconomicoCongreso.direccionResidencia;
+
+                await this.asignarDocumentosAdjuntos(
+                    infoSolicitud.datosApoyoEconomicoCongreso.documentosAdjuntos
+                );
+
+                break;
+
+            case 'PA_PUBL_EVE':
+                this.nombreCongreso =
+                    infoSolicitud.datosApoyoEconomicoPublicacion.nombreEvento;
+                this.tipoCongreso =
+                    infoSolicitud.datosApoyoEconomicoPublicacion.tipoEvento;
+                this.fechasEstancia[0] = this.parseFecha(
+                    infoSolicitud.datosApoyoEconomicoPublicacion.fechaInicio
+                );
+                this.fechasEstancia[1] = this.parseFecha(
+                    infoSolicitud.datosApoyoEconomicoPublicacion.fechaFin
+                );
+                this.tituloPublicacion =
+                    infoSolicitud.datosApoyoEconomicoPublicacion.tituloPublicacion;
+                this.director = {
+                    id: infoSolicitud.datosApoyoEconomicoPublicacion
+                        .idDirectorGrupo,
+                    codigoTutor: 'COD DIR PROVISIONAL',
+                    nombreTutor:
+                        infoSolicitud.datosApoyoEconomicoPublicacion
+                            .nombreDirectorGrupo,
+                };
+
+                this.valorApoyoEcon =
+                    infoSolicitud.datosApoyoEconomicoPublicacion.valorApoyo;
+                this.banco =
+                    infoSolicitud.datosApoyoEconomicoPublicacion.entidadBancaria;
+                this.tipoCuenta =
+                    infoSolicitud.datosApoyoEconomicoPublicacion.tipoCuenta;
+                this.numeroCuenta =
+                    infoSolicitud.datosApoyoEconomicoPublicacion.numeroCuenta;
+                this.cedulaCuentaBanco =
+                    infoSolicitud.datosApoyoEconomicoPublicacion.numeroCedulaAsociada;
+                this.direccion =
+                    infoSolicitud.datosApoyoEconomicoPublicacion.direccionResidencia;
+
+                await this.asignarDocumentosAdjuntos(
+                    infoSolicitud.datosApoyoEconomicoPublicacion
+                        .documentosAdjuntos
+                );
+
+                break;
+
             case 'RE_CRED_PAS':
             case 'RE_CRED_DIS':
             case 'PR_CURS_TEO':
@@ -393,7 +476,11 @@ export class RadicarService {
                 this.asignarDocumentosAdjuntos(
                     infoSolicitud.datosReconocimientoCreditos.documentosAdjuntos
                 );
-
+                break;
+            case 'AV_SEMI_ACT':
+                this.asignarDocumentosAdjuntos(
+                    infoSolicitud.datosAvalSeminario.documentosAdjuntos
+                );
                 break;
 
             default:

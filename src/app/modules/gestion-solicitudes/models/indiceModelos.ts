@@ -28,3 +28,5 @@ export { AsignaturaExternaResp } from './solicitudes/solicitud-cur-asign-extern/
 export { DatosSolicitudAvalPasantia } from './solicitudes/solicitud-aval-pasantia/datosSolicitudAvalPasantia';
 export { DatosApoyoPasantia } from './solicitudes/solicitud-apoyo-pasantia/datosApoyoPasantia';
 export { DatosReconoCreditos } from './solicitudes/solicitud-rec-creditos/datosReconoCreditos';
+export { DatosApoyoCongreso } from './solicitudes/solicitud-apoyo-congreso/datosApoyoCongreso';
+export { DatosApoyoPublicacion } from './solicitudes/solicitud-apoyo-publicacion/DatosApoyoPublicacion';
