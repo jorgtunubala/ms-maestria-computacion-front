@@ -34,6 +34,9 @@ import { PortafolioComponent } from './pages/portafolio/portafolio.component';
 import { OpcionesComponent } from './pages/opciones/opciones.component';
 import { ApyasistenciaeventoComponent } from './components/presentacion-solicitudes/formularios/complementarios/apyasistenciaevento/apyasistenciaevento.component';
 import { ApypublicacionComponent } from './components/presentacion-solicitudes/formularios/complementarios/apypublicacion/apypublicacion.component';
+import { ContenedorComponent } from './components/gestion-coordinacion/contenedor/contenedor.component';
+import { TramiteComponent } from './components/gestion-coordinacion/tramite/tramite.component';
+import { CreditosComponent } from './components/presentacion-solicitudes/formularios/complementarios/creditos/creditos.component';
 
 @NgModule({
     declarations: [
@@ -66,6 +69,9 @@ import { ApypublicacionComponent } from './components/presentacion-solicitudes/f
         OpcionesComponent,
         ApyasistenciaeventoComponent,
         ApypublicacionComponent,
+        ContenedorComponent,
+        TramiteComponent,
+        CreditosComponent,
     ],
     imports: [
         CommonModule,

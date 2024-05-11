@@ -5,6 +5,7 @@ import {
     ViewChild,
     ViewChildren,
 } from '@angular/core';
+
 import { Router } from '@angular/router';
 import { RadicarService } from '../../../services/radicar.service';
 import {
@@ -120,6 +121,88 @@ export class FormulariosComponent implements OnInit {
                         Validators.required,
                     ],
                 });
+            }
+            if (
+                this.radicar.tipoSolicitudEscogida.codigoSolicitud ===
+                'RE_CRED_PAS'
+            ) {
+                this.radicar.actividades = [
+                    {
+                        nombre: 'Pasantía de investigación',
+                        abreviacion: 'Pasantía',
+                        codigo: 'RE_CRED_PAS',
+                    },
+                    {
+                        nombre: 'Diseño curricular de curso teórico/práctico nuevo de pregrado',
+                        abreviacion: 'Diseño curricular',
+                        codigo: 'RE_CRED_DIS',
+                    },
+                    {
+                        nombre: 'Preparación de curso teórico/práctico nuevo de pregrado',
+                        abreviacion: 'Preparación de curso',
+                        codigo: 'PR_CURS_TEO',
+                    },
+                    {
+                        nombre: 'Docencia en pregrado',
+                        abreviacion: 'Docencia',
+                        codigo: 'AS_CRED_DO',
+                    },
+                    {
+                        nombre: 'Realización de seminario de actualización',
+                        abreviacion: 'Seminario',
+                        codigo: 'RE_CRED_SEM',
+                    },
+                    {
+                        nombre: 'Monitoria de cursos',
+                        abreviacion: 'Monitoria',
+                        codigo: 'AS_CRED_MON',
+                    },
+                    {
+                        nombre: 'Elaboración de material de apoyo para pregrado',
+                        abreviacion: 'Material de apoyo',
+                        codigo: 'AS_CRED_MAT',
+                    },
+                    {
+                        nombre: 'Dirección de trabajo de grado en pregrado',
+                        abreviacion: 'Dirección trabajo de grado',
+                        codigo: 'TG_PREG_POS',
+                    },
+                    {
+                        nombre: 'Jurado de trabajo de grado de pregrado',
+                        abreviacion: 'Jurado trabajo de grado',
+                        codigo: 'JU_PREG_POS',
+                    },
+                    {
+                        nombre: 'Evaluación de anteproyecto de pregrado',
+                        abreviacion: 'Evaluación anteproyecto',
+                        codigo: 'EV_ANTE_PRE',
+                    },
+                    {
+                        nombre: 'Evaluación de productividad intelectual',
+                        abreviacion: 'Evaluación productividad intelectual',
+                        codigo: 'EV_PROD_INT',
+                    },
+                    {
+                        nombre: 'Evaluación informe sabático',
+                        abreviacion: 'Evaluación informe sabático',
+                        codigo: 'EV_INFO_SAB',
+                    },
+                    {
+                        nombre: 'Participación en el comité de programa',
+                        abreviacion: 'Participación comité',
+                        codigo: 'PA_COMI_PRO',
+                    },
+                    {
+                        nombre: 'Realización de otras actividades de apoyo al departamento',
+                        abreviacion: 'Otras actividades',
+                        codigo: 'OT_ACTI_APO',
+                    },
+                    {
+                        nombre: 'Publicaciones',
+                        abreviacion: 'Publicaciones',
+                        codigo: 'RE_CRED_PUB',
+                    },
+                ];
             }
         } catch (error) {
             console.error('Se produjo un error:', error);

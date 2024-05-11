@@ -3,6 +3,7 @@ import { DialogService } from 'primeng/dynamicdialog';
 import { Solicitud } from '../../../models/solicitudes/solicitud.model';
 import { VisorComponent } from '../visor/visor.component';
 import { GestorService } from '../../../services/gestor.service';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-buzon',
@@ -16,6 +17,7 @@ export class BuzonComponent implements OnInit {
 
     constructor(
         public gestor: GestorService,
+        private router: Router,
         public dialogService: DialogService
     ) {}
 
@@ -71,14 +73,10 @@ export class BuzonComponent implements OnInit {
     }
 
     mostrarDetalles(event) {
+        // Obtiene la solicitud seleccionada
         this.gestor.setSolicitudSeleccionada(this.seleccionada);
 
-        const ref = this.dialogService.open(VisorComponent, {
-            data: {
-                id: '51gF3',
-            },
-            header: 'Detalles de la solicitud',
-            width: '80%',
-        });
+        // Navega a VistaComponent pasando la ID de la solicitud seleccionada como parámetro de ruta
+        this.router.navigate(['/gestionsolicitudes/visor']);
     }
 }
