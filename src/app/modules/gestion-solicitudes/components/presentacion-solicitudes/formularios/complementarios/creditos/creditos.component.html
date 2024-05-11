@@ -1,0 +1,92 @@
+<p-fieldset legend="Actividades ralizadas" styleClass="bg-bluegray-50">
+    <div class="grid">
+        <p-overlayPanel #op>
+            <ng-template pTemplate>
+                <p-listbox
+                    [options]="radicar.actividades"
+                    (onChange)="agregarActividad($event)"
+                    optionLabel="nombre"
+                    [style]="{
+                        width: '400px',
+                        'max-height': '250px',
+                        'overflow-y': 'auto'
+                    }"
+                ></p-listbox>
+            </ng-template>
+        </p-overlayPanel>
+
+        <div class="col-12">
+            <button
+                pButton
+                type="button"
+                (click)="op.toggle($event)"
+                label="Agregar actividad"
+                icon="pi pi-plus"
+                class="p-button-outlined"
+            ></button>
+        </div>
+
+        <div
+            class="col-12"
+            *ngFor="
+                let actividad of radicar.actividadesSeleccionadas;
+                let i = index
+            "
+        >
+            <p-panel
+                ><ng-template pTemplate="header">
+                    <div class="grid p-0 m-0 w-full" style="height: 20px">
+                        <div
+                            class="col-11 flex align-items-center font-bold"
+                            style="margin-top: -17px"
+                        >
+                            {{ i + 1 }}. {{ actividad.nombre }}
+                        </div>
+
+                        <div
+                            class="col-1 flex justify-content-end"
+                            style="margin-top: -17px"
+                        >
+                            <button
+                                pButton
+                                type="button"
+                                (click)="eliminarActividad(i)"
+                                icon="pi pi-times"
+                                class="p-button-outlined p-button-danger"
+                            ></button>
+                        </div>
+                    </div>
+                </ng-template>
+                <div class="grid"></div>
+            </p-panel>
+        </div>
+        <!--
+        <div class="col-12">
+            <span class="p-float-label mt-3">
+                <p-multiSelect
+                    inputId="acts"
+                    [options]="radicar.actividades"
+                    [(ngModel)]="radicar.actividadesSeleccionadas"
+                    optionLabel="abreviacion"
+                    [filter]="false"
+                    [style]="{ width: '100%' }"
+                    [maxSelectedLabels]="7"
+                    [selectedItemsLabel]="
+                        '{0} Actividades seleccionadas'
+                    "
+                >
+                    >
+                    <ng-template let-item pTemplate="item">
+                        <div>
+                            {{ item.nombre }}
+                        </div>
+                    </ng-template>
+                </p-multiSelect>
+                <label for="adasig"
+                    >Actividades para reconocimiento de creditos</label
+                >
+            </span>
+        </div>
+        -->
+    </div>
+</p-fieldset>

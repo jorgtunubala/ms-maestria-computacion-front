@@ -25,51 +25,30 @@ export class GestionComponent implements OnInit {
                 expanded: true,
                 items: [
                     {
-                        label: 'Bandeja de entrada',
+                        label: 'Nuevas',
                         routerLink: 'buzon',
                         icon: 'pi pi-fw pi-arrow-down',
                     },
-                    { separator: true },
                     {
-                        label: 'Quit',
+                        label: 'Rechazadas',
                         routerLink: 'visor',
                         icon: 'pi pi-fw pi-times',
                     },
+                    { label: 'Eliminadas', icon: 'pi pi-fw pi-trash' },
                 ],
+            },
+            {
+                label: 'En tramite',
+                icon: 'pi pi-fw pi-pencil',
+                items: [{ label: 'En consejo', icon: 'pi pi-fw pi-users' }],
             },
             {
                 label: 'Archivo',
-                icon: 'pi pi-fw pi-pencil',
-                items: [
-                    { label: 'Delete', icon: 'pi pi-fw pi-trash' },
-                    { label: 'Refresh', icon: 'pi pi-fw pi-refresh' },
-                ],
-            },
-            {
-                label: 'Help',
-                icon: 'pi pi-fw pi-question',
+                icon: 'pi pi-fw pi-folder',
                 items: [
                     {
-                        label: 'Contents',
-                        icon: 'pi pi-pi pi-bars',
-                    },
-                    {
-                        label: 'Search',
-                        icon: 'pi pi-pi pi-search',
-                        items: [
-                            {
-                                label: 'Text',
-                                items: [
-                                    {
-                                        label: 'Workspace',
-                                    },
-                                ],
-                            },
-                            {
-                                label: 'User',
-                                icon: 'pi pi-fw pi-file',
-                            },
-                        ],
+                        label: 'Respondidas',
+                        icon: 'pi pi-fw pi-check-circle',
                     },
                 ],
             },
@@ -78,17 +57,24 @@ export class GestionComponent implements OnInit {
                 icon: 'pi pi-fw pi-cog',
                 items: [
                     {
-                        label: 'Edit',
+                        label: 'Editar',
                         icon: 'pi pi-fw pi-pencil',
                         items: [
-                            { label: 'Save', icon: 'pi pi-fw pi-save' },
-                            { label: 'Update', icon: 'pi pi-fw pi-save' },
+                            {
+                                label: 'Coordninador(a)',
+                                icon: 'pi pi-fw pi-user-edit',
+                            },
                         ],
                     },
                     {
-                        label: 'Other',
-                        icon: 'pi pi-fw pi-tags',
-                        items: [{ label: 'Delete', icon: 'pi pi-fw pi-minus' }],
+                        label: 'Ayuda',
+                        icon: 'pi pi-fw pi-question-circle',
+                        items: [
+                            {
+                                label: 'Guia de uso',
+                                icon: 'pi pi-fw pi-info-circle',
+                            },
+                        ],
                     },
                 ],
             },

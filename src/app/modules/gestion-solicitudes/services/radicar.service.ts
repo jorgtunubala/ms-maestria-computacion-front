@@ -13,6 +13,11 @@ import { DatosSolicitudRequest } from '../models/solicitudes/datosSolicitudReque
 import { InfoAsingAdicionCancelacion } from '../models/solicitudes/solicitud-adic-cancel-asig/infoAsignAdicionCancelacion';
 import { NullVisitor } from '@angular/compiler/src/render3/r3_ast';
 
+interface actividadCreditos {
+    nombre: string;
+    abreviacion: string;
+    codigo: string;
+}
 @Injectable({
     providedIn: 'root',
 })
@@ -21,6 +26,8 @@ export class RadicarService {
     listadoTutoresYDirectores: TutorYDirector[];
     fechaEnvio: Date = null;
     tipoSolicitudEscogida: TipoSolicitud;
+    actividades: actividadCreditos[];
+    actividadesSeleccionadas: actividadCreditos[];
     requisitosSolicitudEscogida: RequisitosSolicitud;
     datosSolicitante: InfoPersonal = new InfoPersonal(
         null,
@@ -129,6 +136,8 @@ export class RadicarService {
         this.datosAsignaturasAHomologar = [];
         this.datosInstitucionHomologar = { institucion: '', programa: '' };
         this.semestreAplazamiento = '';
+        this.actividades = [];
+        this.actividadesSeleccionadas = [];
         this.numeroInstanciasAsignExterna = 1;
         this.instanciasAsignExterna = [{}];
         this.datosAsignaturasExternas = [];

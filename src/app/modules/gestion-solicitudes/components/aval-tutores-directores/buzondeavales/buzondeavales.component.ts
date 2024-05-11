@@ -21,10 +21,12 @@ export class BuzondeavalesComponent implements OnInit {
             {
                 label: 'Solicitudes',
                 icon: 'pi pi-pw pi-inbox',
+                expanded: true,
                 items: [
                     {
                         label: 'Pendientes de aval',
                         routerLink: 'pendientes',
+
                         icon: 'pi pi-fw pi-pencil',
                     },
                     { separator: true },

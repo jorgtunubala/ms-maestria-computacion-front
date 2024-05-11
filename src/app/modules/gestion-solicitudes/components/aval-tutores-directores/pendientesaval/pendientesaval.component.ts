@@ -19,6 +19,7 @@ import { RadicarService } from '../../../services/radicar.service';
 export class PendientesavalComponent implements OnInit {
     correoUsuario: string = 'clopez@unicauca.edu.co';
     solicitudes: SolicitudPendienteAval[] = [];
+    cargando: boolean = true;
     solicitudSeleccionada: SolicitudPendienteAval = {
         idSolicitud: 0,
         codigoSolicitud: '',
@@ -47,6 +48,7 @@ export class PendientesavalComponent implements OnInit {
         this.http.obtenerListaSolPendientesAval(this.correoUsuario).subscribe(
             (solicitudes: SolicitudPendienteAval[]) => {
                 this.solicitudes = solicitudes;
+                this.cargando = false;
             },
             (error) => {
                 console.error('Error al cargar las solicitudes:', error);
