@@ -33,7 +33,7 @@ export const menuItems: MenuItem[] = [
             {
                 label: 'SOLICITUDES',
                 icon: 'pi pi-fw pi-inbox',
-                routerLink: '/gestionsolicitudes',
+                routerLink: '/gestionsolicitudes/buzon',
             },
         ],
     },

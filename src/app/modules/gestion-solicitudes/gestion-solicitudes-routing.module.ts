@@ -12,6 +12,7 @@ import { FormulariosComponent } from './components/presentacion-solicitudes/form
 import { HistorialComponent } from './components/seguimiento-solicitudes/historial/historial.component';
 import { PortafolioComponent } from './pages/portafolio/portafolio.component';
 import { OpcionesComponent } from './pages/opciones/opciones.component';
+import { ContenedorComponent } from './components/gestion-coordinacion/contenedor/contenedor.component';
 
 const routes: Routes = [
     {
@@ -20,6 +21,7 @@ const routes: Routes = [
         children: [
             { path: 'buzon', component: BuzonComponent },
             { path: 'visor', component: VisorComponent },
+            { path: 'contenedor', component: ContenedorComponent },
         ],
     },
     {

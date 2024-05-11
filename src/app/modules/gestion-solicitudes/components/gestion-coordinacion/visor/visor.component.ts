@@ -7,9 +7,12 @@ import { GestorService } from '../../../services/gestor.service';
     styleUrls: ['./visor.component.scss'],
 })
 export class VisorComponent implements OnInit {
+    urlOficio: string;
     constructor(public gestor: GestorService) {}
 
-    ngOnInit(): void {}
+    ngOnInit(): void {
+        this.urlOficio = this.gestor.getSolicitudSeleccionada[0];
+    }
 
     mostrarArhivo(archivo) {
         window.open(archivo.url, '_blank');

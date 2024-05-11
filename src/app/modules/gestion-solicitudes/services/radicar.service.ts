@@ -13,6 +13,11 @@ import { DatosSolicitudRequest } from '../models/solicitudes/datosSolicitudReque
 import { InfoAsingAdicionCancelacion } from '../models/solicitudes/solicitud-adic-cancel-asig/infoAsignAdicionCancelacion';
 import { NullVisitor } from '@angular/compiler/src/render3/r3_ast';
 
+interface actividadCreditos {
+    nombre: string;
+    abreviacion: string;
+    codigo: string;
+}
 @Injectable({
     providedIn: 'root',
 })
@@ -21,6 +26,8 @@ export class RadicarService {
     listadoTutoresYDirectores: TutorYDirector[];
     fechaEnvio: Date = null;
     tipoSolicitudEscogida: TipoSolicitud;
+    actividades: actividadCreditos[];
+    actividadesSeleccionadas: actividadCreditos[];
     requisitosSolicitudEscogida: RequisitosSolicitud;
     datosSolicitante: InfoPersonal = new InfoPersonal(
         null,
@@ -129,6 +136,8 @@ export class RadicarService {
         this.datosAsignaturasAHomologar = [];
         this.datosInstitucionHomologar = { institucion: '', programa: '' };
         this.semestreAplazamiento = '';
+        this.actividades = [];
+        this.actividadesSeleccionadas = [];
         this.numeroInstanciasAsignExterna = 1;
         this.instanciasAsignExterna = [{}];
         this.datosAsignaturasExternas = [];
@@ -358,6 +367,89 @@ export class RadicarService {
 
                 break;
 
+            case 'AP_ECON_ASI':
+                this.nombreCongreso =
+                    infoSolicitud.datosApoyoEconomicoCongreso.nombreCongreso;
+                this.tipoCongreso =
+                    infoSolicitud.datosApoyoEconomicoCongreso.tipoCongreso;
+                this.fechasEstancia[0] = this.parseFecha(
+                    infoSolicitud.datosApoyoEconomicoCongreso.fechaInicio
+                );
+                this.fechasEstancia[1] = this.parseFecha(
+                    infoSolicitud.datosApoyoEconomicoCongreso.fechaFin
+                );
+                this.tituloPublicacion =
+                    infoSolicitud.datosApoyoEconomicoCongreso.tituloPublicacion;
+                this.director = {
+                    id: infoSolicitud.datosApoyoEconomicoCongreso
+                        .idDirectorGrupo,
+                    codigoTutor: 'COD DIR PROVISIONAL',
+                    nombreTutor:
+                        infoSolicitud.datosApoyoEconomicoCongreso
+                            .nombreDirectorGrupo,
+                };
+
+                this.valorApoyoEcon =
+                    infoSolicitud.datosApoyoEconomicoCongreso.valorApoyo;
+                this.banco =
+                    infoSolicitud.datosApoyoEconomicoCongreso.entidadBancaria;
+                this.tipoCuenta =
+                    infoSolicitud.datosApoyoEconomicoCongreso.tipoCuenta;
+                this.numeroCuenta =
+                    infoSolicitud.datosApoyoEconomicoCongreso.numeroCuenta;
+                this.cedulaCuentaBanco =
+                    infoSolicitud.datosApoyoEconomicoCongreso.numeroCedulaAsociada;
+                this.direccion =
+                    infoSolicitud.datosApoyoEconomicoCongreso.direccionResidencia;
+
+                await this.asignarDocumentosAdjuntos(
+                    infoSolicitud.datosApoyoEconomicoCongreso.documentosAdjuntos
+                );
+
+                break;
+
+            case 'PA_PUBL_EVE':
+                this.nombreCongreso =
+                    infoSolicitud.datosApoyoEconomicoPublicacion.nombreEvento;
+                this.tipoCongreso =
+                    infoSolicitud.datosApoyoEconomicoPublicacion.tipoEvento;
+                this.fechasEstancia[0] = this.parseFecha(
+                    infoSolicitud.datosApoyoEconomicoPublicacion.fechaInicio
+                );
+                this.fechasEstancia[1] = this.parseFecha(
+                    infoSolicitud.datosApoyoEconomicoPublicacion.fechaFin
+                );
+                this.tituloPublicacion =
+                    infoSolicitud.datosApoyoEconomicoPublicacion.tituloPublicacion;
+                this.director = {
+                    id: infoSolicitud.datosApoyoEconomicoPublicacion
+                        .idDirectorGrupo,
+                    codigoTutor: 'COD DIR PROVISIONAL',
+                    nombreTutor:
+                        infoSolicitud.datosApoyoEconomicoPublicacion
+                            .nombreDirectorGrupo,
+                };
+
+                this.valorApoyoEcon =
+                    infoSolicitud.datosApoyoEconomicoPublicacion.valorApoyo;
+                this.banco =
+                    infoSolicitud.datosApoyoEconomicoPublicacion.entidadBancaria;
+                this.tipoCuenta =
+                    infoSolicitud.datosApoyoEconomicoPublicacion.tipoCuenta;
+                this.numeroCuenta =
+                    infoSolicitud.datosApoyoEconomicoPublicacion.numeroCuenta;
+                this.cedulaCuentaBanco =
+                    infoSolicitud.datosApoyoEconomicoPublicacion.numeroCedulaAsociada;
+                this.direccion =
+                    infoSolicitud.datosApoyoEconomicoPublicacion.direccionResidencia;
+
+                await this.asignarDocumentosAdjuntos(
+                    infoSolicitud.datosApoyoEconomicoPublicacion
+                        .documentosAdjuntos
+                );
+
+                break;
+
             case 'RE_CRED_PAS':
             case 'RE_CRED_DIS':
             case 'PR_CURS_TEO':
@@ -393,7 +485,11 @@ export class RadicarService {
                 this.asignarDocumentosAdjuntos(
                     infoSolicitud.datosReconocimientoCreditos.documentosAdjuntos
                 );
-
+                break;
+            case 'AV_SEMI_ACT':
+                this.asignarDocumentosAdjuntos(
+                    infoSolicitud.datosAvalSeminario.documentosAdjuntos
+                );
                 break;
 
             default:
