@@ -1,0 +1,93 @@
+<p-panel>
+    <p-header>
+        <b>GESTIONAR CATEGORÍAS</b>
+    </p-header>
+    <div class="grid">
+        <div class="col-5">
+            <div class="flex align-items-end h-full">
+                <span class="p-input-icon-left w-full">
+                    <i class="pi pi-search"></i>
+                    <input
+                        pInputText
+                        type="text"
+                        class="w-full"
+                        placeholder="Buscar Categoría"
+                    />
+                </span>
+            </div>
+        </div>
+        <div class="col-1"></div>
+        <div class="col-6">
+            <!-- Reducir el tamaño de esta columna -->
+            <div class="w-full text-right">
+                <button
+                    pButton
+                    icon="pi pi-plus"
+                    label="Agregar Categoría"
+                    (click)="showDialog()"
+                ></button>
+            </div>
+        </div>
+    </div>
+    <br />
+    <p-table
+        #tableCategorias
+        [value]="categorias"
+        [paginator]="true"
+        [loading]="loading"
+        [rows]="3"
+        breakpoint="768px"
+        styleClass="p-datatable-gridlines p-datatable-striped"
+        [globalFilterFields]="[]"
+        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} categorías"
+    >
+        <ng-template pTemplate="header">
+            <tr>
+                <th scope="col">Col1</th>
+                <th scope="col">Col2</th>
+                <th scope="col" class="text-center w-2">Opciones</th>
+            </tr>
+        </ng-template>
+        <!-- Contenido de la tabla -->
+        <ng-template pTemplate="body" let-categoria>
+            <tr>
+                <td>{{ categoria.id }}</td>
+                <!-- <td>{{categoria.}}</td> -->
+
+                <td class="text-center">
+                    <button
+                        *ngIf="false"
+                        pButton
+                        type="button"
+                        icon="pi pi-search"
+                        class="p-button-rounded p-button-text"
+                    ></button>
+                    <button
+                        pButton
+                        pTooltip="Editar"
+                        type="button"
+                        icon="pi pi-pencil"
+                        class="p-button-rounded p-button-text p-button-warning"
+                        (click)="onEditar(categoria.id)"
+                    ></button>
+                    <button
+                        pButton
+                        pTooltip="Eliminar"
+                        type="button"
+                        icon="pi pi-trash"
+                        class="p-button-rounded p-button-text p-button-danger"
+                        (click)="onDelete($event, categoria.id)"
+                    ></button>
+                    <p-confirmDialog> </p-confirmDialog>
+                </td>
+            </tr>
+        </ng-template>
+        <!-- mensaje sin registros -->
+        <ng-template pTemplate="emptymessage" let-columns>
+          <tr>
+              <td [attr.colspan]="7">No se encontraron registros</td>
+          </tr>
+      </ng-template>
+    </p-table>
+    <p-footer> your footer template </p-footer>
+</p-panel>
