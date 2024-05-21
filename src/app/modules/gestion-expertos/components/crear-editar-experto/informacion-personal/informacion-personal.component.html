@@ -75,17 +75,14 @@
 
     <div class="field grid">
         <div class="col-4 text-right font-medium align-self-center">
-            <label class="labelFile"
-                >Copia del documento <br />
-                de identificacion (.pdf)</label
-            >
+            <label class="labelFile">Copia del documento <br /> de identificacion (.pdf)</label>
         </div>
-        <div class="col-8">
+        <div class="col-8 flex flex-wrap items-center">
             <input
                 pInputText
                 type="text"
                 id="labelFile"
-                class="p-inputtext-sm w-auto"
+                class="p-inputtext-sm w-full sm:w-auto mb-2 sm:mb-0 sm:mr-2"
                 placeholder="No se ha seleccionado un archivo"
                 [disabled]="true"
                 [value]="labelFile"
@@ -96,14 +93,14 @@
                 type="button"
                 pButton
                 icon="pi pi-times"
-                class="p-button-warn"
+                class="p-button-warn mb-2 sm:mb-0"
                 (click)="onReset()"
             ></button>
             <p-button
                 *ngIf="!file"
                 label="Seleccionar"
                 icon="pi pi-file-pdf"
-                styleClass="p-button-outlined w-auto h-full ml-4"
+                styleClass="p-button-outlined w-full sm:w-auto h-full sm:ml-4"
                 (click)="fileInput.click()"
                 [disabled]="loading"
             ></p-button>
@@ -116,6 +113,7 @@
             />
         </div>
     </div>
+    
 
     <div class="field grid">
         <div class="col-4 text-right font-medium align-self-center">
