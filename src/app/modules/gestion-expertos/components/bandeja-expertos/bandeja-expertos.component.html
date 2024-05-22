@@ -53,6 +53,16 @@
         </div>
     </div>
     <br />
+    <!-- InputSwitch para mostrar inactivos -->
+    <div class="col-12 text-right mb-3">
+        <p-inputSwitch
+            [(ngModel)]="mostrarInactivosFlag"
+            (onChange)="listExpertos()"
+        ></p-inputSwitch>
+        <label for="mostrarInactivosFlag" class="ml-2">{{
+            mostrarInactivosFlag ? "Mostrar Inactivos" : "Mostrar Activos"
+        }}</label>
+    </div>
     <!-- Tabla Expertos -->
     <p-table
         #tableExpertos
@@ -109,12 +119,22 @@
                         (click)="onEditar(experto.id)"
                     ></button>
                     <button
+                        *ngIf="experto.estado === 'ACTIVO'"
                         pButton
                         pTooltip="Eliminar"
                         type="button"
                         icon="pi pi-trash"
                         class="p-button-rounded p-button-text p-button-danger"
                         (click)="onDelete($event, experto.id)"
+                    ></button>
+                    <button
+                        *ngIf="experto.estado === 'INACTIVO'"
+                        pButton
+                        pTooltip="Habilitar"
+                        type="button"
+                        icon="pi pi-check"
+                        class="p-button-rounded p-button-text p-button-success"
+                        (click)="habilitarExperto(experto.id)"
                     ></button>
                     <button
                         pButton

@@ -20,6 +20,7 @@ export class BandejaExpertosComponent implements OnInit {
     expertoSeleccionado: any = null;
     fieldMap = fieldMap;
     excludedKeys = excludedKeys;
+    mostrarInactivosFlag: boolean = true; // La variable por defecto está en 'true' para mostrar activos
 
     constructor(
         private breadcrumbService: BreadcrumbService,
@@ -27,7 +28,7 @@ export class BandejaExpertosComponent implements OnInit {
         private messageService: MessageService,
         private router: Router,
         private confirmationService: ConfirmationService
-    ) { }
+    ) {}
 
     ngOnInit(): void {
         this.setBreadcrumb();
@@ -40,9 +41,11 @@ export class BandejaExpertosComponent implements OnInit {
             .listExpertos()
             .subscribe({
                 next: (response) =>
-                (this.expertos = response.filter(
-                    (d) => d.estado === 'ACTIVO' 
-                )),
+                    (this.expertos = response.filter(
+                        (d) =>
+                            d.estado ===
+                            (this.mostrarInactivosFlag ? 'ACTIVO' : 'INACTIVO')
+                    )),
             })
             .add(() => (this.loading = false));
     }
@@ -93,53 +96,75 @@ export class BandejaExpertosComponent implements OnInit {
         this.displayDialog = true;
     }
 
-    // Function to rename keys and exclude unwanted keys
-    formatKey(key: string): string {
-        const displayKey = key.split('.').pop();
-        return displayKey ? displayKey.charAt(0).toUpperCase() + displayKey.slice(1) : '';
+    mostrarInactivos() {
+        this.mostrarInactivosFlag = !this.mostrarInactivosFlag;
+        this.listExpertos();
     }
-    
+
+    habilitarExperto(id: number) {
+        // this.expertoService.habilitarExperto(id).subscribe({
+        //     next: () => {
+        //         this.messageService.add(
+        //             infoMessage('Experto habilitado correctamente')
+        //         );
+        //         this.listExpertos();
+        //     },
+        // });
+    }
+
     getKeys(obj: any, prefix: string = ''): any[] {
         let keys: any[] = [];
         let lineasInvestigacion: string[] = [];
-    
+
         for (const [key, value] of Object.entries(obj)) {
             const newKey = prefix ? `${prefix}.${key}` : key;
-    
-            // Verificar si el nuevo key termina con alguna de las partes excluidas
-            if (excludedKeys.some((excludedKey) => newKey.endsWith(excludedKey))) continue;
-    
-            if (newKey.startsWith('lineasInvestigacion') && newKey.endsWith('titulo')) {
-                // Si es un título de línea de investigación, agregar a la lista especial
+
+            if (
+                excludedKeys.some((excludedKey) => newKey.endsWith(excludedKey))
+            )
+                continue;
+
+            if (
+                newKey.startsWith('lineasInvestigacion') &&
+                newKey.endsWith('titulo')
+            ) {
                 if (typeof value === 'string') {
                     lineasInvestigacion.push(value);
                 }
-            } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-                // Si es un objeto anidado, llamar recursivamente a la función
+            } else if (
+                typeof value === 'object' &&
+                value !== null &&
+                !Array.isArray(value)
+            ) {
                 keys.push(...this.getKeys(value, newKey));
             } else if (Array.isArray(value)) {
-                // Si es un array, recorrer cada elemento y concatenar las keys
                 value.forEach((item, index) => {
-                    keys = keys.concat(this.getKeys(item, `${newKey}.${index}`));
+                    keys = keys.concat(
+                        this.getKeys(item, `${newKey}.${index}`)
+                    );
                 });
             } else {
-                // Si es un valor simple, agregar a las keys
                 keys.push({
                     key: this.fieldMap[newKey] || this.formatKey(newKey),
                     value: value,
                 });
             }
         }
-    
-        // Agregar las líneas de investigación si existen
+
         if (lineasInvestigacion.length > 0) {
             keys.push({
                 key: 'Línea de Investigación',
                 value: lineasInvestigacion.join(', '),
             });
         }
-    
+
         return keys;
     }
-    
+
+    formatKey(key: string): string {
+        const displayKey = key.split('.').pop();
+        return displayKey
+            ? displayKey.charAt(0).toUpperCase() + displayKey.slice(1)
+            : '';
+    }
 }
