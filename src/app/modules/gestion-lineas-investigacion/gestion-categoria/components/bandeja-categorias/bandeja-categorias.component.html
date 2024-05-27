@@ -18,7 +18,6 @@
         </div>
         <div class="col-1"></div>
         <div class="col-6">
-            <!-- Reducir el tamaño de esta columna -->
             <div class="w-full text-right">
                 <button
                     pButton
@@ -43,25 +42,16 @@
     >
         <ng-template pTemplate="header">
             <tr>
-                <th scope="col">Col1</th>
-                <th scope="col">Col2</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Observación</th>
                 <th scope="col" class="text-center w-2">Opciones</th>
             </tr>
         </ng-template>
-        <!-- Contenido de la tabla -->
         <ng-template pTemplate="body" let-categoria>
             <tr>
-                <td>{{ categoria.id }}</td>
-                <!-- <td>{{categoria.}}</td> -->
-
+                <td>{{ categoria.nombre }}</td>
+                <td>{{ categoria.observacion }}</td>
                 <td class="text-center">
-                    <button
-                        *ngIf="false"
-                        pButton
-                        type="button"
-                        icon="pi pi-search"
-                        class="p-button-rounded p-button-text"
-                    ></button>
                     <button
                         pButton
                         pTooltip="Editar"
@@ -78,16 +68,59 @@
                         class="p-button-rounded p-button-text p-button-danger"
                         (click)="onDelete($event, categoria.id)"
                     ></button>
-                    <p-confirmDialog> </p-confirmDialog>
                 </td>
             </tr>
         </ng-template>
-        <!-- mensaje sin registros -->
         <ng-template pTemplate="emptymessage" let-columns>
-          <tr>
-              <td [attr.colspan]="7">No se encontraron registros</td>
-          </tr>
-      </ng-template>
+            <tr>
+                <td [attr.colspan]="4">No se encontraron registros</td>
+            </tr>
+        </ng-template>
     </p-table>
     <p-footer> your footer template </p-footer>
 </p-panel>
+
+<p-dialog
+    header="{{ isNew ? 'Agregar Categoría' : 'Editar Categoría' }}"
+    [(visible)]="displayDialog"
+    [modal]="true"
+    [closable]="false"
+    [responsive]="true"
+    [style]="{ width: '50vw' }"
+    [breakpoint]="768"
+>
+    <div class="p-fluid">
+        <div class="p-field">
+            <label for="nombre">Nombre</label>
+            <input
+                id="nombre"
+                type="text"
+                pInputText
+                [(ngModel)]="categoria.nombre"
+            />
+        </div>
+        <div class="p-field">
+            <label for="observacion">Observación</label>
+            <textarea
+                id="observacion"
+                pInputTextarea
+                [(ngModel)]="categoria.observacion"
+                [rows]="5"
+            ></textarea>
+        </div>
+    </div>
+    <p-footer>
+        <button
+            pButton
+            label="Cancelar"
+            icon="pi pi-times"
+            (click)="onCancel()"
+        ></button>
+        <button
+            pButton
+            label="Guardar"
+            icon="pi pi-check"
+            (click)="onSave()"
+        ></button>
+    </p-footer>
+</p-dialog>

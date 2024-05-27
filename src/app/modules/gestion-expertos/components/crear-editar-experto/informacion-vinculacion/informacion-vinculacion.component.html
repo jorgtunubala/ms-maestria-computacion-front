@@ -1,7 +1,7 @@
 <br />
 
 <form [formGroup]="vinculacionForm">
-    <!-- Informacion Titluo -->
+    <!-- Informacion Titulo -->
     <div class="col-4 text-right font-medium">
         <p><b>Información sobre vinculación</b></p>
     </div>
@@ -48,34 +48,29 @@
         </div>
     </div>
 
-    <form [formGroup]="vinculacionForm">
-        <div class="field grid">
-            <div class="col-4 text-right font-medium align-self-center">
-                <label>Líneas de investigación</label>
-            </div>
-            <div class="col-8">
-                <p-card [style]="{ width: '80%' }">
-                    <div *ngFor="let grupo of lineas">
-                        <label class="group-name mb-2">{{ grupo.categoria }}</label>
-                        <div class="checkbox-group ml-3">
-                            <div
-                                *ngFor="let linea of grupo.lineas"
-                                class="checkbox-item"
-                            >
-                                <p-checkbox
-                                    [(ngModel)]="linea.seleccionado"
-                                    [ngModelOptions]="{ standalone: true }"
-                                    [label]="linea.titulo"
-                                    binary="true"
-                                    (onChange)="onCheckChange($event, linea.id)"
-                                ></p-checkbox>
-                            </div>
+    <div class="field grid">
+        <div class="col-4 text-right font-medium align-self-center">
+            <label>Líneas de investigación</label>
+        </div>
+        <div class="col-8">
+            <p-card [style]="{ width: '80%' }">
+                <div *ngFor="let grupo of lineas">
+                    <label class="group-name mb-2">{{ grupo.categoria }}</label>
+                    <div class="checkbox-group ml-3">
+                        <div *ngFor="let linea of grupo.lineas" class="checkbox-item">
+                            <p-checkbox
+                                [(ngModel)]="linea.seleccionado"
+                                [ngModelOptions]="{ standalone: true }"
+                                [label]="linea.titulo"
+                                binary="true"
+                                (onChange)="onCheckChange($event, linea.id)"
+                            ></p-checkbox>
                         </div>
                     </div>
-                </p-card>
-            </div>
+                </div>
+            </p-card>
         </div>
-    </form>
+    </div>
 
     <div class="field grid">
         <div class="col-4 text-right font-medium align-self-center">

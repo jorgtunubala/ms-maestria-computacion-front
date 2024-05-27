@@ -11,9 +11,11 @@ import { Categoria } from '../../models/categoria';
 })
 export class BandejaCategoriasComponent implements OnInit {
 
-  visible: boolean = false;
   categorias: Categoria[] = [];
-  loading: boolean;
+  loading: boolean = false;
+  displayDialog: boolean = false;
+  categoria: Categoria = { nombre: '', observacion: '' };
+  isNew: boolean = true;
 
   constructor(
     private breadcrumbService: BreadcrumbService,
@@ -23,9 +25,59 @@ export class BandejaCategoriasComponent implements OnInit {
     //servicio
   ) { }
 
-  ngOnInit():void {
-    this.setBreadcrumb();
+  ngOnInit(): void {
+    this.loadCategorias();
   }
+
+  loadCategorias() {
+    // this.loading = true;
+    // this.categoriaService.getCategorias().subscribe(data => {
+    //   this.categorias = data;
+    //   this.loading = false;
+    // });
+  }
+
+  showDialog() {
+    this.categoria = { nombre: '', observacion: '' };
+    this.isNew = true;
+    this.displayDialog = true;
+  }
+
+  onEditar(id: number) {
+    // this.categoriaService.getCategoria(id).subscribe(data => {
+    //   this.categoria = { ...data };
+    //   this.isNew = false;
+    //   this.displayDialog = true;
+    // });
+  }
+
+  onSave() {
+    // if (this.isNew) {
+    //   this.categoriaService.addCategoria(this.categoria).subscribe(data => {
+    //     this.categorias.push(data);
+    //     this.displayDialog = false;
+    //   });
+    // } else {
+    //   this.categoriaService.updateCategoria(this.categoria).subscribe(data => {
+    //     const index = this.categorias.findIndex(categoria => categoria.id === data.id);
+    //     if (index !== -1) {
+    //       this.categorias[index] = data;
+    //     }
+    //     this.displayDialog = false;
+    //   });
+    // }
+  }
+
+  onCancel() {
+    this.displayDialog = false;
+  }
+
+  onDelete(event: Event, id: number) {
+    // this.categoriaService.deleteCategoria(id).subscribe(() => {
+    //   this.categorias = this.categorias.filter(categoria => categoria.id !== id);
+    // });
+  }
+
 
   setBreadcrumb() {
     this.breadcrumbService.setItems([
@@ -34,8 +86,6 @@ export class BandejaCategoriasComponent implements OnInit {
     ]);
 }
 
-showDialog() {
-    this.visible = true;
-}
+
 
 }

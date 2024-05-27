@@ -60,7 +60,16 @@ export class ExpertoService {
 
   obtenerLineasInvestigacion(): Observable<any[]> {
     return this.http.get<any[]>(
-      backend('lineas-investigacion'),
+      backend('lineas-investigacion/categoria/listar/ACTIVO'),
+      { headers: getHeaders() }
+    );
+  }
+
+
+  cambiarEstadoExperto(id: number, estado: string) {
+    return this.http.patch(
+      backend(`expertos/${id}/estado`),
+      { estado },
       { headers: getHeaders() }
     );
   }

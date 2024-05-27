@@ -74,15 +74,37 @@ export class InformacionVinculacionComponent implements OnInit {
         ids.forEach((id) => formArray.push(new FormControl(id)));
     }
 
+    // obtenerLineasInvestigacion(): void {
+    //     this.expertoService.obtenerLineasInvestigacion().subscribe({
+    //         next: (lineas: any[]) => {
+    //             // Añade la propiedad `seleccionado` localmente sin cambiar el modelo original
+    //             lineas.forEach((linea) => (linea.seleccionado = false));
+
+    //             // Agrupa las líneas por categorías
+    //             this.lineas = this.agruparPorCategoria(lineas);
+
+    //             // Actualiza el estado de las líneas después de obtenerlas
+    //             this.updateLineasSeleccionadas();
+    //         },
+    //         error: (error) => {
+    //             console.error('Error al obtener líneas:', error);
+    //         },
+    //     });
+    // }
+
     obtenerLineasInvestigacion(): void {
         this.expertoService.obtenerLineasInvestigacion().subscribe({
-            next: (lineas: any[]) => {
-                // Añade la propiedad `seleccionado` localmente sin cambiar el modelo original
-                lineas.forEach((linea) => (linea.seleccionado = false));
-
-                // Agrupa las líneas por categorías
-                this.lineas = this.agruparPorCategoria(lineas);
-
+            next: (categorias: any[]) => {
+                // Estructura las líneas de investigación según la categoría
+                this.lineas = categorias.map(categoria => ({
+                    categoria: categoria.nombre,
+                    lineas: categoria.lineasInvestigacion.map(linea => ({
+                        id: linea.id,
+                        titulo: linea.titulo,
+                        seleccionado: false
+                    }))
+                }));
+    
                 // Actualiza el estado de las líneas después de obtenerlas
                 this.updateLineasSeleccionadas();
             },
@@ -91,6 +113,7 @@ export class InformacionVinculacionComponent implements OnInit {
             },
         });
     }
+    
 
     // Método para actualizar el estado `seleccionado` según los IDs seleccionados
     updateLineasSeleccionadas(): void {
@@ -107,20 +130,20 @@ export class InformacionVinculacionComponent implements OnInit {
         });
     }
 
-    // Método para agrupar las líneas por categorías
-    agruparPorCategoria(lineas: any[]): { categoria: string; lineas: any[] }[] {
-        const gruposMap: Map<string, any[]> = lineas.reduce((map, linea) => {
-            const lineasExistentes = map.get(linea.categoria) || [];
-            lineasExistentes.push(linea);
-            map.set(linea.categoria, lineasExistentes);
-            return map;
-        }, new Map<string, any[]>());
+    // // Método para agrupar las líneas por categorías
+    // agruparPorCategoria(lineas: any[]): { categoria: string; lineas: any[] }[] {
+    //     const gruposMap: Map<string, any[]> = lineas.reduce((map, linea) => {
+    //         const lineasExistentes = map.get(linea.categoria) || [];
+    //         lineasExistentes.push(linea);
+    //         map.set(linea.categoria, lineasExistentes);
+    //         return map;
+    //     }, new Map<string, any[]>());
 
-        return Array.from(gruposMap, ([categoria, lineas]) => ({
-            categoria,
-            lineas,
-        }));
-    }
+    //     return Array.from(gruposMap, ([categoria, lineas]) => ({
+    //         categoria,
+    //         lineas,
+    //     }));
+    // }
 
     onCheckChange(event: any, id: number): void {
         const formArray: FormArray = this.vinculacionForm.get(

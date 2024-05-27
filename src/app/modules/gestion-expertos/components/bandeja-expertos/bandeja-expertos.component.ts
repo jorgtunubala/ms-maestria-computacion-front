@@ -101,17 +101,18 @@ export class BandejaExpertosComponent implements OnInit {
         this.listExpertos();
     }
 
-    habilitarExperto(id: number) {
-        // this.expertoService.habilitarExperto(id).subscribe({
-        //     next: () => {
-        //         this.messageService.add(
-        //             infoMessage('Experto habilitado correctamente')
-        //         );
-        //         this.listExpertos();
-        //     },
-        // });
+    cambiarEstado(experto: Experto, nuevoEstado: string) {
+        this.expertoService.cambiarEstadoExperto(experto.id, nuevoEstado).subscribe({
+            next: () => {
+                this.messageService.add(
+                    infoMessage(`Experto ${nuevoEstado === 'ACTIVO' ? 'habilitado' : 'deshabilitado'} correctamente`)
+                );
+                this.listExpertos();
+            },
+        });
     }
 
+    //para el previsualizar
     getKeys(obj: any, prefix: string = ''): any[] {
         let keys: any[] = [];
         let lineasInvestigacion: string[] = [];
