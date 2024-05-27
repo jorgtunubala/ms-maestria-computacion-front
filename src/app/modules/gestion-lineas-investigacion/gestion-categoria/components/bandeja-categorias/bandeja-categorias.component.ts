@@ -121,9 +121,20 @@ export class BandejaCategoriasComponent implements OnInit {
         });
     }
 
-    cambiarEstado(categoria: Categoria, nuevoEstado: string) {
+    cambiarEstado(event: any, categoria: Categoria, nuevoEstado: string) {
+        this.confirmationService.confirm({
+            target: event.target,
+            message: Mensaje.ESTADO_CATEGORIA_ACTUALIZADO_CORRECTAMENTE,
+            icon: PrimeIcons.EXCLAMATION_TRIANGLE,
+            acceptLabel: 'Si',
+            rejectLabel: 'No',
+            accept: () => this.cambiarEstadoCategoria(categoria, nuevoEstado),
+        });
+    }
+
+    cambiarEstadoCategoria(categoria: Categoria, nuevoEstado: string) {
         this.categoriaService
-            .cambiarEstadoCategoria(categoria.id, nuevoEstado)
+            .cambiarEstadoCategoria(categoria.id!, nuevoEstado)
             .subscribe({
                 next: () => {
                     this.messageService.add(
@@ -139,6 +150,25 @@ export class BandejaCategoriasComponent implements OnInit {
                 },
             });
     }
+
+    // cambiarEstado(categoria: Categoria, nuevoEstado: string) {
+    //     this.categoriaService
+    //         .cambiarEstadoCategoria(categoria.id, nuevoEstado)
+    //         .subscribe({
+    //             next: () => {
+    //                 this.messageService.add(
+    //                     infoMessage(
+    //                         `Categoria ${
+    //                             nuevoEstado === 'ACTIVO'
+    //                                 ? 'habilitado'
+    //                                 : 'deshabilitado'
+    //                         } correctamente`
+    //                     )
+    //                 );
+    //                 this.listCategorias();
+    //             },
+    //         });
+    // }
 
     setBreadcrumb() {
         this.breadcrumbService.setItems([

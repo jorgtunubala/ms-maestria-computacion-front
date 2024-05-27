@@ -102,20 +102,29 @@ export class BandejaExpertosComponent implements OnInit {
     }
 
     cambiarEstado(event: any, experto: Experto, nuevoEstado: string) {
+        this.confirmationService.confirm({
+            target: event.target,
+            message: Mensaje.ESTADO_EXPERTO_ACTUALIZADO_CORRECTAMENTE,
+            icon: PrimeIcons.EXCLAMATION_TRIANGLE,
+            acceptLabel: 'Si',
+            rejectLabel: 'No',
+            accept: () => this.cambiarEstadoExperto(experto, nuevoEstado),
+        });
+    }
+
+    cambiarEstadoExperto(experto: Experto, nuevoEstado: string) {
         this.expertoService
-            .cambiarEstadoExperto(experto.id, nuevoEstado)
+            .cambiarEstadoExperto(experto.id!, nuevoEstado)
             .subscribe({
                 next: () => {
+                    this.listExpertos();
                     this.messageService.add(
                         infoMessage(
                             `Experto ${
-                                nuevoEstado === 'ACTIVO'
-                                    ? 'habilitado'
-                                    : 'deshabilitado'
+                                nuevoEstado === 'ACTIVO' ? 'habilitado' : 'deshabilitado'
                             } correctamente`
                         )
                     );
-                    this.listExpertos();
                 },
             });
     }

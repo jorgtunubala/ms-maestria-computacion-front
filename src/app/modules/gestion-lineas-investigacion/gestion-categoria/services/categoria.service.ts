@@ -57,12 +57,11 @@ export class CategoriaService {
         );
     }
 
-    cambiarEstadoCategoria(id: number,estado: string) {
-        return this.http.patch<any>(
-            backend(`lineas-investigacion/categoria/${id}/estado`),{
-                estado
-            },
-            { headers: getHeaders() }
+    cambiarEstadoCategoria(id: number, estado: string) {
+        return this.http.patch(
+            backend(`lineas-investigacion/categoria/${id}/estado`),
+            { estado },
+            { headers: getHeaders(), responseType: 'text' }
         );
     }
 }
