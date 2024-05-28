@@ -57,6 +57,7 @@
         breakpoint="768px"
         styleClass="p-datatable-gridlines p-datatable-striped"
         currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} categorías"
+        [globalFilterFields]="['nombre', 'observacion']"
     >
         <ng-template pTemplate="header">
             <tr>
