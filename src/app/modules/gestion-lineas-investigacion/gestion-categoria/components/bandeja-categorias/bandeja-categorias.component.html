@@ -36,17 +36,14 @@
     </div>
     <br />
     <div class="col-12 text-right mb-3">
-        <p-inputSwitch
+        <p-selectButton
             [(ngModel)]="mostrarInactivasFlag"
+            [options]="[
+                { label: 'Activas', value: true },
+                { label: 'Inactivas', value: false }
+            ]"
             (onChange)="listCategorias()"
-        ></p-inputSwitch>
-        <label for="mostrarInactivasFlag" class="ml-2">
-            {{
-                mostrarInactivasFlag
-                    ? "Mostrar Categorías Inactivas"
-                    : "Mostrar Categorías Activas"
-            }}
-        </label>
+        ></p-selectButton>
     </div>
     <p-table
         #tableCategorias
