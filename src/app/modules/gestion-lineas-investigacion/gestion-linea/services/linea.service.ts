@@ -41,14 +41,14 @@ export class LineaService {
 
     deleteLinea(id: number) {
         return this.http.patch<any>(
-            backend(`lineas-investigacion/eliminar/${id}`),
+            backend(`lineas-investigacion/${id}`),
             { headers: getHeaders() }
         );
     }
 
     cambiarEstadoLinea(id: number, estado: string) {
         return this.http.patch(
-            backend(`lineas-investigacion/estado/${id}`),
+            backend(`lineas-investigacion/${id}/estado`),
             { estado },
             { headers: getHeaders(), responseType: 'text' }
         );

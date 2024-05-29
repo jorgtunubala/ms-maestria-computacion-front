@@ -7,6 +7,7 @@ import { LineaService } from '../../services/linea.service';
 import { Categoria } from '../../models/categoria';
 import { CategoriaService } from '../../../gestion-categoria/services/categoria.service';
 import { Mensaje } from 'src/app/core/enums/enums';
+import { infoMessage } from 'src/app/core/utils/message-util';
 
 @Component({
     selector: 'app-bandeja-lineas',
@@ -41,19 +42,24 @@ export class BandejaLineasComponent implements OnInit {
         this.lineaService.listLineas().subscribe({
             next: (response) => {
                 this.lineas = response.filter(
-                    (d) => d.estado === (this.mostrarInactivasFlag ? 'ACTIVO' : 'INACTIVO')
+                    (d) =>
+                        d.estado ===
+                        (this.mostrarInactivasFlag ? 'ACTIVO' : 'INACTIVO')
                 );
             },
             error: (err) => {
                 console.error(err);
-                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar líneas' });
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: 'Error al cargar líneas',
+                });
             },
             complete: () => {
                 this.loading = false;
-            }
+            },
         });
     }
-
 
     listCategorias() {
         this.categoriaService.listCategorias().subscribe({
@@ -78,14 +84,12 @@ export class BandejaLineasComponent implements OnInit {
     }
 
     onEditar(id: number) {
-        console.log('registro seleccionado: ', id)
         this.lineaService.getLinea(id).subscribe({
             next: (data) => {
                 this.linea = { ...data };
                 this.linea.idCategoria = data.categoria?.id || null;
                 this.isNew = false;
                 this.displayDialog = true;
-                console.log('data perro',data);
             },
             error: (err) => {
                 console.error(err);
@@ -96,7 +100,6 @@ export class BandejaLineasComponent implements OnInit {
                 });
             },
         });
-        
     }
 
     onSave() {
@@ -180,12 +183,14 @@ export class BandejaLineasComponent implements OnInit {
     }
 
     deleteLinea(id: number) {
-        // this.lineaInvestigacionService.deleteLineaInvestigacion(id).subscribe({
-        //     next: () => {
-        //         this.messageService.add(infoMessage(Mensaje.LINEA_ELIMINADA_CORRECTAMENTE));
-        //         this.listLineas();
-        //     },
-        // });
+        this.lineaService.deleteLinea(id).subscribe({
+            next: () => {
+                this.messageService.add(
+                    infoMessage(Mensaje.LINEA_ELIMINADA_CORRECTAMENTE)
+                );
+                this.listLineas();
+            },
+        });
     }
 
     cambiarEstado(event: any, linea: Linea, nuevoEstado: string) {
@@ -200,14 +205,20 @@ export class BandejaLineasComponent implements OnInit {
     }
 
     cambiarEstadoLinea(linea: Linea, nuevoEstado: string) {
-        // this.lineaInvestigacionService.cambiarEstadoLineaInvestigacion(linea.id!, nuevoEstado).subscribe({
-        //     next: () => {
-        //         this.messageService.add(
-        //             infoMessage(`Línea ${nuevoEstado === 'ACTIVO' ? 'habilitada' : 'deshabilitada'} correctamente`)
-        //         );
-        //         this.listLineas();
-        //     },
-        // });
+        this.lineaService.cambiarEstadoLinea(linea.id!, nuevoEstado).subscribe({
+            next: () => {
+                this.messageService.add(
+                    infoMessage(
+                        `Línea ${
+                            nuevoEstado === 'ACTIVO'
+                                ? 'habilitada'
+                                : 'deshabilitada'
+                        } correctamente`
+                    )
+                );
+                this.listLineas();
+            },
+        });
     }
 
     setBreadcrumb() {

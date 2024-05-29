@@ -58,11 +58,17 @@
         styleClass="p-datatable-gridlines p-datatable-striped"
         currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} líneas"
         [globalFilterFields]="['titulo', 'categoria.nombre']"
+        [sortField]="'titulo'"
+        [sortOrder]="1"
     >
         <ng-template pTemplate="header">
             <tr>
-                <th scope="col">Título</th>
-                <th scope="col">Categoría</th>
+                <th pSortableColumn="titulo" scope="col">
+                    Título <p-sortIcon field="titulo"></p-sortIcon>
+                </th>
+                <th pSortableColumn="categoria.nombre" scope="col">
+                    Categoría <p-sortIcon field="categoria.nombre"></p-sortIcon>
+                </th>
                 <th scope="col" class="text-center w-2">Opciones</th>
             </tr>
         </ng-template>
@@ -70,7 +76,6 @@
             <tr>
                 <td>{{ linea.titulo }}</td>
                 <td>{{ linea.categoria?.nombre || "Sin categoría" }}</td>
-                <!-- Comprobación añadida -->
                 <td class="text-center">
                     <button
                         pButton
@@ -118,12 +123,12 @@
     [modal]="true"
     [closable]="false"
     [responsive]="true"
-    [style]="{ width: '50vw', height: '50vh' }"
+    [style]="{ width: '30vw', height: '50vh' }"
     [breakpoint]="768"
     class="overflow-y-auto"
 >
     <div class="p-fluid">
-        <div class="p-field">
+        <div class="p-field mb-3">
             <label for="titulo">Título</label>
             <input
                 id="titulo"
