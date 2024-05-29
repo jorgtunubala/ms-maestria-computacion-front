@@ -9,7 +9,8 @@ import { ReactiveFormsModule } from "@angular/forms";
 
 @NgModule({
     declarations: [
-        PrincipalGestionLineasComponent
+        PrincipalGestionLineasComponent,
+        
     ],
     imports: [
         CommonModule,

@@ -3,5 +3,4 @@ export interface Categoria {
     nombre?: string;
     observacion?: string;
     estado?: string;
-
 }
