@@ -13,6 +13,7 @@ import { HistorialComponent } from './components/seguimiento-solicitudes/histori
 import { PortafolioComponent } from './pages/portafolio/portafolio.component';
 import { OpcionesComponent } from './pages/opciones/opciones.component';
 import { ContenedorComponent } from './components/gestion-coordinacion/contenedor/contenedor.component';
+import { VisoravalComponent } from './components/aval-tutores-directores/visoraval/visoraval.component';
 
 const routes: Routes = [
     {
@@ -40,7 +41,10 @@ const routes: Routes = [
     {
         path: 'avales',
         component: BuzondeavalesComponent,
-        children: [{ path: 'pendientes', component: PendientesavalComponent }],
+        children: [
+            { path: 'pendientes', component: PendientesavalComponent },
+            { path: 'pendientes/detalles', component: VisoravalComponent },
+        ],
     },
     {
         path: 'seguimiento',

@@ -57,7 +57,7 @@ export class ResumenComponent implements OnInit {
     firmaEnProceso: boolean = false;
     guardadoEnProceso: boolean = false;
     mostrarBtnFirmar: boolean = false;
-    deshabilitarEnvio: boolean = false;
+    habilitarEnvio: boolean = false;
     fechaActual: Date = new Date();
     nombresMes: string[] = [
         'Enero',
@@ -127,6 +127,7 @@ export class ResumenComponent implements OnInit {
                 this.mostrarOficio = true;
                 this.firmaEnProceso = false;
                 this.mostrarBtnFirmar = false;
+                this.habilitarEnvio = true;
             }, 1000);
         }, 100);
     }
@@ -140,7 +141,8 @@ export class ResumenComponent implements OnInit {
     }
 
     validarFirmaCargada() {
-        if (this.radicar.firmaSolicitanteUrl) {
+        if (this.radicar.firmaSolicitanteUrl && !this.mostrarBtnFirmar) {
+            this.habilitarEnvio = true;
             return true;
         }
         return false;
@@ -148,7 +150,6 @@ export class ResumenComponent implements OnInit {
 
     enviarSolicitud() {
         if (this.validarFirmaCargada()) {
-            this.deshabilitarEnvio = true;
             this.guardadoEnProceso = true;
             this.almacenar.almacenarSolicitudEnBD().then((resultado) => {
                 if (resultado) {
@@ -169,7 +170,7 @@ export class ResumenComponent implements OnInit {
                     });
                 } else {
                     this.guardadoEnProceso = false;
-                    this.deshabilitarEnvio = false;
+                    this.habilitarEnvio = false;
                     this.confirmationService.confirm({
                         message:
                             'Ha ocurrido un error inesperado al enviar la solicitud, revisela e intentelo nuevamente.',
@@ -198,9 +199,13 @@ export class ResumenComponent implements OnInit {
 
     navigateToBack() {
         if (
-            ['AD_ASIG', 'CA_ASIG', 'AP_SEME', 'CU_ASIG'].includes(
-                this.radicar.tipoSolicitudEscogida.codigoSolicitud
-            )
+            [
+                'AD_ASIG',
+                'CA_ASIG',
+                'AP_SEME',
+                'CU_ASIG',
+                'RE_CRED_PAS',
+            ].includes(this.radicar.tipoSolicitudEscogida.codigoSolicitud)
         ) {
             this.router.navigate([
                 '/gestionsolicitudes/portafolio/radicar/formulario',

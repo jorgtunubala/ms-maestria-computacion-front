@@ -30,3 +30,4 @@ export { DatosApoyoPasantia } from './solicitudes/solicitud-apoyo-pasantia/datos
 export { DatosReconoCreditos } from './solicitudes/solicitud-rec-creditos/datosReconoCreditos';
 export { DatosApoyoCongreso } from './solicitudes/solicitud-apoyo-congreso/datosApoyoCongreso';
 export { DatosApoyoPublicacion } from './solicitudes/solicitud-apoyo-publicacion/DatosApoyoPublicacion';
+export { InfoActividadesReCreditos } from './solicitudes/solicitud-rec-creditos/infoActividadesReCreditos';
