@@ -4,6 +4,7 @@ import { Subject } from 'rxjs';
 import {
     DatosAsignaturaAdicion,
     DatosSolicitante,
+    InfoActividadesReCreditos,
     InfoPersonal,
     RequisitosSolicitud,
     TipoSolicitud,
@@ -16,18 +17,23 @@ import { NullVisitor } from '@angular/compiler/src/render3/r3_ast';
 interface actividadCreditos {
     nombre: string;
     abreviacion: string;
+    multiplicativo: number;
     codigo: string;
+    docs: string[];
+    enlaces: string[];
 }
+
 @Injectable({
     providedIn: 'root',
 })
 export class RadicarService {
     private clickSubject = new Subject<void>();
     listadoTutoresYDirectores: TutorYDirector[];
+
     fechaEnvio: Date = null;
     tipoSolicitudEscogida: TipoSolicitud;
-    actividades: actividadCreditos[];
-    actividadesSeleccionadas: actividadCreditos[];
+    actividadesReCreditos: InfoActividadesReCreditos[];
+    actividadesSeleccionadas: InfoActividadesReCreditos[];
     requisitosSolicitudEscogida: RequisitosSolicitud;
     datosSolicitante: InfoPersonal = new InfoPersonal(
         null,
@@ -59,7 +65,7 @@ export class RadicarService {
     tipoCongreso: string = 'Seleccione una opción';
     tituloPublicacion: string = '';
 
-    grupoInvestigacion: string = '';
+    grupoInvestigacion: string = 'Seleccione una opción';
     valorApoyoEcon: number = 0;
     banco: string = '';
     tipoCuenta: string = 'Seleccione una opción';
@@ -136,7 +142,7 @@ export class RadicarService {
         this.datosAsignaturasAHomologar = [];
         this.datosInstitucionHomologar = { institucion: '', programa: '' };
         this.semestreAplazamiento = '';
-        this.actividades = [];
+        this.actividadesReCreditos = [];
         this.actividadesSeleccionadas = [];
         this.numeroInstanciasAsignExterna = 1;
         this.instanciasAsignExterna = [{}];
@@ -146,7 +152,7 @@ export class RadicarService {
         this.datosAsignAdiCancel = [];
         this.fechasEstancia = [];
         this.lugarEstancia = '';
-        this.grupoInvestigacion = '';
+        this.grupoInvestigacion = 'Seleccione una opción';
         this.valorApoyoEcon = 0;
         this.banco = '';
         this.tipoCuenta = 'Seleccione una opción';

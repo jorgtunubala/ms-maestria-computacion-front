@@ -122,87 +122,146 @@ export class FormulariosComponent implements OnInit {
                     ],
                 });
             }
+
             if (
                 this.radicar.tipoSolicitudEscogida.codigoSolicitud ===
                 'RE_CRED_PAS'
             ) {
+                this.gestorHttp
+                    .obtenerActividadesReCreditos()
+                    .subscribe((respuesta) => {
+                        this.radicar.actividadesReCreditos = respuesta;
+                    });
+
+                /*
                 this.radicar.actividades = [
-                    {
-                        nombre: 'Pasantía de investigación',
-                        abreviacion: 'Pasantía',
-                        codigo: 'RE_CRED_PAS',
-                    },
                     {
                         nombre: 'Diseño curricular de curso teórico/práctico nuevo de pregrado',
                         abreviacion: 'Diseño curricular',
+                        multiplicativo: 12,
                         codigo: 'RE_CRED_DIS',
+                        docs: [
+                            'Documentaciónn según especificaciones establecidadas por el consejo de facultad para cursos nuevos',
+                            'Aval del comite de programa de la Maestria para la realizacion de la actividad',
+                        ],
+                        enlaces: ['Material de apoyo (si aplica)'],
                     },
                     {
                         nombre: 'Preparación de curso teórico/práctico nuevo de pregrado',
                         abreviacion: 'Preparación de curso',
                         codigo: 'PR_CURS_TEO',
+                        multiplicativo: 36,
+                        docs: [
+                            'Aval del Comité de programa de la Maestría para la realización de la actividad',
+                        ],
+                        enlaces: ['Material de apoyo elaborado para el curso'],
                     },
                     {
                         nombre: 'Docencia en pregrado',
                         abreviacion: 'Docencia',
                         codigo: 'AS_CRED_DO',
+                        multiplicativo: 2.5,
+                        docs: [
+                            'Labor docente asignada (descargada de SIMCA) con la descripción de la intensidad horaria total desarrollada',
+                        ],
+                        enlaces: [],
                     },
                     {
                         nombre: 'Realización de seminario de actualización',
                         abreviacion: 'Seminario',
                         codigo: 'RE_CRED_SEM',
+                        multiplicativo: 2.5,
+                        docs: [
+                            'Carta de aval del Consejo de Facultad',
+                            'Listado de asistencia',
+                        ],
+                        enlaces: [],
                     },
                     {
                         nombre: 'Monitoria de cursos',
                         abreviacion: 'Monitoria',
                         codigo: 'AS_CRED_MON',
+                        multiplicativo: null,
+                        docs: [
+                            'Certificación del profesor de la asignatura (s) indicando intensidad y trabajo realizado, con visto bueno del Jefe de Departamento',
+                            'Aval del Comité de programa de la Maestría para la realización de la actividad',
+                        ],
+                        enlaces: [],
                     },
                     {
                         nombre: 'Elaboración de material de apoyo para pregrado',
                         abreviacion: 'Material de apoyo',
                         codigo: 'AS_CRED_MAT',
+                        multiplicativo: null,
+                        docs: [],
+                        enlaces: [],
                     },
                     {
                         nombre: 'Dirección de trabajo de grado en pregrado',
                         abreviacion: 'Dirección trabajo de grado',
                         codigo: 'TG_PREG_POS',
+                        multiplicativo: null,
+                        docs: [],
+                        enlaces: [],
                     },
                     {
                         nombre: 'Jurado de trabajo de grado de pregrado',
                         abreviacion: 'Jurado trabajo de grado',
                         codigo: 'JU_PREG_POS',
+                        multiplicativo: null,
+                        docs: [],
+                        enlaces: [],
                     },
                     {
                         nombre: 'Evaluación de anteproyecto de pregrado',
                         abreviacion: 'Evaluación anteproyecto',
                         codigo: 'EV_ANTE_PRE',
+                        multiplicativo: null,
+                        docs: [],
+                        enlaces: [],
                     },
                     {
                         nombre: 'Evaluación de productividad intelectual',
                         abreviacion: 'Evaluación productividad intelectual',
                         codigo: 'EV_PROD_INT',
+                        multiplicativo: null,
+                        docs: [],
+                        enlaces: [],
                     },
                     {
                         nombre: 'Evaluación informe sabático',
                         abreviacion: 'Evaluación informe sabático',
                         codigo: 'EV_INFO_SAB',
+                        multiplicativo: null,
+                        docs: [],
+                        enlaces: [],
                     },
                     {
                         nombre: 'Participación en el comité de programa',
                         abreviacion: 'Participación comité',
                         codigo: 'PA_COMI_PRO',
+                        multiplicativo: null,
+                        docs: [],
+                        enlaces: [],
                     },
                     {
                         nombre: 'Realización de otras actividades de apoyo al departamento',
                         abreviacion: 'Otras actividades',
                         codigo: 'OT_ACTI_APO',
+                        multiplicativo: null,
+                        docs: [],
+                        enlaces: [],
                     },
                     {
                         nombre: 'Publicaciones',
                         abreviacion: 'Publicaciones',
                         codigo: 'RE_CRED_PUB',
+                        multiplicativo: null,
+                        docs: [],
+                        enlaces: [],
                     },
                 ];
+                */
             }
         } catch (error) {
             console.error('Se produjo un error:', error);
@@ -449,9 +508,13 @@ export class FormulariosComponent implements OnInit {
 
         if (this.validarDatosFormulario()) {
             if (
-                ['AD_ASIG', 'CA_ASIG', 'AP_SEME', 'CU_ASIG'].includes(
-                    this.radicar.tipoSolicitudEscogida.codigoSolicitud
-                )
+                [
+                    'AD_ASIG',
+                    'CA_ASIG',
+                    'AP_SEME',
+                    'CU_ASIG',
+                    'RE_CRED_PAS',
+                ].includes(this.radicar.tipoSolicitudEscogida.codigoSolicitud)
             ) {
                 this.router.navigate([
                     '/gestionsolicitudes/portafolio/radicar/resumen',

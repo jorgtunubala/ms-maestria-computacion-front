@@ -7,7 +7,7 @@ import {
     SolicitudSave,
     SolicitudPendienteAval,
     DatosAvalSolicitud,
-    DatosAsignaturaAdicion,
+    InfoActividadesReCreditos,
 } from '../models/indiceModelos';
 import { Observable, catchError, map } from 'rxjs';
 import { InfoPersonalResponse } from '../models/solicitante/infoPersonalResponse';
@@ -87,5 +87,15 @@ export class HttpService {
             'http://localhost:8095/msmaestriac/gestionSolicitud/obtener-datos-solicitud/' +
             id;
         return this.http.get<DatosSolicitudRequest>(url);
+    }
+
+    obtenerActividadesReCreditos() {
+        const url =
+            'http://localhost:8095/msmaestriac/gestionSubtipos/subTiposSolicitud/9';
+        return this.http.get<InfoActividadesReCreditos[]>(url).pipe(
+            map((respuesta) => {
+                return respuesta;
+            })
+        );
     }
 }

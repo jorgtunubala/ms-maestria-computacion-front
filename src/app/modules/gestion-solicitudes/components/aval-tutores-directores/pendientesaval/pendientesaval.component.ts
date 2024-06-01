@@ -9,6 +9,7 @@ import {
 } from '../../../models/indiceModelos';
 import { HttpService } from '../../../services/http.service';
 import { RadicarService } from '../../../services/radicar.service';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-pendientesaval',
@@ -32,11 +33,13 @@ export class PendientesavalComponent implements OnInit {
     constructor(
         public gestor: GestorService,
         public radicar: RadicarService,
+        private router: Router,
         public dialogService: DialogService,
         public http: HttpService
     ) {}
 
     ngOnInit(): void {
+        this.radicar.restrablecerValores();
         this.cargarSolicitudes();
 
         this.gestor.cargarSolicitudes$.subscribe(() => {
@@ -56,6 +59,7 @@ export class PendientesavalComponent implements OnInit {
         );
     }
 
+    /*
     mostrarDetalles(event) {
         this.gestor.setSolicitudSeleccionada(this.solicitudSeleccionada);
 
@@ -78,5 +82,24 @@ export class PendientesavalComponent implements OnInit {
         ref.onClose.subscribe(() => {
             this.radicar.restrablecerValores();
         });
+    }
+    */
+
+    mostrarDetalles(event) {
+        // Obtiene la solicitud seleccionada
+        this.gestor.setSolicitudSeleccionada(this.solicitudSeleccionada);
+
+        const tipoSolicitud: TipoSolicitud = {
+            idSolicitud: this.solicitudSeleccionada.idSolicitud,
+            codigoSolicitud: this.solicitudSeleccionada.codigoSolicitud,
+            nombreSolicitud: this.solicitudSeleccionada.nombreTipoSolicitud,
+        };
+
+        this.radicar.tipoSolicitudEscogida = tipoSolicitud;
+
+        // Navega a VistaComponent pasando la ID de la solicitud seleccionada como parámetro de ruta
+        this.router.navigate([
+            '/gestionsolicitudes/avales/pendientes/detalles',
+        ]);
     }
 }

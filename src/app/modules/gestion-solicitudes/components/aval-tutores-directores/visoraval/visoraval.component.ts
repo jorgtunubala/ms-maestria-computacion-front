@@ -1,6 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { GestorService } from '../../../services/gestor.service';
 import { RadicarService } from '../../../services/radicar.service';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { HttpService } from '../../../services/http.service';
 import { DatosSolicitudRequest } from '../../../models/solicitudes/datosSolicitudRequest';
 import { OficioComponent } from '../../utilidades/oficio/oficio.component';
@@ -25,10 +26,13 @@ export class VisoravalComponent implements OnInit {
     mostrarBtnAvalar: boolean = false;
     mostrarPFSet: boolean = true;
 
+    urlPdf: SafeUrl | undefined;
+
     constructor(
         public gestor: GestorService,
         public radicar: RadicarService,
         public http: HttpService,
+        private sanitizer: DomSanitizer,
         private router: Router,
         private confirmationService: ConfirmationService
     ) {}
@@ -185,21 +189,16 @@ export class VisoravalComponent implements OnInit {
         );
 
         if (documento) {
-            // Crear un objeto URL para el archivo
-            const url = URL.createObjectURL(documento);
+            const tipoMIME = 'application/pdf';
+            // Crear una nueva instancia de Blob con el tipo MIME especificado
+            const blob = new Blob([documento], { type: tipoMIME });
 
-            // Crear un enlace de descarga
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = nombreDocumento;
+            // Crear la URL segura
+            this.urlPdf = this.sanitizer.bypassSecurityTrustResourceUrl(
+                URL.createObjectURL(blob)
+            );
 
-            // Simular un clic en el enlace para iniciar la descarga
-            link.click();
-
-            // Liberar el objeto URL
-            URL.revokeObjectURL(url);
-        } else {
-            console.error('El documento no se encontró');
+            console.log(this.urlPdf);
         }
     }
 

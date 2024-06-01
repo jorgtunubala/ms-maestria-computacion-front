@@ -13,7 +13,8 @@ interface actividadCreditos {
     styleUrls: ['./creditos.component.scss'],
 })
 export class CreditosComponent implements OnInit {
-    //actividadSeleccionada: actividadCreditos;
+    horasIngresadas: number[] = [];
+
     constructor(public radicar: RadicarService) {}
 
     ngOnInit(): void {}
@@ -24,5 +25,10 @@ export class CreditosComponent implements OnInit {
 
     eliminarActividad(index: number) {
         this.radicar.actividadesSeleccionadas.splice(index, 1);
+        this.horasIngresadas[index] = null;
+    }
+
+    onValueChange(value: number, index: number): void {
+        this.horasIngresadas[index] = value;
     }
 }
