@@ -19,7 +19,7 @@ export class BandejaLineasComponent implements OnInit {
     categorias: Categoria[] = [];
     loading: boolean = false;
     displayDialog: boolean = false;
-    linea: Linea = { titulo: '', idCategoria: null };
+    linea: Linea = { titulo: '', idCategoria: null, descripcion: '' };
     isNew: boolean = true;
     mostrarInactivasFlag: boolean = true;
 
@@ -78,7 +78,7 @@ export class BandejaLineasComponent implements OnInit {
     }
 
     showDialog() {
-        this.linea = { titulo: '', idCategoria: null };
+        this.linea = { titulo: '', idCategoria: null, descripcion: '' };
         this.isNew = true;
         this.displayDialog = true;
     }

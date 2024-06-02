@@ -16,7 +16,7 @@ export class BandejaCategoriasComponent implements OnInit {
     categorias: Categoria[] = [];
     loading: boolean = false;
     displayDialog: boolean = false;
-    categoria: Categoria = { nombre: '', observacion: '' };
+    categoria: Categoria = { nombre: '', descripcion: '' };
     isNew: boolean = true;
     mostrarInactivasFlag: boolean = true;
 
@@ -49,7 +49,7 @@ export class BandejaCategoriasComponent implements OnInit {
     }
 
     showDialog() {
-        this.categoria = { nombre: '', observacion: '' };
+        this.categoria = { nombre: '', descripcion: '' };
         this.isNew = true;
         this.displayDialog = true;
     }

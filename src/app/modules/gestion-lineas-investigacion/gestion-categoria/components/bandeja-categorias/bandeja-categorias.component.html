@@ -54,7 +54,7 @@
         breakpoint="768px"
         styleClass="p-datatable-gridlines p-datatable-striped"
         currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} categorías"
-        [globalFilterFields]="['nombre', 'observacion']"
+        [globalFilterFields]="['nombre', 'descripcion']"
         [sortField]="'nombre'"
         [sortOrder]="1"
     >
@@ -63,8 +63,8 @@
                 <th pSortableColumn="nombre" scope="col">
                     Nombre <p-sortIcon field="nombre"></p-sortIcon>
                 </th>
-                <th pSortableColumn="observacion" scope="col">
-                    Observación <p-sortIcon field="observacion"></p-sortIcon>
+                <th pSortableColumn="descripcion" scope="col">
+                    Descripción <p-sortIcon field="descripcion"></p-sortIcon>
                 </th>
                 <th scope="col" class="text-center w-2">Opciones</th>
             </tr>
@@ -72,7 +72,7 @@
         <ng-template pTemplate="body" let-categoria>
             <tr>
                 <td>{{ categoria.nombre }}</td>
-                <td>{{ categoria.observacion }}</td>
+                <td>{{ categoria.descripcion }}</td>
                 <td class="text-center">
                     <button
                         pButton
@@ -134,11 +134,11 @@
             />
         </div>
         <div class="p-field">
-            <label for="observacion">Observación</label>
+            <label for="descripcion">Descripción</label>
             <textarea
-                id="observacion"
+                id="descripcion"
                 pInputTextarea
-                [(ngModel)]="categoria.observacion"
+                [(ngModel)]="categoria.descripcion"
                 [rows]="5"
             ></textarea>
         </div>

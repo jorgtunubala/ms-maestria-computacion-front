@@ -54,7 +54,7 @@
         breakpoint="768px"
         styleClass="p-datatable-gridlines p-datatable-striped"
         currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} líneas"
-        [globalFilterFields]="['titulo', 'categoria.nombre']"
+        [globalFilterFields]="['titulo', 'categoria.nombre', 'descripcion']"
         [sortField]="'titulo'"
         [sortOrder]="1"
     >
@@ -66,6 +66,9 @@
                 <th pSortableColumn="categoria.nombre" scope="col">
                     Categoría <p-sortIcon field="categoria.nombre"></p-sortIcon>
                 </th>
+                <th pSortableColumn="descripcion" scope="col">
+                    Descripción <p-sortIcon field="descripcion"></p-sortIcon>
+                </th>
                 <th scope="col" class="text-center w-2">Opciones</th>
             </tr>
         </ng-template>
@@ -73,6 +76,7 @@
             <tr>
                 <td>{{ linea.titulo }}</td>
                 <td>{{ linea.categoria?.nombre || "Sin categoría" }}</td>
+                <td>{{ linea.descripcion }}</td>
                 <td class="text-center">
                     <button
                         pButton
@@ -106,7 +110,7 @@
         </ng-template>
         <ng-template pTemplate="emptymessage" let-columns>
             <tr>
-                <td [attr.colspan]="3">No se encontraron registros</td>
+                <td [attr.colspan]="4">No se encontraron registros</td>
             </tr>
         </ng-template>
     </p-table>
@@ -145,6 +149,15 @@
                 placeholder="Seleccionar Categoría"
                 class="w-full"
             ></p-dropdown>
+        </div>
+        <div class="p-field">
+            <label for="descripcion">Descripción</label>
+            <textarea
+                id="descripcion"
+                pInputTextarea
+                [(ngModel)]="linea.descripcion"
+                [rows]="5"
+            ></textarea>
         </div>
     </div>
     <p-footer>
