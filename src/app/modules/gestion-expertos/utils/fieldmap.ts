@@ -16,4 +16,4 @@ export const fieldMap: { [key: string]: string } = {
 };
 
 // let excludedKeys = ['id', 'categoria', 'estado', 'copiadocidentidad']; // Define las partes de las claves a excluir
-export const excludedKeys = ['id', 'categoria', 'estado', 'copiadocidentidad']; // Define las partes de las claves a excluir
+export const excludedKeys = ['id', 'categoria', 'estado', 'copiadocidentidad','lineasInvestigacion','lineasInvestigacion.titulo','iddocidentidad']; // Define las partes de las claves a excluir

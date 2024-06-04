@@ -132,24 +132,16 @@ export class BandejaExpertosComponent implements OnInit {
     //para el previsualizar
     getKeys(obj: any, prefix: string = ''): any[] {
         let keys: any[] = [];
-        let lineasInvestigacion: string[] = [];
-
+    
         for (const [key, value] of Object.entries(obj)) {
             const newKey = prefix ? `${prefix}.${key}` : key;
-
+    
             if (
                 excludedKeys.some((excludedKey) => newKey.endsWith(excludedKey))
             )
                 continue;
-
+    
             if (
-                newKey.startsWith('lineasInvestigacion') &&
-                newKey.endsWith('titulo')
-            ) {
-                if (typeof value === 'string') {
-                    lineasInvestigacion.push(value);
-                }
-            } else if (
                 typeof value === 'object' &&
                 value !== null &&
                 !Array.isArray(value)
@@ -168,16 +160,10 @@ export class BandejaExpertosComponent implements OnInit {
                 });
             }
         }
-
-        if (lineasInvestigacion.length > 0) {
-            keys.push({
-                key: 'Línea de Investigación',
-                value: lineasInvestigacion.join(', '),
-            });
-        }
-
+    
         return keys;
     }
+    
 
     formatKey(key: string): string {
         const displayKey = key.split('.').pop();
