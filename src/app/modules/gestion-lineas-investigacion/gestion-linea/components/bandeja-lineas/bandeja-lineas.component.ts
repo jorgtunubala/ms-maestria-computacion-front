@@ -19,7 +19,7 @@ export class BandejaLineasComponent implements OnInit {
     categorias: Categoria[] = [];
     loading: boolean = false;
     displayDialog: boolean = false;
-    linea: Linea = { titulo: '', idCategoria: null, descripcion: '' };
+    linea: Linea = this.initializeLinea();
     isNew: boolean = true;
     mostrarInactivasFlag: boolean = true;
 
@@ -47,14 +47,7 @@ export class BandejaLineasComponent implements OnInit {
                         (this.mostrarInactivasFlag ? 'ACTIVO' : 'INACTIVO')
                 );
             },
-            error: (err) => {
-                console.error(err);
-                this.messageService.add({
-                    severity: 'error',
-                    summary: 'Error',
-                    detail: 'Error al cargar líneas',
-                });
-            },
+            error: (err) => this.handleError(err, 'Error al cargar líneas'),
             complete: () => {
                 this.loading = false;
             },
@@ -66,19 +59,12 @@ export class BandejaLineasComponent implements OnInit {
             next: (data: Categoria[]) => {
                 this.categorias = data;
             },
-            error: (err) => {
-                console.error(err);
-                this.messageService.add({
-                    severity: 'error',
-                    summary: 'Error',
-                    detail: 'Error al cargar categorías',
-                });
-            },
+            error: (err) => this.handleError(err, 'Error al cargar categorías'),
         });
     }
 
     showDialog() {
-        this.linea = { titulo: '', idCategoria: null, descripcion: '' };
+        this.linea = this.initializeLinea();
         this.isNew = true;
         this.displayDialog = true;
     }
@@ -91,79 +77,15 @@ export class BandejaLineasComponent implements OnInit {
                 this.isNew = false;
                 this.displayDialog = true;
             },
-            error: (err) => {
-                console.error(err);
-                this.messageService.add({
-                    severity: 'error',
-                    summary: 'Error',
-                    detail: 'Error al cargar la línea',
-                });
-            },
+            error: (err) => this.handleError(err, 'Error al cargar la línea'),
         });
     }
 
     onSave() {
         if (this.isNew) {
-            this.lineaService.createLinea(this.linea).subscribe({
-                next: (data) => {
-                    // Asignar la categoría correspondiente a la nueva línea
-                    const categoria = this.categorias.find(
-                        (cat) => cat.id === this.linea.idCategoria
-                    );
-                    if (categoria) {
-                        data.categoria = categoria;
-                    }
-                    this.lineas.push(data);
-                    this.displayDialog = false;
-                    this.messageService.add({
-                        severity: 'success',
-                        summary: 'Éxito',
-                        detail: 'Línea agregada con éxito',
-                    });
-                },
-                error: (err) => {
-                    console.error(err);
-                    this.messageService.add({
-                        severity: 'error',
-                        summary: 'Error',
-                        detail: 'Error al agregar línea',
-                    });
-                },
-            });
+            this.createLinea();
         } else {
-            this.lineaService
-                .updateLinea(this.linea.id!, this.linea)
-                .subscribe({
-                    next: (data) => {
-                        const index = this.lineas.findIndex(
-                            (linea) => linea.id === data.id
-                        );
-                        if (index !== -1) {
-                            // Asignar la categoría correspondiente a la línea actualizada
-                            const categoria = this.categorias.find(
-                                (cat) => cat.id === this.linea.idCategoria
-                            );
-                            if (categoria) {
-                                data.categoria = categoria;
-                            }
-                            this.lineas[index] = data;
-                        }
-                        this.displayDialog = false;
-                        this.messageService.add({
-                            severity: 'success',
-                            summary: 'Éxito',
-                            detail: 'Línea actualizada con éxito',
-                        });
-                    },
-                    error: (err) => {
-                        console.error(err);
-                        this.messageService.add({
-                            severity: 'error',
-                            summary: 'Error',
-                            detail: 'Error al actualizar línea',
-                        });
-                    },
-                });
+            this.updateLinea();
         }
     }
 
@@ -226,5 +148,66 @@ export class BandejaLineasComponent implements OnInit {
             { label: 'Gestión' },
             { label: 'Líneas de Investigación' },
         ]);
+    }
+
+    private initializeLinea(): Linea {
+        return { titulo: '', idCategoria: null, descripcion: '' };
+    }
+
+    private createLinea() {
+        this.lineaService.createLinea(this.linea).subscribe({
+            next: (data) => {
+                this.assignCategoriaToLinea(data);
+                this.lineas.push(data);
+                this.displayDialog = false;
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Éxito',
+                    detail: 'Línea agregada con éxito',
+                });
+                this.listLineas();
+            },
+            error: (err) => this.handleError(err, 'Error al agregar línea'),
+        });
+    }
+
+    private updateLinea() {
+        this.lineaService.updateLinea(this.linea.id!, this.linea).subscribe({
+            next: (data) => {
+                const index = this.lineas.findIndex(
+                    (linea) => linea.id === data.id
+                );
+                if (index !== -1) {
+                    this.assignCategoriaToLinea(data);
+                    this.lineas[index] = data;
+                }
+                this.displayDialog = false;
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Éxito',
+                    detail: 'Línea actualizada con éxito',
+                });
+                this.listLineas();
+            },
+            error: (err) => this.handleError(err, 'Error al actualizar línea'),
+        });
+    }
+
+    private assignCategoriaToLinea(linea: Linea) {
+        const categoria = this.categorias.find(
+            (cat) => cat.id === this.linea.idCategoria
+        );
+        if (categoria) {
+            linea.categoria = categoria;
+        }
+    }
+
+    private handleError(error: any, detail: string) {
+        console.error(error);
+        this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: detail,
+        });
     }
 }

@@ -16,8 +16,8 @@ export class BandejaCategoriasComponent implements OnInit {
     categorias: Categoria[] = [];
     loading: boolean = false;
     displayDialog: boolean = false;
-    categoria: Categoria = { nombre: '', descripcion: '' };
-    isNew: boolean = true;
+    categoria: Categoria = this.initializeCategoria();
+    isNewCategoria: boolean = true;
     mostrarInactivasFlag: boolean = true;
 
     constructor(
@@ -35,63 +35,43 @@ export class BandejaCategoriasComponent implements OnInit {
 
     listCategorias() {
         this.loading = true;
-        this.categoriaService
-            .listCategorias()
-            .subscribe({
-                next: (response) =>
-                    (this.categorias = response.filter(
-                        (d) =>
-                            d.estado ===
-                            (this.mostrarInactivasFlag ? 'ACTIVO' : 'INACTIVO')
-                    )),
-            })
-            .add(() => (this.loading = false));
+        this.categoriaService.listCategorias().subscribe({
+            next: (response) => {
+                this.categorias = response.filter(
+                    (d) =>
+                        d.estado ===
+                        (this.mostrarInactivasFlag ? 'ACTIVO' : 'INACTIVO')
+                );
+            },
+            error: (err) => this.handleError(err, 'Error al cargar categorías'),
+            complete: () => {
+                this.loading = false;
+            },
+        });
     }
 
     showDialog() {
-        this.categoria = { nombre: '', descripcion: '' };
-        this.isNew = true;
+        this.categoria = this.initializeCategoria();
+        this.isNewCategoria = true;
         this.displayDialog = true;
     }
 
     onEditar(id: number) {
-        this.categoriaService.getCategoria(id).subscribe((data) => {
-            this.categoria = { ...data };
-            this.isNew = false;
-            this.displayDialog = true;
+        this.categoriaService.getCategoria(id).subscribe({
+            next: (data) => {
+                this.categoria = { ...data };
+                this.isNewCategoria = false;
+                this.displayDialog = true;
+            },
+            error: (err) => this.handleError(err, 'Error al cargar la categoría'),
         });
     }
 
     onSave() {
-        if (this.isNew) {
-            this.categoriaService
-                .createCategoria(this.categoria)
-                .subscribe((data) => {
-                    this.categorias.push(data);
-                    this.displayDialog = false;
-                    this.messageService.add({
-                        severity: 'success',
-                        summary: 'Éxito',
-                        detail: 'Categoría agregada con éxito',
-                    });
-                });
+        if (this.isNewCategoria) {
+            this.createCategoria();
         } else {
-            this.categoriaService
-                .updateCategoria(this.categoria.id!, this.categoria)
-                .subscribe((data) => {
-                    const index = this.categorias.findIndex(
-                        (categoria) => categoria.id === data.id
-                    );
-                    if (index !== -1) {
-                        this.categorias[index] = data;
-                    }
-                    this.displayDialog = false;
-                    this.messageService.add({
-                        severity: 'success',
-                        summary: 'Éxito',
-                        detail: 'Categoría actualizada con éxito',
-                    });
-                });
+            this.updateCategoria();
         }
     }
 
@@ -118,6 +98,7 @@ export class BandejaCategoriasComponent implements OnInit {
                 );
                 this.listCategorias();
             },
+            error: (err) => this.handleError(err, 'Error al eliminar categoría'),
         });
     }
 
@@ -133,47 +114,77 @@ export class BandejaCategoriasComponent implements OnInit {
     }
 
     cambiarEstadoCategoria(categoria: Categoria, nuevoEstado: string) {
-        this.categoriaService
-            .cambiarEstadoCategoria(categoria.id!, nuevoEstado)
-            .subscribe({
-                next: () => {
-                    this.messageService.add(
-                        infoMessage(
-                            `Categoria ${
-                                nuevoEstado === 'ACTIVO'
-                                    ? 'habilitado'
-                                    : 'deshabilitado'
-                            } correctamente`
-                        )
-                    );
-                    this.listCategorias();
-                },
-            });
+        this.categoriaService.cambiarEstadoCategoria(categoria.id!, nuevoEstado).subscribe({
+            next: () => {
+                this.messageService.add(
+                    infoMessage(
+                        `Categoria ${
+                            nuevoEstado === 'ACTIVO'
+                                ? 'habilitada'
+                                : 'deshabilitada'
+                        } correctamente`
+                    )
+                );
+                this.listCategorias();
+            },
+            error: (err) => this.handleError(err, 'Error al cambiar el estado de la categoría'),
+        });
     }
-
-    // cambiarEstado(categoria: Categoria, nuevoEstado: string) {
-    //     this.categoriaService
-    //         .cambiarEstadoCategoria(categoria.id, nuevoEstado)
-    //         .subscribe({
-    //             next: () => {
-    //                 this.messageService.add(
-    //                     infoMessage(
-    //                         `Categoria ${
-    //                             nuevoEstado === 'ACTIVO'
-    //                                 ? 'habilitado'
-    //                                 : 'deshabilitado'
-    //                         } correctamente`
-    //                     )
-    //                 );
-    //                 this.listCategorias();
-    //             },
-    //         });
-    // }
 
     setBreadcrumb() {
         this.breadcrumbService.setItems([
             { label: 'Gestión' },
             { label: 'Categorías' },
         ]);
+    }
+
+    private initializeCategoria(): Categoria {
+        return { nombre: '', descripcion: '' };
+    }
+
+    private createCategoria() {
+        this.categoriaService.createCategoria(this.categoria).subscribe({
+            next: (data) => {
+                this.categorias.push(data);
+                this.displayDialog = false;
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Éxito',
+                    detail: 'Categoría agregada con éxito',
+                });
+                this.listCategorias();
+            },
+            error: (err) => this.handleError(err, 'Error al agregar categoría'),
+        });
+    }
+
+    private updateCategoria() {
+        this.categoriaService.updateCategoria(this.categoria.id!, this.categoria).subscribe({
+            next: (data) => {
+                const index = this.categorias.findIndex(
+                    (categoria) => categoria.id === data.id
+                );
+                if (index !== -1) {
+                    this.categorias[index] = data;
+                }
+                this.displayDialog = false;
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Éxito',
+                    detail: 'Categoría actualizada con éxito',
+                });
+                this.listCategorias();
+            },
+            error: (err) => this.handleError(err, 'Error al actualizar categoría'),
+        });
+    }
+
+    private handleError(error: any, detail: string) {
+        console.error(error);
+        this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: detail,
+        });
     }
 }
