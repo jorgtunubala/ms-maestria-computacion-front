@@ -1,6 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { RadicarService } from '../../../services/radicar.service';
-import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-plantillas',
@@ -121,6 +120,41 @@ export class PlantillasComponent implements OnInit {
             this.radicar.documentosAdjuntos.forEach((doc) => {
                 this.nombreArchivosAdjuntos.push(doc.name);
             });
+        }
+
+        // Verificar adjuntosDeActividades
+        if (this.radicar.adjuntosDeActividades) {
+            Object.keys(this.radicar.adjuntosDeActividades).forEach(
+                (actividadId) => {
+                    const adjuntosActividad =
+                        this.radicar.adjuntosDeActividades[Number(actividadId)];
+                    if (adjuntosActividad) {
+                        this.nombreArchivosAdjuntos.push(
+                            `Actividad ${Number(actividadId) + 1}`
+                        );
+                        if (
+                            adjuntosActividad.archivos &&
+                            adjuntosActividad.archivos.length > 0
+                        ) {
+                            adjuntosActividad.archivos.forEach((archivo) => {
+                                this.nombreArchivosAdjuntos.push(
+                                    `- ${archivo.name}`
+                                );
+                            });
+                        }
+                        if (
+                            adjuntosActividad.enlaces &&
+                            adjuntosActividad.enlaces.length > 0
+                        ) {
+                            adjuntosActividad.enlaces.forEach((enlace) => {
+                                this.nombreArchivosAdjuntos.push(
+                                    `- Enlace: ${enlace}`
+                                );
+                            });
+                        }
+                    }
+                }
+            );
         }
     }
 }
