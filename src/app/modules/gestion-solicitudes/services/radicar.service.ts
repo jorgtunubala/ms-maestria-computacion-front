@@ -23,6 +23,14 @@ interface actividadCreditos {
     enlaces: string[];
 }
 
+interface AdjuntosActividad {
+    archivos: File[];
+    enlaces: string[];
+}
+interface AdjuntosDeActividades {
+    [actividadId: number]: AdjuntosActividad;
+}
+
 @Injectable({
     providedIn: 'root',
 })
@@ -64,6 +72,10 @@ export class RadicarService {
     nombreCongreso: string = '';
     tipoCongreso: string = 'Seleccione una opción';
     tituloPublicacion: string = '';
+
+    horasIngresadas: number[] = [];
+    horasAsignables: number[] = [];
+    adjuntosDeActividades: AdjuntosDeActividades = {};
 
     grupoInvestigacion: string = 'Seleccione una opción';
     valorApoyoEcon: number = 0;
@@ -171,6 +183,9 @@ export class RadicarService {
         this.esperando = false;
         this.fechaEnvio = null;
         this.enlaceMaterialAudiovisual = '';
+        this.horasIngresadas = [];
+        this.horasAsignables = [];
+        this.adjuntosDeActividades = {};
     }
 
     agregarInstancia() {
