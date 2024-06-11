@@ -35,6 +35,24 @@ export const menuItems: MenuItem[] = [
                 icon: 'pi pi-fw pi-inbox',
                 routerLink: '/gestionsolicitudes/buzon',
             },
+            {
+                label: 'CUESTIONARIO DE EVALUACIÓN',
+                icon: 'pi pi-fw pi-inbox',
+                items: [
+                    {
+                        label: 'Preguntas Evaluación',
+                        icon: 'pi pi-fw pi-question',
+                        routerLink: '/gestion-evaluaciondocente/preguntas',
+                    },
+                    {
+                        label: 'Cuestionarios de Evaluación',
+                        icon: 'pi pi-fw pi-file',
+                        routerLink: '/gestion-evaluaciondocente/cuestionarios',
+                    },
+                ],
+                // routerLink: '/gestion-evaluaciondocente',
+                
+            },
         ],
     },
     {
