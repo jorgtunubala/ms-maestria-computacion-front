@@ -1,5 +1,97 @@
-<p>
-  Bandeja-Cuestionarios works!
+<p-panel>
+    <p-header>
+        <b>GESTIONAR CUESTIONARIOS</b>
+    </p-header>
+    <!---Encabezado-->
+    <div class="grid">
+        <!-- Busqueda -->
+        <div class="col-5">
+            <div class="flex align-items-end h-full">
+                <span class="p-input-icon-left w-full">
+                    <i class="pi pi-search"></i>
+                    <input
+                        pInputText
+                        type="text"
+                        class="w-full"
+                        placeholder="Buscar cuestionario"
+                    />
+                </span>
+            </div>
+        </div>
+        <div class="col-1"></div>
+        <!-- Aumentar el tamaño de esta columna -->
+        <div class="col-6">
+            <!-- Reducir el tamaño de esta columna -->
+            <div class="w-full text-right">
+                <button
+                    pButton
+                    icon="pi pi-plus"
+                    label="Agregar Cuestionario"
+                    (click)="showDialog()"
+                ></button>
+            </div>
+        </div>
+    </div>
+    <br />
+    <p-table
+        #tableCuestionarios
+        [value]="cuestionarios"
+        [paginator]="true"
+        [loading]="loading"
+        [rows]="5"
+        breakpoint="768px"
+        styleClass="p-datatable-gridlines p-datatable-striped"
+        [globalFilterFields]="['cuestionario.pregunta', 'cuestionario.fecha']"
+        [showCurrentPageReport]="true"
+        currentPageReportTemplate="{first} - {last} de {totalRecords}"
+    >
+        <ng-template pTemplate="header">
+            <tr>
+                <th scope="col">Nombre del cuestionario</th>
+                <th scope="col">Cantidad de preguntas</th>
+                <th scope="col" class="text-center w-2">Opciones</th>
+            </tr>
+        </ng-template>
+        <!-- Contenido  -->
+        <ng-template pTemplate="body" let-cuestionario>
+            <tr>
+                <td>{{ cuestionario.cuestionario }}</td>
+                <td>{{ cuestionario.cantidadPreguntas }}</td>
+                <td>{{ cuestionario.fecha }}</td>
 
-  asdasdasd
-</p>
+                <td class="text-center">
+                    <button
+                        *ngIf="false"
+                        pButton
+                        type="button"
+                        icon="pi pi-search"
+                        class="p-button-rounded p-button-text"
+                    ></button>
+                    <button
+                        pButton
+                        pTooltip="Editar"
+                        type="button"
+                        icon="pi pi-pencil"
+                        class="p-button-rounded p-button-text p-button-warning"
+                        (click)="onEditar(cuestionario.id)"
+                    ></button>
+                    <button
+                        pButton
+                        pTooltip="Eliminar"
+                        type="button"
+                        icon="pi pi-trash"
+                        class="p-button-rounded p-button-text p-button-danger"
+                        (click)="onDelete($event, cuestionario.id)"
+                    ></button>
+                    <p-confirmPopup></p-confirmPopup>
+                </td>
+            </tr>
+        </ng-template>
+        <!-- Mensaje sin registros -->
+        <ng-template pTemplate="emptymessage" let-columns>
+            <tr>
+                <td [attr.colspan]="6">No se encontraron registros</td>
+            </tr>
+        </ng-template>
+    </p-table>
+</p-panel>

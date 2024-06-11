@@ -27,7 +27,7 @@ import { CargarDocentesComponent } from './modules/gestion-docentes/components/c
 import { GestionPreguntasModule } from './modules/gestion-evaluacion-docentes/gestion-preguntas/gestion-preguntas.module';
 import { BandejaPreguntasComponent } from './modules/gestion-evaluacion-docentes/gestion-preguntas/components/bandeja-preguntas/bandeja-preguntas.component';
 import { GestionCuestionariosModule } from './modules/gestion-evaluacion-docentes/gestion-cuestionarios/gestion-cuestionarios.module';
-import { BandejaCuestionariosComponent } from './modules/gestion-evaluacion-docentes/gestion-cuestionarios/components/Bandeja-Cuestionarios/Bandeja-Cuestionarios.component';
+import { BandejaCuestionariosComponent } from './modules/gestion-evaluacion-docentes/gestion-cuestionarios/components/bandeja-cuestionarios/bandeja-cuestionarios.component';
 
 
 @NgModule({
