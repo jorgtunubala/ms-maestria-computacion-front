@@ -12,7 +12,7 @@ import { Router } from '@angular/router';
 })
 export class BandejaCuestionariosComponent implements OnInit {
     visible: boolean = false;
-    loading: boolean;
+    loading: boolean = false;
     cuestionarios: Cuestionario[] = [];
     displayDialog: boolean = false;
     isNewCuestionario: boolean = true;
@@ -37,23 +37,21 @@ export class BandejaCuestionariosComponent implements OnInit {
     }
 
     navigateToAddQuestions(id: number) {
-      this.router.navigate(['/ruta-agregar-preguntas', id]);
-  }
+        this.router.navigate(['/ruta-agregar-preguntas', id]);
+    }
 
     loadCuestionarios() {
         this.loading = true;
         this.cuestionarioService.listCuestionarios().subscribe({
             next: (response) => this.filterCuestionarios(response),
-            error: (err) =>
-                this.handleError(err, 'Error al cargar cuestionarios'),
+            error: (err) => this.handleError(err, 'Error al cargar cuestionarios'),
             complete: () => (this.loading = false),
         });
     }
 
     filterCuestionarios(cuestionarios: Cuestionario[]) {
         this.cuestionarios = cuestionarios.filter(
-            (d) =>
-                d.estado === (this.mostrarInactivasFlag ? 'ACTIVO' : 'INACTIVO')
+            (d) => d.estado === (this.mostrarInactivasFlag ? 'ACTIVO' : 'INACTIVO')
         );
     }
 
@@ -62,16 +60,13 @@ export class BandejaCuestionariosComponent implements OnInit {
     }
 
     onSave() {
-        this.isNewCuestionario
-            ? this.createCuestionario()
-            : this.updateCuestionario();
+        this.isNewCuestionario ? this.createCuestionario() : this.updateCuestionario();
     }
 
     onEdit(id: number) {
         this.cuestionarioService.getCuestionario(id).subscribe({
             next: (data) => this.editCuestionario(data),
-            error: (err) =>
-                this.handleError(err, 'Error al cargar el cuestionario'),
+            error: (err) => this.handleError(err, 'Error al cargar el cuestionario'),
         });
     }
 
@@ -86,70 +81,51 @@ export class BandejaCuestionariosComponent implements OnInit {
         });
     }
 
-    private handleError(error: any, detail: string) {
-        console.error(error);
-        this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: detail,
+    changeEstado(event: any, cuestionario: Cuestionario, nuevoEstado: string) {
+        this.confirmationService.confirm({
+            target: event.target,
+            message: Mensaje.ESTADO_CUESTIONARIO_ACTUALIZADO_CORRECTAMENTE,
+            icon: PrimeIcons.EXCLAMATION_TRIANGLE,
+            acceptLabel: 'Sí',
+            rejectLabel: 'No',
+            accept: () => this.updateCuestionarioEstado(cuestionario, nuevoEstado),
         });
     }
 
     private initializeCuestionario(): Cuestionario {
-        return {
-            nombre: '',
-            observacion: '',
-        };
+        return { nombre: '', observacion: '' };
     }
+
     private resetCuestionario() {
         this.cuestionario = this.initializeCuestionario();
     }
 
     private createCuestionario() {
-        this.cuestionarioService
-            .createCuestionario(this.cuestionario)
-            .subscribe({
-                next: (data) => this.onCuestionarioCreated(data),
-                error: (err) =>
-                    this.handleError(err, 'Error al agregar el cuestionario'),
-            });
+        this.cuestionarioService.createCuestionario(this.cuestionario).subscribe({
+            next: (data) => this.onCuestionarioCreated(data),
+            error: (err) => this.handleError(err, 'Error al agregar el cuestionario'),
+        });
     }
 
     private updateCuestionario() {
-        this.cuestionarioService
-            .updateCuestionario(this.cuestionario.id!, this.cuestionario)
-            .subscribe({
-                next: (data) => this.onCuestionarioUpdated(data),
-                error: (err) =>
-                    this.handleError(
-                        err,
-                        'Error al actualizar el cuestionario'
-                    ),
-            });
+        this.cuestionarioService.updateCuestionario(this.cuestionario.id!, this.cuestionario).subscribe({
+            next: (data) => this.onCuestionarioUpdated(data),
+            error: (err) => this.handleError(err, 'Error al actualizar el cuestionario'),
+        });
     }
 
     private deleteCuestionario(id: number) {
         this.cuestionarioService.deleteCuestionario(id).subscribe({
             next: () => this.onCuestionarioDeleted(),
-            error: (err) =>
-                this.handleError(err, 'Error al eliminar el cuestionario'),
+            error: (err) => this.handleError(err, 'Error al eliminar el cuestionario'),
         });
     }
 
-    private updateCuestionarioEstado(
-        cuestionario: Cuestionario,
-        nuevoEstado: string
-    ) {
-        this.cuestionarioService
-            .cambiarEstadoCuestionario(cuestionario.id!, nuevoEstado)
-            .subscribe({
-                next: () => this.onEstadoUpdated(nuevoEstado),
-                error: (err) =>
-                    this.handleError(
-                        err,
-                        'Error al cambiar el estado del cuestionario'
-                    ),
-            });
+    private updateCuestionarioEstado(cuestionario: Cuestionario, nuevoEstado: string) {
+        this.cuestionarioService.cambiarEstadoCuestionario(cuestionario.id!, nuevoEstado).subscribe({
+            next: () => this.onEstadoUpdated(nuevoEstado),
+            error: (err) => this.handleError(err, 'Error al cambiar el estado del cuestionario'),
+        });
     }
 
     private editCuestionario(data: Cuestionario) {
@@ -170,35 +146,31 @@ export class BandejaCuestionariosComponent implements OnInit {
             (cuestionario) => this.cuestionario.id === data.id
         );
         if (index !== -1) {
-            this.cuestionario[index] = data;
+            this.cuestionarios[index] = data;
         }
         this.displayDialog = false;
-        this.showMessage(
-            'Éxito',
-            'Cuestionario actualiazado con éxito',
-            'success'
-        );
+        this.showMessage('Éxito', 'Cuestionario actualizado con éxito', 'success');
         this.loadCuestionarios();
     }
 
     private onCuestionarioDeleted() {
-        this.showMessage(
-            'Éxito',
-            Mensaje.CUESTIONARIO_ELIMINADO_CORRECTAMENTE,
-            'info'
-        );
+        this.showMessage('Éxito', Mensaje.CUESTIONARIO_ELIMINADO_CORRECTAMENTE, 'info');
         this.loadCuestionarios();
     }
 
     private onEstadoUpdated(nuevoEstado: string) {
-        const estado =
-            nuevoEstado === 'ACTIVO' ? 'habilitada' : 'deshabilitada';
-        this.showMessage(
-            'Éxito',
-            `Cuestionario ${estado} correctamente`,
-            'info'
-        );
+        const estado = nuevoEstado === 'ACTIVO' ? 'habilitado' : 'deshabilitado';
+        this.showMessage('Éxito', `Cuestionario ${estado} correctamente`, 'info');
         this.loadCuestionarios();
+    }
+
+    private handleError(error: any, detail: string) {
+        console.error(error);
+        this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: detail,
+        });
     }
 
     private showMessage(summary: string, detail: string, severity: string) {
