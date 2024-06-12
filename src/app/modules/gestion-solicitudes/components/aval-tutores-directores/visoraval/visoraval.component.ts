@@ -47,8 +47,11 @@ export class VisoravalComponent implements OnInit {
                 this.radicar.tipoSolicitudEscogida.idSolicitud
             )
             .subscribe(
-                (infoSolicitud: DatosSolicitudRequest) => {
-                    this.radicar.poblarConDatosSolicitudGuardada(infoSolicitud);
+                async (infoSolicitud: DatosSolicitudRequest) => {
+                    await this.radicar.poblarConDatosSolicitudGuardada(
+                        infoSolicitud
+                    );
+
                     this.mostrarOficio = true;
                 },
                 (error) => {

@@ -5,6 +5,7 @@ import {
     DatosApoyoCongreso,
     DatosApoyoPasantia,
     DatosApoyoPublicacion,
+    DatosActividadPracticaDocente,
     DatosCursarAsignaturaDto,
     DatosReconoCreditos,
     DatosSolHomologPostSave,
@@ -13,6 +14,7 @@ import {
     DatosSolicitudCancelacionAsignatura,
     DatosSolicitudCursarAsignatura,
     FormHomologPost,
+    InfoActividadesReCreditos,
     SolicitudSave,
 } from '../models/indiceModelos';
 import { HttpService } from './http.service';
@@ -136,6 +138,16 @@ export class AlmacenarSolicitudService {
                     break;
 
                 case 'RE_CRED_PAS':
+                    this.http
+                        .guardarSolicitud(
+                            await this.reunirDatosSolRecCredPracticaDocente()
+                        )
+                        .subscribe((respuesta) => {
+                            resultado = respuesta;
+                            resolve(resultado);
+                        });
+                    break;
+
                 case 'RE_CRED_DIS':
                 case 'PR_CURS_TEO':
                 case 'AS_CRED_MAT':
@@ -159,6 +171,7 @@ export class AlmacenarSolicitudService {
                 case 'EV_INFO_SAB':
                 case 'PA_COMI_PRO':
                 case 'OT_ACTI_APO':
+
                 case 'RE_CRED_PUB':
                     this.http
                         .guardarSolicitud(
@@ -388,6 +401,31 @@ export class AlmacenarSolicitudService {
         return this.construirObjAGuardar('RE_CRED', datos);
     }
 
+    async reunirDatosSolRecCredPracticaDocente() {
+        const datos: DatosActividadPracticaDocente[] = await Promise.all(
+            this.radicar.actividadesSeleccionadas.map(
+                async (actividad, index) => {
+                    const docsAdjuntos = await Promise.all(
+                        this.radicar.adjuntosDeActividades[index].archivos.map(
+                            (archivo) => this.convertirABase64(archivo)
+                        )
+                    );
+
+                    return {
+                        codigoSubtipo: actividad.codigo,
+                        intensidadHoraria: this.radicar.horasIngresadas[index],
+                        horasReconocer: this.radicar.horasAsignables[index],
+                        documentosAdjuntos: docsAdjuntos,
+                        enlacesAdjuntos:
+                            this.radicar.adjuntosDeActividades[index].enlaces,
+                    };
+                }
+            )
+        );
+
+        return this.construirObjAGuardar('RE_CRED_PAS', datos);
+    }
+
     async reunirDatosSolHomolog(): Promise<SolicitudSave> {
         const asignaturasAHomologar: AsignaturaHomologPost[] = [];
         const conversionesBase64: Promise<string>[] = [];
@@ -494,6 +532,8 @@ export class AlmacenarSolicitudService {
                 tipo === 'AP_ECON_ASI' ? infoEspecifica : null,
             datosApoyoEconomicoPublicacion:
                 tipo === 'PA_PUBL_EVE' ? infoEspecifica : null,
+            datosActividadDocenteRequest:
+                tipo === 'RE_CRED_PAS' ? infoEspecifica : null,
             requiereFirmaDirector:
                 tipo === 'AP_ECON_INV' || tipo === 'ApoyoEconomico'
                     ? true
@@ -501,6 +541,7 @@ export class AlmacenarSolicitudService {
             firmaEstudiante: this.firmaSolicitante,
         };
 
+        console.log(infoSolicitud);
         return infoSolicitud;
     }
 

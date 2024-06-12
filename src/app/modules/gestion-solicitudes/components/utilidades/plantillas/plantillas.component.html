@@ -141,6 +141,28 @@
         {{ radicar.cedulaCuentaBanco }} <br />Dirección: {{ radicar.direccion }}
     </ng-container>
 
+    <!--Solicitud de aval para realizacion de actividades de practica docente-->
+    <ng-container
+        *ngIf="
+            ['AV_COMI_PR'].includes(
+                radicar.tipoSolicitudEscogida.codigoSolicitud
+            )
+        "
+    >
+        el aval para la ralización de las actividades de practica docente
+        enumeradas a continuacion: <br /><br />
+
+        <ng-container
+            *ngFor="
+                let actividad of radicar.actividadesSeleccionadas;
+                let i = index
+            "
+        >
+            <p style="line-height: 0.6">{{ i + 1 }}. {{ actividad.nombre }}</p>
+        </ng-container>
+        <br />
+    </ng-container>
+
     <!--Solicitud de reconocimiento creditos por actividades de practica docente-->
     <ng-container
         *ngIf="
@@ -706,7 +728,7 @@
 
 <ng-container
     *ngIf="
-        !['AD_ASIG', 'CA_ASIG', 'AP_SEME'].includes(
+        !['AD_ASIG', 'CA_ASIG', 'AP_SEME', 'AV_COMI_PR'].includes(
             radicar.tipoSolicitudEscogida.codigoSolicitud
         )
     "

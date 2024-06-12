@@ -13,6 +13,7 @@ import {
 import { DatosSolicitudRequest } from '../models/solicitudes/datosSolicitudRequest';
 import { InfoAsingAdicionCancelacion } from '../models/solicitudes/solicitud-adic-cancel-asig/infoAsignAdicionCancelacion';
 import { NullVisitor } from '@angular/compiler/src/render3/r3_ast';
+import { HttpService } from './http.service';
 
 interface actividadCreditos {
     nombre: string;
@@ -129,7 +130,10 @@ export class RadicarService {
 
     enlaceMaterialAudiovisual = '';
 
-    constructor(private sanitizer: DomSanitizer) {}
+    constructor(
+        private gestorHttp: HttpService,
+        private sanitizer: DomSanitizer
+    ) {}
 
     restrablecerValores() {
         this.datosSolicitante = new InfoPersonal(
@@ -472,6 +476,47 @@ export class RadicarService {
                 break;
 
             case 'RE_CRED_PAS':
+                try {
+                    const actividadesReCreditos = await this.gestorHttp
+                        .obtenerActividadesReCreditos()
+                        .toPromise();
+                    this.actividadesReCreditos = actividadesReCreditos;
+
+                    infoSolicitud.datosActividadDocente.forEach(
+                        (actividad, index) => {
+                            const actividadSeleccionada =
+                                this.actividadesReCreditos.find(
+                                    (reCredito) =>
+                                        reCredito.nombre ===
+                                        actividad.nombreActividad
+                                );
+
+                            if (actividadSeleccionada) {
+                                this.actividadesSeleccionadas.push(
+                                    actividadSeleccionada
+                                );
+                            }
+
+                            this.horasAsignables.push(actividad.horasReconocer);
+
+                            const docs = actividad.documentos.map((doc) =>
+                                this.convertirBase64AFile(doc)
+                            );
+
+                            this.adjuntosDeActividades[index] = {
+                                archivos: docs,
+                                enlaces: actividad.enlaces,
+                            };
+                        }
+                    );
+                } catch (error) {
+                    console.error(
+                        'Error al cargar actividades de reconocimiento de créditos:',
+                        error
+                    );
+                }
+                break;
+
             case 'RE_CRED_DIS':
             case 'PR_CURS_TEO':
             case 'AS_CRED_MAT':

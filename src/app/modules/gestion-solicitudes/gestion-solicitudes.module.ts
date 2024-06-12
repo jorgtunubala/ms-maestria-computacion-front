@@ -37,6 +37,7 @@ import { ApypublicacionComponent } from './components/presentacion-solicitudes/f
 import { ContenedorComponent } from './components/gestion-coordinacion/contenedor/contenedor.component';
 import { TramiteComponent } from './components/gestion-coordinacion/tramite/tramite.component';
 import { CreditosComponent } from './components/presentacion-solicitudes/formularios/complementarios/creditos/creditos.component';
+import { AvalpracticadocenteComponent } from './components/presentacion-solicitudes/formularios/complementarios/avalpracticadocente/avalpracticadocente.component';
 
 @NgModule({
     declarations: [
@@ -72,6 +73,7 @@ import { CreditosComponent } from './components/presentacion-solicitudes/formula
         ContenedorComponent,
         TramiteComponent,
         CreditosComponent,
+        AvalpracticadocenteComponent,
     ],
     imports: [
         CommonModule,
