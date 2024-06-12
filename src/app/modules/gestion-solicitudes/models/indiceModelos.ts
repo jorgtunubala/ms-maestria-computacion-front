@@ -31,3 +31,5 @@ export { DatosReconoCreditos } from './solicitudes/solicitud-rec-creditos/datosR
 export { DatosApoyoCongreso } from './solicitudes/solicitud-apoyo-congreso/datosApoyoCongreso';
 export { DatosApoyoPublicacion } from './solicitudes/solicitud-apoyo-publicacion/DatosApoyoPublicacion';
 export { InfoActividadesReCreditos } from './solicitudes/solicitud-rec-creditos/infoActividadesReCreditos';
+export { DatosActividadPracticaDocente } from './solicitudes/solicitud-rec-creditos/datosActividadPracticaDocente';
+export { DatosReCreditosPracticaDocente } from './solicitudes/solicitud-rec-creditos/datosReCreditosPracticaDocente';

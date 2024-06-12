@@ -1,0 +1,22 @@
+<p-fieldset legend="Actividades a realizar" styleClass="bg-bluegray-50">
+    <span class="p-float-label mt-3">
+        <p-multiSelect
+            inputId="acts"
+            [options]="radicar.actividadesReCreditos"
+            [(ngModel)]="radicar.actividadesSeleccionadas"
+            optionLabel="abreviatura"
+            [filter]="false"
+            [style]="{ width: '100%' }"
+            [maxSelectedLabels]="6"
+            [selectedItemsLabel]="'{0} Actividades seleccionadas'"
+        >
+            >
+            <ng-template let-item pTemplate="item">
+                <div>
+                    {{ item.nombre }}
+                </div>
+            </ng-template>
+        </p-multiSelect>
+        <label for="adasig">Actividades de practica docente</label>
+    </span>
+</p-fieldset>

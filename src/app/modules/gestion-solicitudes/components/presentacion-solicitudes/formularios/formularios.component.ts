@@ -124,8 +124,9 @@ export class FormulariosComponent implements OnInit {
             }
 
             if (
-                this.radicar.tipoSolicitudEscogida.codigoSolicitud ===
-                'RE_CRED_PAS'
+                (this.radicar.tipoSolicitudEscogida.codigoSolicitud ===
+                    'RE_CRED_PAS',
+                'AV_COMI_PR')
             ) {
                 this.gestorHttp
                     .obtenerActividadesReCreditos()
@@ -514,6 +515,7 @@ export class FormulariosComponent implements OnInit {
                     'AP_SEME',
                     'CU_ASIG',
                     'RE_CRED_PAS',
+                    'AV_COMI_PR',
                 ].includes(this.radicar.tipoSolicitudEscogida.codigoSolicitud)
             ) {
                 this.router.navigate([

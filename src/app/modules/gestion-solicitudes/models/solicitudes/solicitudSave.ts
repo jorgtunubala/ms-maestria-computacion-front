@@ -9,6 +9,7 @@ import {
     DatosReconoCreditos,
     DatosApoyoCongreso,
     DatosApoyoPublicacion,
+    DatosActividadPracticaDocente,
 } from '../indiceModelos';
 
 export class SolicitudSave {
@@ -28,6 +29,7 @@ export class SolicitudSave {
             obj['datosAvalSeminario'],
             obj['datosApoyoEconomicoCongreso'],
             obj['datosApoyoEconomicoPublicacion'],
+            obj['datosActividadDocenteRequest'],
             obj['requiereFirmaDirector'],
             obj['firmaEstudiante']
         );
@@ -48,6 +50,7 @@ export class SolicitudSave {
         public datosAvalSeminario: any,
         public datosApoyoEconomicoCongreso: DatosApoyoCongreso,
         public datosApoyoEconomicoPublicacion: DatosApoyoPublicacion,
+        public datosActividadDocenteRequest: DatosActividadPracticaDocente[],
         public requiereFirmaDirector: boolean,
         public firmaEstudiante: string
     ) {}

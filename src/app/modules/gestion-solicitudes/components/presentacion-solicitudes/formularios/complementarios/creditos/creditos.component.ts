@@ -68,8 +68,6 @@ export class CreditosComponent implements OnInit {
         pesoActividad: number,
         horasAsignadas: number
     ): void {
-        console.log('peso: ' + pesoActividad);
-        console.log('horasAsignadas: ' + horasAsignadas);
         this.radicar.horasIngresadas[index] = value;
         this.radicar.horasAsignables[index] = value * pesoActividad;
     }
