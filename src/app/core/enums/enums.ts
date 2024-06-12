@@ -11,4 +11,8 @@ export enum Mensaje {
     CONFIRMAR_ELIMINAR_DOCENTE = "¿Está seguro de eliminar este docente?",
     ACTUALIZACION_EXITOSA= "El registro fue actualizado exitosamente",
     GUARDADO_EXITOSO  =  "Los datos han sido guardados exitosamente",
+
+    CONFIRMAR_ELIMINAR_PREGUNTA = "¿Está seguro de eliminar esta pregunta?",
+    PREGUNTA_ELIMINADA_CORRECTAMENTE = "Pregunta eliminada correctamente",
+    ESTADO_PREGUNTA_ACTUALIZADO_CORRECTAMENTE = "Estado de la pregunta actualizado correctamente",
 }

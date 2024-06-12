@@ -1,6 +1,7 @@
 export interface Cuestionario {
     id: number;
-    cuestionario: string;
+    nombre: string;
     cantidadPreguntas: number;
+    estado: string;
     fecha: string;
 }

@@ -2,7 +2,7 @@
     <p-header>
         <b>GESTIONAR PREGUNTAS</b>
     </p-header>
-    <!---Encabezado-->
+    <!-- Encabezado -->
     <div class="grid">
         <!-- Busqueda -->
         <div class="col-5">
@@ -14,14 +14,18 @@
                         type="text"
                         class="w-full"
                         placeholder="Buscar pregunta"
+                        (input)="
+                            tablePreguntas.filterGlobal(
+                                $event.target.value,
+                                'contains'
+                            )
+                        "
                     />
                 </span>
             </div>
         </div>
         <div class="col-1"></div>
-        <!-- Aumentar el tamaño de esta columna -->
         <div class="col-6">
-            <!-- Reducir el tamaño de esta columna -->
             <div class="w-full text-right">
                 <button
                     pButton
@@ -33,7 +37,17 @@
         </div>
     </div>
     <br />
-    <p-table
+    <div class="col-12 text-right mb-3">
+        <p-selectButton
+            [(ngModel)]="mostrarInactivasFlag"
+            [options]="[
+                { label: 'Activas', value: true },
+                { label: 'Inactivas', value: false }
+            ]"
+            (onChange)="loadPreguntas()"
+        ></p-selectButton>
+    </div>
+    <!-- <p-table
         #tablePreguntas
         [value]="preguntas"
         [paginator]="true"
@@ -41,39 +55,34 @@
         [rows]="5"
         breakpoint="768px"
         styleClass="p-datatable-gridlines p-datatable-striped"
-        [globalFilterFields]="['pregunta.nombre', 'pregunta.fecha']"
+        [globalFilterFields]="['nombre', 'fecha']"
         [showCurrentPageReport]="true"
         currentPageReportTemplate="{first} - {last} de {totalRecords}"
     >
         <ng-template pTemplate="header">
             <tr>
                 <th scope="col">Nombre de Pregunta</th>
+                <th scope="col">Observación</th>
                 <th scope="col">Fecha de Creación</th>
                 <th scope="col" class="text-center w-2">Opciones</th>
             </tr>
         </ng-template>
-        <!-- Contenido  -->
         <ng-template pTemplate="body" let-pregunta>
             <tr>
-                <td>{{ pregunta.pregunta }}</td>
+                <td>{{ pregunta.nombre }}</td>
+                <td>{{ pregunta.observacion }}</td>
                 <td>{{ pregunta.fecha }}</td>
                 <td class="text-center">
-                    <button
-                        *ngIf="false"
-                        pButton
-                        type="button"
-                        icon="pi pi-search"
-                        class="p-button-rounded p-button-text"
-                    ></button>
                     <button
                         pButton
                         pTooltip="Editar"
                         type="button"
                         icon="pi pi-pencil"
                         class="p-button-rounded p-button-text p-button-warning"
-                        (click)="onEditar(pregunta.id)"
+                        (click)="onEdit(pregunta.id)"
                     ></button>
                     <button
+                        *ngIf="pregunta.estado === 'ACTIVO'"
                         pButton
                         pTooltip="Eliminar"
                         type="button"
@@ -81,14 +90,91 @@
                         class="p-button-rounded p-button-text p-button-danger"
                         (click)="onDelete($event, pregunta.id)"
                     ></button>
+                    <button
+                        *ngIf="pregunta.estado === 'INACTIVO'"
+                        pButton
+                        pTooltip="Habilitar"
+                        type="button"
+                        icon="pi pi-check"
+                        class="p-button-rounded p-button-text p-button-success"
+                        (click)="changeEstado($event, pregunta, 'ACTIVO')"
+                    ></button>
                     <p-confirmPopup></p-confirmPopup>
                 </td>
             </tr>
         </ng-template>
-        <!-- Mensaje sin registros -->
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td [attr.colspan]="4">No se encontraron registros</td>
+            </tr>
+        </ng-template>
+    </p-table> -->
+    <p-table
+        #tablePreguntas
+        [value]="preguntas"
+        [paginator]="true"
+        [loading]="loading"
+        [rows]="10"
+        breakpoint="768px"
+        styleClass="p-datatable-gridlines p-datatable-striped"
+        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} preguntas"
+        [globalFilterFields]="['nombre', 'observacion', 'fecha']"
+        [sortField]="'nombre'"
+        [sortOrder]="1"
+    >
+        <ng-template pTemplate="header">
+            <tr>
+                <th pSortableColumn="nombre" scope="col">
+                    Nombre <p-sortIcon field="nombre"></p-sortIcon>
+                </th>
+                <th pSortableColumn="observacion" scope="col">
+                    Descripción <p-sortIcon field="observacion"></p-sortIcon>
+                </th>
+                <th pSortableColumn="fecha" scope="col">
+                    Fecha <p-sortIcon field="fecha"></p-sortIcon>
+                </th>
+                <th scope="col" class="text-center w-2">Opciones</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-pregunta>
+            <tr>
+                <td>{{ pregunta.nombre }}</td>
+                <td>{{ pregunta.observacion }}</td>
+                <td>{{ pregunta.fecha }}</td>
+                <td class="text-center">
+                    <button
+                        pButton
+                        pTooltip="Editar"
+                        type="button"
+                        icon="pi pi-pencil"
+                        class="p-button-rounded p-button-text p-button-warning"
+                        (click)="onEdit(pregunta.id)"
+                    ></button>
+                    <button
+                        *ngIf="pregunta.estado === 'ACTIVO'"
+                        pButton
+                        pTooltip="Eliminar"
+                        type="button"
+                        icon="pi pi-trash"
+                        class="p-button-rounded p-button-text p-button-danger"
+                        (click)="onDelete($event, pregunta.id)"
+                    ></button>
+                    <button
+                        *ngIf="pregunta.estado === 'INACTIVO'"
+                        pButton
+                        pTooltip="Habilitar"
+                        type="button"
+                        icon="pi pi-check"
+                        class="p-button-rounded p-button-text p-button-success"
+                        (click)="changeEstado($event, pregunta, 'ACTIVO')"
+                    ></button>
+                    <p-confirmPopup></p-confirmPopup>
+                </td>
+            </tr>
+        </ng-template>
         <ng-template pTemplate="emptymessage" let-columns>
             <tr>
-                <td [attr.colspan]="6">No se encontraron registros</td>
+                <td [attr.colspan]="4">No se encontraron registros</td>
             </tr>
         </ng-template>
     </p-table>
@@ -96,51 +182,52 @@
 
 <!-- Modal -->
 <p-dialog
-    header="Registrar Pregunta"
+    header="{{ isNewPregunta ? 'Agregar Pregunta' : 'Editar Pregunta' }}"
+    [(visible)]="displayDialog"
     [modal]="true"
-    [(visible)]="visible"
-    [style]="{ width: '50rem' }"
+    [closable]="false"
+    [responsive]="true"
+    [style]="{ width: '50vw' }"
+    [breakpoint]="768"
 >
     <span class="p-text-secondary block mb-5"
         ><span style="color: red">*</span> Indica que el campo es
         obligatorio</span
     >
-    <div class="flex align-items-center gap-3 mb-3" style="flex-wrap: nowrap">
-        <label
-            for="pregunta"
-            class="font-semibold label-required"
-            style="width: 15rem"
-            >Nombre de la pregunta</label
-        >
-        <input
-            pInputText
-            id="pregunta"
-            class="flex-auto"
-            autocomplete="off"
-            required
-            style="width: 25rem"
-        />
+    <div class="p-fluid">
+        <div class="p-field">
+            <label for="nombre" class="font-semibold label-required"
+                >Nombre de la pregunta</label
+            >
+            <input
+                id="nombre"
+                type="text"
+                pInputText
+                [(ngModel)]="pregunta.nombre"
+            />
+        </div>
+        <div class="p-field">
+            <label for="descripcion" class="font-semibold">Observación</label>
+            <textarea
+                id="descripcion"
+                pInputTextarea
+                [(ngModel)]="pregunta.observacion"
+                [rows]="5"
+            ></textarea>
+        </div>
     </div>
-    <div class="flex align-items-center gap-3 mb-5" style="flex-wrap: nowrap">
-        <label for="observation" class="font-semibold" style="width: 15rem"
-            >Observacion</label
-        >
-        <textarea
-            rows="5"
-            cols="30"
-            pInputTextarea
-            [(ngModel)]="value"
-            class="flex-auto"
-            style="width: 25rem"
-        >
-        </textarea>
-    </div>
-    <div class="flex justify-content-end gap-2">
-        <p-button
+    <p-footer>
+        <button
+            pButton
             label="Cancelar"
-            severity="secondary"
-            (click)="visible = false"
-        ></p-button>
-        <p-button label="Guardar" (click)="visible = false"></p-button>
-    </div>
+            icon="pi pi-times"
+            (click)="onCancel()"
+        ></button>
+        <button
+            pButton
+            label="Guardar"
+            icon="pi pi-check"
+            (click)="onSave()"
+        ></button>
+    </p-footer>
 </p-dialog>

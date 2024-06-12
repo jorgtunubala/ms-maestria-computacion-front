@@ -17,7 +17,7 @@ export class PreguntaService {
 
     createPregunta(pregunta: Pregunta) {
         return this.http.post<any>(
-            backend('preguntas'),
+            backend('pregunta'),
             pregunta,
             { headers: getHeaders() }
         )
@@ -25,7 +25,7 @@ export class PreguntaService {
 
     updatePregunta(id: number, pregunta: Pregunta) {
         return this.http.put<any>(
-            backend(`preguntas/${id}`),
+            backend(`pregunta/${id}`),
             pregunta,
             { headers: getHeaders() }
         );
@@ -33,22 +33,30 @@ export class PreguntaService {
 
     getPregunta(id: number) {
         return this.http.get<Pregunta>(
-            backend(`preguntas/${id}`),
+            backend(`pregunta/${id}`),
             { headers: getHeaders() }
         );
     }
 
     listPreguntas(): Observable<Pregunta[]> {
         return this.http.get<Pregunta[]>(
-            backend('preguntas'),
+            backend('pregunta'),
         );
 
     }
 
     deletePregunta(id: number) {
         return this.http.patch<any>(
-            backend(`preguntas/eliminar-logico/${id}`),
+            backend(`pregunta/eliminar-logico/${id}`),
             { headers: getHeaders() }
+        );
+    }
+
+    cambiarEstadoPregunta(id: number, estado: string) {
+        return this.http.patch(
+            backend(`pregunta/${id}/estado`),
+            { estado },
+            { headers: getHeaders(), responseType: 'text' }
         );
     }
 

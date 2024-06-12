@@ -1,5 +1,7 @@
 export interface Pregunta {
-    id: number;
-    pregunta: string;
-    fecha: string;
+    id?: number;
+    nombre?: string;
+    observacion?: string;
+    estado?: string;
+    fecha?: string;
 }
