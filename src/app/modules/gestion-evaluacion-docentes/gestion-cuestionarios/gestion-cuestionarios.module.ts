@@ -5,9 +5,13 @@ import { SharedModule } from 'primeng/api';
 import { PrimenNgModule } from '../../primen-ng/primen-ng.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { GestionCuestionariosRoutingModule } from './gestion-cuestionarios-routing.module';
+import { AgregarPreguntaCuestionarioComponent } from './components/agregar-pregunta-cuestionario/agregar-pregunta-cuestionario.component';
 
 @NgModule({
-    declarations: [PrincipalGestionCustionarioComponent],
+    declarations: [
+        PrincipalGestionCustionarioComponent,
+        AgregarPreguntaCuestionarioComponent,
+    ],
     imports: [
         CommonModule,
         SharedModule,

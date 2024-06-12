@@ -37,7 +37,7 @@ export class BandejaCuestionariosComponent implements OnInit {
     }
 
     navigateToAddQuestions(id: number) {
-        this.router.navigate(['/ruta-agregar-preguntas', id]);
+        this.router.navigate(['gestion-evaluacion-docente/cuestionarios/agregar-pregunta',id]);
     }
 
     loadCuestionarios() {

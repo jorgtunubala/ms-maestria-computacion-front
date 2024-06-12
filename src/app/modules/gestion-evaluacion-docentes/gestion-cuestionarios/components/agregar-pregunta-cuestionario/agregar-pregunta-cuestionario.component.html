@@ -1,0 +1,46 @@
+<p-panel header="Agregar preguntas al cuestionario">
+    <div class="p-grid">
+        <div class="p-col-12">
+            <div class="p-field">
+                <label>Nombre cuestionario:</label>
+                <span>{{ cuestionario?.nombre }}</span>
+            </div>
+            <div class="p-field">
+                <label>Fecha de creación:</label>
+                <span>{{ cuestionario?.fecha_creacion }}</span>
+            </div>
+            <div class="p-field">
+                <label>Observación:</label>
+                <span>{{ cuestionario?.observacion }}</span>
+            </div>
+        </div>
+    </div>
+
+    <p-pickList
+        [source]="preguntasDisponibles"
+        [target]="preguntasCuestionario"
+        sourceHeader="Preguntas Disponibles"
+        targetHeader="Preguntas del Cuestionario"
+        [responsive]="true"
+        [style]="{ height: '30rem' }"
+        sourceFilterPlaceholder="Buscar por nombre"
+        targetFilterPlaceholder="Buscar por nombre"
+        filterBy="nombre"
+    >
+        <ng-template let-item pTemplate="item">
+            <div class="p-clearfix">
+                <div style="font-size: 14px; float: left; margin: 5px 5px 0 0">
+                    {{ item.nombre }}
+                </div>
+            </div>
+        </ng-template>
+    </p-pickList>
+
+    <div class="p-field p-text-center">
+        <button
+            pButton
+            label="Actualizar preguntas"
+            (click)="actualizarPreguntas()"
+        ></button>
+    </div>
+</p-panel>

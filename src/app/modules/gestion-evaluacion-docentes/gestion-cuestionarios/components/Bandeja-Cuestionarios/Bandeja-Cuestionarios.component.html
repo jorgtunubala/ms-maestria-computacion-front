@@ -57,7 +57,7 @@
         breakpoint="768px"
         styleClass="p-datatable-gridlines p-datatable-striped"
         currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} cuestionarios"
-        [globalFilterFields]="['nombre', 'observacion', 'fecha', 'cantidadPreguntas']"
+        [globalFilterFields]="['nombre', 'observacion', 'fecha_creacion', 'cantidadPreguntas']"
         [sortField]="'nombre'"
         [sortOrder]="1"
     >
@@ -71,8 +71,8 @@
                     Cantidad de preguntas
                     <p-sortIcon field="cantidadPreguntas"></p-sortIcon>
                 </th>
-                <th pSortableColumn="fecha" scope="col">
-                    Fecha <p-sortIcon field="fecha"></p-sortIcon>
+                <th pSortableColumn="fecha_creacion" scope="col">
+                    Fecha <p-sortIcon field="fecha_creacion"></p-sortIcon>
                 </th>
                 <th scope="col" class="text-center w-2">Opciones</th>
             </tr>
@@ -81,7 +81,7 @@
             <tr>
                 <td>{{ cuestionario.nombre }}</td>
                 <td>{{ cuestionario.cantidadPreguntas }}</td>
-                <td>{{ cuestionario.fecha }}</td>
+                <td>{{ cuestionario.fecha_creacion }}</td>
                 <td class="text-center">
                     <button
                         *ngIf="cuestionario.estado === 'ACTIVO'"

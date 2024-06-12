@@ -50,7 +50,7 @@ import { HomeComponent } from './core/components/home/home.component';
                                 ).then((m) => m.GestionSolicitudesModule),
                         },
                         {
-                            path: 'gestion-evaluaciondocente',
+                            path: 'gestion-evaluacion-docente',
                             children: [
                                 {
                                     path: 'preguntas',

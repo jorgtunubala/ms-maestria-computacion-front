@@ -42,12 +42,12 @@ export const menuItems: MenuItem[] = [
                     {
                         label: 'Preguntas Evaluación',
                         icon: 'pi pi-fw pi-question',
-                        routerLink: '/gestion-evaluaciondocente/preguntas',
+                        routerLink: '/gestion-evaluacion-docente/preguntas',
                     },
                     {
                         label: 'Cuestionarios de Evaluación',
                         icon: 'pi pi-fw pi-file',
-                        routerLink: '/gestion-evaluaciondocente/cuestionarios',
+                        routerLink: '/gestion-evaluacion-docente/cuestionarios',
                     },
                 ],
                 // routerLink: '/gestion-evaluaciondocente',
