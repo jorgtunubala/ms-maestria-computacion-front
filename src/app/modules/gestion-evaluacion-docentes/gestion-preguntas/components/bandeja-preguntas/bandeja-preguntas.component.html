@@ -47,68 +47,6 @@
             (onChange)="loadPreguntas()"
         ></p-selectButton>
     </div>
-    <!-- <p-table
-        #tablePreguntas
-        [value]="preguntas"
-        [paginator]="true"
-        [loading]="loading"
-        [rows]="5"
-        breakpoint="768px"
-        styleClass="p-datatable-gridlines p-datatable-striped"
-        [globalFilterFields]="['nombre', 'fecha']"
-        [showCurrentPageReport]="true"
-        currentPageReportTemplate="{first} - {last} de {totalRecords}"
-    >
-        <ng-template pTemplate="header">
-            <tr>
-                <th scope="col">Nombre de Pregunta</th>
-                <th scope="col">Observación</th>
-                <th scope="col">Fecha de Creación</th>
-                <th scope="col" class="text-center w-2">Opciones</th>
-            </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-pregunta>
-            <tr>
-                <td>{{ pregunta.nombre }}</td>
-                <td>{{ pregunta.observacion }}</td>
-                <td>{{ pregunta.fecha }}</td>
-                <td class="text-center">
-                    <button
-                        pButton
-                        pTooltip="Editar"
-                        type="button"
-                        icon="pi pi-pencil"
-                        class="p-button-rounded p-button-text p-button-warning"
-                        (click)="onEdit(pregunta.id)"
-                    ></button>
-                    <button
-                        *ngIf="pregunta.estado === 'ACTIVO'"
-                        pButton
-                        pTooltip="Eliminar"
-                        type="button"
-                        icon="pi pi-trash"
-                        class="p-button-rounded p-button-text p-button-danger"
-                        (click)="onDelete($event, pregunta.id)"
-                    ></button>
-                    <button
-                        *ngIf="pregunta.estado === 'INACTIVO'"
-                        pButton
-                        pTooltip="Habilitar"
-                        type="button"
-                        icon="pi pi-check"
-                        class="p-button-rounded p-button-text p-button-success"
-                        (click)="changeEstado($event, pregunta, 'ACTIVO')"
-                    ></button>
-                    <p-confirmPopup></p-confirmPopup>
-                </td>
-            </tr>
-        </ng-template>
-        <ng-template pTemplate="emptymessage">
-            <tr>
-                <td [attr.colspan]="4">No se encontraron registros</td>
-            </tr>
-        </ng-template>
-    </p-table> -->
     <p-table
         #tablePreguntas
         [value]="preguntas"
@@ -118,7 +56,7 @@
         breakpoint="768px"
         styleClass="p-datatable-gridlines p-datatable-striped"
         currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} preguntas"
-        [globalFilterFields]="['nombre', 'observacion', 'fecha']"
+        [globalFilterFields]="['nombre', 'observacion', 'fecha_creacion']"
         [sortField]="'nombre'"
         [sortOrder]="1"
     >
@@ -130,8 +68,8 @@
                 <th pSortableColumn="observacion" scope="col">
                     Descripción <p-sortIcon field="observacion"></p-sortIcon>
                 </th>
-                <th pSortableColumn="fecha" scope="col">
-                    Fecha <p-sortIcon field="fecha"></p-sortIcon>
+                <th pSortableColumn="fecha_creacion" scope="col">
+                    Fecha <p-sortIcon field="fecha_creacion"></p-sortIcon>
                 </th>
                 <th scope="col" class="text-center w-2">Opciones</th>
             </tr>
@@ -140,7 +78,7 @@
             <tr>
                 <td>{{ pregunta.nombre }}</td>
                 <td>{{ pregunta.observacion }}</td>
-                <td>{{ pregunta.fecha }}</td>
+                <td>{{ pregunta.fecha_creacion }}</td>
                 <td class="text-center">
                     <button
                         pButton

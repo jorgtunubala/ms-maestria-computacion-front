@@ -15,4 +15,8 @@ export enum Mensaje {
     CONFIRMAR_ELIMINAR_PREGUNTA = "¿Está seguro de eliminar esta pregunta?",
     PREGUNTA_ELIMINADA_CORRECTAMENTE = "Pregunta eliminada correctamente",
     ESTADO_PREGUNTA_ACTUALIZADO_CORRECTAMENTE = "Estado de la pregunta actualizado correctamente",
+
+    CONFIRMAR_ELIMINAR_CUESTIONARIO = "¿Está seguro de eliminar este cuestionario?",
+    CUESTIONARIO_ELIMINADO_CORRECTAMENTE = "Cuestionario eliminado correctamente",
+    ESTADO_CUESTIONARIO_ACTUALIZADO_CORRECTAMENTE = "Estado del cuestionario actualizado correctamente",
 }

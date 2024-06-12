@@ -3,5 +3,5 @@ export interface Pregunta {
     nombre?: string;
     observacion?: string;
     estado?: string;
-    fecha?: string;
+    fecha_creacion?: string;
 }
