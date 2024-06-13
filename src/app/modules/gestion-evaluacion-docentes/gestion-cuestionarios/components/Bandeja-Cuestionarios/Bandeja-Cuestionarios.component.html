@@ -57,7 +57,7 @@
         breakpoint="768px"
         styleClass="p-datatable-gridlines p-datatable-striped"
         currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} cuestionarios"
-        [globalFilterFields]="['nombre', 'observacion', 'fecha_creacion', 'cantidadPreguntas']"
+        [globalFilterFields]="['nombre', 'observacion', 'fecha_creacion', 'cantidad_preguntas']"
         [sortField]="'nombre'"
         [sortOrder]="1"
     >
@@ -67,9 +67,9 @@
                     Nombre del cuestionario
                     <p-sortIcon field="nombre"></p-sortIcon>
                 </th>
-                <th pSortableColumn="cantidadPreguntas" scope="col">
+                <th pSortableColumn="cantidad_preguntas" scope="col">
                     Cantidad de preguntas
-                    <p-sortIcon field="cantidadPreguntas"></p-sortIcon>
+                    <p-sortIcon field="cantidad_preguntas"></p-sortIcon>
                 </th>
                 <th pSortableColumn="fecha_creacion" scope="col">
                     Fecha <p-sortIcon field="fecha_creacion"></p-sortIcon>
@@ -80,7 +80,7 @@
         <ng-template pTemplate="body" let-cuestionario>
             <tr>
                 <td>{{ cuestionario.nombre }}</td>
-                <td>{{ cuestionario.cantidadPreguntas }}</td>
+                <td>{{ cuestionario.cantidad_preguntas ?? 0 }}</td>
                 <td>{{ cuestionario.fecha_creacion }}</td>
                 <td class="text-center">
                     <button

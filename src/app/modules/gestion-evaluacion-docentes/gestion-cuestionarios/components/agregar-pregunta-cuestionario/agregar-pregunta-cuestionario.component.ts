@@ -4,6 +4,7 @@ import { CuestionarioService } from '../../services/cuestionario.service';
 import { Cuestionario } from '../../models/cuestionario';
 import { Pregunta } from '../../../gestion-preguntas/models/pregunta';
 import { PreguntaService } from '../../../gestion-preguntas/services/pregunta.service';
+import { MessageService } from 'primeng/api';
 
 @Component({
     selector: 'app-agregar-pregunta-cuestionario',
@@ -19,7 +20,8 @@ export class AgregarPreguntaCuestionarioComponent implements OnInit {
     constructor(
         private route: ActivatedRoute,
         private cuestionarioService: CuestionarioService,
-        private preguntaService: PreguntaService
+        private preguntaService: PreguntaService,
+        private messageService: MessageService
     ) {}
 
     ngOnInit() {
@@ -54,15 +56,15 @@ export class AgregarPreguntaCuestionarioComponent implements OnInit {
 
     actualizarPreguntas() {
         if (this.cuestionario) {
-            const updatedCuestionario = {
-                ...this.cuestionario,
-                preguntas: this.preguntasCuestionario,
-            };
-            this.cuestionarioService
-                .updateCuestionario(this.cuestionario.id!, updatedCuestionario)
-                .subscribe(() => {
-                    // Manejar la actualización exitosa
-                });
+            const idPreguntas = this.preguntasCuestionario.map(p => p.id);
+            this.cuestionarioService.addPreguntas(this.cuestionario.id!, idPreguntas).subscribe({
+                next: () => {
+                    this.messageService.add({severity:'success', summary:'Éxito', detail:'Preguntas actualizadas correctamente'});
+                },
+                error: (err) => {
+                    this.messageService.add({severity:'error', summary:'Error', detail:'Error actualizando preguntas'});
+                }
+            });
         }
     }
 }

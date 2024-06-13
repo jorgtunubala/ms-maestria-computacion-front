@@ -35,16 +35,24 @@ export class CuestionarioService {
     }
 
     cambiarEstadoCuestionario(id: number, estado: string) {
-      return this.http.patch(
-          backend(`cuestionario/${id}/estado`),
-          { estado },
-          { headers: getHeaders(), responseType: 'text' }
-      );
-  }
+        return this.http.patch(
+            backend(`cuestionario/${id}/estado`),
+            { estado },
+            { headers: getHeaders(), responseType: 'text' }
+        );
+    }
 
-  getCuestionario(id: number) {
-    return this.http.get<Cuestionario>(backend(`cuestionario/${id}`), {
-        headers: getHeaders(),
-    });
-}
+    getCuestionario(id: number) {
+        return this.http.get<Cuestionario>(backend(`cuestionario/${id}`), {
+            headers: getHeaders(),
+        });
+    }
+
+    addPreguntas(id: number, idPreguntas: number[]) {
+        return this.http.post(
+            backend(`cuestionario/preguntas`),
+            { idPreguntas, idCuestionario: id},
+            { headers: getHeaders() }
+        );
+    }
 }
