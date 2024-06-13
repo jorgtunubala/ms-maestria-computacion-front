@@ -1,22 +1,116 @@
 <p-fieldset legend="Actividades a realizar" styleClass="bg-bluegray-50">
-    <span class="p-float-label mt-3">
-        <p-multiSelect
-            inputId="acts"
-            [options]="radicar.actividadesReCreditos"
-            [(ngModel)]="radicar.actividadesSeleccionadas"
-            optionLabel="abreviatura"
-            [filter]="false"
-            [style]="{ width: '100%' }"
-            [maxSelectedLabels]="6"
-            [selectedItemsLabel]="'{0} Actividades seleccionadas'"
-        >
-            >
-            <ng-template let-item pTemplate="item">
-                <div>
-                    {{ item.nombre }}
-                </div>
+    <div class="grid">
+        <p-overlayPanel #op>
+            <ng-template pTemplate>
+                <p-listbox
+                    [options]="radicar.actividadesReCreditos"
+                    (onChange)="agregarActividad($event)"
+                    optionLabel="nombre"
+                    [style]="{
+                        width: '400px',
+                        'max-height': '250px',
+                        'overflow-y': 'auto'
+                    }"
+                ></p-listbox>
             </ng-template>
-        </p-multiSelect>
-        <label for="adasig">Actividades de practica docente</label>
-    </span>
+        </p-overlayPanel>
+
+        <div class="col-12">
+            <button
+                pButton
+                type="button"
+                (click)="op.toggle($event)"
+                label="Agregar actividad"
+                icon="pi pi-plus"
+                class="p-button-outlined"
+            ></button>
+        </div>
+
+        <div
+            class="col-12"
+            *ngFor="
+                let actividad of radicar.actividadesSeleccionadas;
+                let i = index
+            "
+        >
+            <p-panel
+                ><ng-template pTemplate="header">
+                    <div class="grid p-0 m-0 w-full" style="height: 20px">
+                        <div
+                            class="col-11 flex align-items-center font-bold"
+                            style="margin-top: -17px"
+                        >
+                            {{ i + 1 }}. {{ actividad.nombre }}
+                        </div>
+
+                        <div
+                            class="col-1 flex justify-content-end"
+                            style="margin-top: -17px"
+                        >
+                            <button
+                                pButton
+                                type="button"
+                                (click)="eliminarActividad(i)"
+                                icon="pi pi-times"
+                                class="p-button-outlined p-button-danger"
+                            ></button>
+                        </div>
+                    </div>
+                </ng-template>
+
+                <ng-container *ngIf="!actividad.peso">
+                    <div>
+                        &nbsp;Horas a reconocer:
+                        {{ actividad.horasAsignadas }}
+                    </div>
+                </ng-container>
+
+                <ng-container *ngIf="actividad.peso">
+                    <div
+                        class="field col-12 md:col-6 mb-4"
+                        style="margin-left: 0px"
+                    >
+                        <label
+                            for="intensidadCred"
+                            class="font-semibold"
+                            style="display: block"
+                        >
+                            <ng-container
+                                *ngIf="
+                                    actividad.codigo === 'CUR_COR_SEM';
+                                    else defaultLabel
+                                "
+                            >
+                                Total horas curso
+                            </ng-container>
+                            <ng-template #defaultLabel>
+                                Intensidad horaria semanal de la asignatura
+                            </ng-template>
+                        </label>
+                        <p-inputNumber
+                            [showButtons]="true"
+                            [min]="1"
+                            [(ngModel)]="radicar.horasIngresadas[i]"
+                            (onInput)="
+                                onValueChange($event.value, i, actividad.peso)
+                            "
+                            buttonLayout="horizontal"
+                            spinnerMode="horizontal"
+                            inputId="intensidadCred"
+                            decrementButtonClass="p-button-primary"
+                            incrementButtonClass="p-button-primary"
+                            incrementButtonIcon="pi pi-plus"
+                            decrementButtonIcon="pi pi-minus"
+                        >
+                        </p-inputNumber>
+
+                        <ng-container *ngIf="radicar.horasIngresadas[i]">
+                            &nbsp;Horas a reconocer:
+                            {{ radicar.horasIngresadas[i] * actividad.peso }}
+                        </ng-container>
+                    </div>
+                </ng-container>
+            </p-panel>
+        </div>
+    </div>
 </p-fieldset>
