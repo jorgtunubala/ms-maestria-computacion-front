@@ -158,7 +158,10 @@
                 let i = index
             "
         >
-            <p style="line-height: 0.6">{{ i + 1 }}. {{ actividad.nombre }}</p>
+            <p style="line-height: 0.6">
+                {{ i + 1 }}. {{ actividad.nombre }} -
+                {{ radicar.horasAsignables[i] }}h
+            </p>
         </ng-container>
         <br />
     </ng-container>
