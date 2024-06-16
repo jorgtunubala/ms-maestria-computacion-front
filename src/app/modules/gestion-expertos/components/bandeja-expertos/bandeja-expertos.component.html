@@ -28,22 +28,12 @@
         <!-- Carga Expertos -->
         <div class="col-6">
             <div class="w-full text-right">
-                <div>
-                    <button
-                        pButton
-                        icon="pi pi-plus"
-                        label="Agregar experto"
-                        (click)="onRegistrarExperto()"
-                    ></button>
-                </div>
-                <!-- <div class="mt-3">
-                    TODO: Colocar evento click = para reporte
-                    <button
-                        pButton
-                        icon="pi pi-file"
-                        label="Generar reporte"
-                    ></button>
-                </div> -->
+                <button
+                    pButton
+                    icon="pi pi-plus"
+                    label="Agregar experto"
+                    (click)="onRegistrarExperto()"
+                ></button>
             </div>
             <p-fieldset legend="Cargar Expertos">
                 <app-cargar-expertos
@@ -77,7 +67,8 @@
             'persona.identificacion',
             'persona.nombre',
             'persona.apellido',
-            'persona.correoElectronico'
+            'persona.correoElectronico',
+            'universidadexp'
         ]"
         [showCurrentPageReport]="true"
         currentPageReportTemplate="{first} - {last} de {totalRecords}"
@@ -98,7 +89,9 @@
                     Apellidos <p-sortIcon field="persona.apellido"></p-sortIcon>
                 </th>
                 <th scope="col">Correo electrónico</th>
-                <th scope="col">Universidad</th>
+                <th scope="col" pSortableColumn="universidadexp">
+                    Universidad <p-sortIcon field="universidadexp"></p-sortIcon>
+                </th>
                 <th scope="col" class="text-center w-2">Opciones</th>
             </tr>
         </ng-template>
@@ -173,8 +166,11 @@
                     <thead class="bg-gray-100"></thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         <tr
-                            *ngFor="let item of getKeys(expertoSeleccionado)"
-                            [ngClass]="{ 'bg-gray-50': item % 2 !== 0 }"
+                            *ngFor="
+                                let item of getKeys(expertoSeleccionado);
+                                let i = index
+                            "
+                            [ngClass]="{ 'bg-gray-50': i % 2 !== 0 }"
                         >
                             <td
                                 class="px-2 py-2 whitespace-nowrap text-sm font-medium text-gray-900"

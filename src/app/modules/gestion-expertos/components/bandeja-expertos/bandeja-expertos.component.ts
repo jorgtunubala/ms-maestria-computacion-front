@@ -14,13 +14,13 @@ import { excludedKeys, fieldMap } from '../../utils/fieldmap';
     styleUrls: ['./bandeja-expertos.component.scss'],
 })
 export class BandejaExpertosComponent implements OnInit {
-    loading: boolean;
+    loading: boolean = false;
     expertos: Experto[] = [];
     displayDialog: boolean = false;
     expertoSeleccionado: any = null;
     fieldMap = fieldMap;
     excludedKeys = excludedKeys;
-    mostrarInactivosFlag: boolean = true; // La variable por defecto está en 'true' para mostrar activos
+    mostrarInactivosFlag: boolean = true; // Mostrar activos por defecto
 
     constructor(
         private breadcrumbService: BreadcrumbService,
@@ -37,17 +37,23 @@ export class BandejaExpertosComponent implements OnInit {
 
     listExpertos() {
         this.loading = true;
-        this.expertoService
-            .listExpertos()
-            .subscribe({
-                next: (response) =>
-                    (this.expertos = response.filter(
-                        (d) =>
-                            d.estado ===
-                            (this.mostrarInactivosFlag ? 'ACTIVO' : 'INACTIVO')
-                    )),
-            })
-            .add(() => (this.loading = false));
+        this.expertoService.listExpertos().subscribe({
+            next: (response) => {
+                this.expertos = response.filter(
+                    (experto) =>
+                        experto.estado ===
+                        (this.mostrarInactivosFlag ? 'ACTIVO' : 'INACTIVO')
+                );
+            },
+            error: () => {
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: 'Error al cargar los expertos',
+                });
+            },
+            complete: () => (this.loading = false),
+        });
     }
 
     setBreadcrumb() {
@@ -66,14 +72,9 @@ export class BandejaExpertosComponent implements OnInit {
     }
 
     onDelete(event: any, id: number) {
-        this.confirmationService.confirm({
-            target: event.target,
-            message: Mensaje.CONFIRMAR_ELIMINAR_EXPERTO,
-            icon: PrimeIcons.EXCLAMATION_TRIANGLE,
-            acceptLabel: 'Si, eliminar',
-            rejectLabel: 'No',
-            accept: () => this.deleteExperto(id),
-        });
+        this.confirmAction(event, Mensaje.CONFIRMAR_ELIMINAR_EXPERTO, () =>
+            this.deleteExperto(id)
+        );
     }
 
     deleteExperto(id: number) {
@@ -83,6 +84,13 @@ export class BandejaExpertosComponent implements OnInit {
                     infoMessage(Mensaje.EXPERTO_ELIMINADO_CORRECTAMENTE)
                 );
                 this.listExpertos();
+            },
+            error: () => {
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: 'Error al eliminar el experto',
+                });
             },
         });
     }
@@ -102,14 +110,11 @@ export class BandejaExpertosComponent implements OnInit {
     }
 
     cambiarEstado(event: any, experto: Experto, nuevoEstado: string) {
-        this.confirmationService.confirm({
-            target: event.target,
-            message: Mensaje.ESTADO_EXPERTO_ACTUALIZADO_CORRECTAMENTE,
-            icon: PrimeIcons.EXCLAMATION_TRIANGLE,
-            acceptLabel: 'Si',
-            rejectLabel: 'No',
-            accept: () => this.cambiarEstadoExperto(experto, nuevoEstado),
-        });
+        this.confirmAction(
+            event,
+            Mensaje.ESTADO_EXPERTO_ACTUALIZADO_CORRECTAMENTE,
+            () => this.cambiarEstadoExperto(experto, nuevoEstado)
+        );
     }
 
     cambiarEstadoExperto(experto: Experto, nuevoEstado: string) {
@@ -121,54 +126,79 @@ export class BandejaExpertosComponent implements OnInit {
                     this.messageService.add(
                         infoMessage(
                             `Experto ${
-                                nuevoEstado === 'ACTIVO' ? 'habilitado' : 'deshabilitado'
+                                nuevoEstado === 'ACTIVO'
+                                    ? 'habilitado'
+                                    : 'deshabilitado'
                             } correctamente`
                         )
                     );
                 },
+                error: () => {
+                    this.messageService.add({
+                        severity: 'error',
+                        summary: 'Error',
+                        detail: 'Error al cambiar el estado del experto',
+                    });
+                },
             });
     }
 
-    //para el previsualizar
     getKeys(obj: any, prefix: string = ''): any[] {
         let keys: any[] = [];
-    
+
         for (const [key, value] of Object.entries(obj)) {
             const newKey = prefix ? `${prefix}.${key}` : key;
-    
-            if (
-                excludedKeys.some((excludedKey) => newKey.endsWith(excludedKey))
-            )
-                continue;
-    
-            if (
-                typeof value === 'object' &&
-                value !== null &&
-                !Array.isArray(value)
-            ) {
-                keys.push(...this.getKeys(value, newKey));
-            } else if (Array.isArray(value)) {
-                value.forEach((item, index) => {
-                    keys = keys.concat(
-                        this.getKeys(item, `${newKey}.${index}`)
-                    );
-                });
-            } else {
-                keys.push({
-                    key: this.fieldMap[newKey] || this.formatKey(newKey),
-                    value: value,
-                });
-            }
+
+            if (this.isExcludedKey(newKey)) continue;
+
+            keys = keys.concat(this.processKey(newKey, value));
         }
-    
+
         return keys;
     }
-    
+
+    isExcludedKey(key: string): boolean {
+        return excludedKeys.some((excludedKey) => key.endsWith(excludedKey));
+    }
+
+    processKey(key: string, value: any): any[] {
+        if (
+            typeof value === 'object' &&
+            value !== null &&
+            !Array.isArray(value)
+        ) {
+            return this.getKeys(value, key);
+        } else if (Array.isArray(value)) {
+            return value.reduce(
+                (acc, item, index) =>
+                    acc.concat(this.getKeys(item, `${key}.${index}`)),
+                []
+            );
+        } else {
+            return [
+                {
+                    key: this.fieldMap[key] || this.formatKey(key),
+                    value: value,
+                },
+            ];
+        }
+    }
 
     formatKey(key: string): string {
         const displayKey = key.split('.').pop();
         return displayKey
             ? displayKey.charAt(0).toUpperCase() + displayKey.slice(1)
             : '';
+    }
+
+    confirmAction(event: any, message: string, acceptCallback: () => void) {
+        this.confirmationService.confirm({
+            target: event.target,
+            message: message,
+            icon: PrimeIcons.EXCLAMATION_TRIANGLE,
+            acceptLabel: 'Si',
+            rejectLabel: 'No',
+            accept: acceptCallback,
+        });
     }
 }
