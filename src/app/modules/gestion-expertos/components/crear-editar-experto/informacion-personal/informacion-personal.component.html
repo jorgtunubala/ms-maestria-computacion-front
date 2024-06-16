@@ -75,7 +75,10 @@
 
     <div class="field grid">
         <div class="col-4 text-right font-medium align-self-center">
-            <label class="labelFile">Copia del documento <br /> de identificacion (.pdf)</label>
+            <label class="labelFile"
+                >Copia del documento <br />
+                de identificacion (.pdf)</label
+            >
         </div>
         <div class="col-8 flex flex-wrap items-center">
             <input
@@ -113,7 +116,6 @@
             />
         </div>
     </div>
-    
 
     <div class="field grid">
         <div class="col-4 text-right font-medium align-self-center">
@@ -167,8 +169,8 @@
         </div>
         <div class="col-8">
             <input
+                type="tel"
                 pInputText
-                pKeyFilter="int"
                 [maxLength]="250"
                 class="p-inputtext-sm w-25rem"
                 formControlName="telefono"
@@ -181,6 +183,7 @@
         </div>
         <div class="col-8">
             <input
+                type="email"
                 pInputText
                 [maxLength]="250"
                 class="p-inputtext-sm w-25rem"
@@ -192,7 +195,9 @@
                 }"
             />
             <div *ngIf="getFormControl('correoElectronico').errors?.email">
-                <small class="p-error">Formato de correo electrónico no válido.</small>
+                <small class="p-error"
+                    >Formato de correo electrónico no válido.</small
+                >
             </div>
         </div>
     </div>
