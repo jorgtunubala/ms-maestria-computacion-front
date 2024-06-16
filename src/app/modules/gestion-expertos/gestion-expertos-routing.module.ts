@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { PrincipalGestionExpertosComponent } from './pages/principal-gestion-expertos/principal-gestion-expertos.component';
 import { BandejaExpertosComponent } from './components/bandeja-expertos/bandeja-expertos.component';
 import { CrearEditarExpertoComponent } from './components/crear-editar-experto/crear-editar-experto.component';
-import { RegistrarEditarMovilidadComponent } from './components/registrar-editar-movilidad/registrar-editar-movilidad.component';
+
 
 
 const routes: Routes = [
@@ -22,10 +22,6 @@ const routes: Routes = [
             {
                 path: 'editar/:id',
                 component: CrearEditarExpertoComponent,
-            },
-            {
-                path: 'movilidad/:id',
-                component: RegistrarEditarMovilidadComponent,
             }
         ]
     }
