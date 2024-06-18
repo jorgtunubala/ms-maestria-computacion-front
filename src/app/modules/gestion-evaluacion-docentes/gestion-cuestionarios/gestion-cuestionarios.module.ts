@@ -6,11 +6,13 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { GestionCuestionariosRoutingModule } from './gestion-cuestionarios-routing.module';
 import { AgregarPreguntaCuestionarioComponent } from './components/agregar-pregunta-cuestionario/agregar-pregunta-cuestionario.component';
 import { PrincipalGestionCuestionarioComponent } from './pages/principal-gestion-cuestionario/principal-gestion-cuestionario.component';
+import { BandejaCuestionariosComponent } from './components/bandeja-cuestionarios/bandeja-cuestionarios.component';
 
 @NgModule({
     declarations: [
         PrincipalGestionCuestionarioComponent,
         AgregarPreguntaCuestionarioComponent,
+        BandejaCuestionariosComponent,
     ],
     imports: [
         CommonModule,

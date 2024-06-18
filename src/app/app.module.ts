@@ -25,10 +25,7 @@ import { BreadcrumbService } from './core/components/breadcrumb/app.breadcrumb.s
 import { BandejaDocentesComponent } from './modules/gestion-docentes/components/bandeja-docentes/bandeja-docentes.component';
 import { CargarDocentesComponent } from './modules/gestion-docentes/components/cargar-docentes/cargar-docentes.component';
 import { GestionPreguntasModule } from './modules/gestion-evaluacion-docentes/gestion-preguntas/gestion-preguntas.module';
-import { BandejaPreguntasComponent } from './modules/gestion-evaluacion-docentes/gestion-preguntas/components/bandeja-preguntas/bandeja-preguntas.component';
 import { GestionCuestionariosModule } from './modules/gestion-evaluacion-docentes/gestion-cuestionarios/gestion-cuestionarios.module';
-import { BandejaCuestionariosComponent } from './modules/gestion-evaluacion-docentes/gestion-cuestionarios/components/bandeja-cuestionarios/bandeja-cuestionarios.component';
-
 
 @NgModule({
     imports: [
@@ -41,6 +38,8 @@ import { BandejaCuestionariosComponent } from './modules/gestion-evaluacion-doce
         SharedModule,
         GestionEstudiantesModule,
         ReactiveFormsModule,
+        GestionCuestionariosModule,
+        GestionPreguntasModule,
     ],
     declarations: [
         AppComponent,
@@ -54,8 +53,6 @@ import { BandejaCuestionariosComponent } from './modules/gestion-evaluacion-doce
         HomeComponent,
         BandejaDocentesComponent,
         CargarDocentesComponent,
-        BandejaPreguntasComponent,
-        BandejaCuestionariosComponent,
     ],
     providers: [
         { provide: LocationStrategy, useClass: HashLocationStrategy },
