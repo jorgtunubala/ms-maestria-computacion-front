@@ -75,8 +75,7 @@ import { HomeComponent } from './core/components/home/home.component';
                                         import(
                                             './modules/gestion-lineas-investigacion/gestion-categoria/gestion-categorias.module'
                                         ).then(
-                                            (m) =>
-                                                m.GestionCategoriasModule
+                                            (m) => m.GestionCategoriasModule
                                         ),
                                 },
                             ],
