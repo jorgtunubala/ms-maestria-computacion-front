@@ -66,6 +66,13 @@ import { HomeComponent } from './core/components/home/home.component';
                                 }
                             ]
                         },
+                        {
+                            path: 'gestion-matricula-evaluacion',
+                            loadChildren: () =>
+                                import(
+                                    './modules/gestion-evaluacion-docentes/gestion-matricula-evaluacion/gestion-evaluacion.module'
+                                ).then((m) => m.GestionEvaluacionModule),
+                        }
                     ],
                 },
                 { path: 'pages/error', component: ErrorComponent },

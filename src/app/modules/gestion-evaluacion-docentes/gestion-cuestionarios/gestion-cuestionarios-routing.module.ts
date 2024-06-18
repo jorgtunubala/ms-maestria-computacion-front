@@ -1,14 +1,14 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { PrincipalGestionCustionarioComponent } from './pages/principal-gestion-custionario/principal-gestion-custionario.component';
 
 import { AgregarPreguntaCuestionarioComponent } from './components/agregar-pregunta-cuestionario/agregar-pregunta-cuestionario.component';
 import { BandejaCuestionariosComponent } from './components/bandeja-cuestionarios/bandeja-cuestionarios.component';
+import { PrincipalGestionCuestionarioComponent } from './pages/principal-gestion-cuestionario/principal-gestion-cuestionario.component';
 
 const routes: Routes = [
     {
         path: '',
-        component: PrincipalGestionCustionarioComponent,
+        component: PrincipalGestionCuestionarioComponent,
         children: [
             {
                 path: '',
