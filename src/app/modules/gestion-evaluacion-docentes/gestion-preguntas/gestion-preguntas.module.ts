@@ -9,6 +9,7 @@ import { GestionPreguntasRoutingModule } from './gestion-preguntas-routing.modul
 @NgModule({
     declarations: [
         PrincipalGestionPreguntasComponent,
+        
     ],
     imports: [CommonModule,
         SharedModule,
