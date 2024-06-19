@@ -1,5 +1,8 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable, of, throwError } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
+import { httpConfig } from '../environments/http-config';
 import {
     TiposSolicitudResponse,
     RequisitosSolicitudResponse,
@@ -8,8 +11,9 @@ import {
     SolicitudPendienteAval,
     DatosAvalSolicitud,
     InfoActividadesReCreditos,
+    EventoHistorial,
+    NumeroRadicado,
 } from '../models/indiceModelos';
-import { Observable, catchError, map } from 'rxjs';
 import { InfoPersonalResponse } from '../models/solicitante/infoPersonalResponse';
 import { DatosSolicitudRequest } from '../models/solicitudes/datosSolicitudRequest';
 
@@ -17,85 +21,97 @@ import { DatosSolicitudRequest } from '../models/solicitudes/datosSolicitudReque
     providedIn: 'root',
 })
 export class HttpService {
-    private apiUrl = 'http://localhost:8095/msmaestriac/gestionSolicitud/save';
-    private url =
-        'http://localhost:8095/msmaestriac/gestionSolicitud/save/firmas';
+    private apiUrl = httpConfig.apiUrl;
 
     constructor(private http: HttpClient) {}
 
+    private manejarError(error: any) {
+        console.error('Ocurrió un error', error);
+        return throwError(
+            'Algo salió mal; por favor, intenta nuevamente más tarde.'
+        );
+    }
+
     obtenerTiposDeSolicitud() {
-        const url =
-            'http://localhost:8095/msmaestriac/gestionSolicitud/tiposSolicitud';
+        const url = `${this.apiUrl}${httpConfig.obtenerTiposDeSolicitudUrl}`;
         return this.http.get<TiposSolicitudResponse>(url).pipe(
-            map((respuesta) => {
-                return respuesta.tipoSolicitudDto;
-            })
+            map((respuesta) => respuesta.tipoSolicitudDto),
+            catchError(this.manejarError)
         );
     }
 
     obtenerRequisitosDeSolicitud(codigo: string) {
-        const url =
-            'http://localhost:8095/msmaestriac/gestionSolicitud/requisitoSolicitud/' +
-            codigo;
+        const url = `${this.apiUrl}${httpConfig.obtenerRequisitosDeSolicitudUrl}${codigo}`;
         return this.http.get<RequisitosSolicitudResponse>(url).pipe(
-            map((respuesta) => {
-                return respuesta.doRequeridoSolicitudDto;
-            })
+            map((respuesta) => respuesta.doRequeridoSolicitudDto),
+            catchError(this.manejarError)
         );
     }
 
     obtenerInfoPersonalSolicitante(correo: string) {
-        const url =
-            'http://localhost:8095/msmaestriac/gestionSolicitud/obtenerInfoPersonal/' +
-            correo;
+        const url = `${this.apiUrl}${httpConfig.obtenerInfoPersonalSolicitanteUrl}${correo}`;
         return this.http.get<InfoPersonalResponse>(url).pipe(
-            map((respuesta) => {
-                return respuesta.informacionPersonalDto;
-            })
+            map((respuesta) => respuesta.informacionPersonalDto),
+            catchError(this.manejarError)
         );
     }
 
     obtenerTutoresYDirectores() {
-        const url =
-            'http://localhost:8095/msmaestriac/gestionSolicitud/obtenerTutores';
+        const url = `${this.apiUrl}${httpConfig.obtenerTutoresYDirectoresUrl}`;
         return this.http.get<TutoresYDirectoresResponse>(url).pipe(
-            map((respuesta) => {
-                return respuesta.tutores;
-            })
+            map((respuesta) => respuesta.tutores),
+            catchError(this.manejarError)
         );
     }
 
     guardarSolicitud(objeto: SolicitudSave): Observable<any> {
-        return this.http.post(this.apiUrl, objeto);
+        const url = `${this.apiUrl}${httpConfig.guardarSolicitudUrl}`;
+        return this.http.post(url, objeto, { responseType: 'text' }).pipe(
+            map((response) => {
+                try {
+                    return JSON.parse(response);
+                } catch (e) {
+                    // Si la respuesta no es JSON, devolverla como está.
+                    return response;
+                }
+            }),
+            catchError(this.manejarError)
+        );
     }
 
     guardarAvalesSolicitud(objeto: DatosAvalSolicitud): Observable<any> {
-        return this.http.post(this.url, objeto);
+        const url = `${this.apiUrl}${httpConfig.guardarAvalesSolicitudUrl}`;
+        return this.http.post(url, objeto).pipe(catchError(this.manejarError));
     }
 
     obtenerListaSolPendientesAval(
         correo: string
     ): Observable<SolicitudPendienteAval[]> {
-        const url =
-            'http://localhost:8095/msmaestriac/gestionSolicitud/obtener-solicitudes-pendientes/' +
-            correo;
-        return this.http.get<SolicitudPendienteAval[]>(url);
+        const url = `${this.apiUrl}${httpConfig.obtenerListaSolPendientesAvalUrl}${correo}`;
+        return this.http
+            .get<SolicitudPendienteAval[]>(url)
+            .pipe(catchError(this.manejarError));
     }
 
     obtenerInfoSolGuardada(id: number): Observable<DatosSolicitudRequest> {
-        const url =
-            'http://localhost:8095/msmaestriac/gestionSolicitud/obtener-datos-solicitud/' +
-            id;
-        return this.http.get<DatosSolicitudRequest>(url);
+        const url = `${this.apiUrl}${httpConfig.obtenerInfoSolGuardadaUrl}${id}`;
+        return this.http
+            .get<DatosSolicitudRequest>(url)
+            .pipe(catchError(this.manejarError));
     }
 
     obtenerActividadesReCreditos() {
-        const url =
-            'http://localhost:8095/msmaestriac/gestionSubtipos/subTiposSolicitud/9';
+        const url = `${this.apiUrl}${httpConfig.obtenerActividadesReCreditosUrl}`;
         return this.http.get<InfoActividadesReCreditos[]>(url).pipe(
-            map((respuesta) => {
-                return respuesta;
-            })
+            map((respuesta) => respuesta),
+            catchError(this.manejarError)
         );
+    }
+
+    consultarHistorialSolicitud(id: string): Observable<EventoHistorial[]> {
+        const url = `${this.apiUrl}${httpConfig.obtenerHistorialDeSolicitudUrl}${id}`;
+        return this.http
+            .get<EventoHistorial[]>(url)
+            .pipe(catchError(this.manejarError));
     }
 }

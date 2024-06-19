@@ -11,6 +11,7 @@ import {
     DatosApoyoCongreso,
     DatosApoyoPublicacion,
     DatosReCreditosPracticaDocente,
+    DatosAvalPracticaDResponse,
 } from '../indiceModelos';
 
 export class DatosSolicitudRequest {
@@ -27,7 +28,8 @@ export class DatosSolicitudRequest {
             obj['datosAvalSeminario'],
             obj['datosApoyoEconomicoCongreso'],
             obj['datosApoyoEconomicoPublicacion'],
-            obj['datosActividadDocente']
+            obj['datosActividadDocente'],
+            obj['datosAvalComite']
         );
     }
 
@@ -43,6 +45,7 @@ export class DatosSolicitudRequest {
         public datosAvalSeminario: any,
         public datosApoyoEconomicoCongreso: DatosApoyoCongreso,
         public datosApoyoEconomicoPublicacion: DatosApoyoPublicacion,
-        public datosActividadDocente: DatosReCreditosPracticaDocente[]
+        public datosActividadDocente: DatosReCreditosPracticaDocente[],
+        public datosAvalComite: DatosAvalPracticaDResponse[]
     ) {}
 }

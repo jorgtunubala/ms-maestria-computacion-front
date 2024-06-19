@@ -22,14 +22,17 @@ export class AvalpracticadocenteComponent implements OnInit {
             };
         }
 
-        if (event.value.peso == null) {
+        if (event.value && event.value.peso == null) {
             this.radicar.horasAsignables[actividadId] =
                 event.value.horasAsignadas;
         }
     }
 
     eliminarActividad(index: number) {
-        if (this.radicar.actividadesSeleccionadas[index].peso != null) {
+        if (
+            this.radicar.actividadesSeleccionadas[index] &&
+            this.radicar.actividadesSeleccionadas[index].peso != null
+        ) {
             this.radicar.horasIngresadas.splice(index, 1);
         }
         this.radicar.actividadesSeleccionadas.splice(index, 1);

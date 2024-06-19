@@ -475,6 +475,53 @@ export class RadicarService {
 
                 break;
 
+            case 'AV_COMI_PR':
+                try {
+                    const actividadesReCreditos = await this.gestorHttp
+                        .obtenerActividadesReCreditos()
+                        .toPromise();
+
+                    this.actividadesReCreditos = actividadesReCreditos;
+
+                    for (
+                        let index = 0;
+                        index < infoSolicitud.datosAvalComite.length;
+                        index++
+                    ) {
+                        for (
+                            let j = 0;
+                            j < this.actividadesReCreditos.length;
+                            j++
+                        ) {
+                            if (
+                                this.actividadesReCreditos[j].nombre ==
+                                infoSolicitud.datosAvalComite[index]
+                                    .nombreActividad
+                            ) {
+                                this.actividadesSeleccionadas.push(
+                                    this.actividadesReCreditos[j]
+                                );
+                            }
+
+                            if (
+                                infoSolicitud.datosAvalComite[index]
+                                    .horasReconocer != 0
+                            ) {
+                                this.horasAsignables.push(
+                                    infoSolicitud.datosAvalComite[index]
+                                        .horasReconocer
+                                );
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error(
+                        'Error al cargar actividades de reconocimiento de créditos:',
+                        error
+                    );
+                }
+                break;
+
             case 'RE_CRED_PAS':
                 try {
                     const actividadesReCreditos = await this.gestorHttp

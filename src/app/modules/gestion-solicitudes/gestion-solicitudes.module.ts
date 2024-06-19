@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { GestionSolicitudesRoutingModule } from './gestion-solicitudes-routing.module';
@@ -82,5 +82,6 @@ import { AvalpracticadocenteComponent } from './components/presentacion-solicitu
         SharedModule,
         GestionSolicitudesRoutingModule,
     ],
+    providers: [DatePipe],
 })
 export class GestionSolicitudesModule {}

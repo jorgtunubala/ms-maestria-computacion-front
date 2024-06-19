@@ -1,3 +1,10 @@
+<p-toast></p-toast>
+<p-confirmDialog
+    [style]="{ width: '50vw' }"
+    [baseZIndex]="10000"
+    rejectButtonStyleClass="p-button-text"
+></p-confirmDialog>
+
 <div>
     <div class="grid">
         <div class="col-12 lg:col-6 md:p-2">
@@ -51,28 +58,19 @@
                     </div>
 
                     <div class="grid col-10">
-                        <div class="col-12 lg:col-4 mt-3">
-                            <span class="p-float-label">
-                                <input
-                                    class="w-full"
-                                    id="mailSolicit"
-                                    type="text"
-                                    pInputText
-                                />
-                                <label for="mailSolicit">Usuario</label>
-                            </span>
-                        </div>
-                        <div class="col-12 lg:col-4 mt-3">
+                        <div class="col-12 lg:col-8 mt-3">
                             <span class="p-float-label">
                                 <input
                                     id="numRad"
                                     type="text"
                                     style="width: 100%"
+                                    [(ngModel)]="radicado"
                                     pInputText
                                 />
-                                <label for="numRad"># Radicado</label>
+                                <label for="numRad">Número de radicado</label>
                             </span>
                         </div>
+
                         <div
                             class="col-12 lg:col-4 mt-3 flex justify-content-center"
                         >

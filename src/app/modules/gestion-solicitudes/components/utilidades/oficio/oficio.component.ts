@@ -259,46 +259,58 @@ export class OficioComponent implements OnInit {
         }
     }
 
-    crearPDF() {
-        const div = this.vistaPreviaSolicitud.nativeElement;
-        const scale = 3;
+    crearPDF(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            const div = this.vistaPreviaSolicitud.nativeElement;
+            const scale = 3;
 
-        html2canvas(div, { scale: scale }).then((canvas) => {
-            const imgData = canvas.toDataURL('image/jpeg', 1.0);
-            const pdf = new jsPDF('p', 'mm', 'letter');
+            html2canvas(div, { scale: scale })
+                .then((canvas) => {
+                    const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                    const pdf = new jsPDF('p', 'mm', 'letter');
 
-            const imgWidth = 216; // Ancho de la imagen en mm (ajústalo según tus necesidades)
-            const pageHeight = 279; // Altura de la página en mm
+                    const imgWidth = 216; // Ancho de la imagen en mm (ajústalo según tus necesidades)
+                    const pageHeight = 279; // Altura de la página en mm
 
-            let position = 0;
+                    let position = 0;
 
-            for (
-                let index = 0;
-                index < this.segmentosContenido.length;
-                index++
-            ) {
-                pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, 0);
+                    for (
+                        let index = 0;
+                        index < this.segmentosContenido.length;
+                        index++
+                    ) {
+                        pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, 0);
 
-                if (index != this.segmentosContenido.length - 1) {
-                    pdf.addPage();
-                }
+                        if (index != this.segmentosContenido.length - 1) {
+                            pdf.addPage();
+                        }
 
-                position -= pageHeight;
-            }
+                        position -= pageHeight;
+                    }
 
-            // Convierte el PDF a Blob
-            const blob = pdf.output('blob');
+                    // Convierte el PDF a Blob
+                    const blob = pdf.output('blob');
 
-            // Crea un objeto File a partir del Blob
-            const pdfFile = new File([blob], 'Oficio de Solicitud.pdf', {
-                type: 'application/pdf',
-            });
+                    // Crea un objeto File a partir del Blob
+                    const pdfFile = new File(
+                        [blob],
+                        'Oficio de Solicitud.pdf',
+                        {
+                            type: 'application/pdf',
+                        }
+                    );
 
-            // Guarda el PDF en una variable de tipo File
-            this.radicar.oficioDeSolicitud = pdfFile;
+                    // Guarda el PDF en una variable de tipo File
+                    this.radicar.oficioDeSolicitud = pdfFile;
 
-            // Opcional: descargar el PDF también, descomenta la línea siguiente
-            //pdf.save('Oficio de Solicitud.pdf');
+                    // Opcional: descargar el PDF también, descomenta la línea siguiente
+                    //pdf.save('Oficio de Solicitud.pdf');
+
+                    resolve();
+                })
+                .catch((error) => {
+                    reject(error);
+                });
         });
     }
 }
