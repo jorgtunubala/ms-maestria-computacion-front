@@ -4,7 +4,7 @@
             <ng-template pTemplate>
                 <p-listbox
                     [options]="radicar.actividadesReCreditos"
-                    (onChange)="agregarActividad($event)"
+                    (onChange)="agregarActividad($event); op.hide()"
                     optionLabel="nombre"
                     [style]="{
                         width: '400px',
