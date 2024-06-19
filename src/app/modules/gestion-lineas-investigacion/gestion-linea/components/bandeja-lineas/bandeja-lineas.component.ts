@@ -8,6 +8,7 @@ import { Categoria } from '../../models/categoria';
 import { CategoriaService } from '../../../gestion-categoria/services/categoria.service';
 import { Mensaje } from 'src/app/core/enums/enums';
 import { infoMessage } from 'src/app/core/utils/message-util';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-bandeja-lineas',
@@ -23,6 +24,8 @@ export class BandejaLineasComponent implements OnInit {
     isNew: boolean = true;
     mostrarInactivasFlag: boolean = true;
 
+    private subscriptions: Subscription[] = [];
+
     constructor(
         private breadcrumbService: BreadcrumbService,
         private messageService: MessageService,
@@ -35,6 +38,11 @@ export class BandejaLineasComponent implements OnInit {
         this.listLineas();
         this.listCategorias();
         this.setBreadcrumb();
+    }
+
+    ngOnDestroy(): void {
+        // Desuscribirse de todas las suscripciones
+        this.subscriptions.forEach(subscription => subscription.unsubscribe());
     }
 
     listLineas() {
@@ -96,7 +104,7 @@ export class BandejaLineasComponent implements OnInit {
     onDelete(event: any, id: number) {
         this.confirmationService.confirm({
             target: event.target!,
-            message: Mensaje.CONFIRMAR_ELIMINAR_LINEA,
+            message: Mensaje.CONFIRMAR_DESACTIVAR_CATEGORIA,
             icon: PrimeIcons.EXCLAMATION_TRIANGLE,
             acceptLabel: 'Sí, eliminar',
             rejectLabel: 'No',
@@ -108,7 +116,7 @@ export class BandejaLineasComponent implements OnInit {
         this.lineaService.deleteLinea(id).subscribe({
             next: () => {
                 this.messageService.add(
-                    infoMessage(Mensaje.LINEA_ELIMINADA_CORRECTAMENTE)
+                    infoMessage(Mensaje.LINEA_DESACTIVADA_CORRECTAMENTE)
                 );
                 this.listLineas();
             },

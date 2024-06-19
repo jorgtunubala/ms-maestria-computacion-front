@@ -115,9 +115,9 @@
                     <button
                         *ngIf="experto.estado === 'ACTIVO'"
                         pButton
-                        pTooltip="Eliminar"
+                        pTooltip="Desactivar"
                         type="button"
-                        icon="pi pi-trash"
+                        icon="pi pi-times"
                         class="p-button-rounded p-button-text p-button-danger"
                         (click)="onDelete($event, experto.id)"
                     ></button>

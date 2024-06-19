@@ -7,6 +7,7 @@ import { infoMessage } from 'src/app/core/utils/message-util';
 import { ExpertoService } from '../../services/experto.service';
 import { Experto } from '../../models/experto';
 import { excludedKeys, fieldMap } from '../../utils/fieldmap';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-bandeja-expertos',
@@ -22,6 +23,8 @@ export class BandejaExpertosComponent implements OnInit {
     excludedKeys = excludedKeys;
     mostrarInactivosFlag: boolean = true; // Mostrar activos por defecto
 
+    private subscriptions: Subscription[] = [];
+
     constructor(
         private breadcrumbService: BreadcrumbService,
         private expertoService: ExpertoService,
@@ -33,6 +36,11 @@ export class BandejaExpertosComponent implements OnInit {
     ngOnInit(): void {
         this.setBreadcrumb();
         this.listExpertos();
+    }
+
+    ngOnDestroy(): void {
+        // Desuscribirse de todas las suscripciones
+        this.subscriptions.forEach(subscription => subscription.unsubscribe());
     }
 
     listExpertos() {
@@ -72,7 +80,7 @@ export class BandejaExpertosComponent implements OnInit {
     }
 
     onDelete(event: any, id: number) {
-        this.confirmAction(event, Mensaje.CONFIRMAR_ELIMINAR_EXPERTO, () =>
+        this.confirmAction(event, Mensaje.CONFIRMAR_DESACTIVAR_EXPERTO, () =>
             this.deleteExperto(id)
         );
     }
@@ -81,7 +89,7 @@ export class BandejaExpertosComponent implements OnInit {
         this.expertoService.deleteExperto(id).subscribe({
             next: () => {
                 this.messageService.add(
-                    infoMessage(Mensaje.EXPERTO_ELIMINADO_CORRECTAMENTE)
+                    infoMessage(Mensaje.EXPERTO_DESACTIVADO_CORRECTAMENTE)
                 );
                 this.listExpertos();
             },
@@ -89,7 +97,7 @@ export class BandejaExpertosComponent implements OnInit {
                 this.messageService.add({
                     severity: 'error',
                     summary: 'Error',
-                    detail: 'Error al eliminar el experto',
+                    detail: 'Error al desactivar el experto',
                 });
             },
         });

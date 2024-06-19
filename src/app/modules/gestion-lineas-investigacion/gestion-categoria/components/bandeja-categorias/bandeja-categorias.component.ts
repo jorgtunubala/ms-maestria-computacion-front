@@ -6,6 +6,7 @@ import { Categoria } from '../../models/categoria';
 import { CategoriaService } from '../../services/categoria.service';
 import { infoMessage } from 'src/app/core/utils/message-util';
 import { Mensaje } from 'src/app/core/enums/enums';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-bandeja-categorias',
@@ -20,6 +21,8 @@ export class BandejaCategoriasComponent implements OnInit {
     isNewCategoria: boolean = true;
     mostrarInactivasFlag: boolean = true;
 
+    private subscriptions: Subscription[] = [];
+
     constructor(
         private breadcrumbService: BreadcrumbService,
         private messageService: MessageService,
@@ -31,6 +34,10 @@ export class BandejaCategoriasComponent implements OnInit {
     ngOnInit(): void {
         this.listCategorias();
         this.setBreadcrumb();
+    }
+    ngOnDestroy(): void {
+        // Desuscribirse de todas las suscripciones
+        this.subscriptions.forEach(subscription => subscription.unsubscribe());
     }
 
     listCategorias() {
@@ -82,7 +89,7 @@ export class BandejaCategoriasComponent implements OnInit {
     onDelete(event: any, id: number) {
         this.confirmationService.confirm({
             target: event.target!,
-            message: Mensaje.CONFIRMAR_ELIMINAR_CATEGORIA,
+            message: Mensaje.CONFIRMAR_DESACTIVAR_CATEGORIA,
             icon: PrimeIcons.EXCLAMATION_TRIANGLE,
             acceptLabel: 'Sí, eliminar',
             rejectLabel: 'No',
@@ -94,7 +101,7 @@ export class BandejaCategoriasComponent implements OnInit {
         this.categoriaService.deleteCategoria(id).subscribe({
             next: () => {
                 this.messageService.add(
-                    infoMessage(Mensaje.CATEGORIA_ELIMINADA_CORRECTAMENTE)
+                    infoMessage(Mensaje.CATEGORIA_DESACTIVADA_CORRECTAMENTE)
                 );
                 this.listCategorias();
             },

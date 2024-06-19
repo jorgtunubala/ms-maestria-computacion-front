@@ -14,15 +14,15 @@ export enum Mensaje {
 
     REGISTRO_EXPERTOS_EXITOSO = 'Expertos cargados exitosamente',
     ERROR_CARGAR_EXPERTOS = 'Carga de docentes fallida. Verifica los datos e intenta nuevamente',
-    CONFIRMAR_ELIMINAR_EXPERTO = '¿Está seguro de eliminar este experto?',
-    EXPERTO_ELIMINADO_CORRECTAMENTE = 'Experto eliminado correctamente',
+    CONFIRMAR_DESACTIVAR_EXPERTO = '¿Está seguro de desactivar este experto?',
+    EXPERTO_DESACTIVADO_CORRECTAMENTE = 'Experto desactivado correctamente',
     ESTADO_EXPERTO_ACTUALIZADO_CORRECTAMENTE = '¿Está seguro de cambiar el estado del experto?',
 
-    CONFIRMAR_ELIMINAR_CATEGORIA = '¿Está seguro de eliminar esta categoría?',
-    CATEGORIA_ELIMINADA_CORRECTAMENTE = 'Categoría eliminada correctamente',
+    CONFIRMAR_DESACTIVAR_CATEGORIA = '¿Está seguro de desactivar esta categoría?',
+    CATEGORIA_DESACTIVADA_CORRECTAMENTE = 'Categoría desactivada correctamente',
     ESTADO_CATEGORIA_ACTUALIZADO_CORRECTAMENTE = '¿Está seguro de cambiar el estado de la categoría?',
 
-    CONFIRMAR_ELIMINAR_LINEA = '¿Está seguro de eliminar esta línea de investigación?',
-    LINEA_ELIMINADA_CORRECTAMENTE = 'Línea eliminada correctamente',
+    CONFIRMAR_DESACTIVAR_LINEA = '¿Está seguro de desactivar esta línea de investigación?',
+    LINEA_DESACTIVADA_CORRECTAMENTE = 'Línea desactivada correctamente',
     ESTADO_LINEA_ACTUALIZADO_CORRECTAMENTE = '¿Está seguro de cambiar el estado de la línea de investigación?',
 }
