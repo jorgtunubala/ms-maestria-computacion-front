@@ -1,5 +1,63 @@
-<p-panel>
-    <p-header>
-        <b>EVALUACIONES DOCENTE</b>
-    </p-header>
+<p-panel header="Evaluaciones docente">
+    <!-- Botón para agregar evaluación -->
+    <div class="text-right mb-3">
+        <button
+            pButton
+            icon="pi pi-plus"
+            label="Agregar evaluación"
+            (click)="onAddEvaluation()"
+        ></button>
+    </div>
+
+    <!-- Mensaje condicional -->
+    <p-message
+        *ngIf="!hasActiveEvaluations"
+        severity="error"
+        text="No existe una evaluación activa"
+    ></p-message>
+    <p-message
+        *ngIf="hasActiveEvaluations"
+        severity="success"
+        text="Existe una evaluación activa"
+    ></p-message>
+
+    <!-- Tabla de evaluaciones -->
+    <p-table
+        #tableEvaluaciones
+        [value]="evaluaciones"
+        [paginator]="true"
+        [rows]="5"
+        [totalRecords]="totalRecords"
+        [lazy]="true"
+        (onLazyLoad)="loadEvaluations($event)"
+        [style]="{ 'margin-top': '1em' }"
+        [sortField]="'anio'"
+        [sortOrder]="1"
+    >
+        <ng-template pTemplate="header">
+            <tr>
+                <th pSortableColumn="periodo">Periodo <p-sortIcon field="periodo"></p-sortIcon></th>
+                <th pSortableColumn="anio">Año <p-sortIcon field="anio"></p-sortIcon></th>
+                <th pSortableColumn="nombre">Nombre cuestionario <p-sortIcon field="nombre"></p-sortIcon></th>
+                <th pSortableColumn="asignaturasEvaluadas">Cantidad de asignaturas evaluadas <p-sortIcon field="asignaturasEvaluadas"></p-sortIcon></th>
+                <th pSortableColumn="estado">Estado <p-sortIcon field="estado"></p-sortIcon></th>
+                <th>Opciones</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-evaluacion>
+            <tr>
+                <td>{{ evaluacion.periodo }}</td>
+                <td>{{ evaluacion.anio }}</td>
+                <td>{{ evaluacion.nombre }}</td>
+                <td>{{ evaluacion.asignaturasEvaluadas }}</td>
+                <td>{{ evaluacion.estado }}</td>
+                <td><a href="#" (click)="viewStatistics(evaluacion)">Ver estadísticas</a></td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td colspan="6">No se encontraron registros</td>
+            </tr>
+        </ng-template>
+    </p-table>
 </p-panel>

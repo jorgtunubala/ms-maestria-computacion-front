@@ -1,0 +1,57 @@
+<p-panel header="Agregar evaluación">
+  <div class="grid grid-cols-12 gap-4 items-center p-4">
+    <div class="col-span-2">
+      <label for="periodo" class="block text-sm font-medium text-gray-700">Periodo</label>
+      <p-inputNumber id="periodo" [(ngModel)]="evaluacion.periodo" [showButtons]="true" mode="decimal" class="mt-1 block w-full"></p-inputNumber>
+    </div>
+    <div class="col-span-2">
+      <label for="anio" class="block text-sm font-medium text-gray-700">Año</label>
+      <p-calendar id="anio" [(ngModel)]="evaluacion.anio" view="year" dateFormat="yy" yearNavigator="true" [yearRange]="yearRange" [style]="{'width': '100%'}" class="mt-1 block w-full"></p-calendar>
+    </div>
+    <div class="col-span-4">
+      <label for="cuestionario" class="block text-sm font-medium text-gray-700">Cuestionario asociado</label>
+      <p-dropdown id="cuestionario" [(ngModel)]="evaluacion.cuestionario" [options]="cuestionarios" class="mt-1 block w-full"></p-dropdown>
+    </div>
+    <div class="col-span-4 flex items-end">
+      <button pButton icon="pi pi-search" label="Ver detalles de la evaluación" (click)="verDetalles()" class="ml-auto"></button>
+    </div>
+  </div>
+
+  <div *ngIf="mostrarDetalles" class="mt-4 p-4">
+    <p-message *ngIf="evaluacionExistente" severity="error" text="Ya existe una evaluación creada para el periodo y año seleccionado"></p-message>
+    <p-message *ngIf="!evaluacionExistente" severity="success" text="No existe una evaluación activa"></p-message>
+
+    <h4 class="text-lg font-semibold">Detalles de la evaluación a realizar</h4>
+    <p>Cantidad de estudiantes que responderán la evaluación: 15</p>
+
+    <h5 class="text-md font-semibold mt-2">Asignaturas a evaluar</h5>
+
+    <div *ngFor="let area of areas" class="mt-4">
+      <h6 class="text-sm font-medium">{{ area.nombre }}</h6>
+      <p-table [value]="area.asignaturas" class="mt-2 w-full">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Código</th>
+            <th>Grupo</th>
+            <th>Nombre</th>
+            <th>Docente</th>
+            <th>Cantidad de estudiantes que responderán en la plataforma</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-asignatura>
+          <tr>
+            <td>{{ asignatura.codigo }}</td>
+            <td>{{ asignatura.grupo }}</td>
+            <td>{{ asignatura.nombre }}</td>
+            <td>{{ asignatura.docente }}</td>
+            <td>{{ asignatura.cantidadEstudiantes }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+    <div class="text-right mt-3">
+      <button pButton icon="pi pi-save" label="Registrar evaluación" (click)="registrarEvaluacion()"></button>
+    </div>
+  </div>
+</p-panel>
