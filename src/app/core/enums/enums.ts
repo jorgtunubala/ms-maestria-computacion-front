@@ -12,11 +12,11 @@ export enum Mensaje {
     ACTUALIZACION_EXITOSA= "El registro fue actualizado exitosamente",
     GUARDADO_EXITOSO  =  "Los datos han sido guardados exitosamente",
 
-    CONFIRMAR_ELIMINAR_PREGUNTA = "¿Está seguro de eliminar esta pregunta?",
-    PREGUNTA_ELIMINADA_CORRECTAMENTE = "Pregunta eliminada correctamente",
+    CONFIRMAR_DESACTIVAR_PREGUNTA = "¿Está seguro de desactivar esta pregunta?",
+    PREGUNTA_DESACTIVADA_CORRECTAMENTE = "Pregunta desactivada correctamente",
     ESTADO_PREGUNTA_ACTUALIZADO_CORRECTAMENTE = "Estado de la pregunta actualizado correctamente",
 
-    CONFIRMAR_ELIMINAR_CUESTIONARIO = "¿Está seguro de eliminar este cuestionario?",
-    CUESTIONARIO_ELIMINADO_CORRECTAMENTE = "Cuestionario eliminado correctamente",
+    CONFIRMAR_DESACTIVAR_CUESTIONARIO = "¿Está seguro de desactivar este cuestionario?",
+    CUESTIONARIO_DESACTIVADO_CORRECTAMENTE   = "Cuestionario desactivado correctamente",
     ESTADO_CUESTIONARIO_ACTUALIZADO_CORRECTAMENTE = "Estado del cuestionario actualizado correctamente",
 }

@@ -4,6 +4,7 @@ import { CuestionarioService } from '../../services/cuestionario.service';
 import { ConfirmationService, MessageService, PrimeIcons } from 'primeng/api';
 import { Mensaje } from 'src/app/core/enums/enums';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-bandeja-buestionarios',
@@ -19,6 +20,8 @@ export class BandejaCuestionariosComponent implements OnInit {
     mostrarInactivasFlag: boolean = true;
     cuestionario: Cuestionario = this.initializeCuestionario();
 
+    private subscriptions: Subscription[] = [];
+
     constructor(
         private cuestionarioService: CuestionarioService,
         private messageService: MessageService,
@@ -28,6 +31,11 @@ export class BandejaCuestionariosComponent implements OnInit {
 
     ngOnInit() {
         this.loadCuestionarios();
+    }
+
+    ngOnDestroy(): void {
+        // Desuscribirse de todas las suscripciones
+        this.subscriptions.forEach(subscription => subscription.unsubscribe());
     }
 
     showDialog() {
@@ -73,9 +81,9 @@ export class BandejaCuestionariosComponent implements OnInit {
     onDelete(event: any, id: number) {
         this.confirmationService.confirm({
             target: event.target!,
-            message: Mensaje.CONFIRMAR_ELIMINAR_CUESTIONARIO,
+            message: Mensaje.CONFIRMAR_DESACTIVAR_CUESTIONARIO,
             icon: PrimeIcons.EXCLAMATION_TRIANGLE,
-            acceptLabel: 'Sí, eliminar',
+            acceptLabel: 'Sí, desactivar',
             rejectLabel: 'No',
             accept: () => this.deleteCuestionario(id),
         });
@@ -117,7 +125,7 @@ export class BandejaCuestionariosComponent implements OnInit {
     private deleteCuestionario(id: number) {
         this.cuestionarioService.deleteCuestionario(id).subscribe({
             next: () => this.onCuestionarioDeleted(),
-            error: (err) => this.handleError(err, 'Error al eliminar el cuestionario'),
+            error: (err) => this.handleError(err, 'Error al desactivar el cuestionario'),
         });
     }
 
@@ -154,7 +162,7 @@ export class BandejaCuestionariosComponent implements OnInit {
     }
 
     private onCuestionarioDeleted() {
-        this.showMessage('Éxito', Mensaje.CUESTIONARIO_ELIMINADO_CORRECTAMENTE, 'info');
+        this.showMessage('Éxito', Mensaje.CUESTIONARIO_DESACTIVADO_CORRECTAMENTE, 'info');
         this.loadCuestionarios();
     }
 

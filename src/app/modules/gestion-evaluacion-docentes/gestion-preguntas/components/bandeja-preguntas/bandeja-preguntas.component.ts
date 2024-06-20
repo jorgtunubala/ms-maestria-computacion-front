@@ -4,6 +4,8 @@ import { BreadcrumbService } from 'src/app/core/components/breadcrumb/app.breadc
 import { PreguntaService } from '../../services/pregunta.service';
 import { ConfirmationService, MessageService, PrimeIcons } from 'primeng/api';
 import { Mensaje } from 'src/app/core/enums/enums';
+import { Subscription } from 'rxjs';
+
 
 @Component({
     selector: 'app-bandeja-preguntas',
@@ -18,6 +20,8 @@ export class BandejaPreguntasComponent implements OnInit {
     mostrarInactivasFlag: boolean = true;
     pregunta: Pregunta = this.initializePregunta();
 
+    private subscriptions: Subscription[] = [];
+
     constructor(
         private breadcrumbService: BreadcrumbService,
         private preguntaService: PreguntaService,
@@ -30,6 +34,11 @@ export class BandejaPreguntasComponent implements OnInit {
         this.loadPreguntas();
     }
 
+    ngOnDestroy(): void {
+        // Desuscribirse de todas las suscripciones
+        this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    }
+
     setBreadcrumb() {
         this.breadcrumbService.setItems([
             { label: 'Gestión' },
@@ -39,11 +48,13 @@ export class BandejaPreguntasComponent implements OnInit {
 
     loadPreguntas() {
         this.loading = true;
-        this.preguntaService.listPreguntas().subscribe({
-            next: (response) => this.filterPreguntas(response),
-            error: (err) => this.handleError(err, 'Error al cargar preguntas'),
-            complete: () => (this.loading = false),
-        });
+        this.subscriptions.push(
+            this.preguntaService.listPreguntas().subscribe({
+                next: (response) => this.filterPreguntas(response),
+                error: (err) => this.handleError(err, 'Error al cargar preguntas'),
+                complete: () => (this.loading = false),
+            })
+        );
     }
 
     filterPreguntas(preguntas: Pregunta[]) {
@@ -68,19 +79,20 @@ export class BandejaPreguntasComponent implements OnInit {
     }
 
     onEdit(id: number) {
-        this.preguntaService.getPregunta(id).subscribe({
-            next: (data) => this.editPregunta(data),
-            error: (err) =>
-                this.handleError(err, 'Error al cargar la pregunta'),
-        });
+        this.subscriptions.push(
+            this.preguntaService.getPregunta(id).subscribe({
+                next: (data) => this.editPregunta(data),
+                error: (err) => this.handleError(err, 'Error al cargar la pregunta'),
+            })
+        );
     }
 
     onDelete(event: any, id: number) {
         this.confirmationService.confirm({
             target: event.target!,
-            message: Mensaje.CONFIRMAR_ELIMINAR_PREGUNTA,
+            message: Mensaje.CONFIRMAR_DESACTIVAR_PREGUNTA,
             icon: PrimeIcons.EXCLAMATION_TRIANGLE,
-            acceptLabel: 'Sí, eliminar',
+            acceptLabel: 'Sí, desactivar',
             rejectLabel: 'No',
             accept: () => this.deletePregunta(id),
         });
@@ -118,42 +130,47 @@ export class BandejaPreguntasComponent implements OnInit {
     }
 
     private createPregunta() {
-        this.preguntaService.createPregunta(this.pregunta).subscribe({
-            next: (data) => this.onPreguntaCreated(data),
-            error: (err) =>
-                this.handleError(err, 'Error al agregar la pregunta'),
-        });
+        this.subscriptions.push(
+            this.preguntaService.createPregunta(this.pregunta).subscribe({
+                next: (data) => this.onPreguntaCreated(data),
+                error: (err) => this.handleError(err, 'Error al agregar la pregunta'),
+            })
+        );
     }
 
     private updatePregunta() {
-        this.preguntaService
-            .updatePregunta(this.pregunta.id!, this.pregunta)
-            .subscribe({
-                next: (data) => this.onPreguntaUpdated(data),
-                error: (err) =>
-                    this.handleError(err, 'Error al actualizar la pregunta'),
-            });
+        this.subscriptions.push(
+            this.preguntaService
+                .updatePregunta(this.pregunta.id!, this.pregunta)
+                .subscribe({
+                    next: (data) => this.onPreguntaUpdated(data),
+                    error: (err) => this.handleError(err, 'Error al actualizar la pregunta'),
+                })
+        );
     }
 
     private deletePregunta(id: number) {
-        this.preguntaService.deletePregunta(id).subscribe({
-            next: () => this.onPreguntaDeleted(),
-            error: (err) =>
-                this.handleError(err, 'Error al eliminar la pregunta'),
-        });
+        this.subscriptions.push(
+            this.preguntaService.deletePregunta(id).subscribe({
+                next: () => this.onPreguntaDeleted(),
+                error: (err) => this.handleError(err, 'Error al desactivar la pregunta'),
+            })
+        );
     }
 
     private updatePreguntaEstado(pregunta: Pregunta, nuevoEstado: string) {
-        this.preguntaService
-            .cambiarEstadoPregunta(pregunta.id!, nuevoEstado)
-            .subscribe({
-                next: () => this.onEstadoUpdated(nuevoEstado),
-                error: (err) =>
-                    this.handleError(
-                        err,
-                        'Error al cambiar el estado de la pregunta'
-                    ),
-            });
+        this.subscriptions.push(
+            this.preguntaService
+                .cambiarEstadoPregunta(pregunta.id!, nuevoEstado)
+                .subscribe({
+                    next: () => this.onEstadoUpdated(nuevoEstado),
+                    error: (err) =>
+                        this.handleError(
+                            err,
+                            'Error al cambiar el estado de la pregunta'
+                        ),
+                })
+        );
     }
 
     private editPregunta(data: Pregunta) {
@@ -184,7 +201,7 @@ export class BandejaPreguntasComponent implements OnInit {
     private onPreguntaDeleted() {
         this.showMessage(
             'Éxito',
-            Mensaje.PREGUNTA_ELIMINADA_CORRECTAMENTE,
+            Mensaje.PREGUNTA_DESACTIVADA_CORRECTAMENTE,
             'info'
         );
         this.loadPreguntas();
