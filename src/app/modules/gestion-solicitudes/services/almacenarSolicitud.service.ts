@@ -5,6 +5,7 @@ import {
     DatosApoyoCongreso,
     DatosApoyoPasantia,
     DatosApoyoPublicacion,
+    DatosActividadPracticaDocente,
     DatosCursarAsignaturaDto,
     DatosReconoCreditos,
     DatosSolHomologPostSave,
@@ -13,12 +14,15 @@ import {
     DatosSolicitudCancelacionAsignatura,
     DatosSolicitudCursarAsignatura,
     FormHomologPost,
+    InfoActividadesReCreditos,
     SolicitudSave,
+    DatosAvalPracticaDocente,
 } from '../models/indiceModelos';
 import { HttpService } from './http.service';
 import { RadicarService } from './radicar.service';
 import { HttpClient } from '@angular/common/http';
 import { InfoAsingAdicionCancelacion } from '../models/solicitudes/solicitud-adic-cancel-asig/infoAsignAdicionCancelacion';
+import { catchError, map, throwError } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
@@ -32,158 +36,97 @@ export class AlmacenarSolicitudService {
         public httpService: HttpClient
     ) {}
 
-    async almacenarSolicitudEnBD(): Promise<boolean> {
-        return new Promise<boolean>(async (resolve) => {
-            let resultado: boolean = false;
+    async almacenarSolicitudEnBD(): Promise<string> {
+        // Crear una nueva promesa que resuelve una cadena
+        return new Promise<string>(async (resolver, rechazar) => {
+            let resultado: string = null;
 
+            // Convertir la firma del solicitante a Base64
             this.firmaSolicitante = await this.convertirABase64(
                 this.radicar.firmaSolicitante
             );
 
-            switch (this.radicar.tipoSolicitudEscogida.codigoSolicitud) {
-                case 'AD_ASIG':
-                    this.http
-                        .guardarSolicitud(await this.reunirDatosSolAdicion())
-                        .subscribe((respuesta) => {
+            // Función para manejar la respuesta del observable
+            const manejarRespuesta = (observable) => {
+                observable
+                    .pipe(
+                        map((respuesta: any) => {
+                            return typeof respuesta === 'string'
+                                ? respuesta
+                                : JSON.stringify(respuesta);
+                        }),
+                        catchError((error: any) => {
+                            if (error.error.text) {
+                                // Devuelve la cadena de texto en caso de que no sea un JSON
+                                return [error.error.text];
+                            }
+                            return throwError(error);
+                        })
+                    )
+                    .subscribe({
+                        next: (respuesta: string) => {
                             resultado = respuesta;
-                            resolve(resultado);
-                        });
+                            resolver(resultado);
+                        },
+                        error: (error) => {
+                            rechazar(error);
+                        },
+                    });
+            };
 
-                    break;
+            // Función para manejar diferentes tipos de solicitudes
+            const manejarSolicitud = async (
+                codigoSolicitud: string,
+                reunirDatosFn: () => Promise<any>
+            ) => {
+                const datosSolicitud = await reunirDatosFn();
+                const observable = this.http.guardarSolicitud(datosSolicitud);
+                manejarRespuesta(observable);
+            };
 
-                case 'CA_ASIG':
-                    this.http
-                        .guardarSolicitud(await this.reunirDatosSolCancelAsig())
-                        .subscribe((respuesta) => {
-                            resultado = respuesta;
-                            resolve(resultado);
-                        });
+            // Diccionario para mapear códigos de solicitud a funciones de datos
+            const mapaSolicitudes = {
+                AD_ASIG: this.reunirDatosSolAdicion,
+                CA_ASIG: this.reunirDatosSolCancelAsig,
+                HO_ASIG_POS: this.reunirDatosSolHomolog,
+                HO_ASIG_ESP: this.reunirDatosSolHomolog,
+                AP_SEME: this.reunirDatosSolAplazamiento,
+                CU_ASIG: this.reunirDatosSolCurAsigExternas,
+                AV_PASA_INV: this.reunirDatosSolAvalPasant,
+                AP_ECON_INV: this.reunirDatosSolApoyoPasantia,
+                AP_ECON_ASI: this.reunirDatosSolApoyoCongreso,
+                PA_PUBL_EVE: this.reunirDatosSolApoyoPublicacion,
+                RE_CRED_PAS: this.reunirDatosSolRecCredPracticaDocente,
+                RE_CRED_DIS: this.reunirDatosSolRecCreditosConLink,
+                PR_CURS_TEO: this.reunirDatosSolRecCreditosConLink,
+                AS_CRED_MAT: this.reunirDatosSolRecCreditosConLink,
+                AS_CRED_DO: this.reunirDatosSolRecCreditosSinLink,
+                RE_CRED_SEM: this.reunirDatosSolRecCreditosSinLink,
+                AS_CRED_MON: this.reunirDatosSolRecCreditosSinLink,
+                TG_PREG_POS: this.reunirDatosSolRecCreditosSinLink,
+                JU_PREG_POS: this.reunirDatosSolRecCreditosSinLink,
+                EV_ANTE_PRE: this.reunirDatosSolRecCreditosSinLink,
+                EV_PROD_INT: this.reunirDatosSolRecCreditosSinLink,
+                EV_INFO_SAB: this.reunirDatosSolRecCreditosSinLink,
+                PA_COMI_PRO: this.reunirDatosSolRecCreditosSinLink,
+                OT_ACTI_APO: this.reunirDatosSolRecCreditosSinLink,
+                RE_CRED_PUB: this.reunirDatosSolRecCreditosSinLink,
+                AV_SEMI_ACT: this.reunirDatosSolAvalSeminario,
+                AV_COMI_PR: this.reunirDatosAvalPractDocente,
+            };
 
-                    break;
+            // Obtener el código de solicitud actual
+            const codigoSolicitud =
+                this.radicar.tipoSolicitudEscogida.codigoSolicitud;
 
-                case 'HO_ASIG_POS':
-                case 'HO_ASIG_ESP':
-                    this.http
-                        .guardarSolicitud(await this.reunirDatosSolHomolog())
-                        .subscribe((respuesta) => {
-                            resultado = respuesta;
-                            resolve(resultado);
-                        });
-                    break;
-
-                case 'AP_SEME':
-                    this.http
-                        .guardarSolicitud(
-                            await this.reunirDatosSolAplazamiento()
-                        )
-                        .subscribe((respuesta) => {
-                            resultado = respuesta;
-                            resolve(resultado);
-                        });
-                    break;
-
-                case 'CU_ASIG':
-                    this.http
-                        .guardarSolicitud(
-                            await this.reunirDatosSolCurAsigExternas()
-                        )
-                        .subscribe((respuesta) => {
-                            resultado = respuesta;
-                            resolve(resultado);
-                        });
-                    break;
-
-                case 'AV_PASA_INV':
-                    this.http
-                        .guardarSolicitud(await this.reunirDatosSolAvalPasant())
-                        .subscribe((respuesta) => {
-                            resultado = respuesta;
-                            resolve(resultado);
-                        });
-                    break;
-
-                case 'AP_ECON_INV':
-                    this.http
-                        .guardarSolicitud(
-                            await this.reunirDatosSolApoyoPasantia()
-                        )
-                        .subscribe((respuesta) => {
-                            resultado = respuesta;
-                            resolve(resultado);
-                        });
-                    break;
-
-                case 'AP_ECON_ASI':
-                    this.http
-                        .guardarSolicitud(
-                            await this.reunirDatosSolApoyoCongreso()
-                        )
-                        .subscribe((respuesta) => {
-                            resultado = respuesta;
-                            resolve(resultado);
-                        });
-                    break;
-
-                case 'PA_PUBL_EVE':
-                    this.http
-                        .guardarSolicitud(
-                            await this.reunirDatosSolApoyoPublicacion()
-                        )
-                        .subscribe((respuesta) => {
-                            resultado = respuesta;
-                            resolve(resultado);
-                        });
-                    break;
-
-                case 'RE_CRED_PAS':
-                case 'RE_CRED_DIS':
-                case 'PR_CURS_TEO':
-                case 'AS_CRED_MAT':
-                    this.http
-                        .guardarSolicitud(
-                            await this.reunirDatosSolRecCreditosConLink()
-                        )
-                        .subscribe((respuesta) => {
-                            resultado = respuesta;
-                            resolve(resultado);
-                        });
-                    break;
-
-                case 'AS_CRED_DO':
-                case 'RE_CRED_SEM':
-                case 'AS_CRED_MON':
-                case 'TG_PREG_POS':
-                case 'JU_PREG_POS':
-                case 'EV_ANTE_PRE':
-                case 'EV_PROD_INT':
-                case 'EV_INFO_SAB':
-                case 'PA_COMI_PRO':
-                case 'OT_ACTI_APO':
-                case 'RE_CRED_PUB':
-                    this.http
-                        .guardarSolicitud(
-                            await this.reunirDatosSolRecCreditosSinLink()
-                        )
-                        .subscribe((respuesta) => {
-                            resultado = respuesta;
-                            resolve(resultado);
-                        });
-                    break;
-
-                case 'AV_SEMI_ACT':
-                    this.http
-                        .guardarSolicitud(
-                            await this.reunirDatosSolAvalSeminario()
-                        )
-                        .subscribe((respuesta) => {
-                            resultado = respuesta;
-                            resolve(resultado);
-                        });
-                    break;
-
-                default:
-                    resolve(resultado);
-                    break;
+            // Si el código de solicitud existe en el mapa, manejar la solicitud correspondiente
+            if (mapaSolicitudes[codigoSolicitud]) {
+                await manejarSolicitud(
+                    codigoSolicitud,
+                    mapaSolicitudes[codigoSolicitud].bind(this)
+                );
+            } else {
+                resolver(resultado);
             }
         });
     }
@@ -388,6 +331,46 @@ export class AlmacenarSolicitudService {
         return this.construirObjAGuardar('RE_CRED', datos);
     }
 
+    async reunirDatosAvalPractDocente() {
+        const datos: DatosAvalPracticaDocente[] =
+            this.radicar.actividadesSeleccionadas.map((actividad, index) => {
+                const intensidad = this.radicar.horasIngresadas[index] || 0;
+
+                return {
+                    codigoSubtipo: actividad.codigo,
+                    intensidadHoraria: intensidad,
+                    horasReconocer: this.radicar.horasAsignables[index],
+                };
+            });
+
+        return this.construirObjAGuardar('AV_COMI_PR', datos);
+    }
+
+    async reunirDatosSolRecCredPracticaDocente() {
+        const datos: DatosActividadPracticaDocente[] = await Promise.all(
+            this.radicar.actividadesSeleccionadas.map(
+                async (actividad, index) => {
+                    const docsAdjuntos = await Promise.all(
+                        this.radicar.adjuntosDeActividades[index].archivos.map(
+                            (archivo) => this.convertirABase64(archivo)
+                        )
+                    );
+
+                    return {
+                        codigoSubtipo: actividad.codigo,
+                        intensidadHoraria: this.radicar.horasIngresadas[index],
+                        horasReconocer: this.radicar.horasAsignables[index],
+                        documentosAdjuntos: docsAdjuntos,
+                        enlacesAdjuntos:
+                            this.radicar.adjuntosDeActividades[index].enlaces,
+                    };
+                }
+            )
+        );
+
+        return this.construirObjAGuardar('RE_CRED_PAS', datos);
+    }
+
     async reunirDatosSolHomolog(): Promise<SolicitudSave> {
         const asignaturasAHomologar: AsignaturaHomologPost[] = [];
         const conversionesBase64: Promise<string>[] = [];
@@ -494,13 +477,24 @@ export class AlmacenarSolicitudService {
                 tipo === 'AP_ECON_ASI' ? infoEspecifica : null,
             datosApoyoEconomicoPublicacion:
                 tipo === 'PA_PUBL_EVE' ? infoEspecifica : null,
+            datosActividadDocenteRequest:
+                tipo === 'RE_CRED_PAS' ? infoEspecifica : null,
+            datosAvalComite: tipo === 'AV_COMI_PR' ? infoEspecifica : null,
             requiereFirmaDirector:
                 tipo === 'AP_ECON_INV' || tipo === 'ApoyoEconomico'
                     ? true
                     : false,
             firmaEstudiante: this.firmaSolicitante,
+
+            oficioPdf: '',
+            /*
+            oficioPdf: await this.convertirABase64(
+                this.radicar.oficioDeSolicitud
+            ),
+            */
         };
 
+        console.log(infoSolicitud);
         return infoSolicitud;
     }
 

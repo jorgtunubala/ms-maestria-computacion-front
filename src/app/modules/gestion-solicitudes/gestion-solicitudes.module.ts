@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { GestionSolicitudesRoutingModule } from './gestion-solicitudes-routing.module';
@@ -37,6 +37,7 @@ import { ApypublicacionComponent } from './components/presentacion-solicitudes/f
 import { ContenedorComponent } from './components/gestion-coordinacion/contenedor/contenedor.component';
 import { TramiteComponent } from './components/gestion-coordinacion/tramite/tramite.component';
 import { CreditosComponent } from './components/presentacion-solicitudes/formularios/complementarios/creditos/creditos.component';
+import { AvalpracticadocenteComponent } from './components/presentacion-solicitudes/formularios/complementarios/avalpracticadocente/avalpracticadocente.component';
 
 @NgModule({
     declarations: [
@@ -72,6 +73,7 @@ import { CreditosComponent } from './components/presentacion-solicitudes/formula
         ContenedorComponent,
         TramiteComponent,
         CreditosComponent,
+        AvalpracticadocenteComponent,
     ],
     imports: [
         CommonModule,
@@ -80,5 +82,6 @@ import { CreditosComponent } from './components/presentacion-solicitudes/formula
         SharedModule,
         GestionSolicitudesRoutingModule,
     ],
+    providers: [DatePipe],
 })
 export class GestionSolicitudesModule {}

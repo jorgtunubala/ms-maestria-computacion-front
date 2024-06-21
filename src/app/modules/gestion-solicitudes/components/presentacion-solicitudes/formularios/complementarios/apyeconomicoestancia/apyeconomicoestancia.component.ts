@@ -15,6 +15,7 @@ import { RadicarService } from 'src/app/modules/gestion-solicitudes/services/rad
 export class ApyeconomicoestanciaComponent implements OnInit {
     formApoyoEconEstancia: FormGroup;
     tiposCuentaBancaria: string[];
+    listaGruposInvestigacion: string[];
 
     constructor(public radicar: RadicarService, private fb: FormBuilder) {
         this.tiposCuentaBancaria = [
@@ -23,10 +24,17 @@ export class ApyeconomicoestanciaComponent implements OnInit {
             'Corriente',
         ];
 
+        this.listaGruposInvestigacion = [
+            'Seleccione una opción',
+            'Grupo de Investigación y Desarrollo en Ingeniería de Software - IDIS',
+            'Grupo de Investigación en Tecnologías de la Información - GTI',
+            'Grupo de Investigación en Inteligencia Computacional - GICO',
+        ];
+
         this.formApoyoEconEstancia = this.fb.group({
             lugar: ['', Validators.required],
             fechas: ['', Validators.required],
-            grupoInvestigacion: ['', Validators.required],
+            grupoInvestigacion: ['', this.customValidator],
             valorApoyo: ['', Validators.required],
             nombreBanco: ['', Validators.required],
             tipoCuenta: ['', this.customValidator()],
@@ -52,6 +60,7 @@ export class ApyeconomicoestanciaComponent implements OnInit {
                 grupoInvestigacion: this.radicar.grupoInvestigacion,
             });
         }
+
         if (this.radicar.valorApoyoEcon !== null) {
             this.formApoyoEconEstancia.patchValue({
                 valorApoyo: this.radicar.valorApoyoEcon,
@@ -118,10 +127,10 @@ export class ApyeconomicoestanciaComponent implements OnInit {
 
     customValidator() {
         return (control: AbstractControl) => {
-            const tipoCuentaSeleccionado: string = control.value;
+            const tipoSeleccionado: string = control.value;
             if (
-                !tipoCuentaSeleccionado ||
-                tipoCuentaSeleccionado === 'Seleccione una opción'
+                !tipoSeleccionado ||
+                tipoSeleccionado === 'Seleccione una opción'
             ) {
                 return { invalidTipo: true };
             }

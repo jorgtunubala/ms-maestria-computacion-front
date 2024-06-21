@@ -256,6 +256,18 @@
         <app-motivosolicitud></app-motivosolicitud>
     </div>
 
+    <!-- Selector actividades aval practica docente -->
+    <div
+        class="mt-4"
+        *ngIf="
+            ['AV_COMI_PR'].includes(
+                radicar.tipoSolicitudEscogida.codigoSolicitud
+            )
+        "
+    >
+        <app-avalpracticadocente></app-avalpracticadocente>
+    </div>
+
     <!-- Selector actividades reconocimiento de creditos -->
     <div
         class="mt-4"

@@ -45,3 +45,14 @@
         transform: rotate(360deg);
     }
 }
+
+.component-wrapper {
+    position: relative;
+}
+
+.floating-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10001;
+}

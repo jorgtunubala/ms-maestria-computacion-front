@@ -4,6 +4,7 @@ import { Subject } from 'rxjs';
 import {
     DatosAsignaturaAdicion,
     DatosSolicitante,
+    InfoActividadesReCreditos,
     InfoPersonal,
     RequisitosSolicitud,
     TipoSolicitud,
@@ -12,22 +13,36 @@ import {
 import { DatosSolicitudRequest } from '../models/solicitudes/datosSolicitudRequest';
 import { InfoAsingAdicionCancelacion } from '../models/solicitudes/solicitud-adic-cancel-asig/infoAsignAdicionCancelacion';
 import { NullVisitor } from '@angular/compiler/src/render3/r3_ast';
+import { HttpService } from './http.service';
 
 interface actividadCreditos {
     nombre: string;
     abreviacion: string;
+    multiplicativo: number;
     codigo: string;
+    docs: string[];
+    enlaces: string[];
 }
+
+interface AdjuntosActividad {
+    archivos: File[];
+    enlaces: string[];
+}
+interface AdjuntosDeActividades {
+    [actividadId: number]: AdjuntosActividad;
+}
+
 @Injectable({
     providedIn: 'root',
 })
 export class RadicarService {
     private clickSubject = new Subject<void>();
     listadoTutoresYDirectores: TutorYDirector[];
+
     fechaEnvio: Date = null;
     tipoSolicitudEscogida: TipoSolicitud;
-    actividades: actividadCreditos[];
-    actividadesSeleccionadas: actividadCreditos[];
+    actividadesReCreditos: InfoActividadesReCreditos[];
+    actividadesSeleccionadas: InfoActividadesReCreditos[];
     requisitosSolicitudEscogida: RequisitosSolicitud;
     datosSolicitante: InfoPersonal = new InfoPersonal(
         null,
@@ -59,7 +74,11 @@ export class RadicarService {
     tipoCongreso: string = 'Seleccione una opción';
     tituloPublicacion: string = '';
 
-    grupoInvestigacion: string = '';
+    horasIngresadas: number[] = [];
+    horasAsignables: number[] = [];
+    adjuntosDeActividades: AdjuntosDeActividades = {};
+
+    grupoInvestigacion: string = 'Seleccione una opción';
     valorApoyoEcon: number = 0;
     banco: string = '';
     tipoCuenta: string = 'Seleccione una opción';
@@ -111,7 +130,10 @@ export class RadicarService {
 
     enlaceMaterialAudiovisual = '';
 
-    constructor(private sanitizer: DomSanitizer) {}
+    constructor(
+        private gestorHttp: HttpService,
+        private sanitizer: DomSanitizer
+    ) {}
 
     restrablecerValores() {
         this.datosSolicitante = new InfoPersonal(
@@ -136,7 +158,7 @@ export class RadicarService {
         this.datosAsignaturasAHomologar = [];
         this.datosInstitucionHomologar = { institucion: '', programa: '' };
         this.semestreAplazamiento = '';
-        this.actividades = [];
+        this.actividadesReCreditos = [];
         this.actividadesSeleccionadas = [];
         this.numeroInstanciasAsignExterna = 1;
         this.instanciasAsignExterna = [{}];
@@ -146,7 +168,7 @@ export class RadicarService {
         this.datosAsignAdiCancel = [];
         this.fechasEstancia = [];
         this.lugarEstancia = '';
-        this.grupoInvestigacion = '';
+        this.grupoInvestigacion = 'Seleccione una opción';
         this.valorApoyoEcon = 0;
         this.banco = '';
         this.tipoCuenta = 'Seleccione una opción';
@@ -165,6 +187,9 @@ export class RadicarService {
         this.esperando = false;
         this.fechaEnvio = null;
         this.enlaceMaterialAudiovisual = '';
+        this.horasIngresadas = [];
+        this.horasAsignables = [];
+        this.adjuntosDeActividades = {};
     }
 
     agregarInstancia() {
@@ -450,7 +475,95 @@ export class RadicarService {
 
                 break;
 
+            case 'AV_COMI_PR':
+                try {
+                    const actividadesReCreditos = await this.gestorHttp
+                        .obtenerActividadesReCreditos()
+                        .toPromise();
+
+                    this.actividadesReCreditos = actividadesReCreditos;
+
+                    for (
+                        let index = 0;
+                        index < infoSolicitud.datosAvalComite.length;
+                        index++
+                    ) {
+                        for (
+                            let j = 0;
+                            j < this.actividadesReCreditos.length;
+                            j++
+                        ) {
+                            if (
+                                this.actividadesReCreditos[j].nombre ==
+                                infoSolicitud.datosAvalComite[index]
+                                    .nombreActividad
+                            ) {
+                                this.actividadesSeleccionadas.push(
+                                    this.actividadesReCreditos[j]
+                                );
+                            }
+
+                            if (
+                                infoSolicitud.datosAvalComite[index]
+                                    .horasReconocer != 0
+                            ) {
+                                this.horasAsignables.push(
+                                    infoSolicitud.datosAvalComite[index]
+                                        .horasReconocer
+                                );
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error(
+                        'Error al cargar actividades de reconocimiento de créditos:',
+                        error
+                    );
+                }
+                break;
+
             case 'RE_CRED_PAS':
+                try {
+                    const actividadesReCreditos = await this.gestorHttp
+                        .obtenerActividadesReCreditos()
+                        .toPromise();
+                    this.actividadesReCreditos = actividadesReCreditos;
+
+                    infoSolicitud.datosActividadDocente.forEach(
+                        (actividad, index) => {
+                            const actividadSeleccionada =
+                                this.actividadesReCreditos.find(
+                                    (reCredito) =>
+                                        reCredito.nombre ===
+                                        actividad.nombreActividad
+                                );
+
+                            if (actividadSeleccionada) {
+                                this.actividadesSeleccionadas.push(
+                                    actividadSeleccionada
+                                );
+                            }
+
+                            this.horasAsignables.push(actividad.horasReconocer);
+
+                            const docs = actividad.documentos.map((doc) =>
+                                this.convertirBase64AFile(doc)
+                            );
+
+                            this.adjuntosDeActividades[index] = {
+                                archivos: docs,
+                                enlaces: actividad.enlaces,
+                            };
+                        }
+                    );
+                } catch (error) {
+                    console.error(
+                        'Error al cargar actividades de reconocimiento de créditos:',
+                        error
+                    );
+                }
+                break;
+
             case 'RE_CRED_DIS':
             case 'PR_CURS_TEO':
             case 'AS_CRED_MAT':

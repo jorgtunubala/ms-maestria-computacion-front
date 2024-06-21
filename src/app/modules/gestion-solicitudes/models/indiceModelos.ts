@@ -30,3 +30,10 @@ export { DatosApoyoPasantia } from './solicitudes/solicitud-apoyo-pasantia/datos
 export { DatosReconoCreditos } from './solicitudes/solicitud-rec-creditos/datosReconoCreditos';
 export { DatosApoyoCongreso } from './solicitudes/solicitud-apoyo-congreso/datosApoyoCongreso';
 export { DatosApoyoPublicacion } from './solicitudes/solicitud-apoyo-publicacion/DatosApoyoPublicacion';
+export { InfoActividadesReCreditos } from './solicitudes/solicitud-rec-creditos/infoActividadesReCreditos';
+export { DatosActividadPracticaDocente } from './solicitudes/solicitud-rec-creditos/datosActividadPracticaDocente';
+export { DatosReCreditosPracticaDocente } from './solicitudes/solicitud-rec-creditos/datosReCreditosPracticaDocente';
+export { DatosAvalPracticaDocente } from './solicitudes/solicitud-aval-pract-docente/datosAvalPracticaDocente';
+export { DatosAvalPracticaDResponse } from './solicitudes/solicitud-aval-pract-docente/datosAvalPracticaDResponse';
+export { EventoHistorial } from './historial/eventoHistorial';
+export { NumeroRadicado } from './historial/numeroRadicado';

@@ -17,6 +17,7 @@ import { RadicarService } from '../../../services/radicar.service';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { AlmacenarSolicitudService } from '../../../services/almacenarSolicitud.service';
+import { OficioComponent } from '../../utilidades/oficio/oficio.component';
 
 @Component({
     selector: 'app-resumen',
@@ -25,19 +26,20 @@ import { AlmacenarSolicitudService } from '../../../services/almacenarSolicitud.
     providers: [ConfirmationService, MessageService],
 })
 export class ResumenComponent implements OnInit {
-    @ViewChild('lineImage', { static: true }) lineImage: ElementRef;
+    // @ViewChild('lineImage', { static: true }) lineImage: ElementRef;
+    @ViewChild(OficioComponent) oficio: OficioComponent;
     @ViewChild('firmaImage') firmaImage: ElementRef;
-    @ViewChild('encabezadoSolicitud') encabezadoSolicitud: ElementRef;
-    @ViewChild('piePaginaSolicitud') piePaginaSolicitud: ElementRef;
-    @ViewChild('contenidoSolicitud') contenidoSolicitud: ElementRef;
-    @ViewChild('vistaPreviaSolicitud') vistaPreviaSolicitud: ElementRef;
-    @ViewChild('proporcionContenido') proporcionContenido: ElementRef;
-    @ViewChild('divContenedor') divContenedor: ElementRef;
+    //@ViewChild('encabezadoSolicitud') encabezadoSolicitud: ElementRef;
+    //@ViewChild('piePaginaSolicitud') piePaginaSolicitud: ElementRef;
+    //@ViewChild('contenidoSolicitud') contenidoSolicitud: ElementRef;
+    //@ViewChild('vistaPreviaSolicitud') vistaPreviaSolicitud: ElementRef;
+    //@ViewChild('proporcionContenido') proporcionContenido: ElementRef;
+    //@ViewChild('divContenedor') divContenedor: ElementRef;
 
-    imgDivEncabezado: HTMLImageElement;
-    imgDivPiePagina: HTMLImageElement;
-    imgDivContenido: HTMLImageElement;
-    imgDivProporcionContenido: HTMLImageElement;
+    //imgDivEncabezado: HTMLImageElement;
+    //imgDivPiePagina: HTMLImageElement;
+    //imgDivContenido: HTMLImageElement;
+    //imgDivProporcionContenido: HTMLImageElement;
 
     codTipoSolicitudEscogida: string;
 
@@ -49,16 +51,17 @@ export class ResumenComponent implements OnInit {
 
     mostrarOficio: boolean = true;
 
-    segmentosContenido: HTMLImageElement[];
+    //segmentosContenido: HTMLImageElement[];
 
-    espacioVacioEnPaginas: number[];
+    //espacioVacioEnPaginas: number[];
 
-    generandoVistaPrevia = true;
+    //generandoVistaPrevia = true;
     firmaEnProceso: boolean = false;
     guardadoEnProceso: boolean = false;
     mostrarBtnFirmar: boolean = false;
-    deshabilitarEnvio: boolean = false;
-    fechaActual: Date = new Date();
+    habilitarEnvio: boolean = false;
+    //fechaActual: Date = new Date();
+    /*
     nombresMes: string[] = [
         'Enero',
         'Febrero',
@@ -73,7 +76,7 @@ export class ResumenComponent implements OnInit {
         'Noviembre',
         'Diciembre',
     ];
-
+*/
     constructor(
         public radicar: RadicarService,
         public almacenar: AlmacenarSolicitudService,
@@ -83,8 +86,8 @@ export class ResumenComponent implements OnInit {
         private confirmationService: ConfirmationService,
         private messageService: MessageService
     ) {
-        this.segmentosContenido = [];
-        this.espacioVacioEnPaginas = [];
+        //this.segmentosContenido = [];
+        //this.espacioVacioEnPaginas = [];
 
         try {
             this.codTipoSolicitudEscogida =
@@ -127,6 +130,7 @@ export class ResumenComponent implements OnInit {
                 this.mostrarOficio = true;
                 this.firmaEnProceso = false;
                 this.mostrarBtnFirmar = false;
+                this.habilitarEnvio = true;
             }, 1000);
         }, 100);
     }
@@ -140,23 +144,30 @@ export class ResumenComponent implements OnInit {
     }
 
     validarFirmaCargada() {
-        if (this.radicar.firmaSolicitanteUrl) {
+        if (this.radicar.firmaSolicitanteUrl && !this.mostrarBtnFirmar) {
+            this.habilitarEnvio = true;
             return true;
         }
         return false;
     }
 
-    enviarSolicitud() {
+    async enviarSolicitud() {
         if (this.validarFirmaCargada()) {
-            this.deshabilitarEnvio = true;
             this.guardadoEnProceso = true;
-            this.almacenar.almacenarSolicitudEnBD().then((resultado) => {
-                if (resultado) {
+
+            try {
+                await this.convertirOficioEnPDF();
+
+                const resultado = await this.almacenar.almacenarSolicitudEnBD();
+
+                if (resultado != null) {
                     this.guardadoEnProceso = false;
                     this.confirmationService.confirm({
                         message:
-                            'La solicitud se ha enviado al tutor/director seleccionado para su revisión y aval.',
-                        header: 'Solicitud enviada',
+                            'IMPORTANTE: Conserve este número de radicado ' +
+                            resultado +
+                            ' para que pueda hacer seguimiento posterior del estado de su solicitud.',
+                        header: 'Solicitud Radicada: ' + resultado,
                         icon: 'pi pi-exclamation-circle',
                         acceptLabel: 'Aceptar',
                         rejectVisible: false,
@@ -166,13 +177,19 @@ export class ResumenComponent implements OnInit {
                                 '/gestionsolicitudes/portafolio/opciones',
                             ]);
                         },
+                        reject: () => {
+                            this.radicar.restrablecerValores();
+                            this.router.navigate([
+                                '/gestionsolicitudes/portafolio/opciones',
+                            ]);
+                        },
                     });
                 } else {
                     this.guardadoEnProceso = false;
-                    this.deshabilitarEnvio = false;
+                    this.habilitarEnvio = false;
                     this.confirmationService.confirm({
                         message:
-                            'Ha ocurrido un error inesperado al enviar la solicitud, revisela e intentelo nuevamente.',
+                            'Ha ocurrido un error inesperado al enviar la solicitud, revisela e intente enviarla nuevamente.',
                         header: 'Error de envio',
                         icon: 'pi pi-exclamation-triangle',
                         acceptLabel: 'Aceptar',
@@ -180,12 +197,39 @@ export class ResumenComponent implements OnInit {
                         accept: () => {},
                     });
                 }
-            });
+            } catch (error) {
+                this.guardadoEnProceso = false;
+                this.habilitarEnvio = false;
+                this.confirmationService.confirm({
+                    message:
+                        'Ha ocurrido un error inesperado al enviar la solicitud, revisela e intente enviarla nuevamente.',
+                    header: 'Error',
+                    icon: 'pi pi-exclamation-triangle',
+                    acceptLabel: 'Aceptar',
+                    rejectVisible: false,
+                    accept: () => {},
+                });
+            }
         } else {
             this.showWarn();
         }
+    }
 
-        //this.crearPDF();
+    convertirOficioEnPDF(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            if (this.oficio) {
+                this.oficio
+                    .crearPDF()
+                    .then(() => {
+                        resolve();
+                    })
+                    .catch((error) => {
+                        reject(error);
+                    });
+            } else {
+                resolve(); // O reject(new Error('Oficio no definido')) según tu lógica de error
+            }
+        });
     }
 
     renderizarImagen(imagen: File): void {
@@ -198,9 +242,14 @@ export class ResumenComponent implements OnInit {
 
     navigateToBack() {
         if (
-            ['AD_ASIG', 'CA_ASIG', 'AP_SEME', 'CU_ASIG'].includes(
-                this.radicar.tipoSolicitudEscogida.codigoSolicitud
-            )
+            [
+                'AD_ASIG',
+                'CA_ASIG',
+                'AP_SEME',
+                'CU_ASIG',
+                'RE_CRED_PAS',
+                'AV_COMI_PR',
+            ].includes(this.radicar.tipoSolicitudEscogida.codigoSolicitud)
         ) {
             this.router.navigate([
                 '/gestionsolicitudes/portafolio/radicar/formulario',

@@ -10,6 +10,8 @@ import {
     DatosReconoCreditos,
     DatosApoyoCongreso,
     DatosApoyoPublicacion,
+    DatosReCreditosPracticaDocente,
+    DatosAvalPracticaDResponse,
 } from '../indiceModelos';
 
 export class DatosSolicitudRequest {
@@ -25,7 +27,9 @@ export class DatosSolicitudRequest {
             obj['datosRecCreditosPasantia'],
             obj['datosAvalSeminario'],
             obj['datosApoyoEconomicoCongreso'],
-            obj['datosApoyoEconomicoPublicacion']
+            obj['datosApoyoEconomicoPublicacion'],
+            obj['datosActividadDocente'],
+            obj['datosAvalComite']
         );
     }
 
@@ -40,6 +44,8 @@ export class DatosSolicitudRequest {
         public datosReconocimientoCreditos: DatosReconoCreditos,
         public datosAvalSeminario: any,
         public datosApoyoEconomicoCongreso: DatosApoyoCongreso,
-        public datosApoyoEconomicoPublicacion: DatosApoyoPublicacion
+        public datosApoyoEconomicoPublicacion: DatosApoyoPublicacion,
+        public datosActividadDocente: DatosReCreditosPracticaDocente[],
+        public datosAvalComite: DatosAvalPracticaDResponse[]
     ) {}
 }

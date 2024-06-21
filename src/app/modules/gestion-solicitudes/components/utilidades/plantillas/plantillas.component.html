@@ -124,13 +124,13 @@
             )
         "
     >
-        un apoyo economico para la realización de una estancia de investigacion
+        un apoyo economico para la realización de una estancia de investigación
         en
-        {{ radicar.lugarEstancia }} en el periodo comprendido entre las fechas:
+        {{ radicar.lugarEstancia }}, en el periodo comprendido entre las fechas:
         {{ rangoFechas }}. La presente solicitud esta avalada por la direccion
-        del grupo de investigación {{ radicar.grupoInvestigacion }} y
-        adicionalmente anexo la documentacion e informacion requerida para su
-        estudio. <br /><br />Valor apoyo economico: COP ${{
+        del {{ radicar.grupoInvestigacion }}, adicionalmente anexo a esta
+        solicitud la documentacion e informacion requerida para su estudio.
+        <br /><br />Valor apoyo economico: COP ${{
             radicar.valorApoyoEcon | number : "."
         }}
         <br />Entidad Bancaria: {{ radicar.banco }} <br />Tipo de Cuenta:
@@ -141,7 +141,32 @@
         {{ radicar.cedulaCuentaBanco }} <br />Dirección: {{ radicar.direccion }}
     </ng-container>
 
-    <!--Solicitud de reconocimiento creditos pasantia-->
+    <!--Solicitud de aval para realizacion de actividades de practica docente-->
+    <ng-container
+        *ngIf="
+            ['AV_COMI_PR'].includes(
+                radicar.tipoSolicitudEscogida.codigoSolicitud
+            )
+        "
+    >
+        el aval para la ralización de las actividades de practica docente
+        enumeradas a continuacion: <br /><br />
+
+        <ng-container
+            *ngFor="
+                let actividad of radicar.actividadesSeleccionadas;
+                let i = index
+            "
+        >
+            <p style="line-height: 0.6">
+                {{ i + 1 }}. {{ actividad.nombre }} -
+                {{ radicar.horasAsignables[i] }}h
+            </p>
+        </ng-container>
+        <br />
+    </ng-container>
+
+    <!--Solicitud de reconocimiento creditos por actividades de practica docente-->
     <ng-container
         *ngIf="
             ['RE_CRED_PAS'].includes(
@@ -150,12 +175,22 @@
         "
     >
         el reconocimiento y asignación de los créditos que corresponden a la
-        culminación satisfactoria de mi estancia de investigación. Adjunto a
-        esta solicitud, la documentación y soportes requeridos para su revisión.
-        asi como el enlace al repositorio donde se aloja el video de
-        socialización de la pasantía realizada.
+        ralizacion de las actividades de practica docente enumeradas a
+        continuacion, para cada una se adjunta la documentacion y/o material de
+        soporte requerido para su estudio. <br /><br />
 
-        <br /><br />Enlace video: {{ radicar.enlaceMaterialAudiovisual }}
+        <ng-container
+            *ngFor="
+                let actividad of radicar.actividadesSeleccionadas;
+                let i = index
+            "
+        >
+            <p style="line-height: 0.6">
+                {{ i + 1 }}. {{ actividad.nombre }} -
+                {{ radicar.horasAsignables[i] }}h
+            </p>
+        </ng-container>
+        <br />
     </ng-container>
 
     <!--Solicitud de reconocimiento creditos diseño curricular-->
@@ -634,11 +669,10 @@
                 Tutor(a) de Solicitante</ng-container
             >
             <br />
-            <!--
+
             Fecha: {{ fechaActual.getDate() }}/{{
                 fechaActual.getMonth() + 1
             }}/{{ fechaActual.getFullYear() }}
-            -->
         </ng-container>
     </div>
 </div>
@@ -674,21 +708,20 @@
                     <br />
                     Director(a) Grupo de Investigación
                 </ng-container>
+            </ng-container>
 
-                <ng-container *ngIf="radicar.firmaDirector">
-                    VoBo.
-                    <ng-container class="line-through">
-                        {{ radicar.director.nombreTutor }}
-                        <br />
-                        Director(a) Grupo de Investigación</ng-container
-                    >
+            <ng-container *ngIf="radicar.firmaDirector">
+                VoBo.
+                <ng-container class="line-through">
+                    {{ radicar.director.nombreTutor }}
                     <br />
-                    <!--
+                    Director(a) Grupo de Investigación</ng-container
+                >
+                <br />
+
                 Fecha: {{ fechaActual.getDate() }}/{{
                     fechaActual.getMonth() + 1
                 }}/{{ fechaActual.getFullYear() }}
-                -->
-                </ng-container>
             </ng-container>
         </div>
     </div>
@@ -696,7 +729,7 @@
 
 <ng-container
     *ngIf="
-        !['AD_ASIG', 'CA_ASIG', 'AP_SEME'].includes(
+        !['AD_ASIG', 'CA_ASIG', 'AP_SEME', 'AV_COMI_PR'].includes(
             radicar.tipoSolicitudEscogida.codigoSolicitud
         )
     "
