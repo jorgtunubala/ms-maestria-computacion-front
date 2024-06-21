@@ -22,6 +22,7 @@ import { DatosSolicitudRequest } from '../models/solicitudes/datosSolicitudReque
 })
 export class HttpService {
     private apiUrl = httpConfig.apiUrl;
+    private apiUrlSub = httpConfig.apiUrlSub;
 
     constructor(private http: HttpClient) {}
 
@@ -101,7 +102,7 @@ export class HttpService {
     }
 
     obtenerActividadesReCreditos() {
-        const url = `${this.apiUrl}${httpConfig.obtenerActividadesReCreditosUrl}`;
+        const url = `${this.apiUrlSub}${httpConfig.obtenerActividadesReCreditosUrl}`;
         return this.http.get<InfoActividadesReCreditos[]>(url).pipe(
             map((respuesta) => respuesta),
             catchError(this.manejarError)

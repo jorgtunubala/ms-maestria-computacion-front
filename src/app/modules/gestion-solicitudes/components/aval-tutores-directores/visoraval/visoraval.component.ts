@@ -1,12 +1,16 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { GestorService } from '../../../services/gestor.service';
 import { RadicarService } from '../../../services/radicar.service';
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import {
+    DomSanitizer,
+    SafeUrl,
+    SafeResourceUrl,
+} from '@angular/platform-browser';
 import { HttpService } from '../../../services/http.service';
 import { DatosSolicitudRequest } from '../../../models/solicitudes/datosSolicitudRequest';
 import { OficioComponent } from '../../utilidades/oficio/oficio.component';
 import { DatosAvalSolicitud } from '../../../models/indiceModelos';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 
 @Component({
@@ -19,26 +23,103 @@ export class VisoravalComponent implements OnInit {
     @ViewChild(OficioComponent) oficio: OficioComponent;
     @ViewChild('firmaImage') firmaImage: ElementRef;
 
-    segmentosContenido: HTMLImageElement[];
+    //segmentosContenido: HTMLImageElement[];
     mostrarOficio: boolean = false;
     mostrarBtnFirmar: boolean = false;
+    mostrarBtnRechazar: boolean = false;
     firmaEnProceso: boolean = false;
     mostrarBtnAvalar: boolean = false;
     mostrarPFSet: boolean = true;
+    habilitarAval: boolean = false;
 
-    urlPdf: SafeUrl | undefined;
+    urlPdf: SafeResourceUrl;
+
+    documentosAdjuntos: File[] = [];
+    enlacesAdjuntos: string[] = [];
 
     constructor(
         public gestor: GestorService,
         public radicar: RadicarService,
         public http: HttpService,
         private sanitizer: DomSanitizer,
-        private router: Router,
+        private messageService: MessageService,
         private confirmationService: ConfirmationService
     ) {}
 
     ngOnInit(): void {
         this.cargarDatosOficio();
+    }
+
+    capturarInformacionAdjunta() {
+        if (
+            this.radicar.datosAsignaturasExternas &&
+            this.radicar.datosAsignaturasExternas.length > 0
+        ) {
+            // Recorre cada elemento de datosAsignaturasExternas
+            this.radicar.datosAsignaturasExternas.forEach((asignatura) => {
+                // Verifica si hay información en 'contenidos'
+                if (asignatura.contenidos) {
+                    // Si hay información, extrae el nombre y guárdalo en el arreglo nombresArchivos
+                    this.documentosAdjuntos.push(asignatura.contenidos);
+                }
+                // Verifica si hay información en 'cartaAceptacion'
+                if (asignatura.cartaAceptacion) {
+                    // Si hay información, extrae el nombre y guárdalo en el arreglo nombresArchivos
+                    this.documentosAdjuntos.push(asignatura.cartaAceptacion);
+                }
+            });
+        }
+
+        if (
+            this.radicar.datosAsignaturasAHomologar &&
+            this.radicar.datosAsignaturasAHomologar.length > 0
+        ) {
+            // Recorre cada elemento de datosAsignaturasAHomologar
+            this.radicar.datosAsignaturasAHomologar.forEach((asignatura) => {
+                // Verifica si hay información en 'contenidos'
+                if (asignatura.contenidos) {
+                    // Si hay información, extrae el nombre y guárdalo en el arreglo nombresArchivos
+                    this.documentosAdjuntos.push(asignatura.contenidos);
+                }
+            });
+        }
+
+        if (
+            this.radicar.documentosAdjuntos &&
+            this.radicar.documentosAdjuntos.length > 0
+        ) {
+            this.radicar.documentosAdjuntos.forEach((doc) => {
+                this.documentosAdjuntos.push(doc);
+            });
+        }
+
+        // Verificar adjuntosDeActividades
+        if (this.radicar.adjuntosDeActividades) {
+            Object.keys(this.radicar.adjuntosDeActividades).forEach(
+                (actividadId) => {
+                    const adjuntosActividad =
+                        this.radicar.adjuntosDeActividades[Number(actividadId)];
+                    if (adjuntosActividad) {
+                        if (
+                            adjuntosActividad.archivos &&
+                            adjuntosActividad.archivos.length > 0
+                        ) {
+                            adjuntosActividad.archivos.forEach((archivo) => {
+                                this.documentosAdjuntos.push(archivo);
+                            });
+                        }
+                        if (
+                            adjuntosActividad.enlaces &&
+                            adjuntosActividad.enlaces.length > 0
+                        ) {
+                            adjuntosActividad.enlaces.forEach((enlace) => {
+                                this.enlacesAdjuntos.push(enlace);
+                            });
+                        }
+                    }
+                }
+            );
+        }
     }
 
     cargarDatosOficio() {
@@ -48,11 +129,14 @@ export class VisoravalComponent implements OnInit {
             )
             .subscribe(
                 async (infoSolicitud: DatosSolicitudRequest) => {
+                    console.log(infoSolicitud);
                     await this.radicar.poblarConDatosSolicitudGuardada(
                         infoSolicitud
                     );
-
                     this.mostrarOficio = true;
+                    this.mostrarBtnAvalar = true;
+                    this.mostrarBtnRechazar = true;
+                    this.capturarInformacionAdjunta();
                 },
                 (error) => {
                     console.error(
@@ -107,58 +191,78 @@ export class VisoravalComponent implements OnInit {
                 this.mostrarOficio = true;
                 this.firmaEnProceso = false;
                 this.mostrarBtnFirmar = false;
-                this.mostrarBtnAvalar = true;
+                this.habilitarAval = true;
             }, 100);
         }, 100);
     }
 
     async enviarOficioAvalado() {
-        this.convertirOficioEnPDF();
+        if (this.habilitarAval) {
+            await this.convertirOficioEnPDF();
 
-        const aval: DatosAvalSolicitud = {
-            idSolicitud: this.radicar.tipoSolicitudEscogida.idSolicitud,
-            firmaTutor: await this.convertirABase64(this.radicar.firmaTutor),
-            firmaDirector: await this.convertirABase64(
-                this.radicar.firmaDirector
-            ),
-            documentoPdfSolicitud: await this.convertirABase64(
-                this.radicar.oficioDeSolicitud
-            ),
-        };
+            const aval: DatosAvalSolicitud = {
+                idSolicitud: this.radicar.tipoSolicitudEscogida.idSolicitud,
+                firmaTutor: await this.convertirABase64(
+                    this.radicar.firmaTutor
+                ),
+                firmaDirector: await this.convertirABase64(
+                    this.radicar.firmaDirector
+                ),
 
-        this.http.guardarAvalesSolicitud(aval).subscribe(
-            (resultado) => {
-                if (resultado) {
-                    this.gestor.ejecutarCargarSolicitudes();
-                    this.confirmationService.confirm({
-                        message: 'La solicitud se ha avalado exitosamente',
-                        header: 'Solicitud avalada',
-                        icon: 'pi pi-exclamation-circle',
-                        acceptLabel: 'Aceptar',
-                        rejectVisible: false,
-                        accept: () => {
-                            this.mostrarBtnAvalar = false;
-                            this.mostrarPFSet = false;
-                        },
-                    });
-                } else {
-                    this.confirmationService.confirm({
-                        message:
-                            'Ha ocurrido un error inesperado al avalar la solicitud, intentelo nuevamente.',
-                        header: 'Error de aval',
-                        icon: 'pi pi-exclamation-triangle',
-                        acceptLabel: 'Aceptar',
-                        rejectVisible: false,
-                        accept: () => {},
-                    });
+                //Solucion temporal al error de guardado de archivos grandes
+                documentoPdfSolicitud: '',
+
+                /*
+                documentoPdfSolicitud: await this.convertirABase64(
+                    this.radicar.oficioDeSolicitud
+                ),
+                */
+            };
+
+            console.log(aval);
+
+            this.http.guardarAvalesSolicitud(aval).subscribe(
+                (resultado) => {
+                    if (resultado) {
+                        this.gestor.ejecutarCargarSolicitudes();
+                        this.confirmationService.confirm({
+                            message: 'La solicitud se ha avalado exitosamente',
+                            header: 'Solicitud avalada',
+                            icon: 'pi pi-exclamation-circle',
+                            acceptLabel: 'Aceptar',
+                            rejectVisible: false,
+                            accept: () => {
+                                this.mostrarBtnRechazar = false;
+                                this.mostrarBtnAvalar = false;
+                                this.mostrarPFSet = false;
+                            },
+                            reject: () => {
+                                this.mostrarBtnRechazar = false;
+                                this.mostrarBtnAvalar = false;
+                                this.mostrarPFSet = false;
+                            },
+                        });
+                    } else {
+                        this.confirmationService.confirm({
+                            message:
+                                'Ha ocurrido un error inesperado al avalar la solicitud, intentelo nuevamente.',
+                            header: 'Error de aval',
+                            icon: 'pi pi-exclamation-triangle',
+                            acceptLabel: 'Aceptar',
+                            rejectVisible: false,
+                            accept: () => {},
+                        });
+                    }
+                },
+                (error) => {
+                    // Manejar errores en caso de que ocurran durante la solicitud HTTP
+                    console.error('Error al enviar la solicitud:', error);
+                    // Mostrar mensaje de error u otras acciones necesarias
                 }
-            },
-            (error) => {
-                // Manejar errores en caso de que ocurran durante la solicitud HTTP
-                console.error('Error al enviar la solicitud:', error);
-                // Mostrar mensaje de error u otras acciones necesarias
-            }
-        );
+            );
+        } else {
+            this.showWarn();
+        }
     }
 
     renderizarImagen(imagen: File, firmante: any): void {
@@ -179,15 +283,26 @@ export class VisoravalComponent implements OnInit {
         reader.readAsDataURL(imagen);
     }
 
-    convertirOficioEnPDF() {
-        if (this.oficio) {
-            this.oficio.crearPDF();
-        }
+    convertirOficioEnPDF(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            if (this.oficio) {
+                this.oficio
+                    .crearPDF()
+                    .then(() => {
+                        resolve();
+                    })
+                    .catch((error) => {
+                        reject(error);
+                    });
+            } else {
+                resolve(); // O reject(new Error('Oficio no definido')) según tu lógica de error
+            }
+        });
     }
 
     abrirArchivo(nombreDocumento: string) {
         // Buscar el archivo por su nombre
-        const documento = this.radicar.documentosAdjuntos.find(
+        const documento = this.documentosAdjuntos.find(
             (doc) => doc.name === nombreDocumento
         );
 
@@ -197,16 +312,14 @@ export class VisoravalComponent implements OnInit {
             const blob = new Blob([documento], { type: tipoMIME });
 
             // Crear la URL segura
-            this.urlPdf = this.sanitizer.bypassSecurityTrustResourceUrl(
-                URL.createObjectURL(blob)
-            );
+            const url = URL.createObjectURL(blob);
+            this.urlPdf = this.sanitizer.bypassSecurityTrustResourceUrl(url);
 
             console.log(this.urlPdf);
         }
     }
 
-    abrirEnlace(): void {
-        const enlace = this.radicar.enlaceMaterialAudiovisual;
+    abrirEnlace(enlace: string): void {
         if (enlace) {
             const enlaceCompleto = enlace.startsWith('http')
                 ? enlace
@@ -240,6 +353,14 @@ export class VisoravalComponent implements OnInit {
             lector.onerror = () => {
                 reject(null);
             };
+        });
+    }
+
+    showWarn() {
+        this.messageService.add({
+            severity: 'warn',
+            summary: 'Oficio no firmado',
+            detail: 'Firme el oficio de la solicitud',
         });
     }
 }
