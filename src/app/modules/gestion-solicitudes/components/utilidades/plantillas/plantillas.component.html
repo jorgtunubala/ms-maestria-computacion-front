@@ -669,11 +669,10 @@
                 Tutor(a) de Solicitante</ng-container
             >
             <br />
-            <!--
+
             Fecha: {{ fechaActual.getDate() }}/{{
                 fechaActual.getMonth() + 1
             }}/{{ fechaActual.getFullYear() }}
-            -->
         </ng-container>
     </div>
 </div>
@@ -709,21 +708,20 @@
                     <br />
                     Director(a) Grupo de Investigación
                 </ng-container>
+            </ng-container>
 
-                <ng-container *ngIf="radicar.firmaDirector">
-                    VoBo.
-                    <ng-container class="line-through">
-                        {{ radicar.director.nombreTutor }}
-                        <br />
-                        Director(a) Grupo de Investigación</ng-container
-                    >
+            <ng-container *ngIf="radicar.firmaDirector">
+                VoBo.
+                <ng-container class="line-through">
+                    {{ radicar.director.nombreTutor }}
                     <br />
-                    <!--
+                    Director(a) Grupo de Investigación</ng-container
+                >
+                <br />
+
                 Fecha: {{ fechaActual.getDate() }}/{{
                     fechaActual.getMonth() + 1
                 }}/{{ fechaActual.getFullYear() }}
-                -->
-                </ng-container>
             </ng-container>
         </div>
     </div>
