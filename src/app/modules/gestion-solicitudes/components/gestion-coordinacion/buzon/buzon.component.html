@@ -27,14 +27,13 @@
                         styleClass="mr-2"
                         shape="circle"
                     ></p-avatar>
-                    {{ solicitud.nombresSolicitante }}
-                    {{ solicitud.apellidosSolicitante }}
+                    {{ solicitud.nombreEstudiante }}
                 </td>
                 <td>
-                    <p-tag value="{{ solicitud.tipo }}"></p-tag>
+                    <p-tag value="{{ solicitud.abreviatura }}"></p-tag>
                 </td>
                 <td>
-                    {{ solicitud.fechaEnvio }}
+                    {{ solicitud.fecha }}
                 </td>
             </tr>
         </ng-template>

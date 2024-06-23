@@ -3,7 +3,9 @@ import { DialogService } from 'primeng/dynamicdialog';
 import { Solicitud } from '../../../models/solicitudes/solicitud.model';
 import { VisorComponent } from '../visor/visor.component';
 import { GestorService } from '../../../services/gestor.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { HttpService } from '../../../services/http.service';
+import { SolicitudRecibida } from '../../../models/indiceModelos';
 
 @Component({
     selector: 'app-buzon',
@@ -12,64 +14,49 @@ import { Router } from '@angular/router';
     providers: [DialogService],
 })
 export class BuzonComponent implements OnInit {
-    solicitudes: Solicitud[];
+    solicitudes: SolicitudRecibida[];
     seleccionada: Solicitud;
+
+    cargandoSolicitudes: boolean = true;
 
     constructor(
         public gestor: GestorService,
         private router: Router,
+        private route: ActivatedRoute,
+        public http: HttpService,
         public dialogService: DialogService
     ) {}
 
     ngOnInit(): void {
-        this.fechSolicitudes();
+        const rutaCompleta = this.route.snapshot.url.join('/');
+        const filtro = rutaCompleta.split('/').pop();
+
+        if (filtro) {
+            this.cargarSolicitudes(this.proporcionarEstado(filtro));
+        }
     }
 
-    fechSolicitudes() {
-        let docs: any[] = [
-            {
-                name: 'radicado de solicitud',
-                url: 'https://www.ugr.es/~fjperez/textos/calculo_diferencial_integral_func_una_var.pdf',
+    cargarSolicitudes(prmFiltro: string) {
+        this.http.consultarSolicitudesCoordinacion(prmFiltro).subscribe(
+            (solicitudes: SolicitudRecibida[]) => {
+                this.solicitudes = solicitudes;
+                this.cargandoSolicitudes = false;
             },
-            {
-                name: 'Certificado de notas',
-                url: 'https://www.uv.mx/personal/pmartinez/files/2021/03/Libro-completo-Introduccion-a-la-programacion.pdf',
-            },
-        ];
-        const solicitud1 = new Solicitud(
-            'Adición Asignaturas',
-            '22/08/2023',
-            'Juan Esteban',
-            'Arenas Turbay',
-            '1054813433',
-            '1045832227435',
-            'Recibido',
-            docs
+            (error) => {
+                console.error('Error al cargar las solicitudes:', error);
+            }
         );
+    }
 
-        const solicitud2 = new Solicitud(
-            'Aplazamiento Semestre',
-            '20/08/2023',
-            'Maria Camila',
-            'Muñoz Paz',
-            '1054813436',
-            '1045832229435',
-            'Recibido',
-            docs
-        );
+    proporcionarEstado(cadena: string): string {
+        let respuesta: string = '';
+        switch (cadena) {
+            case 'nuevas':
+                respuesta = 'AVALADA';
+                break;
+        }
 
-        const solicitud3 = new Solicitud(
-            'Prorroga Examen',
-            '20/08/2023',
-            'Carlos Andres',
-            'Rodriguez Torres',
-            '1054813434',
-            '1045832227438',
-            'Recibido',
-            docs
-        );
-
-        this.solicitudes = [solicitud1, solicitud2, solicitud3];
+        return respuesta;
     }
 
     mostrarDetalles(event) {

@@ -8,7 +8,7 @@ import {
     RequisitosSolicitudResponse,
     TutoresYDirectoresResponse,
     SolicitudSave,
-    SolicitudPendienteAval,
+    SolicitudRecibida,
     DatosAvalSolicitud,
     InfoActividadesReCreditos,
     EventoHistorial,
@@ -87,10 +87,10 @@ export class HttpService {
 
     obtenerListaSolPendientesAval(
         correo: string
-    ): Observable<SolicitudPendienteAval[]> {
+    ): Observable<SolicitudRecibida[]> {
         const url = `${this.apiUrl}${httpConfig.obtenerListaSolPendientesAvalUrl}${correo}`;
         return this.http
-            .get<SolicitudPendienteAval[]>(url)
+            .get<SolicitudRecibida[]>(url)
             .pipe(catchError(this.manejarError));
     }
 
@@ -114,5 +114,13 @@ export class HttpService {
         return this.http
             .get<EventoHistorial[]>(url)
             .pipe(catchError(this.manejarError));
+    }
+
+    consultarSolicitudesCoordinacion(estado: string) {
+        const url = `${this.apiUrl}${httpConfig.obtenerSolicitudesCoordinacion}${estado}`;
+        return this.http.get<SolicitudRecibida[]>(url).pipe(
+            map((respuesta) => respuesta),
+            catchError(this.manejarError)
+        );
     }
 }

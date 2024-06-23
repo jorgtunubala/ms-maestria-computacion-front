@@ -34,11 +34,21 @@
                 {{ event.descripcion }}
             </p>
 
-            <ng-container *ngIf="event.comentarios"
-                ><p class="font-italic">
-                    "{{ event.comentarios }}"
-                </p></ng-container
-            >
+            <ng-container *ngIf="event.comentarios">
+                <p class="font-italic">"{{ event.comentarios }}"</p>
+            </ng-container>
+
+            <ng-container *ngIf="event.pdfBase64">
+                <button
+                    pButton
+                    pRipple
+                    type="button"
+                    icon="pi pi-file-pdf"
+                    label="{{ retornarNombreArchivo(event.pdfBase64) }}"
+                    (click)="descargarArchivo(event.pdfBase64)"
+                    class="p-button-rounded p-button-secondary mr-2 text-sm"
+                ></button>
+            </ng-container>
         </p-card>
     </ng-template>
 </p-timeline>

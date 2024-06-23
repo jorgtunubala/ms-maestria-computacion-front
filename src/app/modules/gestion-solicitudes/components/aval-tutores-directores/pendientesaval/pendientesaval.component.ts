@@ -4,7 +4,7 @@ import { DialogService } from 'primeng/dynamicdialog';
 import { GestorService } from '../../../services/gestor.service';
 import { VisoravalComponent } from '../visoraval/visoraval.component';
 import {
-    SolicitudPendienteAval,
+    SolicitudRecibida,
     TipoSolicitud,
 } from '../../../models/indiceModelos';
 import { HttpService } from '../../../services/http.service';
@@ -19,9 +19,9 @@ import { Router } from '@angular/router';
 })
 export class PendientesavalComponent implements OnInit {
     correoUsuario: string = 'clopez@unicauca.edu.co';
-    solicitudes: SolicitudPendienteAval[] = [];
+    solicitudes: SolicitudRecibida[] = [];
     cargando: boolean = true;
-    solicitudSeleccionada: SolicitudPendienteAval = {
+    solicitudSeleccionada: SolicitudRecibida = {
         idSolicitud: 0,
         codigoSolicitud: '',
         nombreEstudiante: '',
@@ -49,7 +49,7 @@ export class PendientesavalComponent implements OnInit {
 
     cargarSolicitudes() {
         this.http.obtenerListaSolPendientesAval(this.correoUsuario).subscribe(
-            (solicitudes: SolicitudPendienteAval[]) => {
+            (solicitudes: SolicitudRecibida[]) => {
                 this.solicitudes = solicitudes;
                 this.cargando = false;
             },

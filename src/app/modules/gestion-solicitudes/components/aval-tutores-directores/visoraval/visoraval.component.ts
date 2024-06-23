@@ -200,14 +200,25 @@ export class VisoravalComponent implements OnInit {
         if (this.habilitarAval) {
             await this.convertirOficioEnPDF();
 
+            let prmfirmaTutor: string = null;
+            let prmfirmaDirector: string = null;
+
+            if (this.radicar.firmaTutor) {
+                prmfirmaTutor = await this.convertirABase64(
+                    this.radicar.firmaTutor
+                );
+            }
+
+            if (this.radicar.firmaDirector) {
+                prmfirmaDirector = await this.convertirABase64(
+                    this.radicar.firmaDirector
+                );
+            }
+
             const aval: DatosAvalSolicitud = {
                 idSolicitud: this.radicar.tipoSolicitudEscogida.idSolicitud,
-                firmaTutor: await this.convertirABase64(
-                    this.radicar.firmaTutor
-                ),
-                firmaDirector: await this.convertirABase64(
-                    this.radicar.firmaDirector
-                ),
+                firmaTutor: prmfirmaTutor,
+                firmaDirector: prmfirmaDirector,
 
                 //Solucion temporal al error de guardado de archivos grandes
                 documentoPdfSolicitud: '',

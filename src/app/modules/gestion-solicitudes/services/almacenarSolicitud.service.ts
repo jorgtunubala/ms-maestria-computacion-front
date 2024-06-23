@@ -485,13 +485,9 @@ export class AlmacenarSolicitudService {
                     ? true
                     : false,
             firmaEstudiante: this.firmaSolicitante,
-
-            oficioPdf: '',
-            /*
             oficioPdf: await this.convertirABase64(
                 this.radicar.oficioDeSolicitud
             ),
-            */
         };
 
         console.log(infoSolicitud);
