@@ -219,15 +219,9 @@ export class VisoravalComponent implements OnInit {
                 idSolicitud: this.radicar.tipoSolicitudEscogida.idSolicitud,
                 firmaTutor: prmfirmaTutor,
                 firmaDirector: prmfirmaDirector,
-
-                //Solucion temporal al error de guardado de archivos grandes
-                documentoPdfSolicitud: '',
-
-                /*
                 documentoPdfSolicitud: await this.convertirABase64(
                     this.radicar.oficioDeSolicitud
                 ),
-                */
             };
 
             console.log(aval);

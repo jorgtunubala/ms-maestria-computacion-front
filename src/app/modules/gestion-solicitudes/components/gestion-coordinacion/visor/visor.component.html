@@ -5,58 +5,89 @@
             leftIcon="pi pi-id-card"
             tooltip="Información de la solicitud"
         >
-            <div class="flex block">
-                <div style="padding-top: 5px">
-                    <p-tag
-                        severity="info"
-                        value="{{ gestor.getSolicitudSeleccionada().estado }}"
-                    ></p-tag>
+            <ng-container *ngIf="datosSolicitud">
+                <div class="flex block">
+                    <div style="padding-top: 5px">
+                        <p-tag
+                            severity="info"
+                            value="{{
+                                datosSolicitud.datosComunSolicitud
+                                    .estadoSolicitud
+                            }}"
+                        ></p-tag>
+                    </div>
+                    <div class="col-11 text-lg font-bold">
+                        Solicitud RAD2453 -
+                        {{ datosSolicitud.datosComunSolicitud.tipoSolicitud }}
+                    </div>
                 </div>
-                <div class="col-11 text-lg font-bold">
-                    Solicitud RAD2453 -
-                    {{ gestor.getSolicitudSeleccionada().tipo }}
+
+                <div class="grid mt-1">
+                    <div class="mt-1 col-4">
+                        <p class="text-base m-0">
+                            Solicitante:
+
+                            {{
+                                datosSolicitud.datosComunSolicitud
+                                    .nombreSolicitante
+                            }}
+                        </p>
+                        <p class="text-base m-0">
+                            Identificación:
+
+                            {{
+                                datosSolicitud.datosComunSolicitud
+                                    .numeroIdentSolicitante
+                            }}
+                        </p>
+                        <p class="text-base m-0">
+                            Código:
+                            {{
+                                datosSolicitud.datosComunSolicitud
+                                    .codigoSolicitante
+                            }}
+                        </p>
+                    </div>
+                    <div class="col-4 mt-1">
+                        <p class="text-base m-0">
+                            Correo:
+                            {{
+                                datosSolicitud.datosComunSolicitud
+                                    .emailSolicitante
+                            }}
+                        </p>
+                        <p class="text-base m-0">
+                            Celular:
+                            {{
+                                datosSolicitud.datosComunSolicitud
+                                    .celularSolicitante
+                            }}
+                        </p>
+                    </div>
+                    <div class="col-4 mt-1">
+                        <p class="text-base m-0">
+                            Fecha Recepción:
+
+                            {{
+                                datosSolicitud.datosComunSolicitud
+                                    .fechaEnvioSolicitud
+                            }}
+                        </p>
+                    </div>
+
+                    <ng-container *ngIf="urlOficioPdf">
+                        <div class="col-12 mt-2">
+                            <embed
+                                id="embedElement"
+                                [src]="urlOficioPdf"
+                                type="application/pdf"
+                                width="100%"
+                                height="600px"
+                            />
+                        </div>
+                    </ng-container>
                 </div>
-            </div>
-            <div class="grid mt-1">
-                <div class="mt-1 col-4">
-                    <p class="text-base m-0">
-                        Solicitante:
-                        {{
-                            gestor.getSolicitudSeleccionada().nombresSolicitante
-                        }}
-                        {{
-                            gestor.getSolicitudSeleccionada()
-                                .apellidosSolicitante
-                        }}
-                    </p>
-                    <p class="text-base m-0">
-                        Identificación:
-                        {{ gestor.getSolicitudSeleccionada().identificacion }}
-                    </p>
-                    <p class="text-base m-0">
-                        Código:
-                        {{ gestor.getSolicitudSeleccionada().codigoAcademico }}
-                    </p>
-                </div>
-                <div class="col-4 mt-1">
-                    <p class="text-base m-0">
-                        Tipo Solicitud:
-                        {{ gestor.getSolicitudSeleccionada().tipo }}
-                    </p>
-                    <p class="text-base m-0">
-                        Fecha Recepción:
-                        {{ gestor.getSolicitudSeleccionada().fechaEnvio }}
-                    </p>
-                </div>
-                <div class="col-12 mt-2">
-                    <embed
-                        src="https://www.ugr.es/~fjperez/textos/calculo_diferencial_integral_func_una_var.pdf"
-                        type="application/pdf"
-                        width="100%"
-                        height="600px"
-                    />
-                </div>
-            </div>
+            </ng-container>
         </p-tabPanel>
 
         <p-tabPanel
@@ -64,71 +95,106 @@
             leftIcon="pi pi-paperclip"
             tooltip="Documentos anexos de la solicitud"
         >
-            <div class="flex block">
-                <div style="padding-top: 5px">
-                    <p-tag
-                        severity="info"
-                        value="{{ gestor.getSolicitudSeleccionada().estado }}"
-                    ></p-tag>
+            <ng-container *ngIf="datosSolicitud">
+                <div class="flex block mb-3">
+                    <div style="padding-top: 5px">
+                        <p-tag
+                            severity="info"
+                            value="{{
+                                datosSolicitud.datosComunSolicitud
+                                    .estadoSolicitud
+                            }}"
+                        ></p-tag>
+                    </div>
+                    <div class="col-11 text-lg font-bold">
+                        Solicitud RAD2453 -
+                        {{ datosSolicitud.datosComunSolicitud.tipoSolicitud }}
+                    </div>
                 </div>
-                <div class="col-11 text-lg font-bold">
-                    Solicitud RAD2453 -
-                    {{ gestor.getSolicitudSeleccionada().tipo }}
-                </div>
-            </div>
 
-            <div class="grid">
-                <div class="col-12 md:col-3 mb-5 mt-3">
-                    <p
-                        class="cursor-pointer mb-0"
-                        *ngFor="
-                            let archivo of gestor.getSolicitudSeleccionada()
-                                .adjuntos;
-                            let indice = index
-                        "
-                    >
-                        <a (click)="mostrarArhivo(indice)">
-                            <i class="pi pi-file-pdf"></i> {{ archivo.name }}</a
+                <p-scrollPanel [style]="{ width: '100%', height: '100px' }">
+                    <div class="col-12">
+                        <ng-container *ngFor="let documento of docsAdjuntos">
+                            <button
+                                pButton
+                                pRipple
+                                type="button"
+                                icon="pi pi-file-pdf"
+                                label="{{ documento.name }}"
+                                (click)="abrirArchivo(documento.name)"
+                                class="p-button-rounded p-button-secondary mr-2 mb-2 text-sm"
+                            ></button>
+                        </ng-container>
+
+                        <ng-container
+                            *ngIf="
+                                ['RE_CRED_PAS', 'RE_CRED_DIS'].includes(
+                                    gestor.solicitudSeleccionada.codigoSolicitud
+                                )
+                            "
                         >
-                    </p>
+                            <ng-container
+                                *ngFor="let enlace of enlacesAdjuntos"
+                            >
+                                <button
+                                    pButton
+                                    pRipple
+                                    type="button"
+                                    icon="pi pi-external-link"
+                                    label="Enlace a material externo"
+                                    (click)="abrirEnlace(enlace)"
+                                    class="p-button-rounded p-button-secondary mr-2 mb-2 text-sm"
+                                ></button
+                            ></ng-container>
+                        </ng-container>
+                    </div>
+                </p-scrollPanel>
 
-                    <p></p>
-                </div>
-                <div class="col-12 md:col-9 mt-3">
-                    <embed
-                        src="https://www.uv.mx/personal/pmartinez/files/2021/03/Libro-completo-Introduccion-a-la-programacion.pdf"
-                        type="application/pdf"
-                        width="100%"
-                        height="600px"
-                    />
-                </div>
-            </div>
+                <ng-container *ngIf="urlPdf">
+                    <div class="col-12 mt-2">
+                        <embed
+                            id="embedElement"
+                            [src]="urlPdf"
+                            type="application/pdf"
+                            width="100%"
+                            height="600px"
+                        />
+                    </div>
+                </ng-container>
+            </ng-container>
         </p-tabPanel>
         <p-tabPanel
             header="Gestión"
             leftIcon="pi pi-sliders-h"
             tooltip="Tramitar solicitud"
         >
-            <div class="flex block">
-                <div style="padding-top: 5px">
-                    <p-tag
-                        severity="info"
-                        value="{{ gestor.getSolicitudSeleccionada().estado }}"
-                    ></p-tag>
+            <ng-container *ngIf="datosSolicitud">
+                <div class="flex block">
+                    <div style="padding-top: 5px">
+                        <p-tag
+                            severity="info"
+                            value="{{
+                                datosSolicitud.datosComunSolicitud
+                                    .estadoSolicitud
+                            }}"
+                        ></p-tag>
+                    </div>
+                    <div class="col-11 text-lg font-bold">
+                        Solicitud RAD2453 -
+                        {{ datosSolicitud.datosComunSolicitud.tipoSolicitud }}
+                    </div>
                 </div>
-                <div class="col-11 text-lg font-bold">
-                    Solicitud RAD2453 -
-                    {{ gestor.getSolicitudSeleccionada().tipo }}
-                </div>
-            </div>
-            <app-tramite></app-tramite>
+                <app-tramite></app-tramite>
+            </ng-container>
         </p-tabPanel>
         <p-tabPanel
             header="Historial"
             leftIcon="pi pi-history"
             tooltip="Historial de la solicitud"
         >
-            <app-historial></app-historial>
+            <ng-container *ngIf="datosSolicitud">
+                <app-historial></app-historial>
+            </ng-container>
         </p-tabPanel>
     </p-tabView>
 </div>

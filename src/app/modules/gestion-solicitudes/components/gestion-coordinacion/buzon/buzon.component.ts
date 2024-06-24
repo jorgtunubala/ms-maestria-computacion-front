@@ -15,7 +15,7 @@ import { SolicitudRecibida } from '../../../models/indiceModelos';
 })
 export class BuzonComponent implements OnInit {
     solicitudes: SolicitudRecibida[];
-    seleccionada: Solicitud;
+    seleccionada: SolicitudRecibida;
 
     cargandoSolicitudes: boolean = true;
 
@@ -60,10 +60,8 @@ export class BuzonComponent implements OnInit {
     }
 
     mostrarDetalles(event) {
-        // Obtiene la solicitud seleccionada
-        this.gestor.setSolicitudSeleccionada(this.seleccionada);
-
-        // Navega a VistaComponent pasando la ID de la solicitud seleccionada como parámetro de ruta
+        // Obtiene los datos completos de la solicitud
+        this.gestor.solicitudSeleccionada = this.seleccionada;
         this.router.navigate(['/gestionsolicitudes/visor']);
     }
 }
