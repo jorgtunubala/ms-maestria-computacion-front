@@ -10,6 +10,7 @@ import { DatosSolicitudRequest } from '../models/solicitudes/datosSolicitudReque
 })
 export class GestorService {
     solicitudSeleccionada: SolicitudRecibida;
+    estadoSolicitud: string;
 
     private cargarSolicitudesSubject = new Subject<void>();
     cargarSolicitudes$ = this.cargarSolicitudesSubject.asObservable();

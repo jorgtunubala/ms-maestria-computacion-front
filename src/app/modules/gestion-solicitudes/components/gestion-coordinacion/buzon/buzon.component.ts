@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { DialogService } from 'primeng/dynamicdialog';
-import { Solicitud } from '../../../models/solicitudes/solicitud.model';
-import { VisorComponent } from '../visor/visor.component';
 import { GestorService } from '../../../services/gestor.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpService } from '../../../services/http.service';
@@ -49,18 +47,15 @@ export class BuzonComponent implements OnInit {
     }
 
     proporcionarEstado(cadena: string): string {
-        let respuesta: string = '';
-        switch (cadena) {
-            case 'nuevas':
-                respuesta = 'AVALADA';
-                break;
-        }
+        const estados: { [key: string]: string } = {
+            nuevas: 'AVALADA',
+            rechazadas: 'RECHAZADA',
+        };
 
-        return respuesta;
+        return estados[cadena] || '';
     }
 
-    mostrarDetalles(event) {
-        // Obtiene los datos completos de la solicitud
+    mostrarDetalles() {
         this.gestor.solicitudSeleccionada = this.seleccionada;
         this.router.navigate(['/gestionsolicitudes/visor']);
     }

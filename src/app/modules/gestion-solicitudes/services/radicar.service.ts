@@ -1,9 +1,7 @@
-import { ElementRef, Injectable, ViewChild } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
 import {
-    DatosAsignaturaAdicion,
-    DatosSolicitante,
     InfoActividadesReCreditos,
     InfoPersonal,
     RequisitosSolicitud,
@@ -12,17 +10,8 @@ import {
 } from '../models/indiceModelos';
 import { DatosSolicitudRequest } from '../models/solicitudes/datosSolicitudRequest';
 import { InfoAsingAdicionCancelacion } from '../models/solicitudes/solicitud-adic-cancel-asig/infoAsignAdicionCancelacion';
-import { NullVisitor } from '@angular/compiler/src/render3/r3_ast';
 import { HttpService } from './http.service';
-
-interface actividadCreditos {
-    nombre: string;
-    abreviacion: string;
-    multiplicativo: number;
-    codigo: string;
-    docs: string[];
-    enlaces: string[];
-}
+import { UtilidadesService } from './utilidades.service';
 
 interface AdjuntosActividad {
     archivos: File[];
@@ -132,7 +121,8 @@ export class RadicarService {
 
     constructor(
         private gestorHttp: HttpService,
-        private sanitizer: DomSanitizer
+        private sanitizer: DomSanitizer,
+        private utilidades: UtilidadesService
     ) {}
 
     restrablecerValores() {
@@ -242,7 +232,7 @@ export class RadicarService {
         this.fechaEnvio = infoSolicitud.datosComunSolicitud.fechaEnvioSolicitud;
 
         //Firma Solicitante
-        this.firmaSolicitante = this.convertirBase64AFile(
+        this.firmaSolicitante = this.utilidades.convertirBase64AFile(
             infoSolicitud.datosComunSolicitud.firmaSolicitante
         );
 
@@ -547,7 +537,7 @@ export class RadicarService {
                             this.horasAsignables.push(actividad.horasReconocer);
 
                             const docs = actividad.documentos.map((doc) =>
-                                this.convertirBase64AFile(doc)
+                                this.utilidades.convertirBase64AFile(doc)
                             );
 
                             this.adjuntosDeActividades[index] = {
@@ -572,7 +562,9 @@ export class RadicarService {
                         .slice(0, -1)
                         .map(
                             async (documento: any) =>
-                                await this.convertirBase64AFile(documento)
+                                await this.utilidades.convertirBase64AFile(
+                                    documento
+                                )
                         )
                 );
 
@@ -610,36 +602,11 @@ export class RadicarService {
         }
     }
 
-    convertirBase64AFile(base64String: string): File | null {
-        // Divide la cadena base64 en nombre y contenido
-        const partes = base64String.split(':');
-        if (partes.length !== 2) {
-            return null; // La cadena base64 no tiene el formato esperado
-        }
-
-        const nombre = partes[0];
-        const contenidoBase64 = partes[1];
-
-        // Decodifica el contenido base64 en un ArrayBuffer
-        const binaryString = window.atob(contenidoBase64);
-        const bytes = new Uint8Array(binaryString.length);
-        for (let i = 0; i < binaryString.length; i++) {
-            bytes[i] = binaryString.charCodeAt(i);
-        }
-
-        // Crea un nuevo archivo Blob a partir del ArrayBuffer
-        const blob = new Blob([bytes]);
-
-        // Crea un nuevo objeto File a partir del Blob y asigna el nombre del archivo
-        const archivo = new File([blob], nombre);
-
-        return archivo;
-    }
-
     async asignarDocumentosAdjuntos(docs: string[]): Promise<void> {
         this.documentosAdjuntos = await Promise.all(
             docs.map(async (cadenaBase64) => {
-                const archivo = this.convertirBase64AFile(cadenaBase64);
+                const archivo =
+                    this.utilidades.convertirBase64AFile(cadenaBase64);
                 if (archivo) {
                     return archivo;
                 } else {

@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Solicitud } from '../../../models/solicitudes/solicitud.model';
 import { DialogService } from 'primeng/dynamicdialog';
 import { GestorService } from '../../../services/gestor.service';
-import { VisoravalComponent } from '../visoraval/visoraval.component';
 import {
     SolicitudRecibida,
     TipoSolicitud,
@@ -58,32 +56,6 @@ export class PendientesavalComponent implements OnInit {
             }
         );
     }
-
-    /*
-    mostrarDetalles(event) {
-        this.gestor.setSolicitudSeleccionada(this.solicitudSeleccionada);
-
-        const tipoSolicitud: TipoSolicitud = {
-            idSolicitud: this.solicitudSeleccionada.idSolicitud,
-            codigoSolicitud: this.solicitudSeleccionada.codigoSolicitud,
-            nombreSolicitud: this.solicitudSeleccionada.nombreTipoSolicitud,
-        };
-
-        this.radicar.tipoSolicitudEscogida = tipoSolicitud;
-
-        const ref = this.dialogService.open(VisoravalComponent, {
-            data: {
-                id: '51gF4',
-            },
-            header: 'Detalles de la solicitud',
-            width: '80%',
-        });
-
-        ref.onClose.subscribe(() => {
-            this.radicar.restrablecerValores();
-        });
-    }
-    */
 
     mostrarDetalles(event) {
         // Obtiene la solicitud seleccionada

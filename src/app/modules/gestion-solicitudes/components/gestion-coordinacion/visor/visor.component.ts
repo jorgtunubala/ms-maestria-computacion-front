@@ -2,11 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { GestorService } from '../../../services/gestor.service';
 import { HttpService } from '../../../services/http.service';
 import { DatosSolicitudRequest } from '../../../models/solicitudes/datosSolicitudRequest';
-import {
-    DomSanitizer,
-    SafeUrl,
-    SafeResourceUrl,
-} from '@angular/platform-browser';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { UtilidadesService } from '../../../services/utilidades.service';
 
 @Component({
@@ -18,6 +14,7 @@ export class VisorComponent implements OnInit {
     urlOficioPdf: SafeResourceUrl;
     urlPdf: SafeResourceUrl;
     datosSolicitud: DatosSolicitudRequest;
+    cargandoDatos: boolean = true;
     docsAdjuntos: File[] = [];
     enlacesAdjuntos: string[] = [];
 
@@ -44,6 +41,9 @@ export class VisorComponent implements OnInit {
                     this.extraerAdjuntos(
                         this.gestor.solicitudSeleccionada.codigoSolicitud
                     );
+                    this.gestor.estadoSolicitud =
+                        infoSolicitud.datosComunSolicitud.estadoSolicitud;
+                    this.cargandoDatos = false;
                 },
                 (error) => {
                     console.error(
@@ -54,28 +54,37 @@ export class VisorComponent implements OnInit {
             );
     }
 
-    mostrarArhivo(archivo) {
-        window.open(archivo.url, '_blank');
-    }
-
     AbrirOficioPdf() {
-        let documento;
+        const oficioPdf = this.datosSolicitud.datosComunSolicitud?.oficioPdf;
 
-        if (this.datosSolicitud.datosComunSolicitud.oficioPdf) {
-            documento = this.utilidades.convertirBase64AFile(
-                this.datosSolicitud.datosComunSolicitud.oficioPdf
-            );
-        }
-
-        if (documento) {
+        if (oficioPdf) {
+            const documento = this.utilidades.convertirBase64AFile(oficioPdf);
             const tipoMIME = 'application/pdf';
-            // Crear una nueva instancia de Blob con el tipo MIME especificado
             const blob = new Blob([documento], { type: tipoMIME });
-
-            // Crear la URL segura
             const url = URL.createObjectURL(blob);
             this.urlOficioPdf =
                 this.sanitizer.bypassSecurityTrustResourceUrl(url);
+        }
+    }
+
+    abrirArchivo(nombreDocumento: string) {
+        const documento = this.docsAdjuntos.find(
+            (doc) => doc.name === nombreDocumento
+        );
+
+        if (documento) {
+            const blob = new Blob([documento], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+            this.urlPdf = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+        }
+    }
+
+    abrirEnlace(enlace: string): void {
+        if (enlace) {
+            const enlaceCompleto = enlace.startsWith('http')
+                ? enlace
+                : 'http://' + enlace;
+            window.open(enlaceCompleto, '_blank');
         }
     }
 
@@ -167,34 +176,6 @@ export class VisorComponent implements OnInit {
             default:
                 // No se realiza ninguna acción para estos tipos de solicitud
                 break;
-        }
-    }
-
-    abrirArchivo(nombreDocumento: string) {
-        // Buscar el archivo por su nombre
-        const documento = this.docsAdjuntos.find(
-            (doc) => doc.name === nombreDocumento
-        );
-
-        if (documento) {
-            const tipoMIME = 'application/pdf';
-            // Crear una nueva instancia de Blob con el tipo MIME especificado
-            const blob = new Blob([documento], { type: tipoMIME });
-
-            // Crear la URL segura
-            const url = URL.createObjectURL(blob);
-            this.urlPdf = this.sanitizer.bypassSecurityTrustResourceUrl(url);
-
-            console.log(this.urlPdf);
-        }
-    }
-
-    abrirEnlace(enlace: string): void {
-        if (enlace) {
-            const enlaceCompleto = enlace.startsWith('http')
-                ? enlace
-                : 'http://' + enlace;
-            window.open(enlaceCompleto, '_blank');
         }
     }
 }
