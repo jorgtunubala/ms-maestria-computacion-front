@@ -26,7 +26,7 @@ export class GestionComponent implements OnInit {
                 items: [
                     {
                         label: 'Nuevas',
-                        routerLink: 'buzon',
+                        routerLink: 'buzon/nuevas',
                         icon: 'pi pi-fw pi-arrow-down',
                     },
                     {
@@ -40,7 +40,10 @@ export class GestionComponent implements OnInit {
             {
                 label: 'En tramite',
                 icon: 'pi pi-fw pi-pencil',
-                items: [{ label: 'En consejo', icon: 'pi pi-fw pi-users' }],
+                items: [
+                    { label: 'En comite', icon: 'pi pi-fw pi-users' },
+                    { label: 'En consejo', icon: 'pi pi-fw pi-users' },
+                ],
             },
             {
                 label: 'Archivo',

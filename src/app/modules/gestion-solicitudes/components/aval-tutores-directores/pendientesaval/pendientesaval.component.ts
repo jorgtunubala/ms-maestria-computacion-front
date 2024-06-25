@@ -1,10 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { Solicitud } from '../../../models/solicitudes/solicitud.model';
 import { DialogService } from 'primeng/dynamicdialog';
 import { GestorService } from '../../../services/gestor.service';
-import { VisoravalComponent } from '../visoraval/visoraval.component';
 import {
-    SolicitudPendienteAval,
+    SolicitudRecibida,
     TipoSolicitud,
 } from '../../../models/indiceModelos';
 import { HttpService } from '../../../services/http.service';
@@ -19,9 +17,9 @@ import { Router } from '@angular/router';
 })
 export class PendientesavalComponent implements OnInit {
     correoUsuario: string = 'clopez@unicauca.edu.co';
-    solicitudes: SolicitudPendienteAval[] = [];
+    solicitudes: SolicitudRecibida[] = [];
     cargando: boolean = true;
-    solicitudSeleccionada: SolicitudPendienteAval = {
+    solicitudSeleccionada: SolicitudRecibida = {
         idSolicitud: 0,
         codigoSolicitud: '',
         nombreEstudiante: '',
@@ -49,7 +47,7 @@ export class PendientesavalComponent implements OnInit {
 
     cargarSolicitudes() {
         this.http.obtenerListaSolPendientesAval(this.correoUsuario).subscribe(
-            (solicitudes: SolicitudPendienteAval[]) => {
+            (solicitudes: SolicitudRecibida[]) => {
                 this.solicitudes = solicitudes;
                 this.cargando = false;
             },
@@ -58,32 +56,6 @@ export class PendientesavalComponent implements OnInit {
             }
         );
     }
-
-    /*
-    mostrarDetalles(event) {
-        this.gestor.setSolicitudSeleccionada(this.solicitudSeleccionada);
-
-        const tipoSolicitud: TipoSolicitud = {
-            idSolicitud: this.solicitudSeleccionada.idSolicitud,
-            codigoSolicitud: this.solicitudSeleccionada.codigoSolicitud,
-            nombreSolicitud: this.solicitudSeleccionada.nombreTipoSolicitud,
-        };
-
-        this.radicar.tipoSolicitudEscogida = tipoSolicitud;
-
-        const ref = this.dialogService.open(VisoravalComponent, {
-            data: {
-                id: '51gF4',
-            },
-            header: 'Detalles de la solicitud',
-            width: '80%',
-        });
-
-        ref.onClose.subscribe(() => {
-            this.radicar.restrablecerValores();
-        });
-    }
-    */
 
     mostrarDetalles(event) {
         // Obtiene la solicitud seleccionada

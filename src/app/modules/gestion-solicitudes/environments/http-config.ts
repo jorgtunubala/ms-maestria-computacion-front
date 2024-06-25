@@ -11,4 +11,6 @@ export const httpConfig = {
     obtenerInfoSolGuardadaUrl: '/obtener-datos-solicitud/',
     obtenerActividadesReCreditosUrl: '/subTiposSolicitud/9',
     obtenerHistorialDeSolicitudUrl: '/historial/solicitud/',
+    obtenerSolicitudesCoordinacion:
+        '/obtener-solicitudes-pendientes-coordinador/',
 };

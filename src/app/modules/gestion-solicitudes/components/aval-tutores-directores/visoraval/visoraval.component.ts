@@ -1,17 +1,13 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { GestorService } from '../../../services/gestor.service';
 import { RadicarService } from '../../../services/radicar.service';
-import {
-    DomSanitizer,
-    SafeUrl,
-    SafeResourceUrl,
-} from '@angular/platform-browser';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { HttpService } from '../../../services/http.service';
 import { DatosSolicitudRequest } from '../../../models/solicitudes/datosSolicitudRequest';
 import { OficioComponent } from '../../utilidades/oficio/oficio.component';
 import { DatosAvalSolicitud } from '../../../models/indiceModelos';
-import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
-import { Router } from '@angular/router';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { UtilidadesService } from '../../../services/utilidades.service';
 
 @Component({
     selector: 'app-visoraval',
@@ -23,7 +19,6 @@ export class VisoravalComponent implements OnInit {
     @ViewChild(OficioComponent) oficio: OficioComponent;
     @ViewChild('firmaImage') firmaImage: ElementRef;
 
-    //segmentosContenido: HTMLImageElement[];
     mostrarOficio: boolean = false;
     mostrarBtnFirmar: boolean = false;
     mostrarBtnRechazar: boolean = false;
@@ -43,13 +38,61 @@ export class VisoravalComponent implements OnInit {
         public http: HttpService,
         private sanitizer: DomSanitizer,
         private messageService: MessageService,
-        private confirmationService: ConfirmationService
+        private confirmationService: ConfirmationService,
+        private utilidades: UtilidadesService
     ) {}
 
     ngOnInit(): void {
         this.cargarDatosOficio();
     }
 
+    capturarInformacionAdjunta() {
+        if (this.radicar.datosAsignaturasExternas?.length > 0) {
+            this.radicar.datosAsignaturasExternas.forEach((asignatura) => {
+                if (asignatura.contenidos) {
+                    this.documentosAdjuntos.push(asignatura.contenidos);
+                }
+                if (asignatura.cartaAceptacion) {
+                    this.documentosAdjuntos.push(asignatura.cartaAceptacion);
+                }
+            });
+        }
+
+        if (this.radicar.datosAsignaturasAHomologar?.length > 0) {
+            this.radicar.datosAsignaturasAHomologar.forEach((asignatura) => {
+                if (asignatura.contenidos) {
+                    this.documentosAdjuntos.push(asignatura.contenidos);
+                }
+            });
+        }
+
+        if (this.radicar.documentosAdjuntos?.length > 0) {
+            this.documentosAdjuntos = this.documentosAdjuntos.concat(
+                this.radicar.documentosAdjuntos
+            );
+        }
+
+        if (this.radicar.adjuntosDeActividades) {
+            Object.values(this.radicar.adjuntosDeActividades).forEach(
+                (adjuntosActividad) => {
+                    if (adjuntosActividad) {
+                        if (adjuntosActividad.archivos?.length > 0) {
+                            this.documentosAdjuntos.push(
+                                ...adjuntosActividad.archivos
+                            );
+                        }
+                        if (adjuntosActividad.enlaces?.length > 0) {
+                            this.enlacesAdjuntos.push(
+                                ...adjuntosActividad.enlaces
+                            );
+                        }
+                    }
+                }
+            );
+        }
+    }
+
+    /*
     capturarInformacionAdjunta() {
         if (
             this.radicar.datosAsignaturasExternas &&
@@ -121,7 +164,7 @@ export class VisoravalComponent implements OnInit {
             );
         }
     }
-
+*/
     cargarDatosOficio() {
         this.http
             .obtenerInfoSolGuardada(
@@ -129,7 +172,6 @@ export class VisoravalComponent implements OnInit {
             )
             .subscribe(
                 async (infoSolicitud: DatosSolicitudRequest) => {
-                    console.log(infoSolicitud);
                     await this.radicar.poblarConDatosSolicitudGuardada(
                         infoSolicitud
                     );
@@ -200,26 +242,30 @@ export class VisoravalComponent implements OnInit {
         if (this.habilitarAval) {
             await this.convertirOficioEnPDF();
 
+            let prmfirmaTutor: string = null;
+            let prmfirmaDirector: string = null;
+
+            if (this.radicar.firmaTutor) {
+                prmfirmaTutor = await this.utilidades.convertirFileABase64(
+                    this.radicar.firmaTutor
+                );
+            }
+
+            if (this.radicar.firmaDirector) {
+                prmfirmaDirector = await this.utilidades.convertirFileABase64(
+                    this.radicar.firmaDirector
+                );
+            }
+
             const aval: DatosAvalSolicitud = {
                 idSolicitud: this.radicar.tipoSolicitudEscogida.idSolicitud,
-                firmaTutor: await this.convertirABase64(
-                    this.radicar.firmaTutor
-                ),
-                firmaDirector: await this.convertirABase64(
-                    this.radicar.firmaDirector
-                ),
-
-                //Solucion temporal al error de guardado de archivos grandes
-                documentoPdfSolicitud: '',
-
-                /*
-                documentoPdfSolicitud: await this.convertirABase64(
-                    this.radicar.oficioDeSolicitud
-                ),
-                */
+                firmaTutor: prmfirmaTutor,
+                firmaDirector: prmfirmaDirector,
+                documentoPdfSolicitud:
+                    await this.utilidades.convertirFileABase64(
+                        this.radicar.oficioDeSolicitud
+                    ),
             };
-
-            console.log(aval);
 
             this.http.guardarAvalesSolicitud(aval).subscribe(
                 (resultado) => {
@@ -255,9 +301,7 @@ export class VisoravalComponent implements OnInit {
                     }
                 },
                 (error) => {
-                    // Manejar errores en caso de que ocurran durante la solicitud HTTP
                     console.error('Error al enviar la solicitud:', error);
-                    // Mostrar mensaje de error u otras acciones necesarias
                 }
             );
         } else {
@@ -295,7 +339,7 @@ export class VisoravalComponent implements OnInit {
                         reject(error);
                     });
             } else {
-                resolve(); // O reject(new Error('Oficio no definido')) según tu lógica de error
+                resolve();
             }
         });
     }
@@ -326,34 +370,6 @@ export class VisoravalComponent implements OnInit {
                 : 'http://' + enlace;
             window.open(enlaceCompleto, '_blank');
         }
-    }
-
-    async convertirABase64(archivo: File | null): Promise<string | null> {
-        return new Promise((resolve, reject) => {
-            if (!archivo) {
-                resolve(null);
-                return;
-            }
-
-            const lector = new FileReader();
-
-            lector.readAsDataURL(archivo);
-
-            lector.onload = () => {
-                if (typeof lector.result === 'string') {
-                    const nombre = archivo.name;
-                    const contenidoBase64 = lector.result.split(',')[1];
-                    const base64ConNombre = `${nombre}:${contenidoBase64}`;
-                    resolve(base64ConNombre);
-                } else {
-                    reject(null);
-                }
-            };
-
-            lector.onerror = () => {
-                reject(null);
-            };
-        });
     }
 
     showWarn() {
