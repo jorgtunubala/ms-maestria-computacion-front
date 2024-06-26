@@ -205,6 +205,7 @@ export class ResumenComponent implements OnInit {
                 'CU_ASIG',
                 'RE_CRED_PAS',
                 'AV_COMI_PR',
+                'SO_BECA',
             ].includes(this.radicar.tipoSolicitudEscogida.codigoSolicitud)
         ) {
             this.router.navigate([

@@ -280,6 +280,16 @@
         <app-creditos></app-creditos>
     </div>
 
+    <!-- Formulario de solicitud de Becas -->
+    <div
+        class="mt-4"
+        *ngIf="
+            ['SO_BECA'].includes(radicar.tipoSolicitudEscogida.codigoSolicitud)
+        "
+    >
+        <app-beca></app-beca>
+    </div>
+
     <!-- Formulario Seleccion de un tutor -->
     <app-listatutores></app-listatutores>
 
