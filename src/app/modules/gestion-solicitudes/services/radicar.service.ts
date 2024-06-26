@@ -119,6 +119,8 @@ export class RadicarService {
 
     enlaceMaterialAudiovisual = '';
 
+    tipoBeca: string = 'Seleccione una opción';
+
     constructor(
         private gestorHttp: HttpService,
         private sanitizer: DomSanitizer,
@@ -180,6 +182,7 @@ export class RadicarService {
         this.horasIngresadas = [];
         this.horasAsignables = [];
         this.adjuntosDeActividades = {};
+        this.tipoBeca = 'Seleccione una opción';
     }
 
     agregarInstancia() {

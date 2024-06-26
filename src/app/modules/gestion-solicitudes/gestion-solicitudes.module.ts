@@ -38,6 +38,7 @@ import { ContenedorComponent } from './components/gestion-coordinacion/contenedo
 import { TramiteComponent } from './components/gestion-coordinacion/tramite/tramite.component';
 import { CreditosComponent } from './components/presentacion-solicitudes/formularios/complementarios/creditos/creditos.component';
 import { AvalpracticadocenteComponent } from './components/presentacion-solicitudes/formularios/complementarios/avalpracticadocente/avalpracticadocente.component';
+import { BecaComponent } from './components/presentacion-solicitudes/formularios/complementarios/beca/beca.component';
 
 @NgModule({
     declarations: [
@@ -74,6 +75,7 @@ import { AvalpracticadocenteComponent } from './components/presentacion-solicitu
         TramiteComponent,
         CreditosComponent,
         AvalpracticadocenteComponent,
+        BecaComponent,
     ],
     imports: [
         CommonModule,
