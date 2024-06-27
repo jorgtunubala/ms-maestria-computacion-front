@@ -166,6 +166,16 @@
         <br />
     </ng-container>
 
+    <!--Solicitud de descuento-->
+    <ng-container
+        *ngIf="
+            ['SO_DESC'].includes(radicar.tipoSolicitudEscogida.codigoSolicitud)
+        "
+    >
+        el descuento en la matricula. Adjunto a esta solicitud el formato
+        diligenciado con los datos requeridos para su analisis.
+    </ng-container>
+
     <!--Solicitud de reconocimiento creditos por actividades de practica docente-->
     <ng-container
         *ngIf="
