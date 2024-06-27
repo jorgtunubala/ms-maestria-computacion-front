@@ -50,7 +50,7 @@ export class GestionComponent implements OnInit {
                 icon: 'pi pi-fw pi-folder',
                 items: [
                     {
-                        label: 'Respondidas',
+                        label: 'Resueltas',
                         icon: 'pi pi-fw pi-check-circle',
                     },
                 ],

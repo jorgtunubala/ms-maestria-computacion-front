@@ -26,6 +26,8 @@ export class VisoravalComponent implements OnInit {
     mostrarBtnAvalar: boolean = false;
     mostrarPFSet: boolean = true;
     habilitarAval: boolean = false;
+    deshabilitarRechazo: boolean = false;
+    deshabilitarAval: boolean = false;
 
     urlPdf: SafeResourceUrl;
 
@@ -240,6 +242,7 @@ export class VisoravalComponent implements OnInit {
 
     async enviarOficioAvalado() {
         if (this.habilitarAval) {
+            this.deshabilitarRechazo = true;
             await this.convertirOficioEnPDF();
 
             let prmfirmaTutor: string = null;
@@ -307,6 +310,10 @@ export class VisoravalComponent implements OnInit {
         } else {
             this.showWarn();
         }
+    }
+
+    rechazarSolicitud() {
+        this.deshabilitarAval = true;
     }
 
     renderizarImagen(imagen: File, firmante: any): void {

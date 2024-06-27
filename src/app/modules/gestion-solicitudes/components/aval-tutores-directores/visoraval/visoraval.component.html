@@ -136,7 +136,7 @@
                             margin-left: auto;
                             margin-right: auto;
                         "
-                        [disabled]="radicar.esperando"
+                        [disabled]="radicar.esperando || deshabilitarAval"
                     ></button>
                 </div>
                 <div class="mt-4 col-6" style="text-align: center">
@@ -146,14 +146,14 @@
                         pButton
                         pRipple
                         type="button"
-                        (click)="enviarOficioAvalado()"
+                        (click)="rechazarSolicitud()"
                         label="Rechazar la solicitud"
                         style="
                             width: 100%;
                             margin-left: auto;
                             margin-right: auto;
                         "
-                        [disabled]="radicar.esperando"
+                        [disabled]="radicar.esperando || deshabilitarRechazo"
                     ></button>
                 </div>
             </div>
