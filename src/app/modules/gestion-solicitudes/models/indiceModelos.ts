@@ -13,7 +13,7 @@ export { SolicitudSave } from './solicitudes/solicitudSave';
 export { DatosSolHomologPostRequest } from './solicitudes/solicitud-homolog-post/datosSolHomologPostRequest';
 export { DatosComunSolicitud } from './solicitudes/datosComunSolicitud';
 export { DatosSolHomologPostSave } from './solicitudes/solicitud-homolog-post/datosSolHomologPostSave';
-export { SolicitudPendienteAval } from './avales/solicitudPendienteAval';
+export { SolicitudRecibida } from './solicitudes/solicitudRecibida';
 export { DatosAvalSolicitud } from './avales/datosAvalSolicitud';
 export { DatosAsignaturaAdicion } from './solicitudes/solicitud-adic-cancel-asig/datosAsignaturaAdicion';
 export { DatosSolicitudCancelacionAsignatura } from './solicitudes/solicitud-adic-cancel-asig/datosSolicitudCancelacionAsignatura';

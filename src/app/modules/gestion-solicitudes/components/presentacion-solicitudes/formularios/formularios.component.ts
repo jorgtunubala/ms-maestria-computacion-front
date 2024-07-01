@@ -28,6 +28,7 @@ import { ListadirectoresComponent } from './complementarios/listadirectores/list
 import { ApyeconomicoestanciaComponent } from './complementarios/apyeconomicoestancia/apyeconomicoestancia.component';
 import { ApyasistenciaeventoComponent } from './complementarios/apyasistenciaevento/apyasistenciaevento.component';
 import { ApypublicacionComponent } from './complementarios/apypublicacion/apypublicacion.component';
+import { TipoBeca } from 'src/app/core/enums/domain-enum';
 
 @Component({
     selector: 'app-formularios',
@@ -372,11 +373,6 @@ export class FormulariosComponent implements OnInit {
     }
 
     navigateToNext() {
-        /*
-        this.radicar.setDatosSolicitante(this.datosSolicitante);
-        this.radicar.setMaterias(this.materiasSeleccionadas);
-        */
-
         if (this.validarDatosFormulario()) {
             if (
                 [
@@ -386,6 +382,7 @@ export class FormulariosComponent implements OnInit {
                     'CU_ASIG',
                     'RE_CRED_PAS',
                     'AV_COMI_PR',
+                    'SO_BECA',
                 ].includes(this.radicar.tipoSolicitudEscogida.codigoSolicitud)
             ) {
                 this.router.navigate([

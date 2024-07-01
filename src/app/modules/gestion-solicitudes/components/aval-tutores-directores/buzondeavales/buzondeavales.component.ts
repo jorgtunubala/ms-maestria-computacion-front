@@ -24,14 +24,20 @@ export class BuzondeavalesComponent implements OnInit {
                 expanded: true,
                 items: [
                     {
-                        label: 'Pendientes de aval',
+                        label: 'Pendientes',
                         routerLink: 'pendientes',
 
                         icon: 'pi pi-fw pi-pencil',
                     },
                     { separator: true },
                     {
-                        label: 'Quit',
+                        label: 'Avaladas',
+                        routerLink: 'visor',
+                        icon: 'pi pi-fw pi-times',
+                    },
+
+                    {
+                        label: 'Rechazadas',
                         routerLink: 'visor',
                         icon: 'pi pi-fw pi-times',
                     },

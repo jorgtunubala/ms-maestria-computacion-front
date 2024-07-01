@@ -166,6 +166,16 @@
         <br />
     </ng-container>
 
+    <!--Solicitud de descuento-->
+    <ng-container
+        *ngIf="
+            ['SO_DESC'].includes(radicar.tipoSolicitudEscogida.codigoSolicitud)
+        "
+    >
+        el descuento en la matricula. Adjunto a esta solicitud el formato
+        diligenciado con los datos requeridos para su analisis.
+    </ng-container>
+
     <!--Solicitud de reconocimiento creditos por actividades de practica docente-->
     <ng-container
         *ngIf="
@@ -423,6 +433,22 @@
         {{ radicar.cedulaCuentaBanco }} <br />Dirección: {{ radicar.direccion }}
     </ng-container>
 
+    <!--Solicitud de Beca-->
+    <ng-container
+        *ngIf="
+            ['SO_BECA'].includes(radicar.tipoSolicitudEscogida.codigoSolicitud)
+        "
+        >el otorgamiento de una "{{ radicar.tipoBeca }}".
+        <ng-container
+            *ngIf="
+                radicar.tipoBeca === 'Beca - Convenio (cidesco)' ||
+                radicar.tipoBeca === 'Beca - Mejor promedio en pregrado'
+            "
+            >Adjunto a esta solicitud el formato FA diligenciado con los datos
+            correspondientes para su estudio.</ng-container
+        >
+    </ng-container>
+
     <!--Solicitud apoyo economico para pago de publicación o inscripción a eventos-->
     <ng-container
         *ngIf="
@@ -431,7 +457,7 @@
             )
         "
     >
-        un apoyo economico para la inscripcion al evento: "{{
+        ]un apoyo economico para la inscripcion al evento: "{{
             radicar.nombreCongreso
         }}" que se llevara a cabo en las fechas {{ rangoFechas }} y donde se
         hara la publicación del trabajo titulado "{{
@@ -601,12 +627,17 @@
             </table>
         </ng-container>
     </div>
-    <!-- Motivo en caso de Cancelación/Aplazamiento/Prorroga/CursoExterno -->
+
+    <!-- Motivo en caso de Cancelación/Aplazamiento/Prorroga/CursoExterno/Beca-Trabajo -->
     <ng-container
         *ngIf="
             ['CA_ASIG', 'AP_SEME', 'PR_EXAM', 'CU_ASIG'].includes(
                 radicar.tipoSolicitudEscogida.codigoSolicitud
-            )
+            ) ||
+            (['SO_BECA'].includes(
+                radicar.tipoSolicitudEscogida.codigoSolicitud
+            ) &&
+                radicar.tipoBeca === 'Beca - Trabajo')
         "
     >
         La presente solicitud obedece a que
@@ -731,7 +762,10 @@
     *ngIf="
         !['AD_ASIG', 'CA_ASIG', 'AP_SEME', 'AV_COMI_PR'].includes(
             radicar.tipoSolicitudEscogida.codigoSolicitud
-        )
+        ) ||
+        (['SO_BECA'].includes(radicar.tipoSolicitudEscogida.codigoSolicitud) &&
+            radicar.tipoBeca === 'Beca - Convenio (cidesco)') ||
+        radicar.tipoBeca === 'Beca - Mejor promedio en pregrado'
     "
 >
     <div class="mt-5">

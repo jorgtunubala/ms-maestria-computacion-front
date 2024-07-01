@@ -20,7 +20,7 @@ const routes: Routes = [
         path: '',
         component: GestionComponent,
         children: [
-            { path: 'buzon', component: BuzonComponent },
+            { path: 'buzon/nuevas', component: BuzonComponent },
             { path: 'visor', component: VisorComponent },
             { path: 'contenedor', component: ContenedorComponent },
         ],

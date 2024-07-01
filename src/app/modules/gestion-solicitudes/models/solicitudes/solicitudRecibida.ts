@@ -1,6 +1,6 @@
-export class SolicitudPendienteAval {
-    static nuevaSolicitudPendienteAvla(obj: object) {
-        return new SolicitudPendienteAval(
+export class SolicitudRecibida {
+    static nuevaSolicitudRecibida(obj: object) {
+        return new SolicitudRecibida(
             obj['idSolicitud'],
             obj['codigoSolicitud'],
             obj['nombreEstudiante'],

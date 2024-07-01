@@ -6,16 +6,10 @@ import {
     Renderer2,
     ViewChild,
 } from '@angular/core';
-import {
-    ConfirmationService,
-    ConfirmEventType,
-    MessageService,
-} from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 
 import { Router } from '@angular/router';
 import { RadicarService } from '../../../services/radicar.service';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
 import { AlmacenarSolicitudService } from '../../../services/almacenarSolicitud.service';
 import { OficioComponent } from '../../utilidades/oficio/oficio.component';
 
@@ -26,20 +20,8 @@ import { OficioComponent } from '../../utilidades/oficio/oficio.component';
     providers: [ConfirmationService, MessageService],
 })
 export class ResumenComponent implements OnInit {
-    // @ViewChild('lineImage', { static: true }) lineImage: ElementRef;
     @ViewChild(OficioComponent) oficio: OficioComponent;
     @ViewChild('firmaImage') firmaImage: ElementRef;
-    //@ViewChild('encabezadoSolicitud') encabezadoSolicitud: ElementRef;
-    //@ViewChild('piePaginaSolicitud') piePaginaSolicitud: ElementRef;
-    //@ViewChild('contenidoSolicitud') contenidoSolicitud: ElementRef;
-    //@ViewChild('vistaPreviaSolicitud') vistaPreviaSolicitud: ElementRef;
-    //@ViewChild('proporcionContenido') proporcionContenido: ElementRef;
-    //@ViewChild('divContenedor') divContenedor: ElementRef;
-
-    //imgDivEncabezado: HTMLImageElement;
-    //imgDivPiePagina: HTMLImageElement;
-    //imgDivContenido: HTMLImageElement;
-    //imgDivProporcionContenido: HTMLImageElement;
 
     codTipoSolicitudEscogida: string;
 
@@ -51,44 +33,18 @@ export class ResumenComponent implements OnInit {
 
     mostrarOficio: boolean = true;
 
-    //segmentosContenido: HTMLImageElement[];
-
-    //espacioVacioEnPaginas: number[];
-
-    //generandoVistaPrevia = true;
     firmaEnProceso: boolean = false;
     guardadoEnProceso: boolean = false;
     mostrarBtnFirmar: boolean = false;
     habilitarEnvio: boolean = false;
-    //fechaActual: Date = new Date();
-    /*
-    nombresMes: string[] = [
-        'Enero',
-        'Febrero',
-        'Marzo',
-        'Abril',
-        'Mayo',
-        'Junio',
-        'Julio',
-        'Agosto',
-        'Septiembre',
-        'Octubre',
-        'Noviembre',
-        'Diciembre',
-    ];
-*/
+
     constructor(
         public radicar: RadicarService,
         public almacenar: AlmacenarSolicitudService,
         private router: Router,
-        private renderer: Renderer2,
-        private el: ElementRef,
         private confirmationService: ConfirmationService,
         private messageService: MessageService
     ) {
-        //this.segmentosContenido = [];
-        //this.espacioVacioEnPaginas = [];
-
         try {
             this.codTipoSolicitudEscogida =
                 this.radicar.tipoSolicitudEscogida.codigoSolicitud;
@@ -227,7 +183,7 @@ export class ResumenComponent implements OnInit {
                         reject(error);
                     });
             } else {
-                resolve(); // O reject(new Error('Oficio no definido')) según tu lógica de error
+                resolve();
             }
         });
     }
@@ -249,6 +205,7 @@ export class ResumenComponent implements OnInit {
                 'CU_ASIG',
                 'RE_CRED_PAS',
                 'AV_COMI_PR',
+                'SO_BECA',
             ].includes(this.radicar.tipoSolicitudEscogida.codigoSolicitud)
         ) {
             this.router.navigate([
