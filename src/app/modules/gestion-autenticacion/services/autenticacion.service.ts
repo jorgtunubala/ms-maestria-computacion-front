@@ -16,22 +16,29 @@ const usuarios: Usuario[] = [
         nombreCompleto: 'Juan Pérez',
         rol: 'Admin',
         correo: 'juan@example.com',
-        username: 'juanperez',
-        password: 'password123',
+        username: 'admin',
+        password: 'adm',
     },
     {
         nombreCompleto: 'María García',
         rol: 'estudiante',
         correo: 'maria@example.com',
-        username: 'mariagarcia',
-        password: 'securepass',
+        username: 'estudiante',
+        password: 'est',
     },
     {
         nombreCompleto: 'Carlos Martinez',
         rol: 'docente',
         correo: 'carlos@example.com',
-        username: 'carmartin',
-        password: 'password123',
+        username: 'docente',
+        password: 'doc',
+    },
+    {
+        nombreCompleto: 'Andrea Zuluaga',
+        rol: 'coordinador',
+        correo: 'coordi@example.com',
+        username: 'coordinador',
+        password: 'coo',
     },
 ];
 
@@ -102,6 +109,10 @@ export class AutenticacionService {
 
     getRole() {
         return this.userRole;
+    }
+
+    hasRole(role: string): boolean {
+        return this.userRole === role;
     }
 
     openLoginDialog(): void {

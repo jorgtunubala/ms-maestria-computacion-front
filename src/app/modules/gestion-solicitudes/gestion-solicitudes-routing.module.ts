@@ -38,10 +38,18 @@ const routes: Routes = [
                 path: 'radicar/formulario',
                 component: FormulariosComponent,
                 canActivate: [AuthGuard],
+            },
+            {
+                path: 'radicar/adjuntos',
+                component: DocsAdjuntosComponent,
+                canActivate: [AuthGuard],
+            },
+            {
+                path: 'radicar/resumen',
+                component: ResumenComponent,
+                canActivate: [AuthGuard],
                 data: { expectedRole: 'admin' },
             },
-            { path: 'radicar/adjuntos', component: DocsAdjuntosComponent },
-            { path: 'radicar/resumen', component: ResumenComponent },
         ],
     },
 

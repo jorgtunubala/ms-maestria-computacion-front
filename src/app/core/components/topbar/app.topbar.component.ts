@@ -58,6 +58,8 @@ export class AppTopBarComponent implements OnInit {
 
         if (this.autenticacion.isLoggedIn()) {
             this.updateMenuForLoggedInUser();
+        } else {
+            this.filterMenuItems(null);
         }
     }
 
@@ -80,11 +82,34 @@ export class AppTopBarComponent implements OnInit {
                 }
                 return item;
             });
+            this.filterMenuItems(user);
         }
+    }
+
+    filterMenuItems(user: Usuario | null) {
+        this.items = this.items.filter((item) => {
+            if (item.label === 'GESTIÓN') {
+                if (!user) {
+                    return false;
+                } else if (user.rol === 'coordinador') {
+                    // Mostrar todos los subítems
+                    return true;
+                } else if (user.rol === 'docente') {
+                    // Mostrar solo el subítem "SOLICITUDES"
+                    item.items = item.items.filter(
+                        (subItem) => subItem.label === 'SOLICITUDES'
+                    );
+                    return true;
+                }
+                return false;
+            }
+            return true;
+        });
     }
 
     logout() {
         this.autenticacion.logout();
         this.items = [...menuItems];
+        this.filterMenuItems(null);
     }
 }
