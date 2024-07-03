@@ -14,6 +14,8 @@ import { PortafolioComponent } from './pages/portafolio/portafolio.component';
 import { OpcionesComponent } from './pages/opciones/opciones.component';
 import { ContenedorComponent } from './components/gestion-coordinacion/contenedor/contenedor.component';
 import { VisoravalComponent } from './components/aval-tutores-directores/visoraval/visoraval.component';
+import { RoleGuard } from '../gestion-autenticacion/guards/role.guard';
+import { AuthGuard } from '../gestion-autenticacion/guards/auth.guard';
 
 const routes: Routes = [
     {
@@ -32,7 +34,12 @@ const routes: Routes = [
             { path: 'opciones', component: OpcionesComponent },
             { path: 'seguimiento/historial', component: HistorialComponent },
             { path: 'radicar/selector', component: SelectorComponent },
-            { path: 'radicar/formulario', component: FormulariosComponent },
+            {
+                path: 'radicar/formulario',
+                component: FormulariosComponent,
+                canActivate: [AuthGuard],
+                data: { expectedRole: 'admin' },
+            },
             { path: 'radicar/adjuntos', component: DocsAdjuntosComponent },
             { path: 'radicar/resumen', component: ResumenComponent },
         ],
