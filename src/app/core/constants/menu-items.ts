@@ -8,7 +8,7 @@ export const menuItems: MenuItem[] = [
     },
     {
         label: 'GESTIÓN',
-        icon: 'pi pi-fw pi-user',
+        icon: 'pi pi-fw pi-sliders-h',
         items: [
             {
                 label: 'ESTUDIANTES',
@@ -50,9 +50,13 @@ export const menuItems: MenuItem[] = [
         label: 'PRESUPUESTO',
         icon: 'pi pi-fw pi-chart-line',
     },
-    { separator: true },
     {
         label: 'TRABAJOS DE GRADO',
         icon: 'pi pi-fw pi-book',
+    },
+    {
+        label: 'LOGIN',
+        icon: 'pi pi-fw pi-user',
+        routerLink: '/autenticacion/login',
     },
 ];

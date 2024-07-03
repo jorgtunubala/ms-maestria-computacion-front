@@ -5,6 +5,7 @@ import { ErrorComponent } from './core/components/error/error.component';
 import { NotfoundComponent } from './core/components/notfound/notfound.component';
 import { AccessComponent } from './core/components/access/access.component';
 import { HomeComponent } from './core/components/home/home.component';
+import { DynamicloginComponent } from './modules/gestion-autenticacion/components/dynamiclogin/dynamiclogin.component';
 @NgModule({
     imports: [
         RouterModule.forRoot(
@@ -14,6 +15,13 @@ import { HomeComponent } from './core/components/home/home.component';
                     component: AppMainComponent,
                     children: [
                         { path: '', component: HomeComponent },
+                        {
+                            path: 'autenticacion',
+                            loadChildren: () =>
+                                import(
+                                    './modules/gestion-autenticacion/gestion-autenticacion.module'
+                                ).then((m) => m.GestionAutenticacionModule),
+                        },
                         {
                             path: 'estudiantes',
                             loadChildren: () =>
@@ -51,6 +59,7 @@ import { HomeComponent } from './core/components/home/home.component';
                         },
                     ],
                 },
+
                 { path: 'pages/error', component: ErrorComponent },
                 { path: 'pages/notfound', component: NotfoundComponent },
                 { path: 'pages/access', component: AccessComponent },
