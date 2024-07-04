@@ -1,0 +1,67 @@
+<div class="flex justify-content-center">
+    <div class="card w-4">
+        <div class="flex justify-content-center text-2xl font-medium">
+            <p>Iniciar Sesion</p>
+        </div>
+        <div
+            [formGroup]="loginForm"
+            (ngSubmit)="verificarCredenciales()"
+            class="flex justify-content-center flex-wrap"
+        >
+            <div
+                class="flex align-items-center justify-content-center"
+                style="width: 80%"
+            >
+                <span class="p-float-label mt-5 w-full">
+                    <input
+                        type="text"
+                        id="inputuser"
+                        pInputText
+                        formControlName="username"
+                        style="width: 100%"
+                    />
+                    <label for="inputuser">Usuario</label>
+                </span>
+            </div>
+
+            <div
+                class="flex align-items-center justify-content-center"
+                style="width: 80%"
+            >
+                <span class="p-float-label mt-5 w-full">
+                    <input
+                        type="password"
+                        id="inpupass"
+                        pInputText
+                        formControlName="password"
+                        style="width: 100%"
+                    />
+                    <label for="inpupass">Contraseña</label>
+                </span>
+            </div>
+
+            <p-button
+                label="Ingresar"
+                (click)="verificarCredenciales()"
+                [style]="{ width: '80%' }"
+                class="flex align-items-center justify-content-center w-full mt-5 mb-4"
+            ></p-button>
+
+            <ng-container *ngIf="credencialesIncorretas === true">
+                <i
+                    class="pi pi-exclamation-triangle mr-1"
+                    style="padding-top: 3px"
+                ></i>
+                <span>Las credenciales son incorrectas</span>
+            </ng-container>
+
+            <ng-container *ngIf="camposVacios === true">
+                <i
+                    class="pi pi-exclamation-triangle mr-1"
+                    style="padding-top: 3px"
+                ></i>
+                <span>Hay campos vacios</span>
+            </ng-container>
+        </div>
+    </div>
+</div>
