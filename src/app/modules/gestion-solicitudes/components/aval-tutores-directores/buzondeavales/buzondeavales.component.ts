@@ -27,19 +27,19 @@ export class BuzondeavalesComponent implements OnInit {
                         label: 'Pendientes',
                         routerLink: 'pendientes',
 
-                        icon: 'pi pi-fw pi-pencil',
+                        icon: 'pi pi-fw pi-inbox',
                     },
                     { separator: true },
                     {
                         label: 'Avaladas',
                         routerLink: 'visor',
-                        icon: 'pi pi-fw pi-times',
+                        icon: 'pi pi-fw pi-thumbs-up',
                     },
 
                     {
                         label: 'Rechazadas',
                         routerLink: 'visor',
-                        icon: 'pi pi-fw pi-times',
+                        icon: 'pi pi-fw pi-thumbs-down',
                     },
                 ],
             },

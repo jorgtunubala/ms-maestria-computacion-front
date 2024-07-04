@@ -2,6 +2,7 @@ import { EventEmitter, Injectable } from '@angular/core';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { MenuService } from 'src/app/core/services/app.menu.service';
 import { DynamicloginComponent } from '../components/dynamiclogin/dynamiclogin.component';
+import { Router } from '@angular/router';
 
 interface Usuario {
     nombreCompleto: string;
@@ -55,7 +56,8 @@ export class AutenticacionService {
 
     constructor(
         private dialogService: DialogService,
-        private menuService: MenuService
+        private menuService: MenuService,
+        private router: Router
     ) {
         // Verificar el estado de inicio de sesión al inicializar el servicio
         const storedUser = localStorage.getItem('loggedInUser');
@@ -97,6 +99,7 @@ export class AutenticacionService {
         this.isLoggedInStatus = false;
         this.loggedInUser = null;
         localStorage.removeItem('loggedInUser');
+        this.router.navigate(['']);
     }
 
     isLoggedIn(): boolean {
@@ -108,11 +111,11 @@ export class AutenticacionService {
     }
 
     getRole() {
-        return this.userRole;
+        return this.loggedInUser.rol;
     }
 
     hasRole(role: string): boolean {
-        return this.userRole === role;
+        return this.loggedInUser.rol === role;
     }
 
     openLoginDialog(): void {
