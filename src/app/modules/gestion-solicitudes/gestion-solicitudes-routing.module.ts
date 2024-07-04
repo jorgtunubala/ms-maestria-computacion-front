@@ -22,9 +22,24 @@ const routes: Routes = [
         path: '',
         component: GestionComponent,
         children: [
-            { path: 'buzon/nuevas', component: BuzonComponent },
-            { path: 'visor', component: VisorComponent },
-            { path: 'contenedor', component: ContenedorComponent },
+            {
+                path: 'buzon/nuevas',
+                component: BuzonComponent,
+                canActivate: [RoleGuard],
+                data: { expectedRole: 'coordinador' },
+            },
+            {
+                path: 'visor',
+                component: VisorComponent,
+                canActivate: [RoleGuard],
+                data: { expectedRole: 'coordinador' },
+            },
+            {
+                path: 'contenedor',
+                component: ContenedorComponent,
+                canActivate: [RoleGuard],
+                data: { expectedRole: 'coordinador' },
+            },
         ],
     },
     {
@@ -48,7 +63,6 @@ const routes: Routes = [
                 path: 'radicar/resumen',
                 component: ResumenComponent,
                 canActivate: [AuthGuard],
-                data: { expectedRole: 'admin' },
             },
         ],
     },
@@ -57,8 +71,18 @@ const routes: Routes = [
         path: 'avales',
         component: BuzondeavalesComponent,
         children: [
-            { path: 'pendientes', component: PendientesavalComponent },
-            { path: 'pendientes/detalles', component: VisoravalComponent },
+            {
+                path: 'pendientes',
+                component: PendientesavalComponent,
+                canActivate: [RoleGuard],
+                data: { expectedRole: 'docente' },
+            },
+            {
+                path: 'pendientes/detalles',
+                component: VisoravalComponent,
+                canActivate: [RoleGuard],
+                data: { expectedRole: 'docente' },
+            },
         ],
     },
     {

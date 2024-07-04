@@ -11,6 +11,11 @@ export const menuItems: MenuItem[] = [
         icon: 'pi pi-fw pi-sliders-h',
         items: [
             {
+                label: 'AVALES',
+                icon: 'pi pi-check-circle',
+                routerLink: '/gestionsolicitudes/avales/pendientes',
+            },
+            {
                 label: 'ESTUDIANTES',
                 icon: 'pi pi-user',
                 routerLink: '/estudiantes',

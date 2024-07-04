@@ -95,9 +95,9 @@ export class AppTopBarComponent implements OnInit {
                     // Mostrar todos los subítems
                     return true;
                 } else if (user.rol === 'docente') {
-                    // Mostrar solo el subítem "SOLICITUDES"
+                    // Mostrar solo el subítem "AVALES"
                     item.items = item.items.filter(
-                        (subItem) => subItem.label === 'SOLICITUDES'
+                        (subItem) => subItem.label === 'AVALES'
                     );
                     return true;
                 }
