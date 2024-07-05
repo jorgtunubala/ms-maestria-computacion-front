@@ -65,6 +65,7 @@ export class AppTopBarComponent implements OnInit {
 
     updateMenuForLoggedInUser() {
         const user = this.autenticacion.getLoggedInUser();
+
         if (user) {
             this.items = this.items.map((item) => {
                 if (item.label === 'LOGIN') {
