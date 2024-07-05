@@ -1,14 +1,7 @@
-import {
-    Component,
-    HostListener,
-    OnInit,
-    OnDestroy,
-    ChangeDetectorRef,
-} from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { AppMainComponent } from '../main/app.main.component';
 import { MenuItem } from 'primeng/api';
-import { menuItems } from '../../constants/menu-items';
-import { Subscription } from 'rxjs';
+import { menuItems as originalMenuItems } from '../../constants/menu-items';
 import { MenuService } from '../../services/app.menu.service';
 import { AutenticacionService } from 'src/app/modules/gestion-autenticacion/services/autenticacion.service';
 
@@ -34,10 +27,11 @@ export class AppTopBarComponent implements OnInit {
     ) {}
 
     ngOnInit() {
+        // Inicializar los elementos del menú al iniciar el componente
         this.initializeMenuItems();
+        // Suscribirse a cambios en el estado de autenticación
         this.menuService.alertLogin$.subscribe(() => {
             const user: Usuario | null = this.autenticacion.loggedInUser;
-
             if (user) {
                 this.initializeMenuItems();
             }
@@ -46,6 +40,7 @@ export class AppTopBarComponent implements OnInit {
 
     @HostListener('window:scroll', ['$event'])
     onWindowScroll(event) {
+        // Mostrar/ocultar la barra superior en función del desplazamiento de la página
         if (window.pageYOffset > 120) {
             this.isTopBarVisible = false;
         } else {
@@ -54,8 +49,9 @@ export class AppTopBarComponent implements OnInit {
     }
 
     initializeMenuItems() {
-        this.items = [...menuItems];
-
+        // Crear una copia profunda de los elementos del menú originales
+        this.items = JSON.parse(JSON.stringify(originalMenuItems));
+        // Actualizar el menú según el estado de autenticación
         if (this.autenticacion.isLoggedIn()) {
             this.updateMenuForLoggedInUser();
         } else {
@@ -65,7 +61,9 @@ export class AppTopBarComponent implements OnInit {
 
     updateMenuForLoggedInUser() {
         const user = this.autenticacion.getLoggedInUser();
+
         if (user) {
+            // Actualizar el menú para mostrar el nombre del usuario y opción de cerrar sesión
             this.items = this.items.map((item) => {
                 if (item.label === 'LOGIN') {
                     return {
@@ -82,6 +80,7 @@ export class AppTopBarComponent implements OnInit {
                 }
                 return item;
             });
+            // Filtrar elementos del menú según el rol del usuario
             this.filterMenuItems(user);
         }
     }
@@ -90,12 +89,13 @@ export class AppTopBarComponent implements OnInit {
         this.items = this.items.filter((item) => {
             if (item.label === 'GESTIÓN') {
                 if (!user) {
+                    // No mostrar el elemento GESTIÓN si no hay usuario
                     return false;
                 } else if (user.rol === 'coordinador') {
-                    // Mostrar todos los subítems
+                    // Mostrar todos los subítems si el usuario es coordinador
                     return true;
                 } else if (user.rol === 'docente') {
-                    // Mostrar solo el subítem "AVALES"
+                    // Mostrar solo el subítem "AVALES" si el usuario es docente
                     item.items = item.items.filter(
                         (subItem) => subItem.label === 'AVALES'
                     );
@@ -108,8 +108,8 @@ export class AppTopBarComponent implements OnInit {
     }
 
     logout() {
+        // Cerrar sesión y reinicializar los elementos del menú
         this.autenticacion.logout();
-        this.items = [...menuItems];
-        this.filterMenuItems(null);
+        this.initializeMenuItems();
     }
 }

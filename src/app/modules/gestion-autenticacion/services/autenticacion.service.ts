@@ -23,21 +23,21 @@ const usuarios: Usuario[] = [
     {
         nombreCompleto: 'María García',
         rol: 'estudiante',
-        correo: 'maria@example.com',
+        correo: 'juliiml95@gmail.com',
         username: 'estudiante',
         password: 'est',
     },
     {
         nombreCompleto: 'Carlos Martinez',
         rol: 'docente',
-        correo: 'carlos@example.com',
+        correo: 'julianaml_95@hotmail.com',
         username: 'docente',
         password: 'doc',
     },
     {
         nombreCompleto: 'Andrea Zuluaga',
         rol: 'coordinador',
-        correo: 'coordi@example.com',
+        correo: 'julimlps5@gmail.com',
         username: 'coordinador',
         password: 'coo',
     },
@@ -112,6 +112,14 @@ export class AutenticacionService {
 
     getRole() {
         return this.loggedInUser.rol;
+    }
+
+    getFullName() {
+        return this.loggedInUser.nombreCompleto;
+    }
+
+    getEmail() {
+        return this.loggedInUser.correo;
     }
 
     hasRole(role: string): boolean {
