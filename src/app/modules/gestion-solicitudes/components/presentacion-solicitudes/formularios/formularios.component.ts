@@ -29,6 +29,7 @@ import { ApyeconomicoestanciaComponent } from './complementarios/apyeconomicoest
 import { ApyasistenciaeventoComponent } from './complementarios/apyasistenciaevento/apyasistenciaevento.component';
 import { ApypublicacionComponent } from './complementarios/apypublicacion/apypublicacion.component';
 import { TipoBeca } from 'src/app/core/enums/domain-enum';
+import { CreditosComponent } from './complementarios/creditos/creditos.component';
 
 @Component({
     selector: 'app-formularios',
@@ -62,6 +63,8 @@ export class FormulariosComponent implements OnInit {
     formApyAsistEvnt: ApyasistenciaeventoComponent;
     @ViewChild(ApypublicacionComponent)
     formApyPagoPublic: ApypublicacionComponent;
+    @ViewChild(CreditosComponent)
+    formReCredPracDocente: CreditosComponent;
 
     identificadorSolicitante: string = 'ctorres@unicauca.edu.co';
     tiposIdentificacion: string[];
@@ -297,6 +300,24 @@ export class FormulariosComponent implements OnInit {
                     this.formListaTutores.obtenerEstadoFormulario() &&
                     this.formDirectores.obtenerEstadoFormulario();
                 break;
+
+            case 'RE_CRED_PAS':
+                let totalHoras: number = 0;
+
+                estadoGeneral =
+                    this.formReCredPracDocente.validarFormulario() &&
+                    this.formListaTutores.obtenerEstadoFormulario();
+
+                this.radicar.horasAsignables.forEach((horas) => {
+                    totalHoras += horas;
+                });
+
+                if (totalHoras < 96) {
+                    this.showWarnHoras();
+                    estadoGeneral = false;
+                }
+
+                break;
             default:
                 estadoGeneral = this.formListaTutores.obtenerEstadoFormulario();
                 break;
@@ -369,6 +390,14 @@ export class FormulariosComponent implements OnInit {
             severity: 'warn',
             summary: 'Información Incompleta',
             detail: 'Diligencie todos los campos requeridos',
+        });
+    }
+
+    showWarnHoras() {
+        this.messageService.add({
+            severity: 'warn',
+            summary: 'Horas Insuficientes',
+            detail: 'Las actividades realizadas deben sumar 96 horas como mínimo.',
         });
     }
 

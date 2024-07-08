@@ -92,7 +92,10 @@ export class AppTopBarComponent implements OnInit {
                     // No mostrar el elemento GESTIÓN si no hay usuario
                     return false;
                 } else if (user.rol === 'coordinador') {
-                    // Mostrar todos los subítems si el usuario es coordinador
+                    // Mostrar todos los subítems menos "AVALES" si el usuario es coordinador
+                    item.items = item.items.filter(
+                        (subItem) => subItem.label !== 'AVALES'
+                    );
                     return true;
                 } else if (user.rol === 'docente') {
                     // Mostrar solo el subítem "AVALES" si el usuario es docente

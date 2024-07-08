@@ -15,13 +15,14 @@ export class AvalpracticadocenteComponent implements OnInit {
         this.radicar.actividadesSeleccionadas.push(event.value);
 
         const actividadId = this.radicar.actividadesSeleccionadas.length - 1;
+        /*
         if (!this.radicar.adjuntosDeActividades[actividadId]) {
             this.radicar.adjuntosDeActividades[actividadId] = {
                 archivos: [],
                 enlaces: [],
             };
         }
-
+*/
         if (event.value && event.value.peso == null) {
             this.radicar.horasAsignables[actividadId] =
                 event.value.horasAsignadas;
