@@ -107,4 +107,60 @@ export class CreditosComponent implements OnInit {
             enlace
         );
     }
+
+    validarFormulario(): boolean {
+        let formularioValido = true;
+
+        if (this.radicar.actividadesSeleccionadas.length > 0) {
+            this.radicar.actividadesSeleccionadas.forEach(
+                (actividad, indiceActividad) => {
+                    if (actividad.peso) {
+                        if (this.radicar.horasIngresadas[indiceActividad] < 0) {
+                            formularioValido = false;
+                        }
+                    }
+
+                    if (actividad.documentos.length > 0) {
+                        actividad.documentos.forEach((documento, indiceDoc) => {
+                            const documentoOpcional =
+                                /(\(si aplica\))|(\(opcional\))/i.test(
+                                    documento
+                                );
+
+                            console.log('Doc Opcional: ' + documentoOpcional);
+                            if (
+                                !documentoOpcional &&
+                                !this.radicar.adjuntosDeActividades[
+                                    indiceActividad
+                                ].archivos[indiceDoc]
+                            ) {
+                                formularioValido = false;
+                            }
+                        });
+                    }
+
+                    if (actividad.enlaces.length > 0) {
+                        actividad.enlaces.forEach((enlace, indiceEnlace) => {
+                            const enlaceOpcional =
+                                /(\(si aplica\))|(\(opcional\))/i.test(enlace);
+
+                            console.log('Enlace Opcional: ' + enlaceOpcional);
+                            if (
+                                !enlaceOpcional &&
+                                !this.radicar.adjuntosDeActividades[
+                                    indiceActividad
+                                ].enlaces[indiceEnlace]
+                            ) {
+                                formularioValido = false;
+                            }
+                        });
+                    }
+                }
+            );
+        } else {
+            formularioValido = false;
+        }
+
+        return formularioValido;
+    }
 }

@@ -150,7 +150,7 @@
         "
     >
         el aval para la ralización de las actividades de practica docente
-        enumeradas a continuacion: <br /><br />
+        descritas a continuacion: <br /><br />
 
         <ng-container
             *ngFor="
@@ -158,10 +158,11 @@
                 let i = index
             "
         >
-            <p style="line-height: 0.6">
+            <p style="line-height: 0.6" class="font-semibold">
                 {{ i + 1 }}. {{ actividad.nombre }} -
                 {{ radicar.horasAsignables[i] }}h
             </p>
+            <p>{{ radicar.descripcionesActividades[i] }}</p>
         </ng-container>
         <br />
     </ng-container>

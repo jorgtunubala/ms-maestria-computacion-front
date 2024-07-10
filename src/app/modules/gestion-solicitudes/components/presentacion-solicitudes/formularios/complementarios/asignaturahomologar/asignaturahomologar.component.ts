@@ -15,6 +15,8 @@ export class AsignaturahomologarComponent implements OnInit {
     intensidad: number = null;
     calificacion: number = null;
     contenidos: File = null;
+    deshabilitarCargaArchivo: boolean = false;
+
     binding: any;
 
     constructor(public radicar: RadicarService, private fb: FormBuilder) {
@@ -27,6 +29,12 @@ export class AsignaturahomologarComponent implements OnInit {
     }
 
     ngOnInit(): void {
+        if (
+            this.radicar.tipoSolicitudEscogida.codigoSolicitud === 'HO_ASIG_ESP'
+        ) {
+            this.deshabilitarCargaArchivo = true;
+        }
+
         if (this.radicar.datosAsignaturasAHomologar[this.indice]) {
             this.formAsigHomologar.patchValue({
                 nombreAsignatura:
