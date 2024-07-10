@@ -30,6 +30,7 @@ import { ApyasistenciaeventoComponent } from './complementarios/apyasistenciaeve
 import { ApypublicacionComponent } from './complementarios/apypublicacion/apypublicacion.component';
 import { TipoBeca } from 'src/app/core/enums/domain-enum';
 import { CreditosComponent } from './complementarios/creditos/creditos.component';
+import { AvalpracticadocenteComponent } from './complementarios/avalpracticadocente/avalpracticadocente.component';
 
 @Component({
     selector: 'app-formularios',
@@ -65,6 +66,8 @@ export class FormulariosComponent implements OnInit {
     formApyPagoPublic: ApypublicacionComponent;
     @ViewChild(CreditosComponent)
     formReCredPracDocente: CreditosComponent;
+    @ViewChild(AvalpracticadocenteComponent)
+    formAvalPracDocente: AvalpracticadocenteComponent;
 
     identificadorSolicitante: string = 'ctorres@unicauca.edu.co';
     tiposIdentificacion: string[];
@@ -316,6 +319,13 @@ export class FormulariosComponent implements OnInit {
                     this.showWarnHoras();
                     estadoGeneral = false;
                 }
+
+                break;
+
+            case 'AV_COMI_PR':
+                estadoGeneral =
+                    this.formAvalPracDocente.validarFormulario() &&
+                    this.formListaTutores.obtenerEstadoFormulario();
 
                 break;
             default:

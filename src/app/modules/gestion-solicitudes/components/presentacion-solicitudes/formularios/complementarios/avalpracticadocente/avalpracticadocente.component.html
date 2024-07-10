@@ -63,7 +63,7 @@
                 </ng-template>
                 <ng-container *ngIf="actividad">
                     <ng-container *ngIf="!actividad.peso">
-                        <div>
+                        <div class="mb-4">
                             &nbsp;Horas a reconocer:
                             {{ actividad.horasAsignadas }}
                         </div>
@@ -129,6 +129,12 @@
                                 pInputTextarea
                                 spellcheck="true"
                                 class="w-full"
+                                [(ngModel)]="
+                                    radicar.descripcionesActividades[i]
+                                "
+                                (onInput)="
+                                    actualizarDescripcion($event.value, i)
+                                "
                             ></textarea>
                             <label for="descipcion"
                                 >Descripcion del trabajo a realizar

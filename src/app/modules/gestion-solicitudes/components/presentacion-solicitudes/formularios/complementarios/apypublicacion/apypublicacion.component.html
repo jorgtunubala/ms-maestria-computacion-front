@@ -4,7 +4,7 @@
         styleClass="bg-bluegray-50"
     >
         <div class="grid p-fluid">
-            <div class="col-12 md:col-6">
+            <div class="col-12 md:col-9">
                 <span class="p-float-label mt-3">
                     <input
                         formControlName="nombreCongreso"
@@ -14,19 +14,6 @@
                         pInputText
                     />
                     <label for="nomCongreso">Nombre del evento</label>
-                </span>
-            </div>
-
-            <div class="col-12 lg:col-3">
-                <span class="p-float-label mt-3">
-                    <p-dropdown
-                        formControlName="tipoCongreso"
-                        inputId="tipoCongreso"
-                        [autoDisplayFirst]="false"
-                        [options]="tiposCongreso"
-                        [style]="{ width: '100%' }"
-                    ></p-dropdown>
-                    <label for="tipoCongreso">Tipo de evento</label>
                 </span>
             </div>
 
@@ -46,7 +33,7 @@
                 </span>
             </div>
 
-            <div class="col-12">
+            <div class="col-12 lg:col-8">
                 <span class="p-float-label mt-3">
                     <input
                         formControlName="tituloPublicacion"
@@ -58,6 +45,19 @@
                     <label for="tituloPublicacion"
                         >Título de la publicación</label
                     >
+                </span>
+            </div>
+
+            <div class="col-12 lg:col-4">
+                <span class="p-float-label mt-3">
+                    <p-dropdown
+                        formControlName="tipoCongreso"
+                        inputId="tipoCongreso"
+                        [autoDisplayFirst]="false"
+                        [options]="tiposCongreso"
+                        [style]="{ width: '100%' }"
+                    ></p-dropdown>
+                    <label for="tipoCongreso">Tipo de publicación</label>
                 </span>
             </div>
 

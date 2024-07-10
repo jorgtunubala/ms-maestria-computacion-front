@@ -23,7 +23,15 @@ export class ApypublicacionComponent implements OnInit {
             'Ahorros',
             'Corriente',
         ];
-        this.tiposCongreso = ['Seleccione una opción', 'Opcion 1', 'Opcion 2'];
+        this.tiposCongreso = [
+            'Seleccione una opción',
+            'Articulo en revista indexada categoría A1 o A2 de Publindex',
+            'Articulo en revista indexada categoría B de Publindex',
+            'Articulo en revista indexada categoría C de Publindex',
+            'Articulo en revista no indexada de Publindex',
+            'Articulo en memoria de evento arbitrario internacional con ISBN',
+            'Articulo en memoria de evento arbitrario nacional con ISBN',
+        ];
 
         this.formApoyoPagoPublic = this.fb.group({
             nombreCongreso: ['', Validators.required],
