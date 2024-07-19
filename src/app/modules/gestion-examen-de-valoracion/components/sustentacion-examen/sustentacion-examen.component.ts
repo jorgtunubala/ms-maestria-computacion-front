@@ -37,11 +37,11 @@ import { BuscadorExpertosComponent } from 'src/app/shared/components/buscador-ex
 import { DocenteService } from 'src/app/shared/services/docente.service';
 import { ExpertoService } from 'src/app/shared/services/experto.service';
 import { Estudiante } from '../../../gestion-estudiantes/models/estudiante';
-import { AuthService } from '../../../../shared/services/auth.service';
 import { SustentacionService } from '../../services/sustentacion.service';
 import { TrabajoDeGradoService } from '../../services/trabajoDeGrado.service';
 import { Experto } from '../../models/experto';
 import { Sustentacion } from '../../models/sustentacion';
+import { AutenticacionService } from 'src/app/modules/gestion-autenticacion/services/autenticacion.service';
 
 @Component({
     selector: 'app-sustentacion-examen',
@@ -121,7 +121,7 @@ export class SustentacionExamenComponent implements OnInit {
         private sustentacionService: SustentacionService,
         private dialogService: DialogService,
         private messageService: MessageService,
-        private authService: AuthService,
+        private autenticacion: AutenticacionService,
         private docenteService: DocenteService,
         private expertoService: ExpertoService
     ) {}
@@ -135,7 +135,7 @@ export class SustentacionExamenComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.role = this.authService.getRole();
+        this.role = this.autenticacion.getRole();
         this.initForm();
         this.subscribeToObservers();
         if (this.router.url.includes('editar')) {

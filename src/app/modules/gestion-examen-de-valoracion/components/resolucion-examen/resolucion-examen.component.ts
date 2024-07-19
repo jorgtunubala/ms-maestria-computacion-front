@@ -31,12 +31,12 @@ import {
 } from 'src/app/core/utils/message-util';
 import { Aviso, EstadoProceso, Mensaje } from 'src/app/core/enums/enums';
 import { ResolucionService } from '../../services/resolucion.service';
-import { AuthService } from 'src/app/shared/services/auth.service';
 import { TrabajoDeGradoService } from '../../services/trabajoDeGrado.service';
 import { Docente } from 'src/app/modules/gestion-docentes/models/docente';
 import { Estudiante } from 'src/app/modules/gestion-estudiantes/models/estudiante';
 import { Resolucion } from '../../models/resolucion';
 import { BuscadorDocentesComponent } from 'src/app/shared/components/buscador-docentes/buscador-docentes.component';
+import { AutenticacionService } from 'src/app/modules/gestion-autenticacion/services/autenticacion.service';
 
 @Component({
     selector: 'app-resolucion-examen',
@@ -105,7 +105,7 @@ export class ResolucionExamenComponent implements OnInit {
         private resolucionService: ResolucionService,
         private messageService: MessageService,
         private dialogService: DialogService,
-        private authService: AuthService
+        private autenticacion: AutenticacionService
     ) {}
 
     get director(): FormControl {
@@ -121,7 +121,7 @@ export class ResolucionExamenComponent implements OnInit {
     }
 
     initializeComponent() {
-        this.role = this.authService.getRole();
+        this.role = this.autenticacion.getRole();
         this.initForm();
         this.subscribeToObservers();
         if (this.router.url.includes('editar')) {

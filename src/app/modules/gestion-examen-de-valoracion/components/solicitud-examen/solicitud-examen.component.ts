@@ -39,7 +39,6 @@ import { DocenteService } from 'src/app/shared/services/docente.service';
 import { ExpertoService } from 'src/app/shared/services/experto.service';
 import { Experto } from '../../models/experto';
 import { Solicitud } from '../../models/solicitud';
-import { AuthService } from '../../../../shared/services/auth.service';
 import { RespuestaService } from '../../services/respuesta.service';
 import { ResolucionService } from '../../services/resolucion.service';
 import { SolicitudService } from '../../services/solicitud.service';
@@ -130,7 +129,6 @@ export class SolicitudExamenComponent implements OnInit {
         private solicitudService: SolicitudService,
         private respuestaService: RespuestaService,
         private resolucionService: ResolucionService,
-        private authService: AuthService,
         private autenticacion: AutenticacionService,
         private docenteService: DocenteService,
         private expertoService: ExpertoService

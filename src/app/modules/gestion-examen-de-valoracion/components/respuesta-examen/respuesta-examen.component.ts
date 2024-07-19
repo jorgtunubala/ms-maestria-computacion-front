@@ -14,10 +14,10 @@ import {
 } from 'src/app/core/utils/message-util';
 import { RespuestaService } from '../../services/respuesta.service';
 import { Experto } from '../../models/experto';
-import { AuthService } from '../../../../shared/services/auth.service';
 import { mapResponseException } from 'src/app/core/utils/exception-util';
 import { ResolucionService } from '../../services/resolucion.service';
 import { TrabajoDeGradoService } from '../../services/trabajoDeGrado.service';
+import { AutenticacionService } from 'src/app/modules/gestion-autenticacion/services/autenticacion.service';
 
 @Component({
     selector: 'app-respuesta-examen',
@@ -73,7 +73,7 @@ export class RespuestaExamenComponent implements OnInit {
         private messageService: MessageService,
         private respuestaService: RespuestaService,
         private resolucionService: ResolucionService,
-        private authService: AuthService
+        private autenticacion: AutenticacionService
     ) {}
 
     get expertoEvaluaciones(): FormArray {
@@ -89,7 +89,7 @@ export class RespuestaExamenComponent implements OnInit {
     }
 
     async initializeComponent() {
-        this.role = this.authService.getRole();
+        this.role = this.autenticacion.getRole();
         this.initForm();
         await this.subscribeToObservers();
         this.checkEstados();

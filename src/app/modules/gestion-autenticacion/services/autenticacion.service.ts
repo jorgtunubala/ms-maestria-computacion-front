@@ -45,7 +45,6 @@ export class AutenticacionService {
             .pipe(
                 tap((response) => {
                     localStorage.setItem('token', response.token);
-                    localStorage.setItem('tokenType', response.tokenType);
                     localStorage.setItem(
                         'loggedInUser',
                         JSON.stringify({
@@ -72,7 +71,8 @@ export class AutenticacionService {
         this.loggedInUser = null;
         localStorage.removeItem('loggedInUser');
         localStorage.removeItem('token');
-        localStorage.removeItem('tokenType');
+        localStorage.removeItem('est');
+        localStorage.removeItem('estEgresado');
         this.router.navigate(['']);
     }
 
@@ -85,7 +85,7 @@ export class AutenticacionService {
     }
 
     getRole(): string[] | null {
-        return this.loggedInUser ? this.loggedInUser.role : null;
+        return this.loggedInUser ? this.loggedInUser.role : [];
     }
 
     getFullName(): string {
@@ -111,9 +111,5 @@ export class AutenticacionService {
 
     getToken(): string | null {
         return localStorage.getItem('token');
-    }
-
-    getTokenType(): string | null {
-        return localStorage.getItem('tokenType');
     }
 }

@@ -13,7 +13,6 @@ import { TrabajoDeGradoService } from '../../services/trabajoDeGrado.service';
 import { RespuestaService } from '../../services/respuesta.service';
 import { ResolucionService } from '../../services/resolucion.service';
 import { SustentacionService } from '../../services/sustentacion.service';
-import { AuthService } from '../../../../shared/services/auth.service';
 import { AutenticacionService } from 'src/app/modules/gestion-autenticacion/services/autenticacion.service';
 
 @Component({
@@ -62,7 +61,6 @@ export class BandejaExamenDeValoracionComponent implements OnInit {
         private sustentacionService: SustentacionService,
         private localStorageService: LocalStorageService,
         private dialogService: DialogService,
-        private authService: AuthService,
         private autenticacion: AutenticacionService,
     ) {}
 
