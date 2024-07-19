@@ -27,27 +27,22 @@ export class BuscadorDocentesComponent implements OnInit {
 
     listDocentes() {
         this.loading = true;
-        this.docenteService.listDocentes().subscribe({
-                next: (response) => (this.docentes = this.getDocentesActivos(response)),
+        this.docenteService.listarDocentes().subscribe({
+                next: (response) => (this.docentes = response),
             })
             .add(() => this.loading = false);
     }
 
     filterDocentes(filter: string) {
-        if (filter?.trim()) {
-            this.loading = true;
-            this.docenteService.filterDocentes(filter).subscribe({
-                    next: (response) => (this.docentes = this.getDocentesActivos(response)),
-                })
-                .add(() => this.loading = false);
-        } else {
-            this.listDocentes();
+        if (filter?.trim().length > 0) {
+            this.docenteService.listarDocentes().subscribe({
+                next: (response) => {
+                    this.docentes = response.filter((e) =>
+                        e.nombre.includes(filter.trim())
+                    );
+                },
+            });
         }
-        this.docenteSeleccionado = null;
-    }
-
-    getDocentesActivos(docentes: Docente[]) {
-        return docentes.filter((d) => d.estado === 'ACTIVO');
     }
 
     onCancel() {

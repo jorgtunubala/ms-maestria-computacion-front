@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -24,6 +24,8 @@ import { AppBreadcrumbComponent } from './core/components/breadcrumb/app.breadcr
 import { BreadcrumbService } from './core/components/breadcrumb/app.breadcrumb.service';
 import { BandejaDocentesComponent } from './modules/gestion-docentes/components/bandeja-docentes/bandeja-docentes.component';
 import { CargarDocentesComponent } from './modules/gestion-docentes/components/cargar-docentes/cargar-docentes.component';
+import { PdfViewerModule } from 'ng2-pdf-viewer';
+import { AuthInterceptor } from './shared/config/interceptor';
 @NgModule({
     imports: [
         BrowserModule,
@@ -35,6 +37,7 @@ import { CargarDocentesComponent } from './modules/gestion-docentes/components/c
         SharedModule,
         GestionEstudiantesModule,
         ReactiveFormsModule,
+        PdfViewerModule
     ],
     declarations: [
         AppComponent,
@@ -50,6 +53,7 @@ import { CargarDocentesComponent } from './modules/gestion-docentes/components/c
         CargarDocentesComponent,
     ],
     providers: [
+        { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
         { provide: LocationStrategy, useClass: HashLocationStrategy },
         MessageService,
         MenuService,

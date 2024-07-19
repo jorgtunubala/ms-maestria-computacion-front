@@ -1,0 +1,199 @@
+<div>
+    <div id="formatoEvaluadores">
+        <div class="flex flex-column w-full mb-4">
+            <div
+                class="flex flex-row align-items-center justify-content-evenly header-logo"
+            >
+                <div>
+                    <h2>Maestría en Computación</h2>
+                    <h2>
+                        Facultad de Ingeniería Electrónica y Telecomunicaciones
+                    </h2>
+                </div>
+                <img
+                    src="assets/layout/images/logoUnicauca.png"
+                    alt="Logo Unicauca"
+                    width="120px"
+                    height="180px"
+                />
+            </div>
+            <div
+                class="flex flex-column w-full justify-content-center align-items-center row-gap-4 title-head"
+            >
+                <span style="font-size: 20px; font-weight: bold"
+                    >TESIS DE POSGRADO</span
+                >
+            </div>
+        </div>
+        <div class="mt-4 form-container px-8">
+            <form class="p-fluid" [formGroup]="formatoEvaluadoresForm">
+                <div class="flex flex-column mt-4">
+                    <label class="label-required mb-2" for="consecutivo"
+                        >Consecutivo:</label
+                    >
+                    <input
+                        pInputText
+                        type="text"
+                        id="consecutivo"
+                        formControlName="consecutivo"
+                        readonly
+                    />
+                </div>
+                <div class="flex flex-column mt-4">
+                    <label class="label-required mb-2" for="coordinadora"
+                        >Coordinador(a):</label
+                    >
+                    <input
+                        pInputText
+                        type="text"
+                        id="coordinadora"
+                        formControlName="coordinadora"
+                    />
+                </div>
+                <div class="flex flex-column mt-4">
+                    <label class="label-required mb-2" for="docente"
+                        >Docente:</label
+                    >
+                    <input
+                        pInputText
+                        type="text"
+                        id="docente"
+                        formControlName="docente"
+                    />
+                </div>
+                <div class="mt-4">
+                    <label for="juradoExterno">Jurado Externo:</label>
+                    <div class="flex align-items-center">
+                        <p-card class="w-full m-0">
+                            <div
+                                class="flex justify-content-between align-items-center"
+                            >
+                                <span>{{
+                                    docente.value?.nombres ??
+                                        docente.value?.nombre +
+                                            " " +
+                                            docente.value?.apellido
+                                }}</span>
+                            </div>
+                        </p-card>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <label for="juradoInterno">Jurado Interno:</label>
+                    <div class="flex align-items-center">
+                        <p-card class="w-full m-0">
+                            <div
+                                class="flex justify-content-between align-items-center"
+                            >
+                                <span>{{
+                                    experto.value?.nombres ??
+                                        experto.value?.nombre +
+                                            " " +
+                                            experto.value?.apellido
+                                }}</span>
+                            </div>
+                        </p-card>
+                    </div>
+                </div>
+                <div class="flex flex-column mt-4">
+                    <label class="label-required mb-2" for="asunto"
+                        >Asunto:</label
+                    >
+                    <textarea
+                        pInputTextarea
+                        id="asunto"
+                        formControlName="asunto"
+                        rows="4"
+                    ></textarea>
+                </div>
+                <div class="flex flex-column mt-4">
+                    <label class="label-required mb-2" for="estudiante"
+                        >Estudiante:</label
+                    >
+                    <input
+                        pInputText
+                        type="text"
+                        id="estudiante"
+                        formControlName="estudiante"
+                        readonly
+                    />
+                </div>
+                <div class="flex flex-column mt-4">
+                    <label class="label-required mb-2" for="propuesta"
+                        >Propuesta:</label
+                    >
+                    <input
+                        pInputText
+                        type="text"
+                        id="propuesta"
+                        formControlName="propuesta"
+                        readonly
+                    />
+                </div>
+                <div class="flex flex-column mt-4 max-w-20rem">
+                    <label class="label-required mb-2" for="fechaSesion"
+                        >Fecha de Sesión:</label
+                    >
+                    <p-calendar
+                        id="fechaSesion"
+                        formControlName="fechaSesion"
+                        [showIcon]="true"
+                        dateFormat="dd.mm.yy"
+                    ></p-calendar>
+                </div>
+                <div class="flex flex-column mt-4 max-w-20rem">
+                    <label class="label-required mb-2" for="fechaRespuesta"
+                        >Fecha de Respuesta:</label
+                    >
+                    <p-calendar
+                        id="fechaRespuesta"
+                        formControlName="fechaRespuesta"
+                        [showIcon]="true"
+                        dateFormat="dd.mm.yy"
+                    ></p-calendar>
+                </div>
+            </form>
+        </div>
+        <div
+            class="flex flex-row align-items-center justify-content-center footer-logo footer-content"
+        >
+            <img
+                src="assets/layout/images/logosIcontec.png"
+                alt="Logo Icontec"
+                width="200px"
+                height="140px"
+            />
+            <div
+                class="flex flex-column align-items-center justify-content-center footer-text"
+            >
+                <span>Por una Universidad de excelencia y solidaria</span>
+                <hr />
+                <strong>
+                    Facultad de Ingeniería Electrónica y Telecomunicaciones Cra
+                    2 No. 4N-140 Edif. de Ingenierías - Sector Tulcán Popayán -
+                    Cauca - Colombia Conmutador 8209800 Ext. 2145
+                    maestriacomputacion@unicauca.edu.co - www.unicauca.edu.co
+                    www.unicauca.edu.co/maestriacomputación
+                </strong>
+            </div>
+        </div>
+    </div>
+    <div class="flex align-items-center justify-content-end mt-4 column-gap-2">
+        <button
+            pButton
+            type="button"
+            icon="pi pi-paperclip"
+            label="Adjuntar"
+            (click)="onAdjuntar()"
+            [loading]="loading"
+        ></button>
+        <button
+            pButton
+            type="button"
+            icon="pi pi-download"
+            label="Descargar"
+            (click)="onDownload()"
+            [loading]="loading"
+        ></button>
+    </div>
+</div>

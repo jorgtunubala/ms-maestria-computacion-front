@@ -57,6 +57,20 @@ import { DynamicloginComponent } from './modules/gestion-autenticacion/component
                                     './modules/gestion-solicitudes/gestion-solicitudes.module'
                                 ).then((m) => m.GestionSolicitudesModule),
                         },
+                        {
+                            path: 'examen-de-valoracion',
+                            loadChildren: () =>
+                                import(
+                                    './modules/gestion-examen-de-valoracion/gestion-examen-de-valoracion.module'
+                                ).then((m) => m.ExamenDeValoracionModule),
+                        },
+                        {
+                            path: 'seguimiento-a-egresados',
+                            loadChildren: () =>
+                                import(
+                                    './modules/gestion-egresados/gestion-egresados.module'
+                                ).then((m) => m.SeguimientoAEgresadosModule),
+                        },
                     ],
                 },
 

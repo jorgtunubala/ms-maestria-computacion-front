@@ -1,0 +1,1433 @@
+<p-panel *ngIf="!isLoading; else spinner">
+    <ng-template pTemplate="header">
+        <span class="font-bold w-full text-center" style="font-size: 20px"
+            >Examen de Valoracion</span
+        >
+    </ng-template>
+    <div class="col flex align-items-center justify-content-center">
+        <p-card
+            class="m-2 w-full max-w-30rem"
+            header="Datos del Estudiante"
+            *ngIf="estudianteSeleccionado"
+        >
+            <div class="mt-2 card-data flex justify-content-between">
+                <span>Codigo</span>
+                <span>{{ estudianteSeleccionado.codigo }}</span>
+            </div>
+            <div class="mt-2 card-data flex justify-content-between">
+                <span>Numero de Identificacion</span>
+                <span>{{ estudianteSeleccionado.identificacion }}</span>
+            </div>
+            <div class="mt-2 card-data flex justify-content-between">
+                <span>Nombres y Apellidos</span>
+                <span
+                    >{{ estudianteSeleccionado.nombre }}
+                    {{ estudianteSeleccionado.apellido }}</span
+                >
+            </div>
+        </p-card>
+        <p-dialog
+            header="PDF Viewer"
+            [(visible)]="displayModal"
+            [style]="{
+                width: '80vw',
+                height: '80vh'
+            }"
+            (onHide)="closeModal()"
+        >
+            <ng-template pTemplate="header">
+                <div
+                    style="
+                        display: flex;
+                        flex: 1;
+                        flex-direction: column;
+                        align-items: center;
+                        padding: 1rem;
+                        border-bottom: 1px solid #ccc;
+                        width: 20rem;
+                    "
+                >
+                    <div
+                        style="
+                            font-size: 1.5rem;
+                            font-weight: bold;
+                            margin-bottom: 0.5rem;
+                            width: 100%;
+                            text-align: center;
+                            word-break: break-all;
+                        "
+                    >
+                        {{ pdfUrls[currentPdfIndex]?.name }}
+                    </div>
+                    <div
+                        style="
+                            display: flex;
+                            justify-content: flex-start;
+                            align-items: center;
+                            width: 100%;
+                        "
+                    >
+                        <span style="font-size: 1rem; margin-right: 1rem"
+                            >Página {{ currentPdfIndex + 1 }} de
+                            {{ pdfUrls?.length }}</span
+                        >
+                        <div
+                            style="
+                                display: flex;
+                                align-items: center;
+                                column-gap: 10px;
+                            "
+                        >
+                            <button
+                                pButton
+                                icon="pi pi-arrow-left"
+                                (click)="previousPdf()"
+                                [disabled]="currentPdfIndex === 0"
+                            ></button>
+                            <button
+                                pButton
+                                icon="pi pi-arrow-right"
+                                (click)="nextPdf()"
+                                [disabled]="
+                                    currentPdfIndex === pdfUrls?.length - 1
+                                "
+                            ></button>
+                        </div>
+                    </div>
+                    <div
+                        style="
+                            margin-top: 1rem;
+                            display: flex;
+                            align-items: center;
+                            column-gap: 0.5rem;
+                        "
+                    >
+                        <div class="field-checkbox">
+                            <p-checkbox
+                                [(ngModel)]="isReviewed"
+                                [binary]="true"
+                                inputId="isReviewed"
+                            ></p-checkbox>
+                            <label for="isReviewed"
+                                >Revisé todos los documentos</label
+                            >
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+            <div class="pdf-container">
+                <pdf-viewer
+                    [render-text]="true"
+                    *ngIf="pdfUrls?.length > 0"
+                    [src]="pdfUrls[currentPdfIndex]?.url"
+                    class="pdf-viewer"
+                    (after-load-complete)="onPdfLoad($event)"
+                ></pdf-viewer>
+            </div>
+        </p-dialog>
+        <p-dialog
+            header="Formato Hoja de Vida Academica"
+            [(visible)]="displayFormatoHVA"
+            [style]="{ width: '70vw' }"
+            [modal]="true"
+            [maximizable]="true"
+            [baseZIndex]="10000"
+            [draggable]="false"
+            [resizable]="false"
+        >
+            <ng-container>
+                <documento-formatoHva
+                    (formatoHvaPdfGenerated)="
+                        handleFormatoHvaPdfGenerated($event)
+                    "
+                ></documento-formatoHva>
+            </ng-container>
+        </p-dialog>
+        <p-dialog
+            header="Formato Hoja de Vida Academica para Grado"
+            [(visible)]="displayFormatoHVAGrado"
+            [style]="{ width: '70vw' }"
+            [modal]="true"
+            [maximizable]="true"
+            [baseZIndex]="10000"
+            [draggable]="false"
+            [resizable]="false"
+        >
+            <ng-container>
+                <documento-formatoHvaGrado
+                    (formatoHvaGradoPdfGenerated)="
+                        handleFormatoHvaGradoPdfGenerated($event)
+                    "
+                ></documento-formatoHvaGrado>
+            </ng-container>
+        </p-dialog>
+        <p-dialog
+            header="Formato F"
+            [(visible)]="displayFormatoF"
+            [style]="{ width: '70vw' }"
+            [modal]="true"
+            [maximizable]="true"
+            [baseZIndex]="10000"
+            [draggable]="false"
+            [resizable]="false"
+        >
+            <ng-container>
+                <documento-formatoF
+                    (formatoFPdfGenerated)="handleFormatoFGenerated($event)"
+                ></documento-formatoF>
+            </ng-container>
+        </p-dialog>
+    </div>
+    <div class="flex mt-4 justify-content-between">
+        <div class="flex align-items-center column-gap-4">
+            <div class="flex align-items-center">
+                <button
+                    pButton
+                    icon="pi pi-chevron-left"
+                    label="Salir"
+                    (click)="redirectToBandeja()"
+                ></button>
+            </div>
+            <button
+                *ngIf="role.includes('ROLE_ESTUDIANTE') ? false : true"
+                pButton
+                type="button"
+                icon="pi pi-book"
+                class="w-15rem p-button-secondary"
+                label="Solicitud examen de valoración"
+                [disabled]="role == 'ROLE_ESTUDIANTE'"
+                (click)="redirectToSolicitud(trabajoDeGradoId)"
+            ></button>
+            <button
+                *ngIf="role.includes('ROLE_ESTUDIANTE') ? false : true"
+                pButton
+                type="button"
+                icon="pi pi-envelope"
+                class="w-15rem p-button-secondary"
+                label="Respuesta al examen de valoración"
+                [disabled]="role == 'ROLE_ESTUDIANTE' || role == 'ROLE_DOCENTE'"
+                (click)="redirectToRespuesta()"
+            ></button>
+            <button
+                *ngIf="role.includes('ROLE_ESTUDIANTE') ? false : true"
+                pButton
+                type="button"
+                icon="pi pi-paperclip"
+                class="w-15rem p-button-secondary"
+                label="Generacion de resolucion"
+                [disabled]="role == 'ROLE_ESTUDIANTE'"
+                (click)="redirectToResolucion(resolucionId)"
+            ></button>
+            <button
+                pButton
+                type="button"
+                icon="pi pi-paperclip"
+                class="w-20rem p-button-info"
+                label="Sustentación del proyecto de investigación"
+                [disabled]="isActiveIndex()"
+            ></button>
+        </div>
+    </div>
+    <ng-template class="w-full" pTemplate="footer">
+        <form [formGroup]="sustentacionForm" enctype="multipart/form-data">
+            <div class="sustentacion flex flex-column gap-2">
+                <div class="text-center font-medium mb-4">
+                    <p>
+                        <b>Sustentación del proyecto de investigación</b>
+                    </p>
+                </div>
+                <div
+                    class="card"
+                    *ngIf="
+                        role.includes('ROLE_COORDINADOR') ||
+                        role.includes('ROLE_DOCENTE')
+                    "
+                >
+                    <div class="mb-4">
+                        <p class="text-xl font-bold mb-0">
+                            <i class="pi pi-check-square mr-2"></i>Paso 1 -
+                            Cargue de documentos
+                        </p>
+                        <p>
+                            Complete los datos requeridos para realizar la
+                            solicitud
+                        </p>
+                    </div>
+                    <p-fieldset legend="Docente" styleClass="bg-bluegray-50">
+                        <div
+                            class="flex flex-1 justify-content-end align-items-center"
+                            *ngIf="role.includes('ROLE_DOCENTE')"
+                        >
+                            <button
+                                *ngIf="!editMode"
+                                pButton
+                                icon="pi pi-eye"
+                                label="Revisar documentos"
+                                (click)="openModal()"
+                            ></button>
+                        </div>
+                        <div class="field grid justify-content-center">
+                            <div class="col-5 mt-4">
+                                <label class="label-required"
+                                    >Remisión del documento final al comité
+                                    (Formato F .pdf)
+                                </label>
+                                <div
+                                    style="max-width: 50rem"
+                                    class="flex flex-wrap gap-2 mt-2 align-items-start"
+                                >
+                                    <div
+                                        class="flex flex-column row-gap-2 align-items-start justify-content-start flex-1"
+                                    >
+                                        <div
+                                            class="flex flex-row w-full justify-content-between"
+                                        >
+                                            <p-fileUpload
+                                                #FormatoF
+                                                name="linkFormatoF"
+                                                mode="basic"
+                                                [auto]="true"
+                                                accept=".pdf"
+                                                chooseIcon="pi pi-file"
+                                                class="w-full"
+                                                maxFileSize="5000000"
+                                                (onSelect)="
+                                                    onFileSelectFirst($event)
+                                                "
+                                                chooseLabel="Buscar documento"
+                                                [disabled]="
+                                                    sustentacionForm.get(
+                                                        'linkFormatoF'
+                                                    ).value
+                                                "
+                                            >
+                                            </p-fileUpload>
+                                            <button
+                                                *ngIf="FileFormatoF"
+                                                pButton
+                                                class="p-button-secondary"
+                                                icon="pi pi-times"
+                                                type="button"
+                                                (click)="
+                                                    onFileClear('linkFormatoF')
+                                                "
+                                            ></button>
+                                        </div>
+                                        <div
+                                            class="text-description mt-2"
+                                            style="
+                                                width: '200px';
+                                                word-break: break-word;
+                                            "
+                                            *ngIf="FileFormatoF"
+                                        >
+                                            {{ FileFormatoF.name }} -
+                                            {{ FileFormatoF.size | bytesToKb }}
+                                            KB
+                                        </div>
+                                    </div>
+                                    <button
+                                        *ngIf="editMode && FileFormatoF"
+                                        pButton
+                                        class="p-button-secondary"
+                                        type="button"
+                                        icon="pi pi-download"
+                                        (click)="
+                                            getFileAndSetValue('linkFormatoF')
+                                        "
+                                    ></button>
+                                    <button
+                                        *ngIf="!FileFormatoF"
+                                        pButton
+                                        icon="pi pi-plus"
+                                        class="align-self-center"
+                                        label="Crear Documento"
+                                        (click)="showFormatoF()"
+                                        [loading]="loading"
+                                    ></button>
+                                </div>
+                                <div
+                                    class="text-description mt-2"
+                                    *ngIf="!FileFormatoF"
+                                >
+                                    <p>No has seleccionado ningún documento.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field grid justify-content-center">
+                            <div class="col-5 mt-4">
+                                <label class="label-required"
+                                    >Link documentación de la tesis (monografía
+                                    y anexos)</label
+                                >
+                                <input
+                                    style="max-width: 50rem"
+                                    pInputText
+                                    [maxLength]="250"
+                                    class="p-inputtext-md w-full mt-2"
+                                    formControlName="urlDocumentacion"
+                                />
+                            </div>
+                        </div>
+                    </p-fieldset>
+                </div>
+                <div
+                    class="card"
+                    *ngIf="role.includes('ROLE_COORDINADOR') && isDocente"
+                >
+                    <div class="mb-4">
+                        <p class="text-xl font-bold mb-0">
+                            <i class="pi pi-check-square mr-2"></i>Paso 2 -
+                            Respuesta Concepto Coordinador
+                        </p>
+                        <p>
+                            Complete los datos requeridos para realizar la
+                            solicitud
+                        </p>
+                    </div>
+                    <p-fieldset
+                        legend="Coordinador"
+                        styleClass="bg-bluegray-50"
+                    >
+                        <div class="field grid">
+                            <div
+                                class="flex flex-1 justify-content-end align-items-center"
+                                *ngIf="isDocente && !isCoordinadorFase1"
+                            >
+                                <button
+                                    *ngIf="editMode"
+                                    pButton
+                                    icon="pi pi-eye"
+                                    label="Revisar documentos"
+                                    (click)="openModal()"
+                                ></button>
+                            </div>
+                            <div
+                                class="flex m-4 w-full justify-content-center align-items-center column-gap-4"
+                            >
+                                <div
+                                    *ngFor="let estado of estados"
+                                    class="field-checkbox"
+                                >
+                                    <p-radioButton
+                                        [inputId]="estado + 'coordinador'"
+                                        [value]="estado"
+                                        formControlName="conceptoCoordinador"
+                                    ></p-radioButton>
+                                    <label
+                                        [for]="estado + 'coordinador'"
+                                        class="ml-2"
+                                        >{{ estado }}</label
+                                    >
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field grid justify-content-center">
+                            <div class="col-5">
+                                <div>
+                                    <label class="label-required">Asunto</label>
+                                    <input
+                                        class="p-inputtext-md w-full mt-2"
+                                        pInputText
+                                        [maxLength]="250"
+                                        formControlName="asuntoCoordinador"
+                                    />
+                                </div>
+                                <div class="mt-4">
+                                    <label class="label-required"
+                                        >Observación</label
+                                    >
+                                    <textarea
+                                        class="w-full mt-2"
+                                        rows="5"
+                                        cols="30"
+                                        pInputTextarea
+                                        [autoResize]="true"
+                                        formControlName="mensajeCoordinador"
+                                    ></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </p-fieldset>
+                </div>
+                <div
+                    class="card"
+                    *ngIf="
+                        role.includes('ROLE_COORDINADOR') && isCoordinadorFase1
+                    "
+                >
+                    <div class="mb-4">
+                        <p class="text-xl font-bold mb-0">
+                            <i class="pi pi-check-square mr-2"></i>Paso 3 -
+                            Respuesta Concepto Comite
+                        </p>
+                        <p>
+                            Complete los datos requeridos para realizar la
+                            solicitud
+                        </p>
+                    </div>
+                    <p-fieldset legend="Comite" styleClass="bg-bluegray-50">
+                        <div class="field grid">
+                            <div
+                                class="flex flex-1 justify-content-end align-items-center"
+                                *ngIf="
+                                    isCoordinadorFase1 && !isCoordinadorFase2
+                                "
+                            >
+                                <button
+                                    *ngIf="editMode"
+                                    pButton
+                                    icon="pi pi-eye"
+                                    label="Revisar documentos"
+                                    (click)="openModal()"
+                                ></button>
+                            </div>
+                            <div
+                                class="flex m-4 w-full justify-content-center align-items-center column-gap-4"
+                            >
+                                <div
+                                    *ngFor="let estado of estadosComite"
+                                    class="field-checkbox"
+                                >
+                                    <p-radioButton
+                                        [inputId]="estado + 'comite'"
+                                        [value]="estado"
+                                        formControlName="conceptoComite"
+                                    ></p-radioButton>
+                                    <label
+                                        [for]="estado + 'comite'"
+                                        class="ml-2"
+                                        >{{ estado }}</label
+                                    >
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field grid justify-content-center">
+                            <div class="col-5">
+                                <div>
+                                    <label class="label-required">Asunto</label>
+                                    <input
+                                        class="p-inputtext-md w-full mt-2"
+                                        pInputText
+                                        [maxLength]="250"
+                                        formControlName="asuntoComite"
+                                    />
+                                    <div class="mt-4">
+                                        <label class="label-required"
+                                            >Observación</label
+                                        >
+                                        <textarea
+                                            class="w-full mt-2"
+                                            rows="5"
+                                            cols="30"
+                                            pInputTextarea
+                                            [autoResize]="true"
+                                            formControlName="mensajeComite"
+                                        ></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            class="field grid justify-content-center"
+                            *ngIf="
+                                sustentacionForm.get('conceptoComite').value ==
+                                'Aprobado'
+                            "
+                        >
+                            <div class="col-5 mt-4">
+                                <label class="label-required"
+                                    >Remisión del documento final al concejo de
+                                    facultad (Formato G .pdf)
+                                </label>
+                                <div
+                                    style="max-width: 50rem"
+                                    class="flex flex-wrap gap-2 mt-2 align-items-start"
+                                >
+                                    <div
+                                        class="flex flex-column row-gap-2 align-items-start justify-content-start flex-1"
+                                    >
+                                        <div
+                                            class="flex flex-row w-full justify-content-between"
+                                        >
+                                            <p-fileUpload
+                                                #FormatoG
+                                                name="linkFormatoG"
+                                                mode="basic"
+                                                [auto]="true"
+                                                accept=".pdf"
+                                                chooseIcon="pi pi-file"
+                                                class="w-full"
+                                                maxFileSize="5000000"
+                                                (onSelect)="
+                                                    onFileSelectSecond($event)
+                                                "
+                                                chooseLabel="Buscar documento"
+                                                [disabled]="
+                                                    sustentacionForm.get(
+                                                        'linkFormatoG'
+                                                    ).value
+                                                "
+                                            >
+                                            </p-fileUpload>
+                                            <button
+                                                *ngIf="FileFormatoG"
+                                                pButton
+                                                class="p-button-secondary"
+                                                icon="pi pi-times"
+                                                type="button"
+                                                (click)="
+                                                    onFileClear('linkFormatoG')
+                                                "
+                                            ></button>
+                                        </div>
+                                        <div
+                                            class="text-description mt-2"
+                                            style="
+                                                width: '200px';
+                                                word-break: break-word;
+                                            "
+                                            *ngIf="FileFormatoG"
+                                        >
+                                            {{ FileFormatoG.name }} -
+                                            {{ FileFormatoG.size | bytesToKb }}
+                                            KB
+                                        </div>
+                                    </div>
+                                    <button
+                                        *ngIf="editMode && FileFormatoG"
+                                        pButton
+                                        class="p-button-secondary"
+                                        type="button"
+                                        icon="pi pi-download"
+                                        (click)="
+                                            getFileAndSetValue('linkFormatoG')
+                                        "
+                                    ></button>
+                                </div>
+                                <div
+                                    class="text-description mt-2"
+                                    *ngIf="!FileFormatoG"
+                                >
+                                    <p>No has seleccionado ningún documento.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            class="field grid justify-content-center"
+                            *ngIf="
+                                sustentacionForm.get('conceptoComite').value ==
+                                'Aprobado'
+                            "
+                        >
+                            <div class="col-5 mt-4">
+                                <label class="label-required"
+                                    >Estudio hoja de vida academica (AE-247.pdf)
+                                </label>
+                                <div
+                                    style="max-width: 50rem"
+                                    class="flex flex-wrap gap-2 mt-2 align-items-start"
+                                >
+                                    <div
+                                        class="flex flex-column row-gap-2 align-items-start justify-content-start flex-1"
+                                    >
+                                        <div
+                                            class="flex flex-row w-full justify-content-between"
+                                        >
+                                            <p-fileUpload
+                                                #EstudioHVA
+                                                name="linkEstudioHojaVidaAcademica"
+                                                mode="basic"
+                                                [auto]="true"
+                                                accept=".pdf"
+                                                chooseIcon="pi pi-file"
+                                                class="w-full"
+                                                maxFileSize="5000000"
+                                                (onSelect)="
+                                                    onFileSelectThird($event)
+                                                "
+                                                chooseLabel="Buscar documento"
+                                                [disabled]="
+                                                    sustentacionForm.get(
+                                                        'linkEstudioHojaVidaAcademica'
+                                                    ).value
+                                                "
+                                            >
+                                            </p-fileUpload>
+                                            <button
+                                                *ngIf="FileEstudioHVA"
+                                                pButton
+                                                class="p-button-secondary"
+                                                icon="pi pi-times"
+                                                type="button"
+                                                (click)="
+                                                    onFileClear(
+                                                        'linkEstudioHojaVidaAcademica'
+                                                    )
+                                                "
+                                            ></button>
+                                        </div>
+                                        <div
+                                            class="text-description mt-2"
+                                            style="
+                                                width: '200px';
+                                                word-break: break-word;
+                                            "
+                                            *ngIf="FileEstudioHVA"
+                                        >
+                                            {{ FileEstudioHVA.name }} -
+                                            {{
+                                                FileEstudioHVA.size | bytesToKb
+                                            }}
+                                            KB
+                                        </div>
+                                    </div>
+                                    <button
+                                        *ngIf="editMode && FileEstudioHVA"
+                                        pButton
+                                        class="p-button-secondary"
+                                        type="button"
+                                        icon="pi pi-download"
+                                        (click)="
+                                            getFileAndSetValue(
+                                                'linkEstudioHojaVidaAcademica'
+                                            )
+                                        "
+                                    ></button>
+                                    <button
+                                        *ngIf="!FileEstudioHVA"
+                                        pButton
+                                        icon="pi pi-plus"
+                                        class="align-self-center"
+                                        label="Crear Documento"
+                                        (click)="showFormatoHVA()"
+                                        [loading]="loading"
+                                    ></button>
+                                </div>
+                                <div
+                                    class="text-description mt-2"
+                                    *ngIf="!FileEstudioHVA"
+                                >
+                                    <p>No has seleccionado ningún documento.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field grid justify-content-center">
+                            <div
+                                class="col-5 flex flex-nowrap align-items-center justify-content-between"
+                            >
+                                <label class="label-required">
+                                    No acta de revisión trabajo
+                                </label>
+                                <input
+                                    class="max-w-10rem ml-2"
+                                    pInputText
+                                    formControlName="numeroActa"
+                                />
+                                <label class="label-required ml-4"
+                                    >Fecha del Acta</label
+                                >
+                                <p-calendar
+                                    class="ml-2"
+                                    formControlName="fechaActa"
+                                    [showIcon]="true"
+                                    dateFormat="dd.mm.yy"
+                                ></p-calendar>
+                            </div>
+                        </div>
+                    </p-fieldset>
+                </div>
+                <div
+                    class="card"
+                    *ngIf="
+                        role.includes('ROLE_COORDINADOR') && isCoordinadorFase2
+                    "
+                >
+                    <div class="mb-4">
+                        <p class="text-xl font-bold mb-0">
+                            <i class="pi pi-check-square mr-2"></i>Paso 4 -
+                            Respuesta Consejo
+                        </p>
+                        <p>
+                            Complete los datos requeridos para realizar la
+                            solicitud
+                        </p>
+                    </div>
+                    <p-fieldset legend="Consejo" styleClass="bg-bluegray-50">
+                        <div
+                            class="flex flex-1 justify-content-end align-items-center"
+                            *ngIf="isCoordinadorFase2 && !isCoordinadorFase3"
+                        >
+                            <button
+                                *ngIf="editMode"
+                                pButton
+                                icon="pi pi-eye"
+                                label="Revisar documentos"
+                                (click)="openModal()"
+                            ></button>
+                        </div>
+                        <div class="field grid justify-content-center">
+                            <div class="col-5">
+                                <label>Aceptación de Jurados</label>
+                                <div class="flex align-items-center mt-2">
+                                    <p-radioButton
+                                        value="Aceptado"
+                                        formControlName="juradosAceptados"
+                                        inputId="juradosAceptadosTrue"
+                                    ></p-radioButton>
+                                    <label
+                                        for="juradosAceptadosTrue"
+                                        class="ml-2"
+                                        >Aceptar</label
+                                    >
+                                    <p-radioButton
+                                        value="Rechazado"
+                                        formControlName="juradosAceptados"
+                                        inputId="juradosAceptadosFalse"
+                                        class="ml-4"
+                                    ></p-radioButton>
+                                    <label
+                                        for="juradosAceptadosFalse"
+                                        class="ml-2"
+                                        >Rechazar</label
+                                    >
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field grid justify-content-center">
+                            <div class="col-5 mt-4">
+                                <div>
+                                    <label class="label-required">Asunto</label>
+                                    <input
+                                        class="p-inputtext-md w-full mt-2"
+                                        pInputText
+                                        [maxLength]="250"
+                                        formControlName="asuntoConsejo"
+                                    />
+                                </div>
+                                <div class="mt-4">
+                                    <label class="label-required"
+                                        >Observación</label
+                                    >
+                                    <textarea
+                                        class="w-full mt-2"
+                                        rows="5"
+                                        cols="30"
+                                        pInputTextarea
+                                        [autoResize]="true"
+                                        formControlName="mensajeConsejo"
+                                    ></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            class="field grid justify-content-center"
+                            *ngIf="
+                                sustentacionForm.get('juradosAceptados')
+                                    ?.value == 'Rechazado'
+                            "
+                        >
+                            <div class="col-5" *ngIf="juradoInterno.value">
+                                <label>Jurado Interno</label>
+                                <div class="flex align-items-center">
+                                    <p-card class="w-full m-0">
+                                        <div
+                                            class="flex justify-content-between align-items-center"
+                                        >
+                                            <span>{{
+                                                juradoInternoSeleccionado.nombres ??
+                                                    juradoInternoSeleccionado.nombre +
+                                                        " " +
+                                                        juradoInternoSeleccionado.apellido
+                                            }}</span>
+                                            <button
+                                                pButton
+                                                class="p-button-secondary"
+                                                icon="pi pi-times"
+                                                (click)="limpiarJuradoInterno()"
+                                            ></button>
+                                        </div>
+                                    </p-card>
+                                </div>
+                            </div>
+                            <div class="col-5" *ngIf="!juradoInterno.value">
+                                <label>Jurado Interno</label>
+                                <button
+                                    pButton
+                                    class="mt-2 w-full"
+                                    icon="pi pi-plus"
+                                    label="Seleccionar Jurado"
+                                    (click)="onSeleccionarJuradoInterno()"
+                                ></button>
+                            </div>
+                        </div>
+                        <div
+                            class="field grid justify-content-center"
+                            *ngIf="
+                                sustentacionForm.get('juradosAceptados')
+                                    ?.value == 'Rechazado'
+                            "
+                        >
+                            <div class="col-5" *ngIf="juradoExterno.value">
+                                <label>Jurado Externo</label>
+                                <div class="flex align-items-center">
+                                    <p-card class="w-full m-0">
+                                        <div
+                                            class="flex justify-content-between"
+                                        >
+                                            <span>{{
+                                                juradoExternoSeleccionado.nombres ??
+                                                    juradoExternoSeleccionado.nombre +
+                                                        " " +
+                                                        juradoExternoSeleccionado.apellido
+                                            }}</span>
+                                            <button
+                                                pButton
+                                                class="p-button-secondary"
+                                                icon="pi pi-times"
+                                                (click)="limpiarJuradoExterno()"
+                                            ></button>
+                                        </div>
+                                    </p-card>
+                                </div>
+                            </div>
+                            <div class="col-5" *ngIf="!juradoExterno.value">
+                                <label>Jurado Externo</label>
+                                <button
+                                    class="mt-2 w-full"
+                                    pButton
+                                    icon="pi pi-plus"
+                                    label="Seleccionar Jurado"
+                                    (click)="onSeleccionarJuradoExterno()"
+                                ></button>
+                            </div>
+                        </div>
+                        <div class="field grid justify-content-center">
+                            <div
+                                class="col-5 flex flex-nowrap align-items-center justify-content-between"
+                            >
+                                <label class="label-required"
+                                    >Fecha Sustentacion</label
+                                >
+                                <p-calendar
+                                    formControlName="fechaSustentacion"
+                                    [showIcon]="true"
+                                    dateFormat="dd.mm.yy"
+                                ></p-calendar>
+                            </div>
+                        </div>
+                        <div class="field grid justify-content-center">
+                            <div
+                                class="col-5 flex flex-nowrap align-items-center justify-content-between"
+                            >
+                                <label class="label-required">
+                                    No acta de revisión trabajo final
+                                </label>
+                                <input
+                                    class="max-w-10rem ml-2"
+                                    pInputText
+                                    formControlName="numeroActaConsejo"
+                                />
+                                <label class="label-required ml-4"
+                                    >Fecha del Acta</label
+                                >
+                                <p-calendar
+                                    class="ml-2"
+                                    formControlName="fechaActaConsejo"
+                                    [showIcon]="true"
+                                    dateFormat="dd.mm.yy"
+                                ></p-calendar>
+                            </div>
+                        </div>
+                    </p-fieldset>
+                </div>
+                <div
+                    class="card"
+                    *ngIf="
+                        role.includes('ROLE_ESTUDIANTE') ||
+                        (role.includes('ROLE_COORDINADOR') &&
+                            isCoordinadorFase3)
+                    "
+                >
+                    <div class="mb-4">
+                        <p class="text-xl font-bold mb-0">
+                            <i class="pi pi-check-square mr-2"></i>Paso 5 -
+                            Cargue documentos
+                        </p>
+                        <p>
+                            Complete los datos requeridos para realizar la
+                            solicitud
+                        </p>
+                    </div>
+                    <p-fieldset legend="Estudiante" styleClass="bg-bluegray-50">
+                        <div
+                            class="flex flex-1 justify-content-end align-items-center"
+                            *ngIf="isCoordinadorFase3 && !isEstudiante"
+                        >
+                            <button
+                                *ngIf="editMode"
+                                pButton
+                                icon="pi pi-eye"
+                                label="Revisar documentos"
+                                (click)="openModal()"
+                            ></button>
+                        </div>
+                        <div class="field grid justify-content-center">
+                            <div class="col-5">
+                                <label class="label-required"
+                                    >Constancia de que el documento final
+                                    corresponde a la versión sustentada (Formato
+                                    H .pdf)
+                                </label>
+                                <div
+                                    style="max-width: 50rem"
+                                    class="flex flex-wrap gap-2 mt-2 align-items-start"
+                                >
+                                    <div
+                                        class="flex flex-column row-gap-2 align-items-start justify-content-start flex-1"
+                                    >
+                                        <div
+                                            class="flex flex-row w-full justify-content-between"
+                                        >
+                                            <p-fileUpload
+                                                #FormatoH
+                                                name="linkFormatoH"
+                                                mode="basic"
+                                                [auto]="true"
+                                                accept=".pdf"
+                                                chooseIcon="pi pi-file"
+                                                class="w-full"
+                                                maxFileSize="5000000"
+                                                (onSelect)="
+                                                    onFileSelectFourth($event)
+                                                "
+                                                chooseLabel="Buscar documento"
+                                                [disabled]="
+                                                    sustentacionForm.get(
+                                                        'linkFormatoH'
+                                                    ).value
+                                                "
+                                            >
+                                            </p-fileUpload>
+                                            <button
+                                                *ngIf="FileFormatoH"
+                                                pButton
+                                                class="p-button-secondary"
+                                                icon="pi pi-times"
+                                                type="button"
+                                                (click)="
+                                                    onFileClear('linkFormatoH')
+                                                "
+                                            ></button>
+                                        </div>
+                                        <div
+                                            class="text-description mt-2"
+                                            style="
+                                                width: '200px';
+                                                word-break: break-word;
+                                            "
+                                            *ngIf="FileFormatoH"
+                                        >
+                                            {{ FileFormatoH.name }} -
+                                            {{ FileFormatoH.size | bytesToKb }}
+                                            KB
+                                        </div>
+                                    </div>
+                                    <button
+                                        *ngIf="editMode && FileFormatoH"
+                                        pButton
+                                        class="p-button-secondary"
+                                        type="button"
+                                        icon="pi pi-download"
+                                        (click)="
+                                            getFileAndSetValue('linkFormatoH')
+                                        "
+                                    ></button>
+                                </div>
+                                <div
+                                    class="text-description mt-2"
+                                    *ngIf="!FileFormatoH"
+                                >
+                                    <p>No has seleccionado ningún documento.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field grid justify-content-center">
+                            <div class="col-5">
+                                <label class="label-required"
+                                    >Acta de sustentación (Formato I .pdf)
+                                </label>
+                                <div
+                                    style="max-width: 50rem"
+                                    class="flex flex-wrap gap-2 mt-2 align-items-start"
+                                >
+                                    <div
+                                        class="flex flex-column row-gap-2 align-items-start justify-content-start flex-1"
+                                    >
+                                        <div
+                                            class="flex flex-row w-full justify-content-between"
+                                        >
+                                            <p-fileUpload
+                                                #FormatoI
+                                                name="linkFormatoI"
+                                                mode="basic"
+                                                [auto]="true"
+                                                accept=".pdf"
+                                                chooseIcon="pi pi-file"
+                                                class="w-full"
+                                                maxFileSize="5000000"
+                                                (onSelect)="
+                                                    onFileSelectFifth($event)
+                                                "
+                                                chooseLabel="Buscar documento"
+                                                [disabled]="
+                                                    sustentacionForm.get(
+                                                        'linkFormatoI'
+                                                    ).value
+                                                "
+                                            >
+                                            </p-fileUpload>
+                                            <button
+                                                *ngIf="FileFormatoI"
+                                                pButton
+                                                class="p-button-secondary"
+                                                icon="pi pi-times"
+                                                type="button"
+                                                (click)="
+                                                    onFileClear('linkFormatoI')
+                                                "
+                                            ></button>
+                                        </div>
+                                        <div
+                                            class="text-description mt-2"
+                                            style="
+                                                width: '200px';
+                                                word-break: break-word;
+                                            "
+                                            *ngIf="FileFormatoI"
+                                        >
+                                            {{ FileFormatoI.name }} -
+                                            {{ FileFormatoI.size | bytesToKb }}
+                                            KB
+                                        </div>
+                                    </div>
+                                    <button
+                                        *ngIf="editMode && FileFormatoI"
+                                        pButton
+                                        class="p-button-secondary"
+                                        type="button"
+                                        icon="pi pi-download"
+                                        (click)="
+                                            getFileAndSetValue('linkFormatoI')
+                                        "
+                                    ></button>
+                                </div>
+                                <div
+                                    class="text-description mt-2"
+                                    *ngIf="!FileFormatoI"
+                                >
+                                    <p>No has seleccionado ningún documento.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </p-fieldset>
+                </div>
+                <div
+                    class="card"
+                    *ngIf="role.includes('ROLE_COORDINADOR') && isEstudiante"
+                >
+                    <div class="mb-4">
+                        <p class="text-xl font-bold mb-0">
+                            <i class="pi pi-check-square mr-2"></i>Paso 6 -
+                            Respuesta Sustentacion
+                        </p>
+                        <p>
+                            Complete los datos requeridos para realizar la
+                            solicitud
+                        </p>
+                    </div>
+                    <p-fieldset legend="Consejo" styleClass="bg-bluegray-50">
+                        <div
+                            class="flex flex-1 justify-content-end align-items-center"
+                            *ngIf="isEstudiante && !isCoordinadorFase4"
+                        >
+                            <button
+                                *ngIf="editMode"
+                                pButton
+                                icon="pi pi-eye"
+                                label="Revisar documentos"
+                                (click)="openModal()"
+                            ></button>
+                        </div>
+                        <div class="field grid justify-content-center">
+                            <div class="col-5">
+                                <label class="label-required"
+                                    >Acta para Sustentación Pública (Formato
+                                    PA-GA-4.2-FOR-13 .pdf)
+                                </label>
+                                <div
+                                    style="max-width: 50rem"
+                                    class="flex flex-wrap gap-2 mt-2 align-items-start"
+                                >
+                                    <div
+                                        class="flex flex-column row-gap-2 align-items-start justify-content-start flex-1"
+                                    >
+                                        <div
+                                            class="flex flex-row w-full justify-content-between"
+                                        >
+                                            <p-fileUpload
+                                                #ActaSustentacionP
+                                                name="linkActaSustentacionPublica"
+                                                mode="basic"
+                                                [auto]="true"
+                                                accept=".pdf"
+                                                chooseIcon="pi pi-file"
+                                                class="w-full"
+                                                maxFileSize="5000000"
+                                                (onSelect)="
+                                                    onFileSelectSixth($event)
+                                                "
+                                                chooseLabel="Buscar documento"
+                                                [disabled]="
+                                                    sustentacionForm.get(
+                                                        'linkActaSustentacionPublica'
+                                                    ).value
+                                                "
+                                            >
+                                            </p-fileUpload>
+                                            <button
+                                                *ngIf="FileActaSustentacionP"
+                                                pButton
+                                                class="p-button-secondary"
+                                                icon="pi pi-times"
+                                                type="button"
+                                                (click)="
+                                                    onFileClear(
+                                                        'linkActaSustentacionPublica'
+                                                    )
+                                                "
+                                            ></button>
+                                        </div>
+                                        <div
+                                            class="text-description mt-2"
+                                            style="
+                                                width: '200px';
+                                                word-break: break-word;
+                                            "
+                                            *ngIf="FileActaSustentacionP"
+                                        >
+                                            {{ FileActaSustentacionP.name }} -
+                                            {{
+                                                FileActaSustentacionP.size
+                                                    | bytesToKb
+                                            }}
+                                            KB
+                                        </div>
+                                    </div>
+                                    <button
+                                        *ngIf="
+                                            editMode && FileActaSustentacionP
+                                        "
+                                        pButton
+                                        class="p-button-secondary"
+                                        type="button"
+                                        icon="pi pi-download"
+                                        (click)="
+                                            getFileAndSetValue(
+                                                'linkActaSustentacionPublica'
+                                            )
+                                        "
+                                    ></button>
+                                </div>
+                                <div
+                                    class="text-description mt-2"
+                                    *ngIf="!FileActaSustentacionP"
+                                >
+                                    <p>No has seleccionado ningún documento.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field grid justify-content-center">
+                            <div class="col-5 mt-2">
+                                <label class="label-required"
+                                    >Respuesta a la sustentación
+                                </label>
+                                <div class="flex mt-2 column-gap-4">
+                                    <div
+                                        *ngFor="let respuestas of respuestas"
+                                        class="field-checkbox"
+                                    >
+                                        <p-radioButton
+                                            [inputId]="respuestas"
+                                            [value]="respuestas"
+                                            formControlName="respuestaSustentacion"
+                                        ></p-radioButton>
+                                        <label
+                                            [for]="respuestas"
+                                            class="ml-2"
+                                            >{{ respuestas }}</label
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field grid justify-content-center">
+                            <div class="col-5">
+                                <label class="label-required"
+                                    >Estudio hoja de vida academica para grado
+                                    (PM-FO-4-FOR-27 .pdf)
+                                </label>
+                                <div
+                                    style="max-width: 50rem"
+                                    class="flex flex-wrap gap-2 mt-2 align-items-start"
+                                >
+                                    <div
+                                        class="flex flex-column row-gap-2 align-items-start justify-content-start flex-1"
+                                    >
+                                        <div
+                                            class="flex flex-row w-full justify-content-between"
+                                        >
+                                            <p-fileUpload
+                                                #EstudioHVAGrado
+                                                name="linkEstudioHojaVidaAcademicaGrado"
+                                                mode="basic"
+                                                [auto]="true"
+                                                accept=".pdf"
+                                                chooseIcon="pi pi-file"
+                                                class="w-full"
+                                                maxFileSize="5000000"
+                                                (onSelect)="
+                                                    onFileSelectSeventh($event)
+                                                "
+                                                chooseLabel="Buscar documento"
+                                                [disabled]="
+                                                    sustentacionForm.get(
+                                                        'linkEstudioHojaVidaAcademicaGrado'
+                                                    ).value
+                                                "
+                                            >
+                                            </p-fileUpload>
+                                            <button
+                                                *ngIf="FileEstudioHVAGrado"
+                                                pButton
+                                                class="p-button-secondary"
+                                                icon="pi pi-times"
+                                                type="button"
+                                                (click)="
+                                                    onFileClear(
+                                                        'linkEstudioHojaVidaAcademicaGrado'
+                                                    )
+                                                "
+                                            ></button>
+                                        </div>
+                                        <div
+                                            class="text-description mt-2"
+                                            style="
+                                                width: '200px';
+                                                word-break: break-word;
+                                            "
+                                            *ngIf="FileEstudioHVAGrado"
+                                        >
+                                            {{ FileEstudioHVAGrado.name }} -
+                                            {{
+                                                FileEstudioHVAGrado.size
+                                                    | bytesToKb
+                                            }}
+                                            KB
+                                        </div>
+                                    </div>
+                                    <button
+                                        *ngIf="editMode && FileEstudioHVAGrado"
+                                        pButton
+                                        class="p-button-secondary"
+                                        type="button"
+                                        icon="pi pi-download"
+                                        (click)="
+                                            getFileAndSetValue(
+                                                'linkEstudioHojaVidaAcademicaGrado'
+                                            )
+                                        "
+                                    ></button>
+                                    <button
+                                        *ngIf="!FileEstudioHVAGrado"
+                                        pButton
+                                        icon="pi pi-plus"
+                                        class="align-self-center"
+                                        label="Crear Documento"
+                                        (click)="showFormatoHVAGrado()"
+                                        [loading]="loading"
+                                    ></button>
+                                </div>
+                                <div
+                                    class="text-description mt-2"
+                                    *ngIf="!FileEstudioHVAGrado"
+                                >
+                                    <p>No has seleccionado ningún documento.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field grid justify-content-center">
+                            <div
+                                class="col-5 flex flex-nowrap align-items-center justify-content-between"
+                            >
+                                <label class="label-required">
+                                    No acta de revisión trabajo final
+                                </label>
+                                <input
+                                    class="max-w-10rem ml-2"
+                                    pInputText
+                                    formControlName="numeroActaFinal"
+                                />
+                                <label class="label-required ml-4"
+                                    >Fecha del Acta</label
+                                >
+                                <p-calendar
+                                    class="ml-2"
+                                    formControlName="fechaActaFinal"
+                                    [showIcon]="true"
+                                    dateFormat="dd.mm.yy"
+                                ></p-calendar>
+                            </div>
+                        </div>
+                    </p-fieldset>
+                </div>
+            </div>
+            <div
+                class="w-full flex align-items-center justify-content-end column-gap-2"
+            >
+                <button
+                    *ngIf="!editMode"
+                    pButton
+                    icon="pi pi-save"
+                    label="Guardar"
+                    (click)="createOrUpdateSustentacion()"
+                    [disabled]="role.includes('ROLE_DOCENTE') && !isReviewed"
+                ></button>
+                <button
+                    *ngIf="
+                        editMode &&
+                        role.includes('ROLE_COORDINADOR') &&
+                        isCoordinadorFase4
+                    "
+                    pButton
+                    icon="pi pi-eye"
+                    label="Revisar documentos"
+                    (click)="openModal()"
+                ></button>
+                <button
+                    *ngIf="editMode"
+                    pButton
+                    icon="pi pi-pencil"
+                    [label]="getButtonLabel()"
+                    (click)="createOrUpdateSustentacion()"
+                    [disabled]="
+                        role.includes('ROLE_COORDINADOR') && !isReviewed
+                    "
+                ></button>
+            </div>
+        </form>
+    </ng-template>
+</p-panel>
+<ng-template #spinner>
+    <p-progressSpinner ariaLabel="loading" class="spinner"></p-progressSpinner>
+</ng-template>

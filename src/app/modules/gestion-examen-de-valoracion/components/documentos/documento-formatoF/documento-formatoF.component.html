@@ -1,0 +1,247 @@
+<div>
+    <div id="formatoF">
+        <div class="flex flex-column w-full mb-4">
+            <div
+                class="flex flex-row align-items-center justify-content-evenly header-logo"
+            >
+                <div>
+                    <h2>Maestría en Computación</h2>
+                    <h2>
+                        Facultad de Ingeniería Electrónica y Telecomunicaciones
+                    </h2>
+                </div>
+                <img
+                    src="assets/layout/images/logoUnicauca.png"
+                    alt="Logo Unicauca"
+                    width="120px"
+                    height="180px"
+                />
+            </div>
+            <div
+                class="flex flex-column w-full justify-content-center align-items-center row-gap-4 title-head"
+            >
+                <span style="font-size: 20px; font-weight: bold"
+                    >TESIS DE POSGRADO</span
+                >
+            </div>
+        </div>
+        <div class="mt-4 form-container pl-8 pr-8">
+            <form [formGroup]="formatoFForm">
+                <div class="field grid justify-content-start">
+                    <label class="col-2 label-required" for="titulo"
+                        >TÍTULO:</label
+                    >
+                    <div class="col-10">
+                        <input
+                            pInputText
+                            type="text"
+                            id="titulo"
+                            class="p-inputtext-md w-full"
+                            formControlName="titulo"
+                            readonly
+                        />
+                    </div>
+                </div>
+
+                <div class="field grid justify-content-start">
+                    <label class="col-2 label-required" for="estudiante"
+                        >ESTUDIANTE:</label
+                    >
+                    <div class="col-10">
+                        <input
+                            pInputText
+                            type="text"
+                            id="estudiante"
+                            class="p-inputtext-md w-full"
+                            formControlName="estudiante"
+                            readonly
+                        />
+                    </div>
+                </div>
+
+                <div class="field grid justify-content-start">
+                    <label class="col-2 label-required" for="director"
+                        >DIRECTOR:</label
+                    >
+                    <div class="col-10">
+                        <input
+                            pInputText
+                            type="text"
+                            id="director"
+                            class="p-inputtext-md w-full"
+                            formControlName="director"
+                        />
+                    </div>
+                </div>
+
+                <div class="field grid justify-content-start">
+                    <label class="col-2 label-required" for="trabajoCumple"
+                        >A) EL TRABAJO CUMPLE CON LAS CONDICIONES DE
+                        ENTREGA?</label
+                    >
+                    <div class="col-10">
+                        <div
+                            class="flex justify-content-start align-items-center column-gap-2"
+                        >
+                            <label for="trabajoCumpleSi">SI</label>
+                            <p-checkbox
+                                type="checkbox"
+                                formControlName="trabajoCumpleSi"
+                                [binary]="true"
+                                inputId="trabajoCumpleSi"
+                            ></p-checkbox>
+                            <label for="trabajoCumpleNo">NO</label>
+                            <p-checkbox
+                                type="checkbox"
+                                formControlName="trabajoCumpleNo"
+                                [binary]="true"
+                                inputId="trabajoCumpleNo"
+                            ></p-checkbox>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field grid justify-content-start">
+                    <label class="col-2 label-required" for="documentoTerminado"
+                        >B) DOCUMENTO Y ANEXOS COMPLETAMENTE TERMINADOS?</label
+                    >
+                    <div class="col-10">
+                        <div
+                            class="flex justify-content-start align-items-center column-gap-2"
+                        >
+                            <label for="documentoTerminadoSi">SI</label>
+                            <p-checkbox
+                                type="checkbox"
+                                formControlName="documentoTerminadoSi"
+                                [binary]="true"
+                                inputId="documentoTerminadoSi"
+                            ></p-checkbox>
+                            <label for="documentoTerminadoNo">NO</label>
+                            <p-checkbox
+                                type="checkbox"
+                                formControlName="documentoTerminadoNo"
+                                [binary]="true"
+                                inputId="documentoTerminadoNo"
+                            ></p-checkbox>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field grid justify-content-start">
+                    <label class="col-2" for="observaciones"
+                        >OBSERVACIONES:</label
+                    >
+                    <div class="col-10">
+                        <textarea
+                            pInputTextarea
+                            [maxLength]="250"
+                            id="observaciones"
+                            class="p-inputtextarea-md w-full"
+                            formControlName="observaciones"
+                        ></textarea>
+                    </div>
+                </div>
+
+                <div class="field grid justify-content-start">
+                    <label class="col-2 label-required" for="jurados"
+                        >JURADOS SUGERIDOS Y DATOS DE CONTACTO:</label
+                    >
+                    <div class="col-10">
+                        <textarea
+                            pInputTextarea
+                            [maxLength]="250"
+                            id="jurados"
+                            class="p-inputtextarea-md w-full"
+                            formControlName="jurados"
+                        ></textarea>
+                    </div>
+                </div>
+
+                <div class="field grid justify-content-start">
+                    <label class="col-2" for="fecha">FECHA:</label>
+                    <div class="col-10">
+                        <span> {{ fechaActual | date : "dd/MM/yyyy" }} </span>
+                    </div>
+                </div>
+
+                <div class="field grid mt-4">
+                    <span class="col-9 text-right align-self-start">
+                        <b>Firma Director</b>
+                    </span>
+                    <div class="col-3 text-center">
+                        <p-fileUpload
+                            name="firmaDirector"
+                            chooseIcon="pi pi-file"
+                            accept=".png"
+                            chooseLabel="Seleccionar"
+                            class="w-full max-w-30rem"
+                            previewWidth="100"
+                            [auto]="true"
+                            (onSelect)="onFirmaChange($event, 'firmaDirector')"
+                        >
+                            <ng-template
+                                let-file
+                                pTemplate="file"
+                                data-file="firma"
+                            >
+                                <div *ngIf="firmaDirector">
+                                    <img
+                                        [src]="firmaDirector"
+                                        alt="Vista Previa de la Firma"
+                                        style="
+                                            min-height: 120px;
+                                            min-width: 150px;
+                                            width: 100%;
+                                            height: 100%;
+                                        "
+                                    />
+                                </div>
+                            </ng-template>
+                        </p-fileUpload>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div
+            class="flex flex-row align-items-center justify-content-center footer-logo footer-content"
+        >
+            <img
+                src="assets/layout/images/logosIcontec.png"
+                alt="Logo Icontec"
+                width="200px"
+                height="140px"
+            />
+            <div
+                class="flex flex-column align-items-center justify-content-center footer-text"
+            >
+                <span>Por una Universidad de excelencia y solidaria</span>
+                <hr />
+                <strong>
+                    Facultad de Ingeniería Electrónica y Telecomunicaciones Cra
+                    2 No. 4N-140 Edif. de Ingenierías - Sector Tulcán Popayán -
+                    Cauca - Colombia Conmutador 8209800 Ext. 2145
+                    maestriacomputacion@unicauca.edu.co - www.unicauca.edu.co
+                    www.unicauca.edu.co/maestriacomputación
+                </strong>
+            </div>
+        </div>
+    </div>
+    <div class="flex align-items-center justify-content-end mt-4 column-gap-2">
+        <button
+            pButton
+            type="button"
+            icon="pi pi-paperclip"
+            label="Adjuntar"
+            (click)="onAdjuntar()"
+            [loading]="loading"
+        ></button>
+        <button
+            pButton
+            type="button"
+            icon="pi pi-download"
+            label="Descargar"
+            (click)="onDownload()"
+            [loading]="loading"
+        ></button>
+    </div>
+</div>
