@@ -28,12 +28,16 @@ export class LoginComponent implements OnInit {
     verificarCredenciales() {
         if (this.loginForm.valid) {
             const { username, password } = this.loginForm.value;
-            if (this.autenticacion.login(username, password)) {
-                this.router.navigate(['']);
-            } else {
-                this.credencialesIncorretas = true;
-                this.camposVacios = false;
-            }
+            this.autenticacion.login(username, password).subscribe({
+                next: (response) => {
+                    if (response) {
+                        this.router.navigate(['']);
+                    } else {
+                        this.credencialesIncorretas = true;
+                        this.camposVacios = false;
+                    }
+                },
+            });
         } else {
             this.camposVacios = true;
             this.credencialesIncorretas = false;

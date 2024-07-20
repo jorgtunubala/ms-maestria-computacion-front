@@ -1,0 +1,30 @@
+.respuesta ::ng-deep.p-fileupload .p-message {
+    display: none;
+}
+
+.respuesta
+    ::ng-deep.p-fileupload-buttonbar
+    p-button[ng-reflect-label="Upload"] {
+    display: none;
+}
+
+.respuesta
+    ::ng-deep.p-fileupload-buttonbar
+    p-button[ng-reflect-label="Cancel"] {
+    display: none;
+}
+
+.respuesta ::ng-deep.p-fileupload-content .p-fileupload-files.ng-star-inserted {
+    display: none;
+}
+
+.spinner {
+    transform: translate(-50%, 50%);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+}
+
+.text-description {
+    color: gray;
+}

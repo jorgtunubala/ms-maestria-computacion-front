@@ -6,12 +6,11 @@ import { MenuService } from '../../services/app.menu.service';
 import { AutenticacionService } from 'src/app/modules/gestion-autenticacion/services/autenticacion.service';
 
 interface Usuario {
-    nombreCompleto: string;
-    rol: string;
-    correo: string;
     username: string;
-    password: string;
+    email: string;
+    role: string[];
 }
+
 @Component({
     selector: 'app-topbar',
     templateUrl: './app.topbar.component.html',
@@ -67,7 +66,7 @@ export class AppTopBarComponent implements OnInit {
             this.items = this.items.map((item) => {
                 if (item.label === 'LOGIN') {
                     return {
-                        label: user.nombreCompleto.toUpperCase(),
+                        label: user.username.toUpperCase(),
                         icon: 'pi pi-fw pi-user',
                         items: [
                             {
@@ -91,10 +90,13 @@ export class AppTopBarComponent implements OnInit {
                 if (!user) {
                     // No mostrar el elemento GESTIÓN si no hay usuario
                     return false;
-                } else if (user.rol === 'coordinador') {
-                    // Mostrar todos los subítems si el usuario es coordinador
+                } else if (user.role.includes('ROLE_COORDINADOR')) {
+                    // Mostrar todos los subítems menos "AVALES" si el usuario es coordinador
+                    item.items = item.items.filter(
+                        (subItem) => subItem.label !== 'AVALES'
+                    );
                     return true;
-                } else if (user.rol === 'docente') {
+                } else if (user.role.includes('ROLE_DOCENTE')) {
                     // Mostrar solo el subítem "AVALES" si el usuario es docente
                     item.items = item.items.filter(
                         (subItem) => subItem.label === 'AVALES'

@@ -119,6 +119,8 @@ export class RadicarService {
 
     enlaceMaterialAudiovisual = '';
 
+    descripcionesActividades: string[] = [];
+
     tipoBeca: string = 'Seleccione una opción';
 
     constructor(
@@ -183,6 +185,7 @@ export class RadicarService {
         this.horasAsignables = [];
         this.adjuntosDeActividades = {};
         this.tipoBeca = 'Seleccione una opción';
+        this.descripcionesActividades = [];
     }
 
     agregarInstancia() {

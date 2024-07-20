@@ -1,0 +1,1468 @@
+<p-panel *ngIf="!isLoading; else spinner">
+    <ng-template pTemplate="header">
+        <span class="font-bold w-full text-center" style="font-size: 20px"
+            >Examen de Valoracion</span
+        >
+    </ng-template>
+    <div class="col flex align-items-center justify-content-center">
+        <p-card
+            class="m-2 w-full max-w-30rem"
+            header="Datos del Estudiante"
+            *ngIf="estudianteSeleccionado"
+        >
+            <div class="mt-2 card-data flex justify-content-between">
+                <span>Codigo</span>
+                <span>{{ estudianteSeleccionado.codigo }}</span>
+            </div>
+            <div class="mt-2 card-data flex justify-content-between">
+                <span>Numero de Identificacion</span>
+                <span>{{ estudianteSeleccionado.identificacion }}</span>
+            </div>
+            <div class="mt-2 card-data flex justify-content-between">
+                <span>Nombres y Apellidos</span>
+                <span
+                    >{{ estudianteSeleccionado.nombre }}
+                    {{ estudianteSeleccionado.apellido }}</span
+                >
+            </div>
+        </p-card>
+    </div>
+    <div class="flex mt-4 justify-content-between">
+        <div class="flex align-items-center column-gap-4">
+            <div class="flex align-items-center">
+                <button
+                    pButton
+                    icon="pi pi-chevron-left"
+                    label="Salir"
+                    (click)="redirectToBandeja()"
+                ></button>
+            </div>
+            <button
+                pButton
+                type="button"
+                icon="pi pi-book"
+                class="w-15rem p-button-secondary"
+                severity="secondary"
+                label="Solicitud examen de valoración"
+                [disabled]="role == 'ROLE_ESTUDIANTE'"
+                (click)="redirectToSolicitud(trabajoDeGradoId)"
+            ></button>
+            <button
+                pButton
+                type="button"
+                icon="pi pi-envelope"
+                class="w-15rem p-button-info"
+                label="Respuesta al examen de valoración"
+                [disabled]="isActiveIndex()"
+            ></button>
+            <button
+                pButton
+                type="button"
+                icon="pi pi-paperclip"
+                class="w-15rem p-button-secondary"
+                label="Generacion de resolucion"
+                [disabled]="!isRespuestaValid || role == 'ROLE_ESTUDIANTE'"
+                (click)="redirectToResolucion(resolucionId)"
+            ></button>
+            <button
+                pButton
+                type="button"
+                icon="pi pi-paperclip"
+                class="w-20rem p-button-secondary"
+                label="Sustentación del proyecto de investigación"
+                [disabled]="!isResolucionValid"
+                (click)="redirectToSustentacion(sustentacionId)"
+            ></button>
+        </div>
+    </div>
+    <ng-template class="w-full" pTemplate="footer">
+        <form [formGroup]="respuestaForm" enctype="multipart/form-data">
+            <div class="respuesta flex flex-column gap-2">
+                <div class="text-center font-medium mb-4">
+                    <p>
+                        <b>Respuesta del examen de valoración </b>
+                    </p>
+                </div>
+                <div class="field grid">
+                    <div class="col-2 col-label text-right align-self-center">
+                        <label class="label-required"
+                            >Título del Trabajo de Investigacion</label
+                        >
+                    </div>
+                    <div class="col-10 col-input">
+                        <span class="p-inputtext-md w-full">{{
+                            tituloSeleccionado
+                        }}</span>
+                    </div>
+                </div>
+                <div class="field grid">
+                    <div
+                        class="col-2 col-label flex flex-column row-gap-4 text-right align-self-center"
+                    >
+                        <strong style="font-size: 16px"
+                            >Evaluador Externo</strong
+                        >
+                        <span>Nombre: {{ expertoSeleccionado?.nombres }}</span>
+                        <span
+                            >Universidad:
+                            {{ expertoSeleccionado?.universidad }}</span
+                        >
+                    </div>
+                </div>
+                <div
+                    style="max-width: 90%; margin: -1rem auto"
+                    class="col-12 flex justify-content-end p-0"
+                >
+                    <button
+                        pButton
+                        type="button"
+                        class="p-button-secondary"
+                        pTooltip="Agregar evaluacion"
+                        tooltipPosition="top"
+                        icon="pi pi-plus"
+                        (click)="agregarEvaluacion('expertoEvaluaciones')"
+                        [disabled]="
+                            expertoEvaluaciones
+                                ?.at(0)
+                                ?.get('respuestaExamenValoracionExperto' + 0)
+                                ?.value == 'APROBADO'
+                        "
+                    ></button>
+                </div>
+                <div class="field grid">
+                    <div style="max-width: 90%" class="col-12 flex m-auto">
+                        <div formArrayName="expertoEvaluaciones" class="w-full">
+                            <div
+                                *ngFor="
+                                    let evaluacion of expertoEvaluaciones.controls;
+                                    let i = index
+                                "
+                            >
+                                <div
+                                    class="flex align-items-center justify-content-end mt-4 column-gap-2"
+                                >
+                                    <button
+                                        *ngIf="
+                                            !isExamenCreado(
+                                                'expertoEvaluaciones',
+                                                i
+                                            )
+                                        "
+                                        pButton
+                                        class="p-button-danger"
+                                        type="button"
+                                        pTooltip="Cancelar"
+                                        tooltipPosition="top"
+                                        icon="pi pi-times"
+                                        (click)="
+                                            eliminarRespuestaExamen(
+                                                'expertoEvaluaciones',
+                                                i
+                                            )
+                                        "
+                                    ></button>
+                                </div>
+                                <p-fieldset
+                                    legend="Evaluacion {{ i + 1 }}"
+                                    [formGroupName]="i"
+                                >
+                                    <div class="grid column-gap-4 mb-6">
+                                        <label
+                                            class="label-required col-2 text-right"
+                                            >Formato B (.pdf)
+                                        </label>
+                                        <div class="col-7 col-input">
+                                            <div
+                                                class="flex flex-wrap gap-2 max-w-30rem align-items-start"
+                                            >
+                                                <div
+                                                    class="flex flex-column row-gap-2 align-items-start justify-content-start"
+                                                >
+                                                    <app-custom-file-upload
+                                                        [formControlName]="
+                                                            'linkFormatoB' + i
+                                                        "
+                                                        [arrayName]="
+                                                            'expertoEvaluaciones'
+                                                        "
+                                                        [filename]="
+                                                            'linkFormatoB' + i
+                                                        "
+                                                        [selected]="
+                                                            selectedFiles
+                                                        "
+                                                        [evaluacionId]="
+                                                            this
+                                                                .evaluacionExpertoIds[
+                                                                i
+                                                            ]
+                                                        "
+                                                        (archivoDeseleccionado)="
+                                                            onRemove($event)
+                                                        "
+                                                        (archivoSeleccionado)="
+                                                            onArchivoSeleccionado(
+                                                                $event
+                                                            )
+                                                        "
+                                                    ></app-custom-file-upload>
+                                                    <div
+                                                        class="text-description mt-2"
+                                                        style="
+                                                            width: '200px';
+                                                            word-break: break-word;
+                                                        "
+                                                        *ngIf="
+                                                            selectedFiles[
+                                                                'expertoEvaluaciones.linkFormatoB' +
+                                                                    i
+                                                            ]
+                                                        "
+                                                    >
+                                                        {{
+                                                            selectedFiles[
+                                                                "expertoEvaluaciones.linkFormatoB" +
+                                                                    i
+                                                            ].name
+                                                        }}
+                                                        -
+                                                        {{
+                                                            selectedFiles[
+                                                                "expertoEvaluaciones.linkFormatoB" +
+                                                                    i
+                                                            ].size | bytesToKb
+                                                        }}
+                                                        KB
+                                                    </div>
+                                                </div>
+                                                <button
+                                                    *ngIf="
+                                                        selectedFiles[
+                                                            'expertoEvaluaciones.linkFormatoB' +
+                                                                i
+                                                        ] &&
+                                                        isExamenCreado(
+                                                            'expertoEvaluaciones',
+                                                            i
+                                                        )
+                                                    "
+                                                    pButton
+                                                    class="p-button-secondary"
+                                                    type="button"
+                                                    icon="pi pi-download"
+                                                    (click)="
+                                                        getFileAndSetValue(
+                                                            'expertoEvaluaciones',
+                                                            'linkFormatoB',
+                                                            i
+                                                        )
+                                                    "
+                                                ></button>
+                                            </div>
+                                            <div
+                                                class="mt-2"
+                                                *ngIf="
+                                                    !selectedFiles[
+                                                        'expertoEvaluaciones.linkFormatoB' +
+                                                            i
+                                                    ]
+                                                "
+                                            >
+                                                <p>
+                                                    No has seleccionado ningún
+                                                    documento.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="grid column-gap-4 mb-6">
+                                        <label
+                                            class="label-required col-2 text-right"
+                                            >Formato C (.pdf)
+                                        </label>
+                                        <div class="col-7 col-input">
+                                            <div
+                                                class="flex flex-wrap gap-2 max-w-30rem align-items-start"
+                                            >
+                                                <div
+                                                    class="flex flex-column row-gap-2 align-items-start justify-content-start"
+                                                >
+                                                    <app-custom-file-upload
+                                                        [formControlName]="
+                                                            'linkFormatoC' + i
+                                                        "
+                                                        [arrayName]="
+                                                            'expertoEvaluaciones'
+                                                        "
+                                                        [filename]="
+                                                            'linkFormatoC' + i
+                                                        "
+                                                        [selected]="
+                                                            selectedFiles
+                                                        "
+                                                        [evaluacionId]="
+                                                            this
+                                                                .evaluacionExpertoIds[
+                                                                i
+                                                            ]
+                                                        "
+                                                        (archivoDeseleccionado)="
+                                                            onRemove($event)
+                                                        "
+                                                        (archivoSeleccionado)="
+                                                            onArchivoSeleccionado(
+                                                                $event
+                                                            )
+                                                        "
+                                                    ></app-custom-file-upload>
+                                                    <div
+                                                        class="text-description mt-2"
+                                                        style="
+                                                            width: '200px';
+                                                            word-break: break-word;
+                                                        "
+                                                        *ngIf="
+                                                            selectedFiles[
+                                                                'expertoEvaluaciones.linkFormatoC' +
+                                                                    i
+                                                            ]
+                                                        "
+                                                    >
+                                                        {{
+                                                            selectedFiles[
+                                                                "expertoEvaluaciones.linkFormatoC" +
+                                                                    i
+                                                            ].name
+                                                        }}
+                                                        -
+                                                        {{
+                                                            selectedFiles[
+                                                                "expertoEvaluaciones.linkFormatoC" +
+                                                                    i
+                                                            ].size | bytesToKb
+                                                        }}
+                                                        KB
+                                                    </div>
+                                                </div>
+                                                <button
+                                                    *ngIf="
+                                                        selectedFiles[
+                                                            'expertoEvaluaciones.linkFormatoC' +
+                                                                i
+                                                        ] &&
+                                                        isExamenCreado(
+                                                            'expertoEvaluaciones',
+                                                            i
+                                                        )
+                                                    "
+                                                    pButton
+                                                    class="p-button-secondary"
+                                                    type="button"
+                                                    icon="pi pi-download"
+                                                    (click)="
+                                                        getFileAndSetValue(
+                                                            'expertoEvaluaciones',
+                                                            'linkFormatoC',
+                                                            i
+                                                        )
+                                                    "
+                                                ></button>
+                                            </div>
+                                            <div
+                                                class="mt-2"
+                                                *ngIf="
+                                                    !selectedFiles[
+                                                        'expertoEvaluaciones.linkFormatoC' +
+                                                            i
+                                                    ]
+                                                "
+                                            >
+                                                <p>
+                                                    No has seleccionado ningún
+                                                    documento.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="grid column-gap-4 mb-6">
+                                        <label
+                                            class="label-required col-2 text-right"
+                                            >Observaciones (.pdf)
+                                        </label>
+                                        <div class="col-7 col-input">
+                                            <div
+                                                class="flex flex-wrap gap-2 max-w-30rem align-items-start"
+                                            >
+                                                <div
+                                                    class="flex flex-column row-gap-2 align-items-start justify-content-start"
+                                                >
+                                                    <app-custom-file-upload
+                                                        [formControlName]="
+                                                            'linkObservaciones' +
+                                                            i
+                                                        "
+                                                        [arrayName]="
+                                                            'expertoEvaluaciones'
+                                                        "
+                                                        [filename]="
+                                                            'linkObservaciones' +
+                                                            i
+                                                        "
+                                                        [selected]="
+                                                            selectedFiles
+                                                        "
+                                                        [evaluacionId]="
+                                                            this
+                                                                .evaluacionExpertoIds[
+                                                                i
+                                                            ]
+                                                        "
+                                                        (archivoDeseleccionado)="
+                                                            onRemove($event)
+                                                        "
+                                                        (archivoSeleccionado)="
+                                                            onArchivoSeleccionado(
+                                                                $event
+                                                            )
+                                                        "
+                                                    ></app-custom-file-upload>
+                                                    <div
+                                                        class="text-description mt-2"
+                                                        style="
+                                                            width: '200px';
+                                                            word-break: break-word;
+                                                        "
+                                                        *ngIf="
+                                                            selectedFiles[
+                                                                'expertoEvaluaciones.linkObservaciones' +
+                                                                    i
+                                                            ]
+                                                        "
+                                                    >
+                                                        {{
+                                                            selectedFiles[
+                                                                "expertoEvaluaciones.linkObservaciones" +
+                                                                    i
+                                                            ].name
+                                                        }}
+                                                        -
+                                                        {{
+                                                            selectedFiles[
+                                                                "expertoEvaluaciones.linkObservaciones" +
+                                                                    i
+                                                            ].size | bytesToKb
+                                                        }}
+                                                        KB
+                                                    </div>
+                                                </div>
+                                                <button
+                                                    *ngIf="
+                                                        selectedFiles[
+                                                            'expertoEvaluaciones.linkObservaciones' +
+                                                                i
+                                                        ] &&
+                                                        isExamenCreado(
+                                                            'expertoEvaluaciones',
+                                                            i
+                                                        )
+                                                    "
+                                                    pButton
+                                                    class="p-button-secondary"
+                                                    type="button"
+                                                    icon="pi pi-download"
+                                                    (click)="
+                                                        getFileAndSetValue(
+                                                            'expertoEvaluaciones',
+                                                            'linkObservaciones',
+                                                            i
+                                                        )
+                                                    "
+                                                ></button>
+                                            </div>
+                                            <div
+                                                class="mt-2"
+                                                *ngIf="
+                                                    !selectedFiles[
+                                                        'expertoEvaluaciones.linkObservaciones' +
+                                                            i
+                                                    ]
+                                                "
+                                            >
+                                                <p>
+                                                    No has seleccionado ningún
+                                                    documento.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="grid column-gap-4 mb-6"
+                                        *ngIf="
+                                            role.includes('ROLE_COORDINADOR')
+                                        "
+                                    >
+                                        <label
+                                            class="label-required col-2 text-right"
+                                            >Anexos (.pdf, .rar, .zip)
+                                        </label>
+                                        <div class="col-7 col-input">
+                                            <div
+                                                class="flex flex-wrap gap-2 max-w-30rem align-items-start"
+                                            >
+                                                <div
+                                                    class="flex flex-column row-gap-2 align-items-start justify-content-start flex-1"
+                                                >
+                                                    <div
+                                                        class="flex flex-row w-full justify-content-between"
+                                                    >
+                                                        <p-fileUpload
+                                                            [formControlName]="
+                                                                'anexos' + i
+                                                            "
+                                                            appFileUpload
+                                                            [fileUpload]="this"
+                                                            class="w-full max-w-30rem"
+                                                            chooseIcon="pi pi-file"
+                                                            multiple="multiple"
+                                                            accept=".pdf"
+                                                            maxFileSize="5000000"
+                                                            chooseLabel="Buscar documento"
+                                                            (onSelect)="
+                                                                onUpload(
+                                                                    $event,
+                                                                    'expertoEvaluaciones',
+                                                                    i
+                                                                )
+                                                            "
+                                                        >
+                                                            <ng-template
+                                                                pTemplate="content"
+                                                            >
+                                                                <div
+                                                                    *ngIf="
+                                                                        selectedFiles[
+                                                                            'expertoEvaluaciones.anexos' +
+                                                                                i
+                                                                        ]
+                                                                            ?.length >
+                                                                            0 &&
+                                                                        isExamenCreado(
+                                                                            'expertoEvaluaciones',
+                                                                            i
+                                                                        )
+                                                                    "
+                                                                    class="w-full flex justify-content-between align-items-center"
+                                                                >
+                                                                    <span
+                                                                        class="ml-4"
+                                                                        >Descargar
+                                                                        ({{
+                                                                            selectedFiles[
+                                                                                "expertoEvaluaciones.anexos" +
+                                                                                    i
+                                                                            ]
+                                                                                ?.length
+                                                                        }})
+                                                                        documentos</span
+                                                                    >
+                                                                    <button
+                                                                        *ngIf="
+                                                                            selectedFiles[
+                                                                                'expertoEvaluaciones.anexos' +
+                                                                                    i
+                                                                            ]
+                                                                                .length >
+                                                                                0 &&
+                                                                            isExamenCreado(
+                                                                                'expertoEvaluaciones',
+                                                                                i
+                                                                            )
+                                                                        "
+                                                                        type="button"
+                                                                        pButton
+                                                                        class="p-button-secondary"
+                                                                        icon="pi pi-download"
+                                                                        pTooltip="Descargar documentos"
+                                                                        (click)="
+                                                                            getFileAndSetValue(
+                                                                                'expertoEvaluaciones',
+                                                                                'anexos',
+                                                                                i
+                                                                            )
+                                                                        "
+                                                                    ></button>
+                                                                </div>
+                                                                <ul
+                                                                    *ngIf="
+                                                                        selectedFiles[
+                                                                            'expertoEvaluaciones.anexos' +
+                                                                                i
+                                                                        ]
+                                                                            ?.length
+                                                                    "
+                                                                >
+                                                                    <li
+                                                                        class="flex justify-content-between align-items-center mb-2"
+                                                                        *ngFor="
+                                                                            let file of selectedFiles[
+                                                                                'expertoEvaluaciones.anexos' +
+                                                                                    i
+                                                                            ];
+                                                                            let j = index
+                                                                        "
+                                                                    >
+                                                                        <span
+                                                                            class="text-description w-15rem"
+                                                                            style="
+                                                                                word-break: break-word;
+                                                                            "
+                                                                        >
+                                                                            {{
+                                                                                file.name
+                                                                            }}
+                                                                            -
+                                                                            {{
+                                                                                file.size
+                                                                                    | bytesToKb
+                                                                            }}
+                                                                            KB
+                                                                        </span>
+                                                                        <button
+                                                                            pButton
+                                                                            class="p-button-secondary"
+                                                                            icon="pi pi-times"
+                                                                            type="button"
+                                                                            (click)="
+                                                                                removeFile(
+                                                                                    'expertoEvaluaciones',
+                                                                                    j,
+                                                                                    i
+                                                                                )
+                                                                            "
+                                                                        ></button>
+                                                                    </li>
+                                                                </ul>
+                                                            </ng-template>
+                                                        </p-fileUpload>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="grid column-gap-4 mb-6">
+                                        <label
+                                            class="label-required col-2 text-right"
+                                            >Respuesta al examen de valoración
+                                        </label>
+                                        <div class="col-9 flex column-gap-4">
+                                            <div
+                                                *ngFor="let estado of estados"
+                                                class="field-checkbox"
+                                            >
+                                                <p-radioButton
+                                                    [inputId]="
+                                                        'respuestaExamenValoracionExperto' +
+                                                        estado +
+                                                        i
+                                                    "
+                                                    [value]="estado"
+                                                    [formControlName]="
+                                                        'respuestaExamenValoracionExperto' +
+                                                        i
+                                                    "
+                                                ></p-radioButton>
+                                                <label
+                                                    [for]="
+                                                        'respuestaExamenValoracionExperto' +
+                                                        estado +
+                                                        i
+                                                    "
+                                                    class="ml-2"
+                                                    >{{ estado }}</label
+                                                >
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="grid column-gap-4 mb-6"
+                                        *ngIf="
+                                            expertoEvaluaciones
+                                                .at(i)
+                                                .get(
+                                                    'respuestaExamenValoracionExperto' +
+                                                        i
+                                                )?.value == 'APLAZADO' ||
+                                            expertoEvaluaciones
+                                                .at(i)
+                                                .get(
+                                                    'respuestaExamenValoracionExperto' +
+                                                        i
+                                                )?.value == 'NO_APROBADO'
+                                        "
+                                    >
+                                        <div
+                                            class="label-required col-2 text-right"
+                                        >
+                                            <label
+                                                >Fecha Maxima Entrega de
+                                                Correciones</label
+                                            >
+                                        </div>
+                                        <div class="col-9 flex column-gap-4">
+                                            <p-calendar
+                                                [formControlName]="
+                                                    'fechaMaximaEntrega' + i
+                                                "
+                                                [showIcon]="true"
+                                                dateFormat="dd.mm.yy"
+                                            ></p-calendar>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="col-12 flex align-items-center mt-4 m-auto justify-content-end"
+                                    >
+                                        <button
+                                            *ngIf="
+                                                isExamenCreado(
+                                                    'expertoEvaluaciones',
+                                                    i
+                                                )
+                                            "
+                                            pButton
+                                            type="button"
+                                            icon="pi pi-pencil"
+                                            label="Modificar evaluacion"
+                                            (click)="
+                                                updateRespuestaExamen(
+                                                    'expertoEvaluaciones',
+                                                    i
+                                                )
+                                            "
+                                        ></button>
+                                        <button
+                                            *ngIf="
+                                                !isExamenCreado(
+                                                    'expertoEvaluaciones',
+                                                    i
+                                                )
+                                            "
+                                            pButton
+                                            type="button"
+                                            label="Guardar"
+                                            icon="pi pi-save"
+                                            (click)="
+                                                createRespuestaExamen(
+                                                    'expertoEvaluaciones',
+                                                    i
+                                                )
+                                            "
+                                        ></button>
+                                    </div>
+                                </p-fieldset>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p-divider layout="horizontal" [align]="'center'"
+                    ><b>||</b></p-divider
+                >
+                <div class="field grid">
+                    <div
+                        class="col-2 col-label flex flex-column row-gap-4 text-right align-self-center"
+                    >
+                        <strong style="font-size: 16px"
+                            >Evaluador Interno</strong
+                        >
+                        <span>Nombre: {{ docenteSeleccionado?.nombres }}</span>
+                        <span
+                            >Universidad:
+                            {{ docenteSeleccionado?.universidad }}</span
+                        >
+                    </div>
+                </div>
+                <div
+                    style="max-width: 90%; margin: -1rem auto"
+                    class="col-12 flex justify-content-end p-0"
+                >
+                    <button
+                        pButton
+                        class="p-button-secondary"
+                        type="button"
+                        pTooltip="Agregar evaluacion"
+                        tooltipPosition="top"
+                        icon="pi pi-plus"
+                        (click)="agregarEvaluacion('docenteEvaluaciones')"
+                        [disabled]="
+                            docenteEvaluaciones
+                                ?.at(0)
+                                ?.get('respuestaExamenValoracionDocente' + 0)
+                                ?.value == 'APROBADO'
+                        "
+                    ></button>
+                </div>
+                <div class="field grid">
+                    <div style="max-width: 90%" class="col-12 flex m-auto">
+                        <div formArrayName="docenteEvaluaciones" class="w-full">
+                            <div
+                                *ngFor="
+                                    let evaluacion of docenteEvaluaciones.controls;
+                                    let i = index
+                                "
+                            >
+                                <div
+                                    class="flex align-items-center justify-content-end mt-4 column-gap-2"
+                                >
+                                    <button
+                                        *ngIf="
+                                            !isExamenCreado(
+                                                'docenteEvaluaciones',
+                                                i
+                                            )
+                                        "
+                                        pButton
+                                        class="p-button-danger"
+                                        type="button"
+                                        pTooltip="Cancelar"
+                                        tooltipPosition="top"
+                                        icon="pi pi-times"
+                                        (click)="
+                                            eliminarRespuestaExamen(
+                                                'docenteEvaluaciones',
+                                                i
+                                            )
+                                        "
+                                    ></button>
+                                </div>
+                                <p-fieldset
+                                    legend="Evaluacion {{ i + 1 }}"
+                                    formGroupName="{{ i }}"
+                                >
+                                    <div class="grid column-gap-4 mb-6">
+                                        <label
+                                            class="label-required col-2 text-right"
+                                            >Formato B (.pdf)
+                                        </label>
+                                        <div class="col-7 col-input">
+                                            <div
+                                                class="flex flex-wrap gap-2 max-w-30rem align-items-start"
+                                            >
+                                                <div
+                                                    class="flex flex-column row-gap-2 align-items-start justify-content-start"
+                                                >
+                                                    <app-custom-file-upload
+                                                        [formControlName]="
+                                                            'linkFormatoB' + i
+                                                        "
+                                                        [arrayName]="
+                                                            'docenteEvaluaciones'
+                                                        "
+                                                        [filename]="
+                                                            'linkFormatoB' + i
+                                                        "
+                                                        [selected]="
+                                                            selectedFiles
+                                                        "
+                                                        [evaluacionId]="
+                                                            this
+                                                                .evaluacionDocenteIds[
+                                                                i
+                                                            ]
+                                                        "
+                                                        (archivoDeseleccionado)="
+                                                            onRemove($event)
+                                                        "
+                                                        (archivoSeleccionado)="
+                                                            onArchivoSeleccionado(
+                                                                $event
+                                                            )
+                                                        "
+                                                    ></app-custom-file-upload>
+                                                    <div
+                                                        class="text-description mt-2"
+                                                        style="
+                                                            width: '200px';
+                                                            word-break: break-word;
+                                                        "
+                                                        *ngIf="
+                                                            selectedFiles[
+                                                                'docenteEvaluaciones.linkFormatoB' +
+                                                                    i
+                                                            ]
+                                                        "
+                                                    >
+                                                        {{
+                                                            selectedFiles[
+                                                                "docenteEvaluaciones.linkFormatoB" +
+                                                                    i
+                                                            ].name
+                                                        }}
+                                                        -
+                                                        {{
+                                                            selectedFiles[
+                                                                "docenteEvaluaciones.linkFormatoB" +
+                                                                    i
+                                                            ].size | bytesToKb
+                                                        }}
+                                                        KB
+                                                    </div>
+                                                </div>
+                                                <button
+                                                    *ngIf="
+                                                        selectedFiles[
+                                                            'docenteEvaluaciones.linkFormatoB' +
+                                                                i
+                                                        ] &&
+                                                        isExamenCreado(
+                                                            'docenteEvaluaciones',
+                                                            i
+                                                        )
+                                                    "
+                                                    pButton
+                                                    class="p-button-secondary"
+                                                    type="button"
+                                                    icon="pi pi-download"
+                                                    (click)="
+                                                        getFileAndSetValue(
+                                                            'docenteEvaluaciones',
+                                                            'linkFormatoB',
+                                                            i
+                                                        )
+                                                    "
+                                                ></button>
+                                            </div>
+                                            <div
+                                                class="mt-2"
+                                                *ngIf="
+                                                    !selectedFiles[
+                                                        'docenteEvaluaciones.linkFormatoB' +
+                                                            i
+                                                    ]
+                                                "
+                                            >
+                                                <p>
+                                                    No has seleccionado ningún
+                                                    documento.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="grid column-gap-4 mb-6">
+                                        <label
+                                            class="label-required col-2 text-right"
+                                            >Formato C (.pdf)
+                                        </label>
+                                        <div class="col-7 col-input">
+                                            <div
+                                                class="flex flex-wrap gap-2 max-w-30rem align-items-start"
+                                            >
+                                                <div
+                                                    class="flex flex-column row-gap-2 align-items-start justify-content-start"
+                                                >
+                                                    <app-custom-file-upload
+                                                        [formControlName]="
+                                                            'linkFormatoC' + i
+                                                        "
+                                                        [arrayName]="
+                                                            'docenteEvaluaciones'
+                                                        "
+                                                        [filename]="
+                                                            'linkFormatoC' + i
+                                                        "
+                                                        [selected]="
+                                                            selectedFiles
+                                                        "
+                                                        [evaluacionId]="
+                                                            this
+                                                                .evaluacionDocenteIds[
+                                                                i
+                                                            ]
+                                                        "
+                                                        (archivoDeseleccionado)="
+                                                            onRemove($event)
+                                                        "
+                                                        (archivoSeleccionado)="
+                                                            onArchivoSeleccionado(
+                                                                $event
+                                                            )
+                                                        "
+                                                    ></app-custom-file-upload>
+                                                    <div
+                                                        class="text-description mt-2"
+                                                        style="
+                                                            width: '200px';
+                                                            word-break: break-word;
+                                                        "
+                                                        *ngIf="
+                                                            selectedFiles[
+                                                                'docenteEvaluaciones.linkFormatoC' +
+                                                                    i
+                                                            ]
+                                                        "
+                                                    >
+                                                        {{
+                                                            selectedFiles[
+                                                                "docenteEvaluaciones.linkFormatoC" +
+                                                                    i
+                                                            ].name
+                                                        }}
+                                                        -
+                                                        {{
+                                                            selectedFiles[
+                                                                "docenteEvaluaciones.linkFormatoC" +
+                                                                    i
+                                                            ].size | bytesToKb
+                                                        }}
+                                                        KB
+                                                    </div>
+                                                </div>
+                                                <button
+                                                    *ngIf="
+                                                        selectedFiles[
+                                                            'docenteEvaluaciones.linkFormatoC' +
+                                                                i
+                                                        ] &&
+                                                        isExamenCreado(
+                                                            'docenteEvaluaciones',
+                                                            i
+                                                        )
+                                                    "
+                                                    pButton
+                                                    class="p-button-secondary"
+                                                    type="button"
+                                                    icon="pi pi-download"
+                                                    (click)="
+                                                        getFileAndSetValue(
+                                                            'docenteEvaluaciones',
+                                                            'linkFormatoC',
+                                                            i
+                                                        )
+                                                    "
+                                                ></button>
+                                            </div>
+                                            <div
+                                                class="mt-2"
+                                                *ngIf="
+                                                    !selectedFiles[
+                                                        'docenteEvaluaciones.linkFormatoC' +
+                                                            i
+                                                    ]
+                                                "
+                                            >
+                                                <p>
+                                                    No has seleccionado ningún
+                                                    documento.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="grid column-gap-4 mb-6">
+                                        <label
+                                            class="label-required col-2 text-right"
+                                            >Observaciones (.pdf)
+                                        </label>
+                                        <div class="col-7 col-input">
+                                            <div
+                                                class="flex flex-wrap gap-2 max-w-30rem align-items-start"
+                                            >
+                                                <div
+                                                    class="flex flex-column row-gap-2 align-items-start justify-content-start"
+                                                >
+                                                    <app-custom-file-upload
+                                                        [formControlName]="
+                                                            'linkObservaciones' +
+                                                            i
+                                                        "
+                                                        [arrayName]="
+                                                            'docenteEvaluaciones'
+                                                        "
+                                                        [filename]="
+                                                            'linkObservaciones' +
+                                                            i
+                                                        "
+                                                        [selected]="
+                                                            selectedFiles
+                                                        "
+                                                        [evaluacionId]="
+                                                            this
+                                                                .evaluacionDocenteIds[
+                                                                i
+                                                            ]
+                                                        "
+                                                        (archivoDeseleccionado)="
+                                                            onRemove($event)
+                                                        "
+                                                        (archivoSeleccionado)="
+                                                            onArchivoSeleccionado(
+                                                                $event
+                                                            )
+                                                        "
+                                                    ></app-custom-file-upload>
+                                                    <div
+                                                        class="text-description mt-2"
+                                                        style="
+                                                            width: '200px';
+                                                            word-break: break-word;
+                                                        "
+                                                        *ngIf="
+                                                            selectedFiles[
+                                                                'docenteEvaluaciones.linkObservaciones' +
+                                                                    i
+                                                            ]
+                                                        "
+                                                    >
+                                                        {{
+                                                            selectedFiles[
+                                                                "docenteEvaluaciones.linkObservaciones" +
+                                                                    i
+                                                            ].name
+                                                        }}
+                                                        -
+                                                        {{
+                                                            selectedFiles[
+                                                                "docenteEvaluaciones.linkObservaciones" +
+                                                                    i
+                                                            ].size | bytesToKb
+                                                        }}
+                                                        KB
+                                                    </div>
+                                                </div>
+                                                <button
+                                                    *ngIf="
+                                                        selectedFiles[
+                                                            'docenteEvaluaciones.linkObservaciones' +
+                                                                i
+                                                        ] &&
+                                                        isExamenCreado(
+                                                            'docenteEvaluaciones',
+                                                            i
+                                                        )
+                                                    "
+                                                    pButton
+                                                    class="p-button-secondary"
+                                                    type="button"
+                                                    icon="pi pi-download"
+                                                    (click)="
+                                                        getFileAndSetValue(
+                                                            'docenteEvaluaciones',
+                                                            'linkObservaciones',
+                                                            i
+                                                        )
+                                                    "
+                                                ></button>
+                                            </div>
+                                            <div
+                                                class="mt-2"
+                                                *ngIf="
+                                                    !selectedFiles[
+                                                        'docenteEvaluaciones.linkObservaciones' +
+                                                            i
+                                                    ]
+                                                "
+                                            >
+                                                <p>
+                                                    No has seleccionado ningún
+                                                    documento.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="grid column-gap-4 mb-6"
+                                        *ngIf="
+                                            role.includes('ROLE_COORDINADOR')
+                                        "
+                                    >
+                                        <label
+                                            class="label-required col-2 text-right"
+                                            >Anexos (.pdf, .rar, .zip)
+                                        </label>
+                                        <div class="col-7 col-input">
+                                            <div
+                                                class="flex flex-wrap gap-2 max-w-30rem align-items-start"
+                                            >
+                                                <div
+                                                    class="flex flex-column row-gap-2 align-items-start justify-content-start flex-1"
+                                                >
+                                                    <div
+                                                        class="flex flex-row w-full justify-content-between"
+                                                    >
+                                                        <p-fileUpload
+                                                            [formControlName]="
+                                                                'anexos' + i
+                                                            "
+                                                            appFileUpload
+                                                            [fileUpload]="this"
+                                                            class="w-full max-w-30rem"
+                                                            chooseIcon="pi pi-file"
+                                                            multiple="multiple"
+                                                            accept=".pdf"
+                                                            maxFileSize="5000000"
+                                                            chooseLabel="Buscar documento"
+                                                            (onSelect)="
+                                                                onUpload(
+                                                                    $event,
+                                                                    'docenteEvaluaciones',
+                                                                    i
+                                                                )
+                                                            "
+                                                        >
+                                                            <ng-template
+                                                                pTemplate="content"
+                                                            >
+                                                                <div
+                                                                    *ngIf="
+                                                                        selectedFiles[
+                                                                            'docenteEvaluaciones.anexos' +
+                                                                                i
+                                                                        ]
+                                                                            ?.length >
+                                                                            0 &&
+                                                                        isExamenCreado(
+                                                                            'docenteEvaluaciones',
+                                                                            i
+                                                                        )
+                                                                    "
+                                                                    class="w-full flex justify-content-between align-items-center"
+                                                                >
+                                                                    <span
+                                                                        class="ml-4"
+                                                                        >Descargar
+                                                                        ({{
+                                                                            selectedFiles[
+                                                                                "docenteEvaluaciones.anexos" +
+                                                                                    i
+                                                                            ]
+                                                                                ?.length
+                                                                        }})
+                                                                        documentos</span
+                                                                    >
+                                                                    <button
+                                                                        *ngIf="
+                                                                            selectedFiles[
+                                                                                'docenteEvaluaciones.anexos' +
+                                                                                    i
+                                                                            ]
+                                                                                .length >
+                                                                                0 &&
+                                                                            isExamenCreado(
+                                                                                'docenteEvaluaciones',
+                                                                                i
+                                                                            )
+                                                                        "
+                                                                        type="button"
+                                                                        pButton
+                                                                        class="p-button-secondary"
+                                                                        icon="pi pi-download"
+                                                                        pTooltip="Descargar documentos"
+                                                                        (click)="
+                                                                            getFileAndSetValue(
+                                                                                'docenteEvaluaciones',
+                                                                                'anexos',
+                                                                                i
+                                                                            )
+                                                                        "
+                                                                    ></button>
+                                                                </div>
+                                                                <ul
+                                                                    *ngIf="
+                                                                        selectedFiles[
+                                                                            'docenteEvaluaciones.anexos' +
+                                                                                i
+                                                                        ]
+                                                                            ?.length
+                                                                    "
+                                                                >
+                                                                    <li
+                                                                        class="flex justify-content-between align-items-center mb-2"
+                                                                        *ngFor="
+                                                                            let file of selectedFiles[
+                                                                                'docenteEvaluaciones.anexos' +
+                                                                                    i
+                                                                            ];
+                                                                            let j = index
+                                                                        "
+                                                                    >
+                                                                        <span
+                                                                            class="text-description w-15rem"
+                                                                            style="
+                                                                                word-break: break-word;
+                                                                            "
+                                                                        >
+                                                                            {{
+                                                                                file.name
+                                                                            }}
+                                                                            -
+                                                                            {{
+                                                                                file.size
+                                                                                    | bytesToKb
+                                                                            }}
+                                                                            KB
+                                                                        </span>
+                                                                        <button
+                                                                            pButton
+                                                                            class="p-button-secondary"
+                                                                            icon="pi pi-times"
+                                                                            type="button"
+                                                                            (click)="
+                                                                                removeFile(
+                                                                                    'docenteEvaluaciones',
+                                                                                    j,
+                                                                                    i
+                                                                                )
+                                                                            "
+                                                                        ></button>
+                                                                    </li>
+                                                                </ul>
+                                                            </ng-template>
+                                                        </p-fileUpload>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="grid column-gap-4 mb-6">
+                                        <label
+                                            class="label-required col-2 text-right"
+                                            >Respuesta al examen de valoración
+                                        </label>
+                                        <div class="col-9 flex column-gap-4">
+                                            <div
+                                                *ngFor="let estado of estados"
+                                                class="field-checkbox"
+                                            >
+                                                <p-radioButton
+                                                    [inputId]="
+                                                        'respuestaExamenValoracionDocente' +
+                                                        estado +
+                                                        i
+                                                    "
+                                                    [value]="estado"
+                                                    [formControlName]="
+                                                        'respuestaExamenValoracionDocente' +
+                                                        i
+                                                    "
+                                                ></p-radioButton>
+                                                <label
+                                                    [for]="
+                                                        'respuestaExamenValoracionDocente' +
+                                                        estado +
+                                                        i
+                                                    "
+                                                    class="ml-2"
+                                                    >{{ estado }}</label
+                                                >
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="grid column-gap-4 mb-6"
+                                        *ngIf="
+                                            docenteEvaluaciones
+                                                .at(i)
+                                                .get(
+                                                    'respuestaExamenValoracionDocente' +
+                                                        i
+                                                )?.value == 'APLAZADO' ||
+                                            docenteEvaluaciones
+                                                .at(i)
+                                                .get(
+                                                    'respuestaExamenValoracionDocente' +
+                                                        i
+                                                )?.value == 'NO_APROBADO'
+                                        "
+                                    >
+                                        <div
+                                            class="label-required col-2 text-right"
+                                        >
+                                            <label
+                                                >Fecha Maxima Entrega de
+                                                Correciones</label
+                                            >
+                                        </div>
+                                        <div class="col-9 flex column-gap-4">
+                                            <p-calendar
+                                                [formControlName]="
+                                                    'fechaMaximaEntrega' + i
+                                                "
+                                                [showIcon]="true"
+                                                dateFormat="dd.mm.yy"
+                                            ></p-calendar>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="col-12 flex align-items-center mt-4 m-auto justify-content-end"
+                                    >
+                                        <button
+                                            *ngIf="
+                                                isExamenCreado(
+                                                    'docenteEvaluaciones',
+                                                    i
+                                                )
+                                            "
+                                            pButton
+                                            type="button"
+                                            icon="pi pi-pencil"
+                                            label="Modificar evaluacion"
+                                            (click)="
+                                                updateRespuestaExamen(
+                                                    'docenteEvaluaciones',
+                                                    i
+                                                )
+                                            "
+                                        ></button>
+                                        <button
+                                            *ngIf="
+                                                !isExamenCreado(
+                                                    'docenteEvaluaciones',
+                                                    i
+                                                )
+                                            "
+                                            pButton
+                                            type="button"
+                                            label="Guardar"
+                                            icon="pi pi-save"
+                                            (click)="
+                                                createRespuestaExamen(
+                                                    'docenteEvaluaciones',
+                                                    i
+                                                )
+                                            "
+                                        ></button>
+                                    </div>
+                                </p-fieldset>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p-divider layout="horizontal" [align]="'center'"
+                    ><b></b
+                ></p-divider>
+                <div class="flex m-4 align-items-center">
+                    <div class="flex-grow-0">
+                        <p-checkbox
+                            label="Estado del examen de valoración"
+                            [binary]="true"
+                            [formControl]="
+                                respuestaForm.controls['estadoFinalizado']
+                            "
+                        ></p-checkbox>
+                    </div>
+                    <span class="p-float-label ml-4" *ngIf="showObservacion()">
+                        <textarea
+                            id="float-input"
+                            rows="5"
+                            cols="30"
+                            pInputTextarea
+                            [autoResize]="true"
+                            formControlName="observacion"
+                        ></textarea>
+                        <label for="float-input">Observación</label>
+                    </span>
+                </div>
+            </div>
+        </form>
+    </ng-template>
+</p-panel>
+<ng-template #spinner>
+    <p-progressSpinner ariaLabel="loading" class="spinner"></p-progressSpinner>
+</ng-template>
