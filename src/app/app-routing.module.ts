@@ -72,6 +72,12 @@ import { HomeComponent } from './core/components/home/home.component';
                                 import(
                                     './modules/gestion-evaluacion-docentes/gestion-matricula-evaluacion/gestion-evaluacion.module'
                                 ).then((m) => m.GestionEvaluacionModule),
+                        },
+                        {
+                            path : 'evaluacion-docente',
+                            loadChildren : () =>
+                                import('./modules/gestion-evaluacion-docentes/evaluacion-docente/evaluacion-docente.module')
+                                    .then(m => m.EvaluacionDocenteModule)
                         }
                     ],
                 },
