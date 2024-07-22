@@ -1,4 +1,4 @@
-<p-panel class="bandeja-egresados">
+<p-panel *ngIf="!loading; else spinner" class="bandeja-egresados">
     <ng-template pTemplate="header">
         <div class="flex flex-column w-full">
             <div class="text-center mb-2">
@@ -394,3 +394,6 @@
         </div>
     </ng-template>
 </p-panel>
+<ng-template #spinner>
+    <p-progressSpinner ariaLabel="loading" class="spinner"></p-progressSpinner>
+</ng-template>

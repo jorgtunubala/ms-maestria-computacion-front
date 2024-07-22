@@ -601,6 +601,14 @@ export class RespuestaExamenComponent implements OnInit {
                     ['fechaMaximaEntrega' + indexExperto]: [
                         respuesta.fechaMaximaEntrega,
                     ],
+                    ['asunto' + indexExperto]: [
+                        'Respuesta Examen de Valoracion',
+                        Validators.required,
+                    ],
+                    ['mensaje' + indexExperto]: [
+                        'Documentos enviados por',
+                        Validators.required,
+                    ],
                 });
                 this.expertoEvaluaciones.push(evaluacionFormGroup);
                 this.expertoEvaluaciones.at(indexExperto).patchValue({
@@ -652,6 +660,14 @@ export class RespuestaExamenComponent implements OnInit {
                     ],
                     ['fechaMaximaEntrega' + indexDocente]: [
                         respuesta.fechaMaximaEntrega,
+                    ],
+                    ['asunto' + indexDocente]: [
+                        'Respuesta Examen de Valoracion',
+                        Validators.required,
+                    ],
+                    ['mensaje' + indexDocente]: [
+                        'Documentos enviados por',
+                        Validators.required,
                     ],
                 });
                 this.docenteEvaluaciones.push(evaluacionFormGroup);
@@ -783,6 +799,8 @@ export class RespuestaExamenComponent implements OnInit {
                     ? evaluacion['respuestaExamenValoracionExperto' + i]
                     : evaluacion['respuestaExamenValoracionDocente' + i],
             fechaMaximaEntrega: evaluacion['fechaMaximaEntrega' + i],
+            asunto: evaluacion['asunto' + i],
+            mensaje: evaluacion['mensaje' + i],
         };
     }
 
@@ -799,23 +817,28 @@ export class RespuestaExamenComponent implements OnInit {
             formArrayName === 'expertoEvaluaciones'
                 ? this.evaluacionExpertoIds[index]
                 : this.evaluacionDocenteIds[index];
+
         const evaluacionData = this.mapEvaluacion(formArrayName, index);
 
-        if (evaluacionData.respuestaExamenValoracion == 'APROBADO')
-            evaluacionData.fechaMaximaEntrega = '';
+        const {
+            expertoEvaluaciones: omitExperto,
+            docenteEvaluaciones: omitDocente,
+            ...restFormValues
+        } = this.respuestaForm.value;
+        const { asunto, mensaje, ...restEvaluacionData } = evaluacionData;
 
         const respuestaMail = {
             envioEmail: {
-                asunto: 'Envio respuesta evaluadores',
-                mensaje:
-                    'Buenos dias, envio documentos enviados por el evaluador Mage',
+                asunto,
+                mensaje,
             },
         };
 
-        const { [formArrayName]: omit, ...rest } = this.respuestaForm.value;
-        const castBit = {
-            ...rest,
-            estadoFinalizado: Number(rest.estadoFinalizado),
+        const respuestaData = {
+            ...restFormValues,
+            ...restEvaluacionData,
+            ...respuestaMail,
+            estadoFinalizado: Number(restFormValues.estadoFinalizado),
         };
 
         const formatoB = await this.formatFileString(
@@ -828,15 +851,13 @@ export class RespuestaExamenComponent implements OnInit {
             'linkFormatoC'
         );
 
-        evaluacionData.linkFormatoB = formatoB;
-        evaluacionData.linkFormatoC = formatoC;
+        respuestaData.linkFormatoB = formatoB;
+        respuestaData.linkFormatoC = formatoC;
+        if (respuestaData.respuestaExamenValoracion == 'APROBADO')
+            respuestaData.fechaMaximaEntrega = '';
 
         this.respuestaService
-            .updateRespuestaExamen(respuestaId, {
-                ...castBit,
-                ...evaluacionData,
-                ...respuestaMail,
-            })
+            .updateRespuestaExamen(respuestaId, respuestaData)
             .subscribe({
                 next: (response) => {
                     if (response) {
@@ -852,6 +873,7 @@ export class RespuestaExamenComponent implements OnInit {
                 },
                 error: (e) => {
                     this.handlerResponseException(e);
+                    this.isLoading = false;
                 },
                 complete: () => {
                     this.isLoading = false;
@@ -901,29 +923,32 @@ export class RespuestaExamenComponent implements OnInit {
             return;
         }
         this.isLoading = true;
+
         const evaluacionData = this.mapEvaluacion(formArrayName, index);
+
+        const {
+            expertoEvaluaciones: omitExperto,
+            docenteEvaluaciones: omitDocente,
+            ...restFormValues
+        } = this.respuestaForm.value;
+        const { asunto, mensaje, ...restEvaluacionData } = evaluacionData;
+
         const respuestaMail = {
             envioEmail: {
-                asunto: 'Envio respuesta evaluadores',
-                mensaje:
-                    'Buenos dias, envio documentos enviados por el evaluador Mage',
+                asunto,
+                mensaje,
             },
         };
-        const { [formArrayName]: omit, ...rest } = this.respuestaForm.value;
-        const castBit = {
-            ...rest,
-            estadoFinalizado: Number(rest.estadoFinalizado),
+
+        const respuestaData = {
+            ...restFormValues,
+            ...restEvaluacionData,
+            ...respuestaMail,
+            estadoFinalizado: Number(restFormValues.estadoFinalizado),
         };
 
         this.respuestaService
-            .createRespuestaExamen(
-                {
-                    ...castBit,
-                    ...evaluacionData,
-                    ...respuestaMail,
-                },
-                this.trabajoDeGradoId
-            )
+            .createRespuestaExamen(respuestaData, this.trabajoDeGradoId)
             .subscribe({
                 next: (response) => {
                     if (response) {
@@ -939,6 +964,7 @@ export class RespuestaExamenComponent implements OnInit {
                 },
                 error: (e) => {
                     this.handlerResponseException(e);
+                    this.isLoading = false;
                 },
                 complete: () => {
                     this.isLoading = false;
@@ -993,6 +1019,14 @@ export class RespuestaExamenComponent implements OnInit {
                     : 'respuestaExamenValoracionDocente' +
                       this[formArrayName].length]: [null, Validators.required],
                 ['fechaMaximaEntrega' + this[formArrayName].length]: [null],
+                ['asunto' + this[formArrayName].length]: [
+                    'Respuesta Examen de Valoracion',
+                    Validators.required,
+                ],
+                ['mensaje' + this[formArrayName].length]: [
+                    'Documentos enviados por',
+                    Validators.required,
+                ],
             });
             this[formArrayName].push(evaluacion);
         }

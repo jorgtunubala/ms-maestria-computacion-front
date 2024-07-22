@@ -684,7 +684,7 @@
                                         </div>
                                     </div>
                                     <div
-                                        class="grid column-gap-4 mb-6"
+                                        class="grid column-gap-4"
                                         *ngIf="
                                             expertoEvaluaciones
                                                 .at(i)
@@ -716,6 +716,40 @@
                                                 [showIcon]="true"
                                                 dateFormat="dd.mm.yy"
                                             ></p-calendar>
+                                        </div>
+                                    </div>
+                                    <div class="field grid column-gap-4">
+                                        <div class="col-2 text-right">
+                                            <label class="label-required"
+                                                >Asunto</label
+                                            >
+                                        </div>
+                                        <div class="col-7">
+                                            <input
+                                                class="p-inputtext-md w-full max-w-30rem"
+                                                pInputText
+                                                [maxLength]="250"
+                                                [formControlName]="'asunto' + i"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div class="field grid column-gap-4 mb-6">
+                                        <div class="col-2 text-right">
+                                            <label class="label-required"
+                                                >Observación</label
+                                            >
+                                        </div>
+                                        <div class="col-7">
+                                            <textarea
+                                                class="w-full max-w-30rem"
+                                                rows="5"
+                                                cols="30"
+                                                pInputTextarea
+                                                [autoResize]="true"
+                                                [formControlName]="
+                                                    'mensaje' + i
+                                                "
+                                            ></textarea>
                                         </div>
                                     </div>
                                     <div
@@ -1387,6 +1421,40 @@
                                                 [showIcon]="true"
                                                 dateFormat="dd.mm.yy"
                                             ></p-calendar>
+                                        </div>
+                                    </div>
+                                    <div class="field grid column-gap-4">
+                                        <div class="col-2 text-right">
+                                            <label class="label-required"
+                                                >Asunto</label
+                                            >
+                                        </div>
+                                        <div class="col-7">
+                                            <input
+                                                class="p-inputtext-md w-full max-w-30rem"
+                                                pInputText
+                                                [maxLength]="250"
+                                                [formControlName]="'asunto' + i"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div class="field grid column-gap-4 mb-6">
+                                        <div class="col-2 text-right">
+                                            <label class="label-required"
+                                                >Observación</label
+                                            >
+                                        </div>
+                                        <div class="col-7">
+                                            <textarea
+                                                class="w-full max-w-30rem"
+                                                rows="5"
+                                                cols="30"
+                                                pInputTextarea
+                                                [autoResize]="true"
+                                                [formControlName]="
+                                                    'mensaje' + i
+                                                "
+                                            ></textarea>
                                         </div>
                                     </div>
                                     <div

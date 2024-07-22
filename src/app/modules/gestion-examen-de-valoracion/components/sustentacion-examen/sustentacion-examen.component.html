@@ -137,6 +137,7 @@
         >
             <ng-container>
                 <documento-formatoHva
+                    [fileFormatoHva]="FileEstudioHVA"
                     (formatoHvaPdfGenerated)="
                         handleFormatoHvaPdfGenerated($event)
                     "
@@ -292,7 +293,7 @@
                                                 class="w-full"
                                                 maxFileSize="5000000"
                                                 (onSelect)="
-                                                    onFileSelectFirst($event)
+                                                    onFileSelectFormatoF($event)
                                                 "
                                                 chooseLabel="Buscar documento"
                                                 [disabled]="
@@ -357,16 +358,196 @@
                         <div class="field grid justify-content-center">
                             <div class="col-5 mt-4">
                                 <label class="label-required"
-                                    >Link documentación de la tesis (monografía
-                                    y anexos)</label
-                                >
-                                <input
+                                    >Link documentación de la tesis (monografía)
+                                </label>
+                                <div
                                     style="max-width: 50rem"
-                                    pInputText
-                                    [maxLength]="250"
-                                    class="p-inputtext-md w-full mt-2"
-                                    formControlName="urlDocumentacion"
-                                />
+                                    class="flex flex-wrap gap-2 mt-2 align-items-start"
+                                >
+                                    <div
+                                        class="flex flex-column row-gap-2 align-items-start justify-content-start flex-1"
+                                    >
+                                        <div
+                                            class="flex flex-row w-full justify-content-between"
+                                        >
+                                            <p-fileUpload
+                                                #Monografia
+                                                name="linkMonografia"
+                                                mode="basic"
+                                                [auto]="true"
+                                                accept=".pdf"
+                                                chooseIcon="pi pi-file"
+                                                class="w-full"
+                                                maxFileSize="5000000"
+                                                (onSelect)="
+                                                    onFileSelectMonografia(
+                                                        $event
+                                                    )
+                                                "
+                                                chooseLabel="Buscar documento"
+                                                [disabled]="
+                                                    sustentacionForm.get(
+                                                        'linkMonografia'
+                                                    ).value
+                                                "
+                                            >
+                                            </p-fileUpload>
+                                            <button
+                                                *ngIf="FileMonografia"
+                                                pButton
+                                                class="p-button-secondary"
+                                                icon="pi pi-times"
+                                                type="button"
+                                                (click)="
+                                                    onFileClear(
+                                                        'linkMonografia'
+                                                    )
+                                                "
+                                            ></button>
+                                        </div>
+                                        <div
+                                            class="text-description mt-2"
+                                            style="
+                                                width: '200px';
+                                                word-break: break-word;
+                                            "
+                                            *ngIf="FileMonografia"
+                                        >
+                                            {{ FileMonografia.name }} -
+                                            {{
+                                                FileMonografia.size | bytesToKb
+                                            }}
+                                            KB
+                                        </div>
+                                    </div>
+                                    <button
+                                        *ngIf="editMode && FileMonografia"
+                                        pButton
+                                        class="p-button-secondary"
+                                        type="button"
+                                        icon="pi pi-download"
+                                        (click)="
+                                            getFileAndSetValue('linkMonografia')
+                                        "
+                                    ></button>
+                                </div>
+                                <div
+                                    class="text-description mt-2"
+                                    *ngIf="!FileMonografia"
+                                >
+                                    <p>No has seleccionado ningún documento.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field grid justify-content-center">
+                            <div class="col-5 mt-4">
+                                <label class="label-required"
+                                    >Anexos (.pdf, .rar, .zip)
+                                </label>
+                                <div
+                                    style="max-width: 50rem"
+                                    class="flex flex-wrap gap-2 mt-2 align-items-start"
+                                >
+                                    <div
+                                        class="flex flex-column row-gap-2 align-items-start justify-content-start flex-1"
+                                    >
+                                        <div
+                                            class="flex flex-row w-full justify-content-between"
+                                        >
+                                            <p-fileUpload
+                                                name="anexos"
+                                                class="w-full"
+                                                chooseIcon="pi pi-file"
+                                                multiple="multiple"
+                                                accept=".pdf"
+                                                maxFileSize="5000000"
+                                                chooseLabel="Buscar documento"
+                                                (onSelect)="onUpload($event)"
+                                                [disabled]="
+                                                    editMode &&
+                                                    sustentacionForm.get(
+                                                        'anexos'
+                                                    ).value &&
+                                                    !isChanged
+                                                "
+                                            >
+                                                <ng-template
+                                                    pTemplate="content"
+                                                >
+                                                    <div
+                                                        *ngIf="
+                                                            editMode &&
+                                                            anexosFiles.length
+                                                        "
+                                                        class="w-full flex justify-content-between align-items-center"
+                                                    >
+                                                        <span class="ml-4"
+                                                            >Descargar ({{
+                                                                anexosFiles.length
+                                                            }}) documentos</span
+                                                        >
+                                                        <button
+                                                            *ngIf="
+                                                                editMode &&
+                                                                anexosFiles.length >
+                                                                    0
+                                                            "
+                                                            type="button"
+                                                            pButton
+                                                            class="p-button-secondary"
+                                                            icon="pi pi-download"
+                                                            pTooltip="Descargar documentos"
+                                                            (click)="
+                                                                getFileAndSetValue(
+                                                                    'anexos'
+                                                                )
+                                                            "
+                                                        ></button>
+                                                    </div>
+                                                    <ul
+                                                        *ngIf="
+                                                            anexosFiles.length
+                                                        "
+                                                    >
+                                                        <li
+                                                            class="flex justify-content-between align-items-center mb-2"
+                                                            *ngFor="
+                                                                let file of anexosFiles;
+                                                                let i = index
+                                                            "
+                                                        >
+                                                            <span
+                                                                class="w-15rem"
+                                                                style="
+                                                                    word-break: break-word;
+                                                                "
+                                                            >
+                                                                {{ file.name }}
+                                                                -
+                                                                {{
+                                                                    file.size
+                                                                        | bytesToKb
+                                                                }}
+                                                                KB
+                                                            </span>
+                                                            <button
+                                                                pButton
+                                                                class="p-button-secondary"
+                                                                icon="pi pi-times"
+                                                                type="button"
+                                                                (click)="
+                                                                    removeFile(
+                                                                        i
+                                                                    )
+                                                                "
+                                                            ></button>
+                                                        </li>
+                                                    </ul>
+                                                </ng-template>
+                                            </p-fileUpload>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </p-fieldset>
@@ -560,7 +741,7 @@
                                                 class="w-full"
                                                 maxFileSize="5000000"
                                                 (onSelect)="
-                                                    onFileSelectSecond($event)
+                                                    onFileSelectFormatoG($event)
                                                 "
                                                 chooseLabel="Buscar documento"
                                                 [disabled]="
@@ -644,7 +825,9 @@
                                                 class="w-full"
                                                 maxFileSize="5000000"
                                                 (onSelect)="
-                                                    onFileSelectThird($event)
+                                                    onFileSelectEstudioHVA(
+                                                        $event
+                                                    )
                                                 "
                                                 chooseLabel="Buscar documento"
                                                 [disabled]="
@@ -917,6 +1100,93 @@
                             </div>
                         </div>
                         <div class="field grid justify-content-center">
+                            <div class="col-5 mt-4">
+                                <label class="label-required"
+                                    >Oficio Consejo (.pdf)
+                                </label>
+                                <div
+                                    style="max-width: 50rem"
+                                    class="flex flex-wrap gap-2 mt-2 align-items-start"
+                                >
+                                    <div
+                                        class="flex flex-column row-gap-2 align-items-start justify-content-start flex-1"
+                                    >
+                                        <div
+                                            class="flex flex-row w-full justify-content-between"
+                                        >
+                                            <p-fileUpload
+                                                #OficioConsejo
+                                                name="linkOficioConsejo"
+                                                mode="basic"
+                                                [auto]="true"
+                                                accept=".pdf"
+                                                chooseIcon="pi pi-file"
+                                                class="w-full"
+                                                maxFileSize="5000000"
+                                                (onSelect)="
+                                                    onFileSelectOficioConsejo(
+                                                        $event
+                                                    )
+                                                "
+                                                chooseLabel="Buscar documento"
+                                                [disabled]="
+                                                    sustentacionForm.get(
+                                                        'linkOficioConsejo'
+                                                    ).value
+                                                "
+                                            >
+                                            </p-fileUpload>
+                                            <button
+                                                *ngIf="FileOficioConsejo"
+                                                pButton
+                                                class="p-button-secondary"
+                                                icon="pi pi-times"
+                                                type="button"
+                                                (click)="
+                                                    onFileClear(
+                                                        'linkOficioConsejo'
+                                                    )
+                                                "
+                                            ></button>
+                                        </div>
+                                        <div
+                                            class="text-description mt-2"
+                                            style="
+                                                width: '200px';
+                                                word-break: break-word;
+                                            "
+                                            *ngIf="FileOficioConsejo"
+                                        >
+                                            {{ FileOficioConsejo.name }} -
+                                            {{
+                                                FileOficioConsejo.size
+                                                    | bytesToKb
+                                            }}
+                                            KB
+                                        </div>
+                                    </div>
+                                    <button
+                                        *ngIf="editMode && FileOficioConsejo"
+                                        pButton
+                                        class="p-button-secondary"
+                                        type="button"
+                                        icon="pi pi-download"
+                                        (click)="
+                                            getFileAndSetValue(
+                                                'linkOficioConsejo'
+                                            )
+                                        "
+                                    ></button>
+                                </div>
+                                <div
+                                    class="text-description mt-2"
+                                    *ngIf="!FileOficioConsejo"
+                                >
+                                    <p>No has seleccionado ningún documento.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field grid justify-content-center">
                             <div
                                 class="col-5 flex flex-nowrap align-items-center justify-content-between"
                             >
@@ -999,7 +1269,7 @@
                                                 class="w-full"
                                                 maxFileSize="5000000"
                                                 (onSelect)="
-                                                    onFileSelectFourth($event)
+                                                    onFileSelectFormatoH($event)
                                                 "
                                                 chooseLabel="Buscar documento"
                                                 [disabled]="
@@ -1077,7 +1347,7 @@
                                                 class="w-full"
                                                 maxFileSize="5000000"
                                                 (onSelect)="
-                                                    onFileSelectFifth($event)
+                                                    onFileSelectFormatoI($event)
                                                 "
                                                 chooseLabel="Buscar documento"
                                                 [disabled]="
@@ -1130,147 +1400,6 @@
                                 </div>
                             </div>
                         </div>
-                    </p-fieldset>
-                </div>
-                <div
-                    class="card"
-                    *ngIf="role.includes('ROLE_COORDINADOR') && isEstudiante"
-                >
-                    <div class="mb-4">
-                        <p class="text-xl font-bold mb-0">
-                            <i class="pi pi-check-square mr-2"></i>Paso 6 -
-                            Respuesta Sustentacion
-                        </p>
-                        <p>
-                            Complete los datos requeridos para realizar la
-                            solicitud
-                        </p>
-                    </div>
-                    <p-fieldset legend="Consejo" styleClass="bg-bluegray-50">
-                        <div
-                            class="flex flex-1 justify-content-end align-items-center"
-                            *ngIf="isEstudiante && !isCoordinadorFase4"
-                        >
-                            <button
-                                *ngIf="editMode"
-                                pButton
-                                icon="pi pi-eye"
-                                label="Revisar documentos"
-                                (click)="openModal()"
-                            ></button>
-                        </div>
-                        <div class="field grid justify-content-center">
-                            <div class="col-5">
-                                <label class="label-required"
-                                    >Acta para Sustentación Pública (Formato
-                                    PA-GA-4.2-FOR-13 .pdf)
-                                </label>
-                                <div
-                                    style="max-width: 50rem"
-                                    class="flex flex-wrap gap-2 mt-2 align-items-start"
-                                >
-                                    <div
-                                        class="flex flex-column row-gap-2 align-items-start justify-content-start flex-1"
-                                    >
-                                        <div
-                                            class="flex flex-row w-full justify-content-between"
-                                        >
-                                            <p-fileUpload
-                                                #ActaSustentacionP
-                                                name="linkActaSustentacionPublica"
-                                                mode="basic"
-                                                [auto]="true"
-                                                accept=".pdf"
-                                                chooseIcon="pi pi-file"
-                                                class="w-full"
-                                                maxFileSize="5000000"
-                                                (onSelect)="
-                                                    onFileSelectSixth($event)
-                                                "
-                                                chooseLabel="Buscar documento"
-                                                [disabled]="
-                                                    sustentacionForm.get(
-                                                        'linkActaSustentacionPublica'
-                                                    ).value
-                                                "
-                                            >
-                                            </p-fileUpload>
-                                            <button
-                                                *ngIf="FileActaSustentacionP"
-                                                pButton
-                                                class="p-button-secondary"
-                                                icon="pi pi-times"
-                                                type="button"
-                                                (click)="
-                                                    onFileClear(
-                                                        'linkActaSustentacionPublica'
-                                                    )
-                                                "
-                                            ></button>
-                                        </div>
-                                        <div
-                                            class="text-description mt-2"
-                                            style="
-                                                width: '200px';
-                                                word-break: break-word;
-                                            "
-                                            *ngIf="FileActaSustentacionP"
-                                        >
-                                            {{ FileActaSustentacionP.name }} -
-                                            {{
-                                                FileActaSustentacionP.size
-                                                    | bytesToKb
-                                            }}
-                                            KB
-                                        </div>
-                                    </div>
-                                    <button
-                                        *ngIf="
-                                            editMode && FileActaSustentacionP
-                                        "
-                                        pButton
-                                        class="p-button-secondary"
-                                        type="button"
-                                        icon="pi pi-download"
-                                        (click)="
-                                            getFileAndSetValue(
-                                                'linkActaSustentacionPublica'
-                                            )
-                                        "
-                                    ></button>
-                                </div>
-                                <div
-                                    class="text-description mt-2"
-                                    *ngIf="!FileActaSustentacionP"
-                                >
-                                    <p>No has seleccionado ningún documento.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="field grid justify-content-center">
-                            <div class="col-5 mt-2">
-                                <label class="label-required"
-                                    >Respuesta a la sustentación
-                                </label>
-                                <div class="flex mt-2 column-gap-4">
-                                    <div
-                                        *ngFor="let respuestas of respuestas"
-                                        class="field-checkbox"
-                                    >
-                                        <p-radioButton
-                                            [inputId]="respuestas"
-                                            [value]="respuestas"
-                                            formControlName="respuestaSustentacion"
-                                        ></p-radioButton>
-                                        <label
-                                            [for]="respuestas"
-                                            class="ml-2"
-                                            >{{ respuestas }}</label
-                                        >
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                         <div class="field grid justify-content-center">
                             <div class="col-5">
                                 <label class="label-required"
@@ -1297,7 +1426,9 @@
                                                 class="w-full"
                                                 maxFileSize="5000000"
                                                 (onSelect)="
-                                                    onFileSelectSeventh($event)
+                                                    onFileSelectEstudioHVAGrado(
+                                                        $event
+                                                    )
                                                 "
                                                 chooseLabel="Buscar documento"
                                                 [disabled]="
@@ -1366,7 +1497,162 @@
                                 </div>
                             </div>
                         </div>
+                    </p-fieldset>
+                </div>
+                <div
+                    class="card"
+                    *ngIf="role.includes('ROLE_COORDINADOR') && isEstudiante"
+                >
+                    <div class="mb-4">
+                        <p class="text-xl font-bold mb-0">
+                            <i class="pi pi-check-square mr-2"></i>Paso 6 -
+                            Respuesta Sustentacion
+                        </p>
+                        <p>
+                            Complete los datos requeridos para realizar la
+                            solicitud
+                        </p>
+                    </div>
+                    <p-fieldset legend="Consejo" styleClass="bg-bluegray-50">
+                        <div
+                            class="flex flex-1 justify-content-end align-items-center"
+                            *ngIf="isEstudiante && !isCoordinadorFase4"
+                        >
+                            <button
+                                *ngIf="editMode"
+                                pButton
+                                icon="pi pi-eye"
+                                label="Revisar documentos"
+                                (click)="openModal()"
+                            ></button>
+                        </div>
                         <div class="field grid justify-content-center">
+                            <div class="col-5 mt-2">
+                                <label class="label-required"
+                                    >Respuesta a la sustentación
+                                </label>
+                                <div class="flex mt-2 column-gap-4">
+                                    <div
+                                        *ngFor="let respuestas of respuestas"
+                                        class="field-checkbox"
+                                    >
+                                        <p-radioButton
+                                            [inputId]="respuestas"
+                                            [value]="respuestas"
+                                            formControlName="respuestaSustentacion"
+                                        ></p-radioButton>
+                                        <label
+                                            [for]="respuestas"
+                                            class="ml-2"
+                                            >{{ respuestas }}</label
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            *ngIf="
+                                sustentacionForm.get('respuestaSustentacion')
+                                    .value == 'Aprobado'
+                            "
+                            class="field grid justify-content-center"
+                        >
+                            <div class="col-5">
+                                <label class="label-required"
+                                    >Acta para Sustentación Pública (Formato
+                                    PA-GA-4.2-FOR-13 .pdf)
+                                </label>
+                                <div
+                                    style="max-width: 50rem"
+                                    class="flex flex-wrap gap-2 mt-2 align-items-start"
+                                >
+                                    <div
+                                        class="flex flex-column row-gap-2 align-items-start justify-content-start flex-1"
+                                    >
+                                        <div
+                                            class="flex flex-row w-full justify-content-between"
+                                        >
+                                            <p-fileUpload
+                                                #ActaSustentacionP
+                                                name="linkActaSustentacionPublica"
+                                                mode="basic"
+                                                [auto]="true"
+                                                accept=".pdf"
+                                                chooseIcon="pi pi-file"
+                                                class="w-full"
+                                                maxFileSize="5000000"
+                                                (onSelect)="
+                                                    onFileSelectActaSustentacionPublica(
+                                                        $event
+                                                    )
+                                                "
+                                                chooseLabel="Buscar documento"
+                                                [disabled]="
+                                                    sustentacionForm.get(
+                                                        'linkActaSustentacionPublica'
+                                                    ).value
+                                                "
+                                            >
+                                            </p-fileUpload>
+                                            <button
+                                                *ngIf="FileActaSustentacionP"
+                                                pButton
+                                                class="p-button-secondary"
+                                                icon="pi pi-times"
+                                                type="button"
+                                                (click)="
+                                                    onFileClear(
+                                                        'linkActaSustentacionPublica'
+                                                    )
+                                                "
+                                            ></button>
+                                        </div>
+                                        <div
+                                            class="text-description mt-2"
+                                            style="
+                                                width: '200px';
+                                                word-break: break-word;
+                                            "
+                                            *ngIf="FileActaSustentacionP"
+                                        >
+                                            {{ FileActaSustentacionP.name }} -
+                                            {{
+                                                FileActaSustentacionP.size
+                                                    | bytesToKb
+                                            }}
+                                            KB
+                                        </div>
+                                    </div>
+                                    <button
+                                        *ngIf="
+                                            editMode && FileActaSustentacionP
+                                        "
+                                        pButton
+                                        class="p-button-secondary"
+                                        type="button"
+                                        icon="pi pi-download"
+                                        (click)="
+                                            getFileAndSetValue(
+                                                'linkActaSustentacionPublica'
+                                            )
+                                        "
+                                    ></button>
+                                </div>
+                                <div
+                                    class="text-description mt-2"
+                                    *ngIf="!FileActaSustentacionP"
+                                >
+                                    <p>No has seleccionado ningún documento.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            *ngIf="
+                                sustentacionForm.get('respuestaSustentacion')
+                                    .value == 'Aprobado'
+                            "
+                            class="field grid justify-content-center"
+                        >
                             <div
                                 class="col-5 flex flex-nowrap align-items-center justify-content-between"
                             >

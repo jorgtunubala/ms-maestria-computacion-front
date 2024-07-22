@@ -61,7 +61,7 @@ export class BandejaExamenDeValoracionComponent implements OnInit {
         private sustentacionService: SustentacionService,
         private localStorageService: LocalStorageService,
         private dialogService: DialogService,
-        private autenticacion: AutenticacionService,
+        private autenticacion: AutenticacionService
     ) {}
 
     ngOnInit() {
@@ -162,7 +162,7 @@ export class BandejaExamenDeValoracionComponent implements OnInit {
         this.router.navigate(['examen-de-valoracion/solicitud']);
     }
 
-    async onEditar(id: number, estudianteId: number) {
+    async onEditar(id: number, estudianteId: number, titulo: string) {
         this.unsubscribePreviousSubscriptions();
 
         if (estudianteId) {
@@ -260,6 +260,7 @@ export class BandejaExamenDeValoracionComponent implements OnInit {
                 this.trabajoDeGradoService.setSustentacionSeleccionada(
                     sustentacionResponse
                 );
+                this.trabajoDeGradoService.setTituloSeleccionadoSubject(titulo);
                 if (this.role.includes('ROLE_ESTUDIANTE')) {
                     await this.router.navigate([
                         'examen-de-valoracion/sustentacion/editar',

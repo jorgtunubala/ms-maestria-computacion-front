@@ -132,7 +132,13 @@
                                     type="button"
                                     icon="pi pi-pencil"
                                     class="p-button-rounded p-button-text p-button-warning"
-                                    (click)="onEditar(solicitud.id)"
+                                    (click)="
+                                        onEditar(
+                                            solicitud.id,
+                                            null,
+                                            solicitud.titulo
+                                        )
+                                    "
                                 ></button>
                             </td>
                         </tr>
@@ -224,7 +230,8 @@
                                     (click)="
                                         onEditar(
                                             solicitud.id,
-                                            solicitud.estudianteId
+                                            solicitud.estudianteId,
+                                            null
                                         )
                                     "
                                 ></button>

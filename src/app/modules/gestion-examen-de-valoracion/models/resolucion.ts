@@ -1,5 +1,5 @@
 export interface Resolucion {
-    idGeneracionResolucion?: number;
+    id?: number;
     titulo?: string;
     director?: string;
     codirector?: string;

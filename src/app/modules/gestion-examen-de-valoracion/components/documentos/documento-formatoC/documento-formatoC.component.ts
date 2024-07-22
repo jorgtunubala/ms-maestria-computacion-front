@@ -2,6 +2,7 @@ import {
     Component,
     ElementRef,
     EventEmitter,
+    Input,
     OnInit,
     Output,
     ViewChild,
@@ -14,8 +15,12 @@ import {
     Validators,
 } from '@angular/forms';
 import { MessageService } from 'primeng/api';
+import { Subscription } from 'rxjs';
+import * as PizZip from 'pizzip';
+import * as Docxtemplater from 'docxtemplater';
+import { saveAs } from 'file-saver';
+import * as JSZipUtils from 'pizzip/utils/index.js';
 import { Estudiante } from 'src/app/modules/gestion-estudiantes/models/estudiante';
-import { PdfService } from 'src/app/shared/services/pdf.service';
 import { TrabajoDeGradoService } from '../../../services/trabajoDeGrado.service';
 import { Mensaje } from 'src/app/core/enums/enums';
 import { mapResponseException } from 'src/app/core/utils/exception-util';
@@ -24,7 +29,14 @@ import {
     infoMessage,
     warnMessage,
 } from 'src/app/core/utils/message-util';
-import { Subscription } from 'rxjs';
+import { FileUpload } from 'primeng/fileupload';
+
+interface Evaluador {
+    id?: number;
+    nombres?: string;
+    correo?: string;
+    universidad?: string;
+}
 
 @Component({
     selector: 'documento-formatoC',
@@ -32,19 +44,22 @@ import { Subscription } from 'rxjs';
     styleUrls: ['documento-formatoC.component.scss'],
 })
 export class DocumentoFormatoCComponent implements OnInit {
+    @Input() formatoCEv1: File;
+    @Input() formatoCEv2: File;
+    @Input() evaluador: Evaluador;
     @Output() formReady = new EventEmitter<FormGroup>();
     @Output() formatoCPdfGenerated = new EventEmitter<File>();
 
     @ViewChild('formatoC') formatoC!: ElementRef;
+    @ViewChild('FormatoC') FormatoC!: FileUpload;
 
     private estudianteSubscription: Subscription;
     private tituloSubscription: Subscription;
-    private evaluadorInternoSubscription: Subscription;
-    private evaluadorExternoSubscription: Subscription;
 
     formatoCForm: FormGroup;
 
     loading = false;
+    isPending = true;
 
     fechaActual: Date;
     estudianteSeleccionado: Estudiante = {};
@@ -52,8 +67,7 @@ export class DocumentoFormatoCComponent implements OnInit {
     constructor(
         private fb: FormBuilder,
         private messageService: MessageService,
-        private trabajoDeGradoService: TrabajoDeGradoService,
-        private pdfService: PdfService
+        private trabajoDeGradoService: TrabajoDeGradoService
     ) {}
 
     get titulo(): FormControl {
@@ -66,14 +80,6 @@ export class DocumentoFormatoCComponent implements OnInit {
 
     get recomendaciones(): FormArray {
         return this.formatoCForm.get('recomendaciones') as FormArray;
-    }
-
-    get experto(): FormControl {
-        return this.formatoCForm.get('juradoExterno') as FormControl;
-    }
-
-    get docente(): FormControl {
-        return this.formatoCForm.get('juradoInterno') as FormControl;
     }
 
     ngOnInit() {
@@ -99,46 +105,16 @@ export class DocumentoFormatoCComponent implements OnInit {
                 },
                 error: (e) => this.handlerResponseException(e),
             });
-
-        this.evaluadorExternoSubscription =
-            this.trabajoDeGradoService.evaluadorExternoSeleccionadoSubject$.subscribe(
-                {
-                    next: (response) => {
-                        if (response) {
-                            this.experto.setValue(response);
-                        }
-                    },
-                    error: (e) => this.handlerResponseException(e),
-                }
-            );
-        this.evaluadorInternoSubscription =
-            this.trabajoDeGradoService.evaluadorInternoSeleccionadoSubject$.subscribe(
-                {
-                    next: (response) => {
-                        if (response) {
-                            this.docente.setValue(response);
-                        }
-                    },
-                    error: (e) => this.handlerResponseException(e),
-                }
-            );
     }
 
     initForm(): void {
         this.formatoCForm = this.fb.group({
             receptor: ['Luz Marina Sierra Martínez', Validators.required],
-            asunto: [null, Validators.required],
+            asunto: ['Examen de Valoración', Validators.required],
             titulo: [null, Validators.required],
             observaciones: [null, Validators.required],
-            juradoInterno: [null, Validators.required],
-            juradoExterno: [null, Validators.required],
         });
-
-        this.formatoCForm.get('titulo').disable();
-        this.formatoCForm.get('asunto').disable();
         this.formatoCForm.get('observaciones').disable();
-        this.formatoCForm.get('juradoInterno').disable();
-        this.formatoCForm.get('juradoExterno').disable();
         this.formReady.emit(this.formatoCForm);
     }
 
@@ -149,62 +125,87 @@ export class DocumentoFormatoCComponent implements OnInit {
         if (this.estudianteSubscription) {
             this.estudianteSubscription.unsubscribe();
         }
-        if (this.evaluadorExternoSubscription) {
-            this.evaluadorExternoSubscription.unsubscribe();
-        }
-        if (this.evaluadorInternoSubscription) {
-            this.evaluadorInternoSubscription.unsubscribe();
-        }
+    }
+
+    getFormattedDate(): string {
+        const rawDate = new Date();
+        const day = rawDate.getDate();
+        const month = rawDate.toLocaleString('default', { month: 'short' });
+        const year = rawDate.getFullYear();
+        return `${day} de ${month} de ${year}`;
     }
 
     onDownload() {
+        this.isPending = false;
         if (this.formatoCForm.invalid) {
             this.handleWarningMessage(Mensaje.REGISTRE_CAMPOS_OBLIGATORIOS);
             return;
         } else {
-            const content = document.getElementById('formatoC1');
-            const nextContent = document.getElementById('formatoC2');
-            this.pdfService
-                .generatePDF(content, nextContent)
-                .then((pdfBlob: Blob) => {
-                    const file = new File(
-                        [pdfBlob],
-                        `${this.estudianteSeleccionado.codigo} - formatoC.pdf`,
-                        {
-                            type: 'application/pdf',
-                        }
-                    );
-                    const link = document.createElement('a');
-                    link.download = file.name;
-                    link.href = URL.createObjectURL(file);
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
+            this.loading = true;
+            const formValues = this.formatoCForm.value;
+
+            const docData: any = {
+                fecha: this.getFormattedDate(),
+                titulo: formValues.titulo,
+                asunto: formValues.asunto,
+                receptor: formValues.receptor,
+                jurado:
+                    this.evaluador.nombres + ', ' + this.evaluador.universidad,
+            };
+
+            this.loadFile(
+                'assets/plantillas/formatoC.docx',
+                (error: any, content: any) => {
+                    if (error) {
+                        throw error;
+                    }
+                    const zip = new PizZip(content);
+                    const doc = new Docxtemplater(zip, {
+                        paragraphLoop: true,
+                        linebreaks: true,
+                    });
+
+                    doc.setData(docData);
+
+                    try {
+                        doc.render();
+                    } catch (error) {
+                        console.error(error);
+                        throw error;
+                    }
+
+                    const out = doc.getZip().generate({
+                        type: 'blob',
+                        mimeType:
+                            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                    });
+
+                    saveAs(out, 'formatoC.docx');
                     this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
-                });
+                }
+            );
+            this.loading = false;
         }
     }
 
-    onAdjuntar() {
+    loadFile(url: string, callback: (error: any, content: any) => void) {
+        JSZipUtils.default.getBinaryContent(url, callback);
+    }
+
+    onAdjuntar(event: any) {
         if (this.formatoCForm.invalid) {
+            this.FormatoC.clear();
             this.handleWarningMessage(Mensaje.REGISTRE_CAMPOS_OBLIGATORIOS);
             return;
         } else {
-            const content = document.getElementById('formatoC1');
-            const nextContent = document.getElementById('formatoC2');
-            this.pdfService
-                .generatePDF(content, nextContent)
-                .then((pdfBlob: Blob) => {
-                    const file = new File(
-                        [pdfBlob],
-                        `${this.estudianteSeleccionado.codigo} - formatoC.pdf`,
-                        {
-                            type: 'application/pdf',
-                        }
-                    );
-                    this.formatoCPdfGenerated.emit(file);
-                    this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
-                });
+            this.loading = true;
+            const file: File = event.files[0];
+            if (file) {
+                this.formatoCPdfGenerated.emit(file);
+                this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
+            }
+            this.loading = false;
+            this.FormatoC.clear();
         }
     }
 

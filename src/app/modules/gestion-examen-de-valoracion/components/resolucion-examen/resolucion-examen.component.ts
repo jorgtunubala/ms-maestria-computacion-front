@@ -15,6 +15,7 @@ import { Router } from '@angular/router';
 import {
     Subscription,
     catchError,
+    firstValueFrom,
     forkJoin,
     lastValueFrom,
     of,
@@ -37,6 +38,7 @@ import { Estudiante } from 'src/app/modules/gestion-estudiantes/models/estudiant
 import { Resolucion } from '../../models/resolucion';
 import { BuscadorDocentesComponent } from 'src/app/shared/components/buscador-docentes/buscador-docentes.component';
 import { AutenticacionService } from 'src/app/modules/gestion-autenticacion/services/autenticacion.service';
+import { RespuestaService } from '../../services/respuesta.service';
 
 @Component({
     selector: 'app-resolucion-examen',
@@ -60,10 +62,12 @@ export class ResolucionExamenComponent implements OnInit {
     @ViewChild('AnteproyectoFinal') AnteproyectoFinal!: FileUpload;
     @ViewChild('SolicitudComite') SolicitudComite!: FileUpload;
     @ViewChild('SolicitudConsejo') SolicitudConsejo!: FileUpload;
+    @ViewChild('OficioConsejo') OficioConsejo!: FileUpload;
 
     FileAnteproyectoFinal: File | null;
     FileSolicitudComite: File | null;
     FileSolicitudConsejo: File | null;
+    FileOficioConsejo: File | null;
 
     displayModal: boolean = false;
     errorMessageShown: boolean = false;
@@ -102,6 +106,7 @@ export class ResolucionExamenComponent implements OnInit {
         private fb: FormBuilder,
         private router: Router,
         private trabajoDeGradoService: TrabajoDeGradoService,
+        private respuestaService: RespuestaService,
         private resolucionService: ResolucionService,
         private messageService: MessageService,
         private dialogService: DialogService,
@@ -152,6 +157,7 @@ export class ResolucionExamenComponent implements OnInit {
             linkSolicitudConsejoFacultad: [null, Validators.required],
             numeroActaConsejoFacultad: [null, Validators.required],
             fechaActaConsejoFacultad: [null, Validators.required],
+            linkOficioConsejo: [null, Validators.required],
         });
 
         this.formReady.emit(this.resolucionForm);
@@ -258,6 +264,7 @@ export class ResolucionExamenComponent implements OnInit {
             if (this.isCoordinadorFase2) {
                 formControls['numeroActaConsejoFacultad'].enable();
                 formControls['fechaActaConsejoFacultad'].enable();
+                formControls['linkOficioConsejo'].enable();
             }
         }
     }
@@ -565,6 +572,9 @@ export class ResolucionExamenComponent implements OnInit {
                             case 'linkSolicitudConsejoFacultad':
                                 this.FileSolicitudConsejo = file;
                                 break;
+                            case 'linkOficioConsejo':
+                                this.FileOficioConsejo = file;
+                                break;
                             default:
                                 break;
                         }
@@ -724,6 +734,9 @@ export class ResolucionExamenComponent implements OnInit {
                         if (this.isCoordinadorFase2Created) {
                             this.setup('linkSolicitudConsejoFacultad');
                         }
+                        if (this.isCoordinadorFase3Created) {
+                            this.setup('linkOficioConsejo');
+                        }
                     }
                     this.isLoading = false;
                     resolve();
@@ -787,15 +800,6 @@ export class ResolucionExamenComponent implements OnInit {
                     this.estado ==
                         EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE1_GENERACION_RESOLUCION
                 ) {
-                    const base64AnteproyectoFinal = await this.formatFileString(
-                        this.FileAnteproyectoFinal,
-                        null
-                    );
-                    const base64SolicitudComite = await this.formatFileString(
-                        this.FileSolicitudComite,
-                        null
-                    );
-
                     const resolucionData =
                         this.resolucionForm.get('conceptoDocumentosCoordinador')
                             .value == 'Aceptado'
@@ -809,10 +813,6 @@ export class ResolucionExamenComponent implements OnInit {
                                           this.resolucionForm.get(
                                               'mensajeCoordinador'
                                           ).value,
-                                  },
-                                  obtenerDocumentosParaEnvio: {
-                                      base64AnteproyectoFinal,
-                                      base64SolicitudComite,
                                   },
                               }
                             : {
@@ -839,6 +839,38 @@ export class ResolucionExamenComponent implements OnInit {
                     this.estado ==
                         EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE2_GENERACION_RESOLUCION
                 ) {
+                    const b64AnteproyectoFinal = await this.formatFileString(
+                        this.FileAnteproyectoFinal,
+                        null
+                    );
+
+                    const b64SolicitudConsejoFacultad =
+                        this.resolucionForm.get('conceptoComite').value ===
+                        'Aprobado'
+                            ? await this.formatFileString(
+                                  this.FileSolicitudConsejo,
+                                  null
+                              )
+                            : '';
+
+                    const { formatosB } = await firstValueFrom(
+                        this.respuestaService.getFormatosB(
+                            this.trabajoDeGradoId
+                        )
+                    );
+
+                    const b64FormatoBEv1 = await firstValueFrom(
+                        this.trabajoDeGradoService.getFile(
+                            formatosB.formatoBEv1
+                        )
+                    );
+
+                    const b64FormatoBEv2 = await firstValueFrom(
+                        this.trabajoDeGradoService.getFile(
+                            formatosB.formatoBEv2
+                        )
+                    );
+
                     const {
                         numeroActa,
                         fechaActa,
@@ -867,6 +899,12 @@ export class ResolucionExamenComponent implements OnInit {
                                           ).value,
                                   },
                                   linkSolicitudConsejoFacultad,
+                                  obtenerDocumentosParaEnvioConsejo: {
+                                      b64FormatoBEv1,
+                                      b64FormatoBEv2,
+                                      b64SolicitudConsejoFacultad,
+                                      b64AnteproyectoFinal,
+                                  },
                               }
                             : {
                                   actaFechaRespuestaComite: [
@@ -909,15 +947,6 @@ export class ResolucionExamenComponent implements OnInit {
                     this.estado ==
                         EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE1_GENERACION_RESOLUCION
                 ) {
-                    const base64AnteproyectoFinal = await this.formatFileString(
-                        this.FileAnteproyectoFinal,
-                        null
-                    );
-                    const base64SolicitudComite = await this.formatFileString(
-                        this.FileSolicitudComite,
-                        null
-                    );
-
                     const resolucionData =
                         this.resolucionForm.get('conceptoDocumentosCoordinador')
                             .value == 'Aceptado'
@@ -931,10 +960,6 @@ export class ResolucionExamenComponent implements OnInit {
                                           this.resolucionForm.get(
                                               'mensajeCoordinador'
                                           ).value,
-                                  },
-                                  obtenerDocumentosParaEnvio: {
-                                      base64AnteproyectoFinal,
-                                      base64SolicitudComite,
                                   },
                               }
                             : {
@@ -961,6 +986,38 @@ export class ResolucionExamenComponent implements OnInit {
                     this.estado ==
                         EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE2_GENERACION_RESOLUCION
                 ) {
+                    const b64AnteproyectoFinal = await this.formatFileString(
+                        this.FileAnteproyectoFinal,
+                        null
+                    );
+
+                    const b64SolicitudConsejoFacultad =
+                        this.resolucionForm.get('conceptoComite').value ===
+                        'Aprobado'
+                            ? await this.formatFileString(
+                                  this.FileSolicitudConsejo,
+                                  null
+                              )
+                            : '';
+
+                    const { formatosB } = await firstValueFrom(
+                        this.respuestaService.getFormatosB(
+                            this.trabajoDeGradoId
+                        )
+                    );
+
+                    const b64FormatoBEv1 = await firstValueFrom(
+                        this.trabajoDeGradoService.getFile(
+                            formatosB.formatoBEv1
+                        )
+                    );
+
+                    const b64FormatoBEv2 = await firstValueFrom(
+                        this.trabajoDeGradoService.getFile(
+                            formatosB.formatoBEv2
+                        )
+                    );
+
                     const {
                         numeroActa,
                         fechaActa,
@@ -989,6 +1046,12 @@ export class ResolucionExamenComponent implements OnInit {
                                           ).value,
                                   },
                                   linkSolicitudConsejoFacultad,
+                                  obtenerDocumentosParaEnvioConsejo: {
+                                      b64FormatoBEv1,
+                                      b64FormatoBEv2,
+                                      b64SolicitudConsejoFacultad,
+                                      b64AnteproyectoFinal,
+                                  },
                               }
                             : {
                                   actaFechaRespuestaComite: [
@@ -1110,6 +1173,13 @@ export class ResolucionExamenComponent implements OnInit {
         );
     }
 
+    onFileSelectFourth(event: any) {
+        this.FileOficioConsejo = this.uploadFileAndSetValue(
+            'linkOficioConsejo',
+            event
+        );
+    }
+
     onFileClear(field: string) {
         if (field == 'linkAnteproyectoFinal') {
             this.FileAnteproyectoFinal = null;
@@ -1125,6 +1195,11 @@ export class ResolucionExamenComponent implements OnInit {
             this.FileSolicitudConsejo = null;
             this.SolicitudConsejo.clear();
             this.resolucionForm.get('linkSolicitudConsejoFacultad').reset();
+        }
+        if (field == 'linkOficioConsejo') {
+            this.FileOficioConsejo = null;
+            this.OficioConsejo.clear();
+            this.resolucionForm.get('linkOficioConsejo').reset();
         }
     }
 

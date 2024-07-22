@@ -1,3 +1,10 @@
+.spinner {
+    transform: translate(-50%, 50%);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+}
+
 @media (max-width: 1440px) {
     .bandeja-title {
         font-size: 2rem;

@@ -60,4 +60,13 @@ export class RespuestaService {
             { headers: getHeaders() }
         );
     }
+
+    getFormatosB(trabajoDeGradoId: number): Observable<any> {
+        return this.http.get<any>(
+            backendGestionTrabajoDeGrado(
+                `respuesta_examen_valoracion/obtenerFormatosB/${trabajoDeGradoId}`
+            ),
+            { headers: getHeaders() }
+        );
+    }
 }

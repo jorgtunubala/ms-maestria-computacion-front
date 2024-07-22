@@ -33,70 +33,6 @@
         </div>
         <form [formGroup]="formatoHvaForm">
             <div class="container mt-4 px-8">
-                <div class="flex align-items-center">
-                    <div>
-                        <label for="fecha-dia">Fecha:</label>
-                        <input
-                            pInputText
-                            [maxLength]="250"
-                            class="p-inputtext-md ml-2"
-                            type="text"
-                            id="fecha-dia"
-                            placeholder="Día"
-                            formControlName="dia"
-                        />
-                    </div>
-                    <div class="ml-2">
-                        <input
-                            pInputText
-                            [maxLength]="250"
-                            class="p-inputtext-md"
-                            type="text"
-                            placeholder="Mes"
-                            formControlName="mes"
-                        />
-                    </div>
-                    <div class="ml-2">
-                        <input
-                            pInputText
-                            [maxLength]="250"
-                            class="p-inputtext-md"
-                            type="text"
-                            placeholder="Año"
-                            formControlName="anio"
-                        />
-                    </div>
-                </div>
-                <div class="flex align-items-center mt-2">
-                    <div class="flex align-items-center">
-                        <label class="mr-2" for="periodoi">Periodo I:</label>
-                        <p-checkbox
-                            formControlName="periodoi"
-                            [binary]="true"
-                            inputId="periodoi"
-                        ></p-checkbox>
-                    </div>
-                    <div class="flex align-items-center ml-2">
-                        <label class="mr-2" for="periodoii">Periodo II:</label>
-                        <p-checkbox
-                            formControlName="periodoii"
-                            [binary]="true"
-                            inputId="periodoii"
-                        ></p-checkbox>
-                    </div>
-                    <div class="ml-2">
-                        <label for="anio">Año</label>
-                        <input
-                            pInputText
-                            [maxLength]="250"
-                            class="p-inputtext-md ml-2"
-                            type="text"
-                            formControlName="anioPeriodo"
-                        />
-                    </div>
-                </div>
-            </div>
-            <div class="container mt-2 px-8">
                 <div class="flex align-items-center justify-content-start mt-2">
                     <label
                         class="label-required"
@@ -135,218 +71,20 @@
                     <label
                         class="label-required"
                         style="text-wrap: nowrap"
-                        for="nombre-estudiante"
+                        for="estudiante"
                         >Nombre del Estudiante:</label
                     >
                     <input
                         pInputText
                         class="w-full ml-2"
                         type="text"
-                        id="nombre-estudiante"
-                        formControlName="nombreEstudiante"
+                        id="estudiante"
+                        formControlName="estudiante"
                         readonly
                     />
                 </div>
-
-                <div class="flex align-items-center justify-content-start mt-2">
-                    <label style="text-wrap: nowrap" for="cedula"
-                        >Cédula de Ciudadanía:</label
-                    >
-                    <input
-                        pInputText
-                        class="w-full ml-2"
-                        type="text"
-                        id="cedula"
-                        formControlName="cedulaCiudadania"
-                    />
-                </div>
-
-                <div class="flex align-items-center justify-content-start mt-2">
-                    <label style="text-wrap: nowrap" for="lugar-expedicion"
-                        >Lugar de Expedición:</label
-                    >
-                    <input
-                        pInputText
-                        class="w-full ml-2"
-                        type="text"
-                        id="lugar-expedicion"
-                        formControlName="lugarExpedicion"
-                    />
-                </div>
-
-                <div class="flex align-items-center justify-content-start mt-2">
-                    <label style="text-wrap: nowrap" for="codigo"
-                        >Código:</label
-                    >
-                    <input
-                        pInputText
-                        class="w-full ml-2"
-                        type="text"
-                        id="codigo"
-                        formControlName="codigo"
-                    />
-                </div>
-
-                <div class="flex align-items-center justify-content-start mt-2">
-                    <label style="text-wrap: nowrap" for="telefono-fijo"
-                        >Teléfono Fijo:</label
-                    >
-                    <input
-                        pInputText
-                        class="w-full ml-2"
-                        type="text"
-                        id="telefono-fijo"
-                        formControlName="telefonoFijo"
-                    />
-                    <label
-                        style="text-wrap: nowrap"
-                        class="ml-4"
-                        for="telefono-celular"
-                        >Teléfono Celular:</label
-                    >
-                    <input
-                        pInputText
-                        class="w-full ml-2"
-                        type="text"
-                        id="telefono-celular"
-                        formControlName="telefonoCelular"
-                    />
-                </div>
-
-                <div class="flex align-items-center justify-content-start mt-2">
-                    <label style="text-wrap: nowrap" for="codigo-saber-pro"
-                        >Código Pruebas SABER PRO:</label
-                    >
-                    <input
-                        pInputText
-                        class="w-full ml-2"
-                        type="text"
-                        id="codigo-saber-pro"
-                        formControlName="codigoSaberPro"
-                    />
-                </div>
-
-                <div class="flex align-items-center justify-content-start mt-2">
-                    <label style="text-wrap: nowrap" for="residencia"
-                        >Residencia Actual:</label
-                    >
-                    <input
-                        pInputText
-                        class="w-full ml-2"
-                        type="text"
-                        id="residencia"
-                        formControlName="residenciaActual"
-                    />
-                </div>
-
-                <div class="flex align-items-center justify-content-start mt-2">
-                    <label style="text-wrap: nowrap" for="departamento"
-                        >Departamento:</label
-                    >
-                    <input
-                        pInputText
-                        class="w-full ml-2"
-                        type="text"
-                        id="departamento"
-                        formControlName="departamento"
-                    />
-                </div>
-                <div class="flex align-items-center justify-content-start mt-2">
-                    <label style="text-wrap: nowrap" for="municipio"
-                        >Municipio:</label
-                    >
-                    <input
-                        pInputText
-                        class="w-full ml-2"
-                        type="text"
-                        id="municipio"
-                        formControlName="municipio"
-                    />
-                    <label style="text-wrap: nowrap" class="ml-4" for="email"
-                        >Email:</label
-                    >
-                    <input
-                        pInputText
-                        class="w-full ml-2"
-                        type="email"
-                        id="email"
-                        formControlName="email"
-                    />
-                </div>
             </div>
-            <div class="field grid mt-4 mr-8">
-                <span class="col-9 text-right align-self-start">
-                    <b>Firma Estudiante</b>
-                </span>
-                <div class="col-3 text-center p-0">
-                    <p-fileUpload
-                        name="firmaEstudiante"
-                        chooseIcon="pi pi-file"
-                        accept=".png"
-                        chooseLabel="Seleccionar"
-                        class="w-full max-w-30rem"
-                        previewWidth="100"
-                        [auto]="true"
-                        (onSelect)="onFirmaChange($event, 'firmaEstudiante')"
-                    >
-                        <ng-template
-                            let-file
-                            pTemplate="file"
-                            data-file="firma"
-                        >
-                            <div *ngIf="firmaEstudiante">
-                                <img
-                                    [src]="firmaEstudiante"
-                                    alt="Vista Previa de la Firma"
-                                    style="
-                                        min-height: 120px;
-                                        min-width: 150px;
-                                        width: 100%;
-                                        height: 100%;
-                                    "
-                                />
-                            </div>
-                        </ng-template>
-                    </p-fileUpload>
-                </div>
-            </div>
-            <div class="container px-8">
-                <div class="flex align-items-center">
-                    <div>
-                        <label for="fecha-dia">Fecha:</label>
-                        <input
-                            pInputText
-                            [maxLength]="250"
-                            class="p-inputtext-md ml-2"
-                            type="text"
-                            id="fecha-dia"
-                            placeholder="Día"
-                            formControlName="dia"
-                        />
-                    </div>
-                    <div class="ml-2">
-                        <input
-                            pInputText
-                            [maxLength]="250"
-                            class="p-inputtext-md"
-                            type="text"
-                            placeholder="Mes"
-                            formControlName="mes"
-                        />
-                    </div>
-                    <div class="ml-2">
-                        <input
-                            pInputText
-                            [maxLength]="250"
-                            class="p-inputtext-md"
-                            type="text"
-                            placeholder="Año"
-                            formControlName="anio"
-                        />
-                    </div>
-                </div>
-            </div>
-            <div class="mt-2 px-8">
+            <div class="mt-4 px-8">
                 <h2 class="mt-2 text-center text-lg">
                     Diligenciamiento exclusivo por la Facultad
                 </h2>
@@ -361,7 +99,7 @@
                             pInputText
                             class="ml-2"
                             type="text"
-                            id="program"
+                            id="programa"
                             [value]="formatoHvaForm.get('programa')?.value"
                             readonly
                         />
@@ -397,7 +135,7 @@
                     </div>
                     <div>
                         <label
-                            for="coordinator"
+                            for="coordinador"
                             class="label-required line-height-3"
                             >Nombre Coordinador Programa:</label
                         >
@@ -405,51 +143,15 @@
                             pInputText
                             class="ml-2"
                             type="text"
-                            id="coordinator"
-                            formControlName="nombreCoordinador"
+                            id="coordinador"
+                            formControlName="coordinador"
                         />
                     </div>
                 </div>
             </div>
-            <div class="field grid mt-4 mr-8">
-                <span class="col-9 text-right align-self-start">
-                    <b>Firma</b>
-                </span>
-                <div class="col-3 text-center p-0">
-                    <p-fileUpload
-                        name="firmaCoordinador"
-                        chooseIcon="pi pi-file"
-                        accept=".png"
-                        chooseLabel="Seleccionar"
-                        class="w-full max-w-30rem"
-                        previewWidth="100"
-                        [auto]="true"
-                        (onSelect)="onFirmaChange($event, 'firmaCoordinador')"
-                    >
-                        <ng-template
-                            let-file
-                            pTemplate="file"
-                            data-file="firma"
-                        >
-                            <div *ngIf="firmaCoordinador">
-                                <img
-                                    [src]="firmaCoordinador"
-                                    alt="Vista Previa de la Firma"
-                                    style="
-                                        min-height: 120px;
-                                        min-width: 150px;
-                                        width: 100%;
-                                        height: 100%;
-                                    "
-                                />
-                            </div>
-                        </ng-template>
-                    </p-fileUpload>
-                </div>
-            </div>
         </form>
         <div
-            class="flex flex-row align-items-center justify-content-center footer-logo footer-content"
+            class="flex flex-row align-items-center justify-content-center footer-logo footer-content mt-8"
         >
             <img
                 src="assets/layout/images/logosIcontec.png"
@@ -474,14 +176,23 @@
         <div
             class="flex align-items-center justify-content-end mt-4 column-gap-2"
         >
-            <button
-                pButton
-                type="button"
-                icon="pi pi-paperclip"
-                label="Adjuntar"
-                (click)="onAdjuntar()"
-                [loading]="loading"
-            ></button>
+            <p-fileUpload
+                #FormatoHva
+                mode="basic"
+                [auto]="true"
+                accept=".pdf"
+                chooseIcon="pi pi-paperclip"
+                maxFileSize="5000000"
+                chooseLabel="Adjuntar"
+                [pTooltip]="
+                    !!fileFormatoHva
+                        ? 'Ya se ha adjuntado el documento.'
+                        : 'Descargar documentos, rellenar/firmar y adjuntar en PDF.'
+                "
+                tooltipPosition="top"
+                (onSelect)="onAdjuntar($event)"
+            >
+            </p-fileUpload>
             <button
                 pButton
                 type="button"

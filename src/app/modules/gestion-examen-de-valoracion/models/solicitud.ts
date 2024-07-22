@@ -2,7 +2,7 @@ import { Docente } from '../../gestion-docentes/models/docente';
 import { Experto } from './experto';
 
 export interface Solicitud {
-    idExamenValoracion?: number;
+    id?: number;
     titulo?: string;
     linkFormatoA?: string;
     linkFormatoD?: string;
@@ -14,4 +14,5 @@ export interface Solicitud {
     fechaActa?: string;
     linkOficioDirigidoEvaluadores?: string;
     fechaMaximaEvaluacion?: string;
+    linkOficioConsejo?: string;
 }

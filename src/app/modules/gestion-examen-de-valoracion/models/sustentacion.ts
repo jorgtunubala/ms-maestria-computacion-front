@@ -1,7 +1,8 @@
 export interface Sustentacion {
-    idSustentacionTrabajoInvestigacion?: number;
+    id?: number;
     linkFormatoF?: string;
-    urlDocumentacion?: string;
+    linkMonografia?: string;
+    anexos?: any;
     linkFormatoG?: string;
     linkEstudioHojaVidaAcademica?: string;
     juradoExterno?: string;

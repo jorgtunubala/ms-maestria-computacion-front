@@ -27,7 +27,8 @@
             </div>
         </p-card>
         <p-dialog
-            [header]="currentFormat"
+            *ngIf="evaluadorInternoSeleccionado && evaluadorExternoSeleccionado"
+            [header]="getCurrentFormatName()"
             [(visible)]="displayFormatos"
             [style]="{ width: '70vw' }"
             [modal]="true"
@@ -36,14 +37,42 @@
             [draggable]="false"
             [resizable]="false"
         >
-            <ng-container *ngIf="currentFormat == 'formatoB'">
+            <!-- Docente -->
+            <ng-container *ngIf="currentFormat == 'formatoBEv1'">
                 <documento-formatoB
-                    (formatoBPdfGenerated)="handleFormatoBPdfGenerated($event)"
+                    [formatoBEv1]="formatoBEv1"
+                    [evaluador]="evaluadorInternoSeleccionado"
+                    (formatoBPdfGenerated)="
+                        handleFormatoBEv1PdfGenerated($event)
+                    "
                 ></documento-formatoB>
             </ng-container>
-            <ng-container *ngIf="currentFormat == 'formatoC'">
+            <ng-container *ngIf="currentFormat == 'formatoCEv1'">
                 <documento-formatoC
-                    (formatoCPdfGenerated)="handleFormatoCPdfGenerated($event)"
+                    [formatoCEv1]="formatoCEv1"
+                    [evaluador]="evaluadorInternoSeleccionado"
+                    (formatoCPdfGenerated)="
+                        handleFormatoCEv1PdfGenerated($event)
+                    "
+                ></documento-formatoC>
+            </ng-container>
+            <!-- Experto -->
+            <ng-container *ngIf="currentFormat == 'formatoBEv2'">
+                <documento-formatoB
+                    [formatoBEv2]="formatoBEv2"
+                    [evaluador]="evaluadorExternoSeleccionado"
+                    (formatoBPdfGenerated)="
+                        handleFormatoBEv2PdfGenerated($event)
+                    "
+                ></documento-formatoB>
+            </ng-container>
+            <ng-container *ngIf="currentFormat == 'formatoCEv2'">
+                <documento-formatoC
+                    [formatoCEv2]="formatoCEv2"
+                    [evaluador]="evaluadorExternoSeleccionado"
+                    (formatoCPdfGenerated)="
+                        handleFormatoCEv2PdfGenerated($event)
+                    "
                 ></documento-formatoC>
             </ng-container>
             <ng-template pTemplate="footer">
@@ -58,14 +87,14 @@
                     </div>
                     <div>
                         <p-button
-                            *ngIf="currentFormat != 'formatoB'"
+                            *ngIf="currentFormat != 'formatoBEv1'"
                             icon="pi pi-chevron-left"
                             label="Anterior"
                             styleClass="p-button-text"
                             (click)="previousFormat()"
                         ></p-button>
                         <p-button
-                            *ngIf="currentFormat != 'formatoC'"
+                            *ngIf="currentFormat != 'formatoCEv2'"
                             icon="pi pi-chevron-right"
                             iconPos="right"
                             label="Siguiente"
@@ -307,18 +336,6 @@
                         </p>
                     </div>
                     <p-fieldset legend="Docente" styleClass="bg-bluegray-50">
-                        <div
-                            class="flex flex-1 justify-content-end align-items-center"
-                            *ngIf="role.includes('ROLE_DOCENTE')"
-                        >
-                            <button
-                                *ngIf="!editMode"
-                                pButton
-                                icon="pi pi-eye"
-                                label="Revisar documentos"
-                                (click)="openModal()"
-                            ></button>
-                        </div>
                         <div class="field grid justify-content-center">
                             <div class="col-5">
                                 <label class="label-required"
@@ -331,6 +348,173 @@
                                     class="p-inputtext-md mt-2 w-full"
                                     formControlName="titulo"
                                 />
+                            </div>
+                        </div>
+                        <div
+                            class="field grid justify-content-center"
+                            *ngIf="
+                                role.includes('ROLE_COORDINADOR') ||
+                                role.includes('ROLE_DOCENTE')
+                            "
+                        >
+                            <div class="col-5 mt-4">
+                                <label class="label-required"
+                                    >Evaluador Externo</label
+                                >
+
+                                <div
+                                    class="mt-2"
+                                    *ngIf="
+                                        evaluadorExternoSeleccionado;
+                                        else noEvaluadorSelected
+                                    "
+                                >
+                                    <div class="flex align-items-center">
+                                        <p-card class="w-full m-0">
+                                            <div
+                                                class="flex justify-content-between"
+                                            >
+                                                <span
+                                                    style="
+                                                        font-size: 18px;
+                                                        font-weight: bold;
+                                                    "
+                                                    >Datos del Evaluador
+                                                    Externo</span
+                                                >
+                                                <button
+                                                    pButton
+                                                    class="p-button-secondary"
+                                                    icon="pi pi-times"
+                                                    (click)="
+                                                        limpiarEvaluadorExterno()
+                                                    "
+                                                ></button>
+                                            </div>
+                                            <div
+                                                class="mt-2 flex justify-content-between"
+                                            >
+                                                <span>Nombres y Apellidos</span>
+                                                <span
+                                                    >{{
+                                                        evaluadorExternoSeleccionado.nombres
+                                                    }}
+                                                </span>
+                                            </div>
+                                            <div
+                                                class="mt-2 flex justify-content-between"
+                                            >
+                                                <span>Universidad</span>
+                                                <span>{{
+                                                    evaluadorExternoSeleccionado.universidad
+                                                }}</span>
+                                            </div>
+                                            <div
+                                                class="mt-2 flex justify-content-between"
+                                            >
+                                                <span>Correo</span>
+                                                <span>{{
+                                                    evaluadorExternoSeleccionado.correo
+                                                }}</span>
+                                            </div>
+                                        </p-card>
+                                    </div>
+                                </div>
+                                <div
+                                    class="align-self-center mt-2"
+                                    *ngIf="!evaluadorExternoSeleccionado"
+                                >
+                                    <button
+                                        pButton
+                                        icon="pi pi-plus"
+                                        label="Seleccionar Evaluador"
+                                        (click)="
+                                            onSeleccionarEvaluadorExterno()
+                                        "
+                                    ></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            class="field grid justify-content-center"
+                            *ngIf="
+                                role.includes('ROLE_COORDINADOR') ||
+                                role.includes('ROLE_DOCENTE')
+                            "
+                        >
+                            <div class="col-5 mt-4">
+                                <label class="label-required"
+                                    >Evaluador Interno</label
+                                >
+                                <div
+                                    class="mt-2"
+                                    *ngIf="
+                                        evaluadorInternoSeleccionado;
+                                        else noEvaluadorSelected
+                                    "
+                                >
+                                    <div class="flex align-items-center">
+                                        <p-card class="w-full m-0">
+                                            <div
+                                                class="flex justify-content-between"
+                                            >
+                                                <span
+                                                    style="
+                                                        font-size: 18px;
+                                                        font-weight: bold;
+                                                    "
+                                                    >Datos del Evaluador
+                                                    Interno</span
+                                                >
+                                                <button
+                                                    pButton
+                                                    class="p-button-secondary"
+                                                    icon="pi pi-times"
+                                                    (click)="
+                                                        limpiarEvaluadorInterno()
+                                                    "
+                                                ></button>
+                                            </div>
+                                            <div
+                                                class="mt-2 flex justify-content-between"
+                                            >
+                                                <span>Nombres y Apellidos</span>
+                                                <span>{{
+                                                    evaluadorInternoSeleccionado.nombres
+                                                }}</span>
+                                            </div>
+                                            <div
+                                                class="mt-2 flex justify-content-between"
+                                            >
+                                                <span>Universidad</span>
+                                                <span>{{
+                                                    evaluadorInternoSeleccionado.universidad
+                                                }}</span>
+                                            </div>
+                                            <div
+                                                class="mt-2 flex justify-content-between"
+                                            >
+                                                <span>Correo</span>
+                                                <span>{{
+                                                    evaluadorInternoSeleccionado.correo
+                                                }}</span>
+                                            </div>
+                                        </p-card>
+                                    </div>
+                                </div>
+                                <div
+                                    class="align-self-center mt-2"
+                                    *ngIf="!evaluadorInternoSeleccionado"
+                                >
+                                    <button
+                                        pButton
+                                        icon="pi pi-plus"
+                                        label="Seleccionar Evaluador"
+                                        (click)="
+                                            onSeleccionarEvaluadorInterno()
+                                        "
+                                    ></button>
+                                </div>
                             </div>
                         </div>
                         <div class="field grid justify-content-center">
@@ -696,171 +880,16 @@
                             </div>
                         </div>
                         <div
-                            class="field grid justify-content-center"
-                            *ngIf="
-                                role.includes('ROLE_COORDINADOR') ||
-                                role.includes('ROLE_DOCENTE')
-                            "
+                            class="flex flex-1 justify-content-end align-items-center"
+                            *ngIf="role.includes('ROLE_DOCENTE')"
                         >
-                            <div class="col-5 mt-4">
-                                <label class="label-required"
-                                    >Evaluador Externo</label
-                                >
-
-                                <div
-                                    class="mt-2"
-                                    *ngIf="
-                                        evaluadorExternoSeleccionado;
-                                        else noEvaluadorSelected
-                                    "
-                                >
-                                    <div class="flex align-items-center">
-                                        <p-card class="w-full m-0">
-                                            <div
-                                                class="flex justify-content-between"
-                                            >
-                                                <span
-                                                    style="
-                                                        font-size: 18px;
-                                                        font-weight: bold;
-                                                    "
-                                                    >Datos del Evaluador
-                                                    Externo</span
-                                                >
-                                                <button
-                                                    pButton
-                                                    class="p-button-secondary"
-                                                    icon="pi pi-times"
-                                                    (click)="
-                                                        limpiarEvaluadorExterno()
-                                                    "
-                                                ></button>
-                                            </div>
-                                            <div
-                                                class="mt-2 flex justify-content-between"
-                                            >
-                                                <span>Nombres y Apellidos</span>
-                                                <span
-                                                    >{{
-                                                        evaluadorExternoSeleccionado.nombres
-                                                    }}
-                                                </span>
-                                            </div>
-                                            <div
-                                                class="mt-2 flex justify-content-between"
-                                            >
-                                                <span>Universidad</span>
-                                                <span>{{
-                                                    evaluadorExternoSeleccionado.universidad
-                                                }}</span>
-                                            </div>
-                                            <div
-                                                class="mt-2 flex justify-content-between"
-                                            >
-                                                <span>Correo</span>
-                                                <span>{{
-                                                    evaluadorExternoSeleccionado.correo
-                                                }}</span>
-                                            </div>
-                                        </p-card>
-                                    </div>
-                                </div>
-                                <div
-                                    class="align-self-center mt-2"
-                                    *ngIf="!evaluadorExternoSeleccionado"
-                                >
-                                    <button
-                                        pButton
-                                        icon="pi pi-plus"
-                                        label="Seleccionar Evaluador"
-                                        (click)="
-                                            onSeleccionarEvaluadorExterno()
-                                        "
-                                    ></button>
-                                </div>
-                            </div>
-                        </div>
-                        <div
-                            class="field grid justify-content-center"
-                            *ngIf="
-                                role.includes('ROLE_COORDINADOR') ||
-                                role.includes('ROLE_DOCENTE')
-                            "
-                        >
-                            <div class="col-5 mt-4">
-                                <label class="label-required"
-                                    >Evaluador Interno</label
-                                >
-                                <div
-                                    class="mt-2"
-                                    *ngIf="
-                                        evaluadorInternoSeleccionado;
-                                        else noEvaluadorSelected
-                                    "
-                                >
-                                    <div class="flex align-items-center">
-                                        <p-card class="w-full m-0">
-                                            <div
-                                                class="flex justify-content-between"
-                                            >
-                                                <span
-                                                    style="
-                                                        font-size: 18px;
-                                                        font-weight: bold;
-                                                    "
-                                                    >Datos del Evaluador
-                                                    Interno</span
-                                                >
-                                                <button
-                                                    pButton
-                                                    class="p-button-secondary"
-                                                    icon="pi pi-times"
-                                                    (click)="
-                                                        limpiarEvaluadorInterno()
-                                                    "
-                                                ></button>
-                                            </div>
-                                            <div
-                                                class="mt-2 flex justify-content-between"
-                                            >
-                                                <span>Nombres y Apellidos</span>
-                                                <span>{{
-                                                    evaluadorInternoSeleccionado.nombres
-                                                }}</span>
-                                            </div>
-                                            <div
-                                                class="mt-2 flex justify-content-between"
-                                            >
-                                                <span>Universidad</span>
-                                                <span>{{
-                                                    evaluadorInternoSeleccionado.universidad
-                                                }}</span>
-                                            </div>
-                                            <div
-                                                class="mt-2 flex justify-content-between"
-                                            >
-                                                <span>Correo</span>
-                                                <span>{{
-                                                    evaluadorInternoSeleccionado.correo
-                                                }}</span>
-                                            </div>
-                                        </p-card>
-                                    </div>
-                                </div>
-                                <div
-                                    class="align-self-center mt-2"
-                                    *ngIf="!evaluadorInternoSeleccionado"
-                                >
-                                    <button
-                                        pButton
-                                        icon="pi pi-plus"
-                                        label="Seleccionar Evaluador"
-                                        (click)="
-                                            onSeleccionarEvaluadorInterno()
-                                        "
-                                    ></button>
-                                </div>
-                            </div>
+                            <button
+                                *ngIf="!editMode"
+                                pButton
+                                icon="pi pi-eye"
+                                label="Revisar documentos"
+                                (click)="openModal()"
+                            ></button>
                         </div>
                     </p-fieldset>
                 </div>
