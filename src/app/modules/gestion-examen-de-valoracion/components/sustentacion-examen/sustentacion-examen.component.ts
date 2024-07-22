@@ -86,6 +86,7 @@ export class SustentacionExamenComponent implements OnInit {
     displayFormatoHVA: boolean = false;
     displayFormatoHVAGrado: boolean = false;
     displayFormatoF: boolean = false;
+    displayFormatoG: boolean = false;
     isPdfLoaded: boolean = false;
     isDocente: boolean = false;
     isCoordinadorFase1: boolean = false;
@@ -833,6 +834,10 @@ export class SustentacionExamenComponent implements OnInit {
         this.displayFormatoF = true;
     }
 
+    showFormatoG() {
+        this.displayFormatoG = true;
+    }
+
     handleFormatoHvaPdfGenerated(file: File) {
         const pdfFile = new File([file], 'EstudioHojaVidaAcademica.pdf', {
             type: 'application/pdf',
@@ -877,6 +882,22 @@ export class SustentacionExamenComponent implements OnInit {
                 this.sustentacionForm
                     .get('linkFormatoF')
                     .setValue(`linkFormatoF.pdf-${base64}`);
+            })
+            .catch((error) => {
+                console.error('Error al convertir el archivo a base64:', error);
+            });
+    }
+
+    handleFormatoGGenerated(file: File) {
+        const pdfFile = new File([file], 'FormatoG.pdf', {
+            type: 'application/pdf',
+        });
+        this.FileFormatoG = pdfFile;
+        this.convertFileToBase64(pdfFile)
+            .then((base64) => {
+                this.sustentacionForm
+                    .get('linkFormatoG')
+                    .setValue(`linkFormatoG.pdf-${base64}`);
             })
             .catch((error) => {
                 console.error('Error al convertir el archivo a base64:', error);

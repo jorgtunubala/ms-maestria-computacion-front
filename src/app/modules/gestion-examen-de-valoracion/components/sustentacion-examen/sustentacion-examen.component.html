@@ -178,6 +178,24 @@
                 ></documento-formatoF>
             </ng-container>
         </p-dialog>
+        <p-dialog
+            header="Formato G"
+            [(visible)]="displayFormatoG"
+            [style]="{ width: '70vw' }"
+            [modal]="true"
+            [maximizable]="true"
+            [baseZIndex]="10000"
+            [draggable]="false"
+            [resizable]="false"
+        >
+            <ng-container>
+                <documento-formatoG
+                    [juradoInterno]="juradoInternoSeleccionado"
+                    [juradoExterno]="juradoExternoSeleccionado"
+                    (formatoGPdfGenerated)="handleFormatoGGenerated($event)"
+                ></documento-formatoG>
+            </ng-container>
+        </p-dialog>
     </div>
     <div class="flex mt-4 justify-content-between">
         <div class="flex align-items-center column-gap-4">
@@ -785,6 +803,15 @@
                                             getFileAndSetValue('linkFormatoG')
                                         "
                                     ></button>
+                                    <button
+                                        *ngIf="!FileFormatoG"
+                                        pButton
+                                        icon="pi pi-plus"
+                                        class="align-self-center"
+                                        label="Crear Documento"
+                                        (click)="showFormatoG()"
+                                        [loading]="loading"
+                                    ></button>
                                 </div>
                                 <div
                                     class="text-description mt-2"
@@ -972,12 +999,12 @@
                                     <label
                                         for="juradosAceptadosFalse"
                                         class="ml-2"
-                                        >Rechazar</label
+                                        >Modificar</label
                                     >
                                 </div>
                             </div>
                         </div>
-                        <div class="field grid justify-content-center">
+                        <!-- <div class="field grid justify-content-center">
                             <div class="col-5 mt-4">
                                 <div>
                                     <label class="label-required">Asunto</label>
@@ -1002,7 +1029,7 @@
                                     ></textarea>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                         <div
                             class="field grid justify-content-center"
                             *ngIf="

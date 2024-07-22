@@ -62,7 +62,7 @@
                     />
                 </div>
                 <div class="mt-4">
-                    <label for="juradoExterno">Jurado Externo:</label>
+                    <label>Evaluador Externo:</label>
                     <div class="flex align-items-center">
                         <p-card class="w-full m-0">
                             <div
@@ -79,7 +79,7 @@
                     </div>
                 </div>
                 <div class="mt-4">
-                    <label for="juradoInterno">Jurado Interno:</label>
+                    <label>Evaluador Interno:</label>
                     <div class="flex align-items-center">
                         <p-card class="w-full m-0">
                             <div
@@ -131,9 +131,16 @@
                     />
                 </div>
                 <div class="flex flex-column mt-4 max-w-20rem">
-                    <label class="label-required mb-2" for="fechaSesion"
-                        >Fecha de Sesión:</label
-                    >
+                    <div class="flex column-gap-2 mb-2">
+                        <label class="label-required" for="fechaSesion"
+                            >Fecha de Sesión:
+                        </label>
+                        <i
+                            class="pi pi-info-circle"
+                            pTooltip="Esta es la fecha en la que se celebró la sesión ordinaria del comité, que es importante para el seguimiento del proceso."
+                            tooltipPosition="top"
+                        ></i>
+                    </div>
                     <p-calendar
                         id="fechaSesion"
                         formControlName="fechaSesion"
@@ -142,9 +149,16 @@
                     ></p-calendar>
                 </div>
                 <div class="flex flex-column mt-4 max-w-20rem">
-                    <label class="label-required mb-2" for="fechaRespuesta"
-                        >Fecha de Respuesta:</label
-                    >
+                    <div class="flex column-gap-2 mb-2">
+                        <label class="label-required" for="fechaRespuesta"
+                            >Fecha de Respuestas:
+                        </label>
+                        <i
+                            class="pi pi-info-circle"
+                            pTooltip="Esta es la fecha límite para enviar los formatos B y C a la coordinación. Asegúrate de enviar la información antes de esta fecha para cumplir con el plazo."
+                            tooltipPosition="top"
+                        ></i>
+                    </div>
                     <p-calendar
                         id="fechaRespuesta"
                         formControlName="fechaRespuesta"

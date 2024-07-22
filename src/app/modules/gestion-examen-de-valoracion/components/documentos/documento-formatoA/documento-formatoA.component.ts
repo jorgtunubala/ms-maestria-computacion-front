@@ -55,7 +55,6 @@ export class DocumentoFormatoAComponent implements OnInit {
     rolSeleccionado = '';
 
     fechaActual: Date;
-    firmaEstudiante: string | ArrayBuffer;
     firmaTutor: string | ArrayBuffer;
     estudianteSeleccionado: Estudiante = {};
 
@@ -168,7 +167,6 @@ export class DocumentoFormatoAComponent implements OnInit {
             tipo: [null, Validators.required],
             evaluadorInterno: [null, Validators.required],
             evaluadorExterno: [null, Validators.required],
-            firmaEstudiante: [null, Validators.required],
             firmaTutor: [null, Validators.required],
         });
 
@@ -258,9 +256,7 @@ export class DocumentoFormatoAComponent implements OnInit {
         if (file) {
             const reader = new FileReader();
             reader.onload = () => {
-                if (fieldName === 'firmaEstudiante') {
-                    this.firmaEstudiante = reader.result as string;
-                } else if (fieldName === 'firmaTutor') {
+                if (fieldName === 'firmaTutor') {
                     this.firmaTutor = reader.result as string;
                 }
             };

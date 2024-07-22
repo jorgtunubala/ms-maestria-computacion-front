@@ -1050,39 +1050,16 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="field grid justify-content-center">
-                            <div
-                                class="col-5 flex flex-nowrap justify-content-between align-items-center"
-                            >
-                                <label class="label-required"
-                                    >No Acta de aprobacion del examen</label
-                                >
-                                <input
-                                    class="max-w-10rem ml-2"
-                                    pInputText
-                                    formControlName="numeroActa"
-                                />
-                                <label class="label-required ml-4"
-                                    >Fecha del Acta</label
-                                >
-                                <p-calendar
-                                    class="ml-2"
-                                    formControlName="fechaActa"
-                                    [showIcon]="true"
-                                    dateFormat="dd.mm.yy"
-                                ></p-calendar>
-                            </div>
-                        </div>
                         <div
                             class="field grid justify-content-center"
                             *ngIf="
                                 solicitudForm.get('conceptoComite').value ==
-                                'Aprobado'
+                                'Avalado'
                             "
                         >
                             <div class="col-5 mt-4">
                                 <label class="label-required"
-                                    >Ofcio dirigido a jurados sobre
+                                    >Ofcio dirigido a evaluadores sobre
                                     instrucciones para el examen de valoración
                                     (.pdf)
                                 </label>
@@ -1187,11 +1164,34 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="field grid justify-content-center">
+                            <div
+                                class="col-5 flex flex-nowrap justify-content-between align-items-center"
+                            >
+                                <label class="label-required"
+                                    >No Acta de aprobacion del examen</label
+                                >
+                                <input
+                                    class="max-w-10rem ml-2"
+                                    pInputText
+                                    formControlName="numeroActa"
+                                />
+                                <label class="label-required ml-4"
+                                    >Fecha del Acta</label
+                                >
+                                <p-calendar
+                                    class="ml-2"
+                                    formControlName="fechaActa"
+                                    [showIcon]="true"
+                                    dateFormat="dd.mm.yy"
+                                ></p-calendar>
+                            </div>
+                        </div>
                         <div
                             class="field grid justify-content-center"
                             *ngIf="
                                 solicitudForm.get('conceptoComite').value ==
-                                'Aprobado'
+                                'Avalado'
                             "
                         >
                             <div
@@ -1218,7 +1218,7 @@
                         editMode &&
                         role.includes('ROLE_COORDINADOR') &&
                         isCoordinadorFase1 &&
-                        solicitudForm.get('conceptoComite').value == 'Aprobado'
+                        solicitudForm.get('conceptoComite').value == 'Avalado'
                     "
                     pButton
                     pTooltip="Formatos B y C"

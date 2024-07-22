@@ -1,0 +1,77 @@
+@import url("https://fonts.googleapis.com/css2?family=Inria+Serif:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap");
+
+table {
+    border-collapse: collapse;
+}
+
+.header-table {
+    opacity: 0.6;
+}
+
+.header-title {
+    text-align: center;
+    border-collapse: collapse;
+
+    td {
+        border-collapse: collapse;
+        border: 1px solid #444;
+    }
+
+    h1 {
+        font-size: 1.8rem;
+    }
+}
+
+.header-desc {
+    border-collapse: collapse;
+}
+
+.header-desc td {
+    border: 1px solid #444;
+    vertical-align: middle;
+    padding: 8px;
+    width: 33.33%;
+    text-align: center;
+}
+
+.form-table {
+    margin-top: 2rem;
+}
+
+.footer-logo {
+    opacity: 0.6;
+    margin-top: 10px;
+
+    img {
+        object-fit: contain;
+        flex: 0.4;
+    }
+
+    div {
+        flex: 0.6;
+    }
+
+    & span:first-child {
+        font-family: "Inria Serif", serif;
+        font-weight: 400;
+        font-style: italic;
+        font-size: 16px;
+        text-align: center;
+    }
+
+    hr {
+        margin: 0;
+        height: 2px;
+        background-color: #ff0000;
+        width: 70%;
+    }
+
+    & strong:last-child {
+        font-weight: 400;
+        margin-top: 7px;
+        width: 80%;
+        text-align: center;
+        font-size: 16px;
+        color: #3e5270;
+    }
+}

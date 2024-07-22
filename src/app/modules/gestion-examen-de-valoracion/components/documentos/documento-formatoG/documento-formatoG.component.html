@@ -1,0 +1,181 @@
+<p-panel>
+    <div id="formatoHva">
+        <div class="header px-8">
+            <table class="p-datatable p-component header-table">
+                <tr class="header-title">
+                    <td>
+                        <img
+                            src="assets/layout/images/logoUnicauca.png"
+                            alt="Logo Unicauca"
+                            width="80px"
+                            height="140px"
+                        />
+                    </td>
+                    <td colspan="2">
+                        <h1 class="text-lg">
+                            Gestión Académica Gestión de Facultades y Programas
+                            Académicos Estudio Hoja de Vida Académica para Grado
+                        </h1>
+                    </td>
+                </tr>
+                <tr class="header-desc">
+                    <td>
+                        <span>Código: PM-FO-4-FOR-27</span>
+                    </td>
+                    <td>
+                        <span>Versión: 1</span>
+                    </td>
+                    <td>
+                        <span>Fecha Vigencia: 30-04-2019</span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <form [formGroup]="formatoGForm">
+            <div class="container mt-4 px-8">
+                <div class="flex align-items-center justify-content-start mt-2">
+                    <label
+                        class="label-required"
+                        style="text-wrap: nowrap"
+                        for="facultad"
+                        >Facultad:</label
+                    >
+                    <input
+                        pInputText
+                        class="w-full ml-2"
+                        type="text"
+                        id="facultad"
+                        formControlName="facultad"
+                        readonly
+                    />
+                </div>
+
+                <div class="flex align-items-center justify-content-start mt-2">
+                    <label
+                        class="label-required"
+                        style="text-wrap: nowrap"
+                        for="programa"
+                        >Programa:</label
+                    >
+                    <input
+                        pInputText
+                        class="w-full ml-2"
+                        type="text"
+                        id="programa"
+                        formControlName="programa"
+                        readonly
+                    />
+                </div>
+
+                <div class="flex align-items-center justify-content-start mt-2">
+                    <label
+                        class="label-required"
+                        style="text-wrap: nowrap"
+                        for="estudiante"
+                        >Nombre del Estudiante:</label
+                    >
+                    <input
+                        pInputText
+                        class="w-full ml-2"
+                        type="text"
+                        id="estudiante"
+                        formControlName="estudiante"
+                        readonly
+                    />
+                </div>
+
+                <div class="flex align-items-center justify-content-start mt-2">
+                    <label
+                        for="coordinador"
+                        class="label-required line-height-3"
+                        >Nombre Coordinador Programa:</label
+                    >
+                    <input
+                        pInputText
+                        class="w-full ml-2"
+                        type="text"
+                        id="coordinador"
+                        formControlName="coordinador"
+                    />
+                </div>
+
+                <div class="flex align-items-center justify-content-start mt-2">
+                    <label>Jurado Interno</label>
+                    <div class="flex align-items-center w-full">
+                        <p-card class="w-full m-0">
+                            <div class="flex justify-content-between">
+                                <span>{{
+                                    juradoInterno.nombres ??
+                                        juradoInterno.nombre +
+                                            " " +
+                                            juradoInterno.apellido
+                                }}</span>
+                            </div>
+                        </p-card>
+                    </div>
+                </div>
+                <div class="flex align-items-center justify-content-start mt-2">
+                    <label>Jurado Externo</label>
+                    <div class="flex align-items-center w-full">
+                        <p-card class="w-full m-0">
+                            <div class="flex justify-content-between">
+                                <span>{{
+                                    juradoExterno.nombres ??
+                                        juradoExterno.nombre +
+                                            " " +
+                                            juradoExterno.apellido
+                                }}</span>
+                            </div>
+                        </p-card>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div
+            class="flex flex-row align-items-center justify-content-center footer-logo footer-content mt-8"
+        >
+            <img
+                src="assets/layout/images/logosIcontec.png"
+                alt="Logo Icontec"
+                width="200px"
+                height="140px"
+            />
+            <div
+                class="flex flex-column align-items-center justify-content-center footer-text"
+            >
+                <span>Por una Universidad de excelencia y solidaria</span>
+                <hr />
+                <strong>
+                    Facultad de Ingeniería Electrónica y Telecomunicaciones Cra
+                    2 No. 4N-140 Edif. de Ingenierías - Sector Tulcán Popayán -
+                    Cauca - Colombia Conmutador 8209800 Ext. 2145
+                    maestriacomputacion@unicauca.edu.co - www.unicauca.edu.co
+                    www.unicauca.edu.co/maestriacomputación
+                </strong>
+            </div>
+        </div>
+        <div
+            class="flex align-items-center justify-content-end mt-4 column-gap-2"
+        >
+            <p-fileUpload
+                #FormatoG
+                mode="basic"
+                [auto]="true"
+                accept=".pdf"
+                chooseIcon="pi pi-paperclip"
+                maxFileSize="5000000"
+                chooseLabel="Adjuntar"
+                (onSelect)="onAdjuntar($event)"
+            >
+            </p-fileUpload>
+            <button
+                pButton
+                type="button"
+                icon="pi pi-download"
+                label="Descargar"
+                (click)="onDownload()"
+                [loading]="loading"
+            ></button>
+        </div>
+    </div>
+</p-panel>

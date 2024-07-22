@@ -28,6 +28,7 @@ import { DocumentoFormatoHvaComponent } from './components/documentos/documento-
 import { DocumentoFormatoFComponent } from './components/documentos/documento-formatoF/documento-formatoF.component';
 import { DocumentoformatoEvaluadoresComponent } from './components/documentos/documento-formatoEvaluadores/documento-formatoEvaluadores.component';
 import { DocumentoFormatoHvaGradoComponent } from './components/documentos/documento-formatoHvaGrado/documento-formatoHvaGrado.component';
+import { DocumentoFormatoGComponent } from './components/documentos/documento-formatoG/documento-formatoG.component';
 
 @NgModule({
     declarations: [
@@ -39,6 +40,7 @@ import { DocumentoFormatoHvaGradoComponent } from './components/documentos/docum
         DocumentoFormatoHvaComponent,
         DocumentoFormatoHvaGradoComponent,
         DocumentoFormatoFComponent,
+        DocumentoFormatoGComponent,
         DocumentoformatoEvaluadoresComponent,
         SolicitudExamenComponent,
         CustomFileUploadComponent,

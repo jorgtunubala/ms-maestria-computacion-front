@@ -116,7 +116,7 @@ export class SolicitudExamenComponent implements OnInit {
     anexosFiles: File[] = [];
     anexosBase64: { linkAnexo: string }[] = [];
     pdfUrls: { name: string; url: string }[] = [];
-    estadosRespuesta: string[] = ['Aprobado', 'No Aprobado'];
+    estadosRespuesta: string[] = ['Avalado', 'No Avalado'];
     estadosVerificacion: string[] = ['Aceptado', 'Rechazado'];
 
     estado: string;
@@ -216,7 +216,7 @@ export class SolicitudExamenComponent implements OnInit {
         this.solicitudForm
             .get('conceptoComite')
             .valueChanges.subscribe((value) => {
-                if (value == 'Aprobado') {
+                if (value == 'Avalado') {
                     this.solicitudForm
                         .get('asuntoComite')
                         .setValue('Envio evaluadores');
@@ -226,7 +226,7 @@ export class SolicitudExamenComponent implements OnInit {
                             'Envio documentos para que por favor los revisen y den respuesta oportuna.'
                         );
                 }
-                if (value == 'No Aprobado') {
+                if (value == 'No Avalado') {
                     this.solicitudForm
                         .get('asuntoComite')
                         .setValue('Envio correcion por parte del comite');
@@ -528,14 +528,14 @@ export class SolicitudExamenComponent implements OnInit {
                 this.solicitudForm
                     .get('conceptoComite')
                     .valueChanges.subscribe((value) => {
-                        if (value == 'Aprobado') {
+                        if (value == 'Avalado') {
                             this.solicitudForm
                                 .get('linkOficioDirigidoEvaluadores')
                                 .enable();
                             this.solicitudForm
                                 .get('fechaMaximaEvaluacion')
                                 .enable();
-                        } else if (value == 'No Aprobado') {
+                        } else if (value == 'No Avalado') {
                             this.solicitudForm
                                 .get('linkOficioDirigidoEvaluadores')
                                 .disable();
@@ -1099,7 +1099,7 @@ export class SolicitudExamenComponent implements OnInit {
                     let b64FormatoCEv2 = '';
                     let b64Oficio = '';
 
-                    if (conceptoComite == 'Aprobado') {
+                    if (conceptoComite == 'Avalado') {
                         if (
                             !this.formatoBEv1 ||
                             !this.formatoBEv2 ||
@@ -1136,7 +1136,7 @@ export class SolicitudExamenComponent implements OnInit {
                     }
 
                     const solicitudData =
-                        conceptoComite == 'Aprobado'
+                        conceptoComite == 'Avalado'
                             ? {
                                   ...restOfFormValues,
                                   actaFechaRespuestaComite: [
@@ -1270,7 +1270,7 @@ export class SolicitudExamenComponent implements OnInit {
                     let b64FormatoCEv2 = '';
                     let b64Oficio = '';
 
-                    if (conceptoComite == 'Aprobado') {
+                    if (conceptoComite == 'Avalado') {
                         if (
                             !this.formatoBEv1 ||
                             !this.formatoBEv2 ||
@@ -1307,7 +1307,7 @@ export class SolicitudExamenComponent implements OnInit {
                     }
 
                     const solicitudData =
-                        conceptoComite == 'Aprobado'
+                        conceptoComite == 'Avalado'
                             ? {
                                   ...restOfFormValues,
                                   actaFechaRespuestaComite: [
@@ -1634,8 +1634,8 @@ export class SolicitudExamenComponent implements OnInit {
                             .get('conceptoComite')
                             .setValue(
                                 actaConceptoComite == 'APROBADO'
-                                    ? 'Aprobado'
-                                    : 'No Aprobado'
+                                    ? 'Avalado'
+                                    : 'No Avalado'
                             );
 
                         this.solicitudForm
