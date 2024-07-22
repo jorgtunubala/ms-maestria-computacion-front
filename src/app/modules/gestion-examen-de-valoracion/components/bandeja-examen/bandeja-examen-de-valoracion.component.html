@@ -12,7 +12,7 @@
             <span
                 class="font-bold w-full text-center"
                 *ngIf="!role.includes('ROLE_DOCENTE')"
-                >Examen de Valoracion</span
+                >Examen de Valoración</span
             >
             <p-card
                 class="m-2 w-full max-w-30rem"
@@ -30,11 +30,11 @@
                     ></button>
                 </div>
                 <div class="mt-2 card-data flex justify-content-between">
-                    <span>Codigo</span>
+                    <span>Código</span>
                     <span>{{ estudianteSeleccionado.codigo }}</span>
                 </div>
                 <div class="mt-2 card-data flex justify-content-between">
-                    <span>Numero de Identificacion</span>
+                    <span>Numero de Identificación</span>
                     <span>{{ estudianteSeleccionado.identificacion }}</span>
                 </div>
                 <div class="mt-2 card-data flex justify-content-between">
@@ -104,7 +104,7 @@
                         <tr>
                             <th scope="col" style="min-width: 200px">Titulo</th>
                             <th scope="col" style="min-width: 200px">
-                                Fecha creacion
+                                Fecha creación
                             </th>
                             <th scope="col" style="min-width: 200px">
                                 Estado Actual
@@ -192,13 +192,13 @@
                     <ng-template pTemplate="header">
                         <tr>
                             <th scope="col" style="min-width: 200px">
-                                Identificacion
+                                Identificación
                             </th>
                             <th scope="col" style="min-width: 200px">
                                 Nombre Completo
                             </th>
                             <th scope="col" style="min-width: 200px">
-                                Correo Electronico
+                                Correo Electrónico
                             </th>
                             <th scope="col" style="min-width: 200px">Estado</th>
                             <th scope="col" style="min-width: 200px">
@@ -235,6 +235,16 @@
                                         )
                                     "
                                 ></button>
+                                <button
+                                    *ngIf="role.includes('ROLE_COORDINADOR')"
+                                    pButton
+                                    pTooltip="Cancelar"
+                                    type="button"
+                                    icon="pi pi-times"
+                                    class="p-button-rounded p-button-text p-button-danger"
+                                    (click)="onDelete($event, solicitud.id)"
+                                ></button>
+                                <p-confirmPopup></p-confirmPopup>
                             </td>
                         </tr>
                     </ng-template>

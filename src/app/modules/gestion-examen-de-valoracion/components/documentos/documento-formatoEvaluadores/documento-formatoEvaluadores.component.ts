@@ -48,6 +48,8 @@ export class DocumentoformatoEvaluadoresComponent implements OnInit {
 
     fechaActual: Date;
     firmaDirector: string;
+    logoImage: string;
+    footerImage: string;
     estudianteSeleccionado: any;
 
     constructor(
@@ -137,6 +139,18 @@ export class DocumentoformatoEvaluadoresComponent implements OnInit {
         });
 
         this.formReady.emit(this.formatoEvaluadoresForm);
+
+        var logoImg = new Image();
+        logoImg.src = 'assets/layout/images/logoUnicauca.png';
+        logoImg.onload = () => {
+            this.logoImage = this.getBase64Image(logoImg);
+        };
+
+        var footerImg = new Image();
+        footerImg.src = 'assets/layout/images/logosIcontec.png';
+        footerImg.onload = () => {
+            this.footerImage = this.getBase64Image(footerImg);
+        };
     }
 
     ngOnDestroy() {
@@ -152,6 +166,15 @@ export class DocumentoformatoEvaluadoresComponent implements OnInit {
         if (this.evaluadorInternoSubscription) {
             this.evaluadorInternoSubscription.unsubscribe();
         }
+    }
+
+    getBase64Image(img: HTMLImageElement) {
+        var canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        var ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+        return canvas.toDataURL('image/png');
     }
 
     onFirmaChange(event: any, fieldName: string) {
@@ -177,6 +200,25 @@ export class DocumentoformatoEvaluadoresComponent implements OnInit {
 
         return {
             content: [
+                {
+                    columns: [
+                        {
+                            text: 'Maestría en Computación\nFacultad de Ingeniería Electrónica y Telecomunicaciones',
+                            fontSize: 14,
+                            alignment: 'left',
+                            margin: [0, 5, 0, 5],
+                            opacity: 0.6,
+                        },
+                        {
+                            image: this.logoImage,
+                            width: 50,
+                            height: 70,
+                            margin: [0, -10, 0, 5],
+                            alignment: 'right',
+                            opacity: 0.6,
+                        },
+                    ],
+                },
                 {
                     text: formValues.consecutivo,
                     alignment: 'justify',
@@ -374,6 +416,60 @@ export class DocumentoformatoEvaluadoresComponent implements OnInit {
                     alignment: 'justify',
                 },
             ],
+            footer: (currentPage, pageCount) => {
+                return {
+                    columns: [
+                        {
+                            stack: [
+                                {
+                                    image: this.footerImage,
+                                    width: 100,
+                                    height: 60,
+                                    alignment: 'left',
+                                    margin: [0, 5, 0, 5],
+                                    opacity: 0.6,
+                                },
+                            ],
+                            width: 'auto',
+                        },
+                        {
+                            stack: [
+                                {
+                                    text: 'Hacia una Universidad comprometida con la paz territorial',
+                                    alignment: 'center',
+                                    margin: [0, 2, 0, 2],
+                                    opacity: 0.6,
+                                },
+                                {
+                                    canvas: [
+                                        {
+                                            type: 'line',
+                                            x1: 0,
+                                            y1: 0,
+                                            x2: 320,
+                                            y2: 0,
+                                            lineWidth: 1,
+                                            color: '#ff0000',
+                                        },
+                                    ],
+                                    margin: [0, 2, 0, 2],
+                                    alignment: 'center',
+                                    opacity: 0.6,
+                                },
+                                {
+                                    text: 'Facultad de Ingeniería Electrónica y Telecomunicaciones\nSector Tulcán   Popayán - Cauca - Colombia\nConmutador 8209800 Exts. 2145 – 2103\nmaestriacomputacion@unicauca.edu.co   www.unicauca.edu.co/maestriacomputacion',
+                                    alignment: 'center',
+                                    fontSize: 10,
+                                    margin: [0, 5, 0, 5],
+                                    opacity: 0.6,
+                                },
+                            ],
+                            width: '*',
+                        },
+                    ],
+                    margin: [40, 60, 0, 0],
+                };
+            },
             styles: {
                 title: {
                     bold: true,
@@ -383,6 +479,7 @@ export class DocumentoformatoEvaluadoresComponent implements OnInit {
                     fontSize: 11,
                 },
             },
+            pageMargins: [40, 40, 40, 160],
         };
     }
 

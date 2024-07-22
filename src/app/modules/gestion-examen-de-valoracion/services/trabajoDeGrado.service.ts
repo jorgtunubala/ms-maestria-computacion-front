@@ -157,6 +157,17 @@ export class TrabajoDeGradoService {
         );
     }
 
+    cancelTrabajoDeGrado(trabajoGradoId: number): Observable<any> {
+        return this.http.put<any>(
+            backendGestionTrabajoDeGrado(
+                `inicio_trabajo_grado/cancelarTrabajoGrado/${trabajoGradoId}`
+            ),
+            {
+                headers: getHeaders(),
+            }
+        );
+    }
+
     deleteTrabajoDeGrado(trabajoGradoId: number): Observable<any> {
         return this.http.delete<any>(
             backendGestionTrabajoDeGrado(

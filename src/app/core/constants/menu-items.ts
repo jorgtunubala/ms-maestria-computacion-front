@@ -60,7 +60,7 @@ export const menuItems: MenuItem[] = [
         icon: 'pi pi-fw pi-book',
         items: [
             {
-                label: 'Examen de valoracion',
+                label: 'Examen de valoración',
                 icon: 'pi pi-user',
                 routerLink: '/examen-de-valoracion',
             },

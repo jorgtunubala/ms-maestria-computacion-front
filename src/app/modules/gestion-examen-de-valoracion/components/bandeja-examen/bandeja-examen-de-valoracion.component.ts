@@ -4,7 +4,7 @@ import { Subscription, catchError, firstValueFrom, of } from 'rxjs';
 import { DialogService } from 'primeng/dynamicdialog';
 import { BuscadorEstudiantesComponent } from 'src/app/shared/components/buscador-estudiantes/buscador-estudiantes.component';
 import { LocalStorageService } from 'src/app/shared/services/localstorage.service';
-import { EstadoProceso } from 'src/app/core/enums/enums';
+import { Aviso, EstadoProceso } from 'src/app/core/enums/enums';
 import { Estudiante } from 'src/app/modules/gestion-estudiantes/models/estudiante';
 import { Solicitud } from '../../models/solicitud';
 import { SolicitudService } from '../../services/solicitud.service';
@@ -14,6 +14,8 @@ import { RespuestaService } from '../../services/respuesta.service';
 import { ResolucionService } from '../../services/resolucion.service';
 import { SustentacionService } from '../../services/sustentacion.service';
 import { AutenticacionService } from 'src/app/modules/gestion-autenticacion/services/autenticacion.service';
+import { ConfirmationService, MessageService, PrimeIcons } from 'primeng/api';
+import { infoMessage } from 'src/app/core/utils/message-util';
 
 @Component({
     selector: 'app-bandeja-examen-de-valoracion',
@@ -51,17 +53,19 @@ export class BandejaExamenDeValoracionComponent implements OnInit {
     private sustentacionSubscription: Subscription;
 
     constructor(
+        private autenticacion: AutenticacionService,
         private cdr: ChangeDetectorRef,
-        private router: Router,
-        private estudianteService: EstudianteService,
-        private trabajoDeGradoService: TrabajoDeGradoService,
-        private solicitudService: SolicitudService,
-        private respuestaService: RespuestaService,
-        private resolucionService: ResolucionService,
-        private sustentacionService: SustentacionService,
-        private localStorageService: LocalStorageService,
+        private confirmationService: ConfirmationService,
         private dialogService: DialogService,
-        private autenticacion: AutenticacionService
+        private estudianteService: EstudianteService,
+        private localStorageService: LocalStorageService,
+        private messageService: MessageService,
+        private resolucionService: ResolucionService,
+        private respuestaService: RespuestaService,
+        private router: Router,
+        private solicitudService: SolicitudService,
+        private sustentacionService: SustentacionService,
+        private trabajoDeGradoService: TrabajoDeGradoService
     ) {}
 
     ngOnInit() {
@@ -324,6 +328,28 @@ export class BandejaExamenDeValoracionComponent implements OnInit {
         this.estudianteSeleccionado = null;
         this.localStorageService.clearLocalStorage('est');
         this.solicitudesPorEstudiante = [];
+    }
+
+    onDelete(event: any, id: number) {
+        this.confirmationService.confirm({
+            target: event.target,
+            message: Aviso.CONFIRMAR_ELIMINAR_REGISTRO,
+            icon: PrimeIcons.EXCLAMATION_TRIANGLE,
+            acceptLabel: 'Si, eliminar',
+            rejectLabel: 'No',
+            accept: () => this.cancelarTrabajoDeGrado(id),
+        });
+    }
+
+    cancelarTrabajoDeGrado(id: number) {
+        this.trabajoDeGradoService.cancelTrabajoDeGrado(id).subscribe({
+            next: () => {
+                this.messageService.add(
+                    infoMessage(Aviso.SOLICITUD_ELIMINADA_CORRECTAMENTE)
+                );
+                this.listTrabajosDeGradoPorEstados([34]);
+            },
+        });
     }
 
     onSeleccionarEstudiante() {
