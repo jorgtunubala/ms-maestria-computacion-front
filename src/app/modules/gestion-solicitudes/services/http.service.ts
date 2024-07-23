@@ -101,8 +101,8 @@ export class HttpService {
             .pipe(catchError(this.manejarError));
     }
 
-    obtenerActividadesReCreditos() {
-        const url = `${this.apiUrlSub}${httpConfig.obtenerActividadesReCreditosUrl}`;
+    obtenerActividadesDePracticaDocente(id: number) {
+        const url = `${this.apiUrlSub}${httpConfig.obtenerActividadesReCreditosUrl}190`;
         return this.http.get<InfoActividadesReCreditos[]>(url).pipe(
             map((respuesta) => respuesta),
             catchError(this.manejarError)

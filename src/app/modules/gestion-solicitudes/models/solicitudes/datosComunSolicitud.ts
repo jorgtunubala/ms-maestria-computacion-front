@@ -2,6 +2,7 @@ export class DatosComunSolicitud {
     static nuevoDatosComunSolicitud(obj: Object) {
         return new DatosComunSolicitud(
             obj['tipoSolicitud'],
+            obj['radicado'],
             obj['fechaEnvioSolicitud'],
             obj['nombreSolicitante'],
             obj['apellidoSolicitante'],
@@ -23,6 +24,7 @@ export class DatosComunSolicitud {
 
     constructor(
         public tipoSolicitud: string,
+        public radicado: string,
         public fechaEnvioSolicitud: Date,
         public nombreSolicitante: string,
         public apellidoSolicitante: string,

@@ -5,6 +5,10 @@
             leftIcon="pi pi-id-card"
             tooltip="Información de la solicitud"
         >
+            <ng-container *ngIf="cargandoDatos">
+                <app-skelinfosolicitud></app-skelinfosolicitud>
+            </ng-container>
+
             <ng-container *ngIf="datosSolicitud">
                 <div class="flex block">
                     <div style="padding-top: 5px">
@@ -17,7 +21,8 @@
                         ></p-tag>
                     </div>
                     <div class="col-11 text-lg font-bold">
-                        Solicitud RAD2453 -
+                        Solicitud
+                        {{ datosSolicitud.datosComunSolicitud.radicado }} -
                         {{ datosSolicitud.datosComunSolicitud.tipoSolicitud }}
                     </div>
                 </div>
@@ -95,6 +100,10 @@
             leftIcon="pi pi-paperclip"
             tooltip="Documentos anexos de la solicitud"
         >
+            <ng-container *ngIf="cargandoDatos">
+                <app-skelinfosolicitud></app-skelinfosolicitud>
+            </ng-container>
+
             <ng-container *ngIf="datosSolicitud">
                 <div class="flex block mb-3">
                     <div style="padding-top: 5px">
@@ -107,7 +116,8 @@
                         ></p-tag>
                     </div>
                     <div class="col-11 text-lg font-bold">
-                        Solicitud RAD2453 -
+                        Solicitud
+                        {{ datosSolicitud.datosComunSolicitud.radicado }} -
                         {{ datosSolicitud.datosComunSolicitud.tipoSolicitud }}
                     </div>
                 </div>
@@ -168,6 +178,10 @@
             leftIcon="pi pi-sliders-h"
             tooltip="Tramitar solicitud"
         >
+            <ng-container *ngIf="cargandoDatos">
+                <app-skelinfosolicitud></app-skelinfosolicitud>
+            </ng-container>
+
             <ng-container *ngIf="datosSolicitud">
                 <div class="flex block">
                     <div style="padding-top: 5px">
@@ -180,7 +194,8 @@
                         ></p-tag>
                     </div>
                     <div class="col-11 text-lg font-bold">
-                        Solicitud RAD2453 -
+                        Solicitud
+                        {{ datosSolicitud.datosComunSolicitud.radicado }} -
                         {{ datosSolicitud.datosComunSolicitud.tipoSolicitud }}
                     </div>
                 </div>
@@ -192,7 +207,15 @@
             leftIcon="pi pi-history"
             tooltip="Historial de la solicitud"
         >
-            <ng-container *ngIf="datosSolicitud">
+            <ng-container *ngIf="cargandoDatos">
+                <app-skelinfosolicitud></app-skelinfosolicitud>
+            </ng-container>
+
+            <ng-container
+                *ngIf="
+                    seguimiento.historial && seguimiento.historial.length > 0
+                "
+            >
                 <app-historial></app-historial>
             </ng-container>
         </p-tabPanel>

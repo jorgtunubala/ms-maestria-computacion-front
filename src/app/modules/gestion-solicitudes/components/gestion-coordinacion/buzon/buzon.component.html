@@ -5,6 +5,7 @@
             <b>Bandeja de entrada</b>
         </div>
     </p-divider>
+
     <p-table
         [value]="solicitudes"
         selectionMode="single"
@@ -19,6 +20,7 @@
                 <th>Recibido</th>
             </tr>
         </ng-template>
+
         <ng-template pTemplate="body" let-solicitud>
             <tr [pSelectableRow]="solicitud">
                 <td>

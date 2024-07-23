@@ -204,7 +204,7 @@
             )
         "
     >
-        <app-pasantiainvest></app-pasantiainvest>
+        <app-avalpasantiainvest></app-avalpasantiainvest>
     </div>
 
     <!-- Formulario para apoyo economico estancia de investigacion -->
@@ -268,11 +268,11 @@
         <app-avalpracticadocente></app-avalpracticadocente>
     </div>
 
-    <!-- Selector actividades reconocimiento de creditos -->
+    <!-- Selector actividades reconocimiento de creditos practica docente-->
     <div
         class="mt-4"
         *ngIf="
-            ['RE_CRED_PAS'].includes(
+            ['RE_CRED_PR_DOC'].includes(
                 radicar.tipoSolicitudEscogida.codigoSolicitud
             )
         "

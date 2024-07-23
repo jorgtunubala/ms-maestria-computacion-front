@@ -116,6 +116,23 @@
         requeridos para su revisión.
     </ng-container>
 
+    <!--Solicitud de reconocimiento creditos pasantia-->
+    <ng-container
+        *ngIf="
+            ['RE_CRED_PAS'].includes(
+                radicar.tipoSolicitudEscogida.codigoSolicitud
+            )
+        "
+    >
+        el reconocimiento y asignación de los créditos que corresponden a la
+        culminación satisfactoria de mi estancia de investigación. Adjunto a
+        esta solicitud, la documentación y soportes requeridos para su revisión.
+        asi como el enlace al repositorio donde se aloja el video de
+        socialización de la pasantía realizada.
+
+        <br /><br />Enlace video: {{ radicar.enlaceMaterialAudiovisual }}
+    </ng-container>
+
     <!--Solicitud apoyo economico para estancia de investigacion-->
     <ng-container
         *ngIf="
@@ -180,7 +197,7 @@
     <!--Solicitud de reconocimiento creditos por actividades de practica docente-->
     <ng-container
         *ngIf="
-            ['RE_CRED_PAS'].includes(
+            ['RE_CRED_PR_DOC'].includes(
                 radicar.tipoSolicitudEscogida.codigoSolicitud
             )
         "

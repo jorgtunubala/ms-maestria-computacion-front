@@ -39,15 +39,17 @@
                         <p class="font-semibold text-justify">
                             {{ requisitosSolicitudEscogida.tituloDocumento }}
                         </p>
-                        <p
-                            class="pl-3"
+
+                        <ng-container
                             *ngFor="
                                 let documento of requisitosSolicitudEscogida.documentosRequeridos;
                                 let i = index
                             "
                         >
-                            {{ i + 1 }}. {{ documento }}
-                        </p>
+                            <p class="pl-3" *ngIf="documento.adjuntarDocumento">
+                                {{ i + 1 }}. {{ documento.nombre }}
+                            </p>
+                        </ng-container>
                     </div>
                     <br />
 

@@ -11,7 +11,6 @@ import { DatePipe } from '@angular/common';
 })
 export class HistorialComponent implements OnInit {
     eventos: EventoHistorial[] = [];
-    docPrueba: File;
 
     personalizacion: {
         [estadoSolicitud: string]: { color: string; icon: string };

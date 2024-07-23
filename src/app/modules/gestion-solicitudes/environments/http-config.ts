@@ -9,7 +9,7 @@ export const httpConfig = {
     guardarAvalesSolicitudUrl: '/save/firmas',
     obtenerListaSolPendientesAvalUrl: '/obtener-solicitudes-pendientes/',
     obtenerInfoSolGuardadaUrl: '/obtener-datos-solicitud/',
-    obtenerActividadesReCreditosUrl: '/subTiposSolicitud/9',
+    obtenerActividadesReCreditosUrl: '/subTiposSolicitud/',
     obtenerHistorialDeSolicitudUrl: '/historial/solicitud/',
     obtenerSolicitudesCoordinacion:
         '/obtener-solicitudes-pendientes-coordinador/',
