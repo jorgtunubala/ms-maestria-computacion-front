@@ -92,6 +92,7 @@ export class SustentacionExamenComponent implements OnInit {
     isCoordinadorFase1: boolean = false;
     isEstudiante: boolean = false;
     isCoordinadorFase2: boolean = false;
+    isFechaSustentacion: boolean = false;
     isCoordinadorFase3: boolean = false;
     isCoordinadorFase4: boolean = false;
     isDocenteCreated: boolean = false;
@@ -174,14 +175,11 @@ export class SustentacionExamenComponent implements OnInit {
             linkOficioConsejo: [null, Validators.required],
             numeroActa: [null, Validators.required],
             fechaActa: [null, Validators.required],
-            asuntoConsejo: [null],
-            mensajeConsejo: [null],
+            nota: [null],
             juradosAceptados: [null],
             idJuradoInterno: [null, Validators.required],
             idJuradoExterno: [null, Validators.required],
             fechaSustentacion: [null, Validators.required],
-            numeroActaConsejo: [null, Validators.required],
-            fechaActaConsejo: [null, Validators.required],
             linkFormatoH: [null, Validators.required],
             linkFormatoI: [null, Validators.required],
             linkEstudioHojaVidaAcademicaGrado: [null, Validators.required],
@@ -196,15 +194,6 @@ export class SustentacionExamenComponent implements OnInit {
         this.sustentacionForm
             .get('conceptoCoordinador')
             .valueChanges.subscribe((value) => {
-                if (value == 'Aceptado') {
-                    this.sustentacionForm
-                        .get('asuntoCoordinador')
-                        .setValue('Sin asunto');
-
-                    this.sustentacionForm
-                        .get('mensajeCoordinador')
-                        .setValue('Sin observaciones.');
-                }
                 if (value == 'Rechazado') {
                     this.sustentacionForm
                         .get('asuntoCoordinador')
@@ -256,21 +245,16 @@ export class SustentacionExamenComponent implements OnInit {
                         this.juradoExternoSeleccionado.id
                     );
                     this.sustentacionForm
-                        .get('asuntoConsejo')
-                        .setValue('Sin Asunto');
-
-                    this.sustentacionForm
-                        .get('mensajeConsejo')
-                        .setValue('Sin observaciones');
+                        .get('nota')
+                        .setValue(
+                            'Los jurados fueron aceptados mediante oficio xxx del consejo de facultad.'
+                        );
                 }
                 if (value == 'Rechazado') {
                     this.sustentacionForm
-                        .get('asuntoConsejo')
-                        .setValue('Notificacion cambio de jurados');
-                    this.sustentacionForm
-                        .get('mensajeConsejo')
+                        .get('nota')
                         .setValue(
-                            'Por medio del presente se hace informe del cambio realizado por el comite respecto a los jurados.'
+                            'Se cambia el jurado x por x por tal situación.'
                         );
                 }
             });
@@ -331,14 +315,14 @@ export class SustentacionExamenComponent implements OnInit {
 
             if (this.isCoordinadorFase2 && !this.isCoordinadorFase3) {
                 formControls['juradosAceptados'].enable();
-                formControls['asuntoConsejo'].enable();
-                formControls['mensajeConsejo'].enable();
+                formControls['nota'].enable();
                 formControls['idJuradoInterno'].enable();
                 formControls['idJuradoExterno'].enable();
-                formControls['fechaSustentacion'].enable();
                 formControls['linkOficioConsejo'].enable();
-                formControls['numeroActaConsejo'].enable();
-                formControls['fechaActaConsejo'].enable();
+
+                if (this.isFechaSustentacion) {
+                    formControls['fechaSustentacion'].enable();
+                }
             }
 
             if (this.isEstudiante) {
@@ -631,6 +615,16 @@ export class SustentacionExamenComponent implements OnInit {
                 this.isCoordinadorFase4 = false;
                 break;
 
+            case EstadoProceso.SIN_ACTUALIZAR_FECHA_SUSTENTACION:
+                this.isDocente = true;
+                this.isCoordinadorFase1 = true;
+                this.isCoordinadorFase2 = true;
+                this.isFechaSustentacion = true;
+                this.isCoordinadorFase3 = false;
+                this.isEstudiante = false;
+                this.isCoordinadorFase4 = false;
+                break;
+
             case EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_ESTUDIANTE_SUSTENTACION:
                 this.messageService.add({
                     severity: 'info',
@@ -714,45 +708,105 @@ export class SustentacionExamenComponent implements OnInit {
 
     //#region PDF VIEWER
     async loadPdfFiles() {
-        const filesToConvert = [
-            {
-                file: this.FileFormatoF,
-                fieldName: 'Formato F',
-            },
-            {
+        const filesToConvert = [];
+
+        if (this.role.includes('ROLE_DOCENTE')) {
+            filesToConvert.push(
+                {
+                    file: this.FileMonografia,
+                    fieldName: 'Monografia',
+                },
+                {
+                    file: this.FileFormatoF,
+                    fieldName: 'Formato F',
+                },
+                ...this.anexosFiles.map((file) => ({
+                    file,
+                    fieldName: 'Anexo',
+                }))
+            );
+        }
+
+        if (
+            this.role.includes('ROLE_COORDINADOR') &&
+            this.isDocente &&
+            !this.isCoordinadorFase1
+        ) {
+            filesToConvert.push({
                 file: this.FileMonografia,
                 fieldName: 'Monografia',
-            },
-            {
-                file: this.FileFormatoG,
-                fieldName: 'Formato G',
-            },
-            {
-                file: this.FileEstudioHVA,
-                fieldName: 'Estudio Hoja de Vida Academica',
-            },
-            {
+            });
+        }
+
+        if (
+            this.role.includes('ROLE_COORDINADOR') &&
+            this.isCoordinadorFase1 &&
+            !this.isCoordinadorFase2
+        ) {
+            filesToConvert.push(
+                {
+                    file: this.FileFormatoG,
+                    fieldName: 'Formato G',
+                },
+                {
+                    file: this.FileEstudioHVA,
+                    fieldName: 'Estudio Hoja de Vida Academica',
+                }
+            );
+        }
+
+        if (
+            this.role.includes('ROLE_COORDINADOR') &&
+            this.isCoordinadorFase2 &&
+            !this.isCoordinadorFase3
+        ) {
+            filesToConvert.push({
                 file: this.FileOficioConsejo,
-                fieldName: 'Oficio Consejo',
-            },
-            {
-                file: this.FileFormatoH,
-                fieldName: 'Formato H',
-            },
-            {
-                file: this.FileFormatoI,
-                fieldName: 'Formato I',
-            },
-            {
-                file: this.FileEstudioHVAGrado,
-                fieldName: 'Estudio Hoja de Vida Academica para Grado',
-            },
-            {
+                fieldName: 'Carta de aceptación nombramiento de jurados',
+            });
+        }
+
+        if (
+            this.role.includes('ROLE_ESTUDIANTE') &&
+            this.isCoordinadorFase3 &&
+            !this.isEstudiante
+        ) {
+            filesToConvert.push(
+                {
+                    file: this.FileFormatoH,
+                    fieldName: 'Formato H',
+                },
+                {
+                    file: this.FileFormatoI,
+                    fieldName: 'Formato I',
+                },
+                {
+                    file: this.FileEstudioHVAGrado,
+                    fieldName: 'Estudio Hoja de Vida Academica para Grado',
+                }
+            );
+        }
+
+        if (
+            this.role.includes('ROLE_COORDINADOR') &&
+            this.isEstudiante &&
+            !this.isCoordinadorFase4
+        ) {
+            filesToConvert.push({
                 file: this.FileActaSustentacionP,
                 fieldName: 'Acta de Sustentación Publica',
-            },
-            ...this.anexosFiles.map((file) => ({ file, fieldName: 'Anexo' })),
-        ];
+            });
+        }
+
+        if (
+            this.role.includes('ROLE_COORDINADOR') &&
+            this.isCoordinadorFase4Created
+        ) {
+            filesToConvert.push({
+                file: this.FileActaSustentacionP,
+                fieldName: 'Acta de Sustentación Publica',
+            });
+        }
 
         const errorFiles = new Set<File>();
 
@@ -949,7 +1003,41 @@ export class SustentacionExamenComponent implements OnInit {
         });
     }
 
-    async loadSustentacion(): Promise<void> {
+    async loadJuradoExterno() {
+        try {
+            const idJuradoExterno =
+                this.sustentacionForm.get('idJuradoExterno').value;
+            const response = await firstValueFrom(
+                this.expertoService.obtenerExperto(idJuradoExterno)
+            );
+            if (response) {
+                this.juradoExternoSeleccionado =
+                    this.mapJuradoExternoLabel(response);
+                this.juradoExterno.setValue(response.id);
+            }
+        } catch (error) {
+            console.error('Error al obtener el jurado externo:', error);
+        }
+    }
+
+    async loadJuradoInterno() {
+        try {
+            const idJuradoInterno =
+                this.sustentacionForm.get('idJuradoInterno').value;
+            const response = await firstValueFrom(
+                this.docenteService.obtenerDocente(idJuradoInterno)
+            );
+            if (response) {
+                this.juradoInternoSeleccionado =
+                    this.mapJuradoInternoLabel(response);
+                this.juradoInterno.setValue(response.id);
+            }
+        } catch (error) {
+            console.error('Error al obtener el jurado interno:', error);
+        }
+    }
+
+    loadSustentacion(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             this.isLoading = true;
             const docenteObs =
@@ -1078,33 +1166,8 @@ export class SustentacionExamenComponent implements OnInit {
                         this.isCoordinadorFase3Created = true;
                         const data = responses.coordinadorFase3;
                         this.setValuesForm(data);
-
-                        this.expertoService
-                            .obtenerExperto(
-                                this.sustentacionForm.get('idJuradoExterno')
-                                    .value
-                            )
-                            .subscribe({
-                                next: (response) => {
-                                    this.juradoExternoSeleccionado =
-                                        this.mapJuradoExternoLabel(response);
-                                    this.juradoExterno.setValue(response.id);
-                                },
-                            });
-
-                        this.docenteService
-                            .obtenerDocente(
-                                this.sustentacionForm.get('idJuradoInterno')
-                                    .value
-                            )
-                            .subscribe({
-                                next: (response) => {
-                                    this.juradoInternoSeleccionado =
-                                        this.mapJuradoInternoLabel(response);
-                                    this.juradoInterno.setValue(response.id);
-                                },
-                            });
-
+                        this.loadJuradoExterno();
+                        this.loadJuradoInterno();
                         this.sustentacionForm
                             .get('juradosAceptados')
                             .setValue(
@@ -1118,14 +1181,6 @@ export class SustentacionExamenComponent implements OnInit {
                             .setValue(
                                 data.fechaSustentacion
                                     ? new Date(data.fechaSustentacion)
-                                    : null
-                            );
-
-                        this.sustentacionForm
-                            .get('fechaActaConsejo')
-                            .setValue(
-                                data?.fechaActaConsejo
-                                    ? new Date(data.fechaActaConsejo)
                                     : null
                             );
                     }
@@ -1282,15 +1337,6 @@ export class SustentacionExamenComponent implements OnInit {
                             .value == 'Aceptado'
                             ? {
                                   conceptoCoordinador: 'ACEPTADO',
-                                  envioEmail: {
-                                      asunto: this.sustentacionForm.get(
-                                          'asuntoCoordinador'
-                                      ).value,
-                                      mensaje:
-                                          this.sustentacionForm.get(
-                                              'mensajeCoordinador'
-                                          ).value,
-                                  },
                               }
                             : {
                                   conceptoCoordinador: 'RECHAZADO',
@@ -1343,9 +1389,7 @@ export class SustentacionExamenComponent implements OnInit {
                             : '';
 
                     const b64Anexos = anexos.map(
-                        (anexo: string, index: number) => ({
-                            linkAnexo: `Anexos${index}.pdf-${anexo}`,
-                        })
+                        (anexo: string, _: number) => anexo
                     );
 
                     const sustentacionData =
@@ -1409,8 +1453,6 @@ export class SustentacionExamenComponent implements OnInit {
                     const {
                         idJuradoInterno,
                         idJuradoExterno,
-                        numeroActaConsejo,
-                        fechaActaConsejo,
                         fechaSustentacion,
                         linkOficioConsejo,
                     } = this.sustentacionForm.value;
@@ -1420,39 +1462,17 @@ export class SustentacionExamenComponent implements OnInit {
                         'Aceptado'
                             ? {
                                   juradosAceptados: 'ACEPTADO',
-                                  numeroActaConsejo,
-                                  fechaActaConsejo,
                                   fechaSustentacion,
                                   idJuradoInterno: 'Sin cambios',
                                   idJuradoExterno: 'Sin cambios',
                                   linkOficioConsejo,
-                                  envioEmail: {
-                                      asunto: this.sustentacionForm.get(
-                                          'asuntoConsejo'
-                                      ).value,
-                                      mensaje:
-                                          this.sustentacionForm.get(
-                                              'mensajeConsejo'
-                                          ).value,
-                                  },
                               }
                             : {
                                   juradosAceptados: 'RECHAZADO',
                                   fechaSustentacion,
-                                  numeroActaConsejo,
-                                  fechaActaConsejo,
                                   idJuradoInterno,
                                   idJuradoExterno,
                                   linkOficioConsejo,
-                                  envioEmail: {
-                                      asunto: this.sustentacionForm.get(
-                                          'asuntoConsejo'
-                                      ).value,
-                                      mensaje:
-                                          this.sustentacionForm.get(
-                                              'mensajeConsejo'
-                                          ).value,
-                                  },
                               };
 
                     await lastValueFrom(
@@ -1497,15 +1517,6 @@ export class SustentacionExamenComponent implements OnInit {
                             .value == 'Aceptado'
                             ? {
                                   conceptoCoordinador: 'ACEPTADO',
-                                  envioEmail: {
-                                      asunto: this.sustentacionForm.get(
-                                          'asuntoCoordinador'
-                                      ).value,
-                                      mensaje:
-                                          this.sustentacionForm.get(
-                                              'mensajeCoordinador'
-                                          ).value,
-                                  },
                               }
                             : {
                                   conceptoCoordinador: 'RECHAZADO',
@@ -1588,14 +1599,14 @@ export class SustentacionExamenComponent implements OnInit {
                     );
                 } else if (
                     this.isCoordinadorFase3Created == true &&
-                    this.estado ==
-                        EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE3_SUSTENTACION
+                    (this.estado ==
+                        EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE3_SUSTENTACION ||
+                        this.estado ==
+                            EstadoProceso.SIN_ACTUALIZAR_FECHA_SUSTENTACION)
                 ) {
                     const {
                         idJuradoInterno,
                         idJuradoExterno,
-                        numeroActaConsejo,
-                        fechaActaConsejo,
                         fechaSustentacion,
                         linkOficioConsejo,
                     } = this.sustentacionForm.value;
@@ -1605,38 +1616,17 @@ export class SustentacionExamenComponent implements OnInit {
                         'Aceptado'
                             ? {
                                   juradosAceptados: 'ACEPTADO',
-                                  numeroActaConsejo,
-                                  fechaActaConsejo,
-                                  idJuradoInterno: 'Sin cambios',
-                                  idJuradoExterno: 'Sin cambios',
+                                  fechaSustentacion,
+                                  idJuradoInterno: this.juradoInterno.value,
+                                  idJuradoExterno: this.juradoExterno.value,
                                   linkOficioConsejo,
-                                  envioEmail: {
-                                      asunto: this.sustentacionForm.get(
-                                          'asuntoConsejo'
-                                      ).value,
-                                      mensaje:
-                                          this.sustentacionForm.get(
-                                              'mensajeConsejo'
-                                          ).value,
-                                  },
                               }
                             : {
                                   juradosAceptados: 'RECHAZADO',
                                   fechaSustentacion,
-                                  numeroActaConsejo,
-                                  fechaActaConsejo,
                                   idJuradoInterno,
                                   idJuradoExterno,
                                   linkOficioConsejo,
-                                  envioEmail: {
-                                      asunto: this.sustentacionForm.get(
-                                          'asuntoConsejo'
-                                      ).value,
-                                      mensaje:
-                                          this.sustentacionForm.get(
-                                              'mensajeConsejo'
-                                          ).value,
-                                  },
                               };
 
                     await lastValueFrom(

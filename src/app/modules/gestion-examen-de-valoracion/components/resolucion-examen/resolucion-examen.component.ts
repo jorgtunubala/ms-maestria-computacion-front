@@ -69,6 +69,9 @@ export class ResolucionExamenComponent implements OnInit {
     FileSolicitudConsejo: File | null;
     FileOficioConsejo: File | null;
 
+    formatoBEv1: any;
+    formatoBEv2: any;
+
     displayModal: boolean = false;
     errorMessageShown: boolean = false;
     editMode: boolean = false;
@@ -165,19 +168,6 @@ export class ResolucionExamenComponent implements OnInit {
         this.resolucionForm
             .get('conceptoDocumentosCoordinador')
             .valueChanges.subscribe((value) => {
-                if (value == 'Aceptado') {
-                    this.resolucionForm
-                        .get('asuntoCoordinador')
-                        .setValue(
-                            'Solicitud de revision resolucion de valoracion'
-                        );
-
-                    this.resolucionForm
-                        .get('mensajeCoordinador')
-                        .setValue(
-                            'Solicito comedidamente revisar el resolucion de valoracion del estudiante para aprobacion.'
-                        );
-                }
                 if (value == 'Rechazado') {
                     this.resolucionForm
                         .get('asuntoCoordinador')
@@ -259,6 +249,8 @@ export class ResolucionExamenComponent implements OnInit {
                 formControls['numeroActa'].enable();
                 formControls['fechaActa'].enable();
                 formControls['linkSolicitudConsejoFacultad'].enable();
+
+                this.getFormatosBEvaluadores();
             }
 
             if (this.isCoordinadorFase2) {
@@ -462,22 +454,75 @@ export class ResolucionExamenComponent implements OnInit {
         this.updateFormFields(this.role);
     }
 
+    async getFormatosBEvaluadores() {
+        const { formatosB } = await firstValueFrom(
+            this.respuestaService.getFormatosB(this.trabajoDeGradoId)
+        );
+
+        this.formatoBEv1 = await firstValueFrom(
+            this.trabajoDeGradoService.getFile(formatosB.formatoBEv1)
+        );
+
+        this.formatoBEv2 = await firstValueFrom(
+            this.trabajoDeGradoService.getFile(formatosB.formatoBEv2)
+        );
+    }
+
     //#region PDF VIEWER
     async loadPdfFiles() {
-        const filesToConvert = [
-            {
-                file: this.FileAnteproyectoFinal,
-                fieldName: 'Anteproyecto Final',
-            },
-            {
-                file: this.FileSolicitudComite,
-                fieldName: 'Solicitud al Comité',
-            },
-            {
-                file: this.FileSolicitudConsejo,
-                fieldName: 'Solicitud al Consejo de Facultad',
-            },
-        ];
+        const filesToConvert = [];
+
+        if (this.isDocente && !this.isCoordinadorFase3) {
+            filesToConvert.push(
+                {
+                    file: this.FileAnteproyectoFinal,
+                    fieldName: 'Anteproyecto Final',
+                },
+                {
+                    file: this.FileSolicitudComite,
+                    fieldName:
+                        'Solicitud al cómite para resolución de aprobación de trabajo de grado',
+                },
+                {
+                    file: this.FileSolicitudConsejo,
+                    fieldName:
+                        'Solicitud al consejo de facultad para resolución de aprobación de trabajo de grado',
+                }
+            );
+        }
+
+        if (this.isCoordinadorFase2 && this.isCoordinadorFase3) {
+            filesToConvert.push({
+                file: this.FileOficioConsejo,
+                fieldName:
+                    'Respuesta consejo de resolución generada - Oficio Consejo',
+            });
+        }
+
+        if (this.isCoordinadorFase1 && !this.isCoordinadorFase2) {
+            const FileFormatoBEv1 = this.convertBase64ToFile(
+                this.formatoBEv1,
+                'formatoBEv1',
+                'application/pdf'
+            );
+
+            const FileFormatoBEv2 = this.convertBase64ToFile(
+                this.formatoBEv2,
+                'formatoBEv2',
+                'application/pdf'
+            );
+
+            filesToConvert.push(
+                {
+                    file: FileFormatoBEv1,
+                    fieldName: 'Formato B Evaluador Interno',
+                },
+                {
+                    file: FileFormatoBEv2,
+                    fieldName: 'Formato B Evaluador Externo',
+                }
+            );
+        }
 
         const errorFiles = new Set<File>();
 
@@ -805,15 +850,6 @@ export class ResolucionExamenComponent implements OnInit {
                             .value == 'Aceptado'
                             ? {
                                   conceptoDocumentosCoordinador: 'ACEPTADO',
-                                  envioEmail: {
-                                      asunto: this.resolucionForm.get(
-                                          'asuntoCoordinador'
-                                      ).value,
-                                      mensaje:
-                                          this.resolucionForm.get(
-                                              'mensajeCoordinador'
-                                          ).value,
-                                  },
                               }
                             : {
                                   conceptoDocumentosCoordinador: 'RECHAZADO',
@@ -853,24 +889,6 @@ export class ResolucionExamenComponent implements OnInit {
                               )
                             : '';
 
-                    const { formatosB } = await firstValueFrom(
-                        this.respuestaService.getFormatosB(
-                            this.trabajoDeGradoId
-                        )
-                    );
-
-                    const b64FormatoBEv1 = await firstValueFrom(
-                        this.trabajoDeGradoService.getFile(
-                            formatosB.formatoBEv1
-                        )
-                    );
-
-                    const b64FormatoBEv2 = await firstValueFrom(
-                        this.trabajoDeGradoService.getFile(
-                            formatosB.formatoBEv2
-                        )
-                    );
-
                     const {
                         numeroActa,
                         fechaActa,
@@ -900,8 +918,8 @@ export class ResolucionExamenComponent implements OnInit {
                                   },
                                   linkSolicitudConsejoFacultad,
                                   obtenerDocumentosParaEnvioConsejo: {
-                                      b64FormatoBEv1,
-                                      b64FormatoBEv2,
+                                      b64FormatoBEv1: this.formatoBEv1,
+                                      b64FormatoBEv2: this.formatoBEv2,
                                       b64SolicitudConsejoFacultad,
                                       b64AnteproyectoFinal,
                                   },
@@ -952,15 +970,6 @@ export class ResolucionExamenComponent implements OnInit {
                             .value == 'Aceptado'
                             ? {
                                   conceptoDocumentosCoordinador: 'ACEPTADO',
-                                  envioEmail: {
-                                      asunto: this.resolucionForm.get(
-                                          'asuntoCoordinador'
-                                      ).value,
-                                      mensaje:
-                                          this.resolucionForm.get(
-                                              'mensajeCoordinador'
-                                          ).value,
-                                  },
                               }
                             : {
                                   conceptoDocumentosCoordinador: 'RECHAZADO',
@@ -1000,24 +1009,6 @@ export class ResolucionExamenComponent implements OnInit {
                               )
                             : '';
 
-                    const { formatosB } = await firstValueFrom(
-                        this.respuestaService.getFormatosB(
-                            this.trabajoDeGradoId
-                        )
-                    );
-
-                    const b64FormatoBEv1 = await firstValueFrom(
-                        this.trabajoDeGradoService.getFile(
-                            formatosB.formatoBEv1
-                        )
-                    );
-
-                    const b64FormatoBEv2 = await firstValueFrom(
-                        this.trabajoDeGradoService.getFile(
-                            formatosB.formatoBEv2
-                        )
-                    );
-
                     const {
                         numeroActa,
                         fechaActa,
@@ -1047,8 +1038,8 @@ export class ResolucionExamenComponent implements OnInit {
                                   },
                                   linkSolicitudConsejoFacultad,
                                   obtenerDocumentosParaEnvioConsejo: {
-                                      b64FormatoBEv1,
-                                      b64FormatoBEv2,
+                                      b64FormatoBEv1: this.formatoBEv1,
+                                      b64FormatoBEv2: this.formatoBEv2,
                                       b64SolicitudConsejoFacultad,
                                       b64AnteproyectoFinal,
                                   },
@@ -1215,6 +1206,20 @@ export class ResolucionExamenComponent implements OnInit {
             console.error('Error al convertir el archivo a base64:', error);
             throw error;
         }
+    }
+
+    convertBase64ToFile(
+        base64: string,
+        fileName: string,
+        fileType: string
+    ): File {
+        const byteCharacters = atob(base64);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        return new File([byteArray], fileName, { type: fileType });
     }
 
     convertFileToBase64(file: File | Blob): Promise<string> {

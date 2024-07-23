@@ -18,190 +18,196 @@
                 />
             </div>
         </div>
-        <form class="p-fluid px-8" [formGroup]="formatoHvaGradoForm">
-            <div class="flex flex-column mt-4">
-                <label class="label-required mb-2" for="estudiante"
-                    >Estudiante:</label
-                >
-                <input
-                    pInputText
-                    type="text"
-                    id="estudiante"
-                    formControlName="estudiante"
-                    readonly
-                />
-            </div>
-            <div class="flex flex-column mt-4">
-                <label class="label-required mb-2" for="codigo">Código:</label>
-                <input
-                    pInputText
-                    type="text"
-                    id="codigo"
-                    formControlName="codigo"
-                />
-            </div>
-            <div class="flex flex-column mt-4">
-                <label class="label-required mb-2" for="planEstudios"
-                    >Plan de Estudios:</label
-                >
-                <input
-                    pInputText
-                    type="text"
-                    id="planEstudios"
-                    formControlName="planEstudios"
-                />
-            </div>
-            <div class="flex flex-column mt-4 max-w-20rem">
-                <label class="label-required mb-2" for="fechaRevision"
-                    >Fecha de Revisión:</label
-                >
-                <p-calendar
-                    id="fechaRevision"
-                    formControlName="fechaRevision"
-                    [showIcon]="true"
-                    dateFormat="dd.mm.yy"
-                ></p-calendar>
-            </div>
-            <div class="flex flex-column mt-4">
-                <label class="label-required mb-2"
-                    >Tipo de Área de Formación:</label
-                >
-                <p-dropdown
-                    placeholder="Seleccione"
-                    styleClass="p-inputtext-md w-full max-w-35rem"
-                    optionLabel="nombre"
-                    [options]="tiposAreaFormacion"
-                    (onChange)="addAreaFormacion($event)"
-                ></p-dropdown>
-                <div
-                    class="mt-2"
-                    *ngFor="
-                        let area of areasFormacionControls;
-                        let areaIndex = index
-                    "
-                >
-                    <p-card class="w-full mt-2">
-                        <div class="card-title font-bold">
-                            {{ area.get("tipo").value }}
-                        </div>
-                        <div class="flex flex-column mb-2">
-                            <label class="label-required mb-2"
-                                >Seleccionar Asignatura:</label
-                            >
-                            <p-dropdown
-                                placeholder="Seleccione"
-                                styleClass="p-inputtext-md w-full"
-                                optionLabel="nombre"
-                                [options]="asignaturas"
-                                (onChange)="
-                                    addAsignatura(areaIndex, $event.value)
-                                "
-                            ></p-dropdown>
-                        </div>
-                        <div class="card-data flex flex-column row-gap-1">
-                            <div
-                                class="flex flex-row align-items-center justify-content-between column-gap-2"
-                                *ngFor="
-                                    let asignatura of area.get('asignaturas')
-                                        .controls;
-                                    let i = index
-                                "
-                            >
-                                <span>
-                                    {{ asignatura.get("nombre").value }} -
-                                    {{ asignatura.get("creditos").value }}
-                                    créditos</span
-                                >
-                                <button
-                                    pButton
-                                    icon="pi pi-times"
-                                    (click)="removeAsignatura(areaIndex, i)"
-                                ></button>
-                            </div>
-                        </div>
-                    </p-card>
+        <div class="px-8">
+            <form class="p-fluid" [formGroup]="formatoHvaGradoForm">
+                <div class="flex flex-column mt-4">
+                    <label class="label-required mb-2" for="titulo"
+                        >Título:</label
+                    >
+                    <input
+                        pInputText
+                        type="text"
+                        id="titulo"
+                        formControlName="titulo"
+                        readonly
+                    />
                 </div>
-            </div>
-            <div class="flex flex-column mt-4">
-                <label class="label-required mb-2" for="pruebaSuperada"
-                    >Prueba Superada:</label
-                >
-                <p-dropdown
-                    id="pruebaSuperada"
-                    formControlName="pruebaSuperada"
-                    [options]="pruebaSuperadaOptions"
-                    optionLabel="label"
-                    placeholder="Seleccione"
-                ></p-dropdown>
-            </div>
-            <div class="flex flex-column mt-4">
-                <label class="label-required mb-2" for="minimoArticulo"
-                    >Mínimo Artículo:</label
-                >
-                <input
-                    pInputText
-                    type="text"
-                    id="minimoArticulo"
-                    formControlName="minimoArticulo"
-                />
-            </div>
-            <div class="flex flex-column mt-4">
-                <label class="label-required mb-2" for="creditosCumplidos"
-                    >Créditos Cumplidos:</label
-                >
-                <input
-                    pInputText
-                    type="text"
-                    id="creditosCumplidos"
-                    formControlName="creditosCumplidos"
-                />
-            </div>
-            <div class="flex flex-column mt-4">
-                <label class="label-required mb-2" for="titulo">Título:</label>
-                <input
-                    pInputText
-                    type="text"
-                    id="titulo"
-                    formControlName="titulo"
-                    readonly
-                />
-            </div>
-            <div class="flex flex-column mt-4">
-                <label class="label-required mb-2" for="director"
-                    >Director:</label
-                >
-                <input
-                    pInputText
-                    type="text"
-                    id="director"
-                    formControlName="director"
-                />
-            </div>
-            <div class="flex flex-column mt-4">
-                <label class="label-required mb-2" for="codirector"
-                    >Codirector:</label
-                >
-                <input
-                    pInputText
-                    type="text"
-                    id="codirector"
-                    formControlName="codirector"
-                />
-            </div>
-            <div class="flex flex-column mt-4">
-                <label class="label-required mb-2" for="coordinador"
-                    >Coordinador:</label
-                >
-                <input
-                    pInputText
-                    type="text"
-                    id="coordinador"
-                    formControlName="coordinador"
-                />
-            </div>
-        </form>
+                <div class="flex flex-column mt-4">
+                    <label class="mb-2" for="estudiante">Estudiante:</label>
+                    <input
+                        pInputText
+                        type="text"
+                        id="estudiante"
+                        formControlName="estudiante"
+                        readonly
+                    />
+                </div>
+                <div class="flex flex-column mt-4">
+                    <label class="mb-2" for="codigo">Código:</label>
+                    <input
+                        pInputText
+                        type="text"
+                        id="codigo"
+                        formControlName="codigo"
+                    />
+                </div>
+                <div class="flex flex-column mt-4">
+                    <label class="mb-2" for="planEstudios"
+                        >Plan de Estudios:</label
+                    >
+                    <input
+                        pInputText
+                        type="text"
+                        id="planEstudios"
+                        formControlName="planEstudios"
+                    />
+                </div>
+                <div class="flex flex-column mt-4 max-w-20rem">
+                    <label class="label-required mb-2" for="fechaRevision"
+                        >Fecha de Revisión:</label
+                    >
+                    <p-calendar
+                        id="fechaRevision"
+                        formControlName="fechaRevision"
+                        [showIcon]="true"
+                        dateFormat="dd.mm.yy"
+                    ></p-calendar>
+                </div>
+                <div class="flex flex-column mt-4">
+                    <label class="label-required mb-2"
+                        >Tipo de Área de Formación:</label
+                    >
+                    <p-dropdown
+                        placeholder="Seleccione"
+                        styleClass="p-inputtext-md w-full max-w-35rem"
+                        optionLabel="nombre"
+                        [options]="tiposAreaFormacion"
+                        (onChange)="addAreaFormacion($event)"
+                    ></p-dropdown>
+                    <div
+                        class="mt-2"
+                        *ngFor="
+                            let area of areasFormacionControls;
+                            let areaIndex = index
+                        "
+                    >
+                        <p-card class="w-full mt-2">
+                            <div class="card-title font-bold">
+                                {{ area.get("tipo").value }}
+                            </div>
+                            <div class="flex flex-column mb-2">
+                                <label class="label-required mb-2"
+                                    >Seleccionar Asignatura:</label
+                                >
+                                <p-dropdown
+                                    placeholder="Seleccione"
+                                    styleClass="p-inputtext-md w-full"
+                                    optionLabel="nombre"
+                                    [options]="asignaturas"
+                                    (onChange)="
+                                        addAsignatura(areaIndex, $event.value)
+                                    "
+                                ></p-dropdown>
+                            </div>
+                            <div class="card-data flex flex-column row-gap-1">
+                                <div
+                                    class="flex flex-row align-items-center justify-content-between column-gap-2"
+                                    *ngFor="
+                                        let asignatura of area.get(
+                                            'asignaturas'
+                                        ).controls;
+                                        let i = index
+                                    "
+                                >
+                                    <span>
+                                        {{ asignatura.get("nombre").value }} -
+                                        {{ asignatura.get("creditos").value }}
+                                        créditos</span
+                                    >
+                                    <button
+                                        pButton
+                                        icon="pi pi-times"
+                                        (click)="removeAsignatura(areaIndex, i)"
+                                    ></button>
+                                </div>
+                            </div>
+                        </p-card>
+                    </div>
+                </div>
+                <div class="flex flex-column mt-4">
+                    <label class="label-required mb-2" for="pruebaSuperada"
+                        >Prueba Superada:</label
+                    >
+                    <p-dropdown
+                        id="pruebaSuperada"
+                        formControlName="pruebaSuperada"
+                        [options]="pruebaSuperadaOptions"
+                        optionLabel="label"
+                        placeholder="Seleccione"
+                    ></p-dropdown>
+                </div>
+                <div class="flex flex-column mt-4">
+                    <label class="label-required mb-2" for="minimoArticulo"
+                        >Mínimo Artículo:</label
+                    >
+                    <input
+                        pInputText
+                        type="text"
+                        id="minimoArticulo"
+                        formControlName="minimoArticulo"
+                    />
+                </div>
+                <div class="flex flex-column mt-4">
+                    <label class="label-required mb-2" for="creditosCumplidos"
+                        >Créditos Cumplidos:</label
+                    >
+                    <input
+                        pInputText
+                        type="text"
+                        id="creditosCumplidos"
+                        formControlName="creditosCumplidos"
+                    />
+                </div>
+                <div class="flex flex-column mt-4">
+                    <label class="label-required mb-2" for="director"
+                        >Director:</label
+                    >
+                    <input
+                        pInputText
+                        type="text"
+                        id="director"
+                        formControlName="director"
+                        readonly
+                    />
+                </div>
+                <div class="flex flex-column mt-4">
+                    <label class="label-required mb-2" for="codirector"
+                        >Codirector:</label
+                    >
+                    <input
+                        pInputText
+                        type="text"
+                        id="codirector"
+                        formControlName="codirector"
+                        readonly
+                    />
+                </div>
+                <div class="flex flex-column mt-4">
+                    <label class="label-required mb-2" for="coordinador"
+                        >Coordinador:</label
+                    >
+                    <input
+                        pInputText
+                        type="text"
+                        id="coordinador"
+                        formControlName="coordinador"
+                        readonly
+                    />
+                </div>
+            </form>
+        </div>
         <div
-            class="flex flex-row align-items-center justify-content-center footer-logo footer-content"
+            class="flex flex-row align-items-center justify-content-center footer-logo mt-8"
         >
             <img
                 src="assets/layout/images/logosIcontec.png"
@@ -210,7 +216,7 @@
                 height="140px"
             />
             <div
-                class="flex flex-column align-items-center justify-content-center footer-text"
+                class="flex flex-column align-items-center justify-content-center"
             >
                 <span>Por una Universidad de excelencia y solidaria</span>
                 <hr />

@@ -1,5 +1,3 @@
-import * as pdfMake from 'pdfmake/build/pdfmake';
-import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 import {
     Component,
     ElementRef,
@@ -15,7 +13,6 @@ import {
     FormGroup,
     Validators,
 } from '@angular/forms';
-import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
 import * as PizZip from 'pizzip';
@@ -31,7 +28,6 @@ import {
 } from 'src/app/core/utils/message-util';
 import { TrabajoDeGradoService } from '../../../services/trabajoDeGrado.service';
 import { FileUpload } from 'primeng/fileupload';
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 @Component({
     selector: 'documento-formatoHva',
@@ -43,8 +39,9 @@ export class DocumentoFormatoHvaComponent implements OnInit {
     @Output() formReady = new EventEmitter<FormGroup>();
     @Output() formatoHvaPdfGenerated = new EventEmitter<File>();
     @ViewChild('formatoHva') formatoHva!: ElementRef;
-    @ViewChild('FormatoHva') FormatoHva!: FileUpload;
+    @ViewChild('FileFormatoHva') FileFormatoHva!: FileUpload;
 
+    tituloSubscription: Subscription;
     estudianteSubscription: Subscription;
 
     formatoHvaForm: FormGroup;
@@ -56,7 +53,6 @@ export class DocumentoFormatoHvaComponent implements OnInit {
 
     constructor(
         private fb: FormBuilder,
-        private router: Router,
         private messageService: MessageService,
         private trabajoDeGradoService: TrabajoDeGradoService
     ) {}
@@ -102,8 +98,8 @@ export class DocumentoFormatoHvaComponent implements OnInit {
             ],
             programa: ['Maestría en Computación', Validators.required],
             estudiante: [null, Validators.required],
-            titulo: [null, Validators.required],
-            coordinador: [null, Validators.required],
+            titulo: [null],
+            coordinador: ['Luz Marina Sierra Martínez', Validators.required],
         });
         this.formReady.emit(this.formatoHvaForm);
     }
@@ -112,10 +108,6 @@ export class DocumentoFormatoHvaComponent implements OnInit {
         if (this.estudianteSubscription) {
             this.estudianteSubscription.unsubscribe();
         }
-    }
-
-    onCancel() {
-        this.router.navigate(['examen-de-valoracion/solicitud']);
     }
 
     onDownload() {
@@ -179,7 +171,7 @@ export class DocumentoFormatoHvaComponent implements OnInit {
 
     onAdjuntar(event: any) {
         if (this.formatoHvaForm.invalid) {
-            this.FormatoHva.clear();
+            this.FileFormatoHva.clear();
             this.handleWarningMessage(Mensaje.REGISTRE_CAMPOS_OBLIGATORIOS);
             return;
         } else {
@@ -190,7 +182,7 @@ export class DocumentoFormatoHvaComponent implements OnInit {
                 this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
             }
             this.loading = false;
-            this.FormatoHva.clear();
+            this.FileFormatoHva.clear();
         }
     }
 

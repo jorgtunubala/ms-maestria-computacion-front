@@ -190,17 +190,6 @@ export class SolicitudExamenComponent implements OnInit {
         this.solicitudForm
             .get('conceptoCoordinadorDocumentos')
             .valueChanges.subscribe((value) => {
-                if (value == 'Aceptado') {
-                    this.solicitudForm
-                        .get('asuntoCoordinador')
-                        .setValue('Solicitud de revision examen de valoracion');
-
-                    this.solicitudForm
-                        .get('mensajeCoordinador')
-                        .setValue(
-                            'Solicito comedidamente revisar el examen de valoracion del estudiante Julio Mellizo para aprobacion.'
-                        );
-                }
                 if (value == 'Rechazado') {
                     this.solicitudForm
                         .get('asuntoCoordinador')
@@ -369,7 +358,7 @@ export class SolicitudExamenComponent implements OnInit {
                                             })
                                         )
                                         .subscribe({
-                                            next: (response) => {                                                
+                                            next: (response) => {
                                                 if (
                                                     response?.evaluador_externo &&
                                                     response?.evaluador_interno
@@ -1028,15 +1017,6 @@ export class SolicitudExamenComponent implements OnInit {
                             .value == 'Aceptado'
                             ? {
                                   conceptoCoordinadorDocumentos: 'ACEPTADO',
-                                  envioEmail: {
-                                      asunto: this.solicitudForm.get(
-                                          'asuntoCoordinador'
-                                      ).value,
-                                      mensaje:
-                                          this.solicitudForm.get(
-                                              'mensajeCoordinador'
-                                          ).value,
-                                  },
                               }
                             : {
                                   conceptoCoordinadorDocumentos: 'RECHAZADO',
@@ -1199,15 +1179,6 @@ export class SolicitudExamenComponent implements OnInit {
                             .value == 'Aceptado'
                             ? {
                                   conceptoCoordinadorDocumentos: 'ACEPTADO',
-                                  envioEmail: {
-                                      asunto: this.solicitudForm.get(
-                                          'asuntoCoordinador'
-                                      ).value,
-                                      mensaje:
-                                          this.solicitudForm.get(
-                                              'mensajeCoordinador'
-                                          ).value,
-                                  },
                               }
                             : {
                                   conceptoCoordinadorDocumentos: 'RECHAZADO',

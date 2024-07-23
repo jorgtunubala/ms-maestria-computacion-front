@@ -24,6 +24,8 @@ import {
     warnMessage,
 } from 'src/app/core/utils/message-util';
 import { TrabajoDeGradoService } from '../../../services/trabajoDeGrado.service';
+import { BuscadorDocentesComponent } from 'src/app/shared/components/buscador-docentes/buscador-docentes.component';
+import { DialogService } from 'primeng/dynamicdialog';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 @Component({
@@ -46,14 +48,15 @@ export class DocumentoformatoEvaluadoresComponent implements OnInit {
 
     loading = false;
 
-    fechaActual: Date;
-    firmaDirector: string;
-    logoImage: string;
-    footerImage: string;
+    docenteSeleccionado: any;
     estudianteSeleccionado: any;
+    fechaActual: Date;
+    footerImage: string;
+    logoImage: string;
 
     constructor(
         private fb: FormBuilder,
+        private dialogService: DialogService,
         private messageService: MessageService,
         private trabajoDeGradoService: TrabajoDeGradoService
     ) {}
@@ -66,12 +69,20 @@ export class DocumentoformatoEvaluadoresComponent implements OnInit {
         return this.formatoEvaluadoresForm.get('estudiante') as FormControl;
     }
 
-    get experto(): FormControl {
-        return this.formatoEvaluadoresForm.get('juradoExterno') as FormControl;
+    get docente(): FormControl {
+        return this.formatoEvaluadoresForm.get('docente') as FormControl;
     }
 
-    get docente(): FormControl {
-        return this.formatoEvaluadoresForm.get('juradoInterno') as FormControl;
+    get evaluadorExterno(): FormControl {
+        return this.formatoEvaluadoresForm.get(
+            'evaluadorExterno'
+        ) as FormControl;
+    }
+
+    get evaluadorInterno(): FormControl {
+        return this.formatoEvaluadoresForm.get(
+            'evaluadorInterno'
+        ) as FormControl;
     }
 
     ngOnInit() {
@@ -105,7 +116,7 @@ export class DocumentoformatoEvaluadoresComponent implements OnInit {
                 {
                     next: (response) => {
                         if (response) {
-                            this.experto.setValue(response);
+                            this.evaluadorExterno.setValue(response);
                         }
                     },
                     error: (e) => this.handlerResponseException(e),
@@ -116,7 +127,7 @@ export class DocumentoformatoEvaluadoresComponent implements OnInit {
                 {
                     next: (response) => {
                         if (response) {
-                            this.docente.setValue(response);
+                            this.evaluadorInterno.setValue(response);
                         }
                     },
                     error: (e) => this.handlerResponseException(e),
@@ -127,12 +138,12 @@ export class DocumentoformatoEvaluadoresComponent implements OnInit {
     initForm(): void {
         this.formatoEvaluadoresForm = this.fb.group({
             consecutivo: ['MC/051', Validators.required],
-            juradoExterno: [null, Validators.required],
-            juradoInterno: [null, Validators.required],
             asunto: [null, Validators.required],
             estudiante: [null, Validators.required],
-            propuesta: [null, Validators.required],
             docente: [null, Validators.required],
+            propuesta: [null, Validators.required],
+            evaluadorExterno: [null, Validators.required],
+            evaluadorInterno: [null, Validators.required],
             fechaSesion: [null, Validators.required],
             fechaRespuesta: [null, Validators.required],
             coordinadora: [null, Validators.required],
@@ -168,6 +179,10 @@ export class DocumentoformatoEvaluadoresComponent implements OnInit {
         }
     }
 
+    nombreCompletoEstudiante(e: any) {
+        return `${e.nombre} ${e.apellido}`;
+    }
+
     getBase64Image(img: HTMLImageElement) {
         var canvas = document.createElement('canvas');
         canvas.width = img.width;
@@ -175,23 +190,6 @@ export class DocumentoformatoEvaluadoresComponent implements OnInit {
         var ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0);
         return canvas.toDataURL('image/png');
-    }
-
-    onFirmaChange(event: any, fieldName: string) {
-        const input = event && event.files ? event : { files: [] };
-        const file = input.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = () => {
-                if (fieldName === 'firmaDirector') {
-                    this.firmaDirector = reader.result as string;
-                }
-            };
-            reader.readAsDataURL(file);
-            const patchObject = {};
-            patchObject[fieldName] = file;
-            this.formatoEvaluadoresForm.patchValue(patchObject);
-        }
     }
 
     generateDocDefinition() {
@@ -235,17 +233,17 @@ export class DocumentoformatoEvaluadoresComponent implements OnInit {
                     alignment: 'justify',
                 },
                 {
-                    text: this.experto.value?.nombres,
+                    text: this.evaluadorInterno.value?.nombres,
                     style: 'value',
                     alignment: 'justify',
                 },
                 {
-                    text: this.experto.value?.universidad,
+                    text: this.evaluadorInterno.value?.universidad,
                     style: 'value',
                     alignment: 'justify',
                 },
                 {
-                    text: this.experto.value?.correo,
+                    text: this.evaluadorInterno.value?.correo,
                     style: 'value',
                     alignment: 'justify',
                 },
@@ -261,7 +259,7 @@ export class DocumentoformatoEvaluadoresComponent implements OnInit {
                     alignment: 'justify',
                 },
                 {
-                    text: this.experto.value?.nombres,
+                    text: this.evaluadorExterno.value?.nombres,
                     style: 'value',
                     alignment: 'justify',
                 },
@@ -271,12 +269,12 @@ export class DocumentoformatoEvaluadoresComponent implements OnInit {
                     alignment: 'justify',
                 },
                 {
-                    text: this.experto.value?.universidad,
+                    text: this.evaluadorExterno.value?.universidad,
                     style: 'value',
                     alignment: 'justify',
                 },
                 {
-                    text: this.experto.value?.correo,
+                    text: this.evaluadorExterno.value?.correo,
                     style: 'value',
                     alignment: 'justify',
                 },
@@ -310,7 +308,7 @@ export class DocumentoformatoEvaluadoresComponent implements OnInit {
                         '” del estudiante ' +
                         formValues.estudiante +
                         ', bajo la dirección del PhD. ' +
-                        formValues.docente +
+                        this.docenteSeleccionado.nombres +
                         '.',
                     style: 'value',
                     margin: [0, 0, 0, 5],
@@ -319,7 +317,7 @@ export class DocumentoformatoEvaluadoresComponent implements OnInit {
                 {
                     text:
                         'En la reunión mencionada, el Comité aceptó la sugerencia de evaluadores realizada por el profesor ' +
-                        formValues.docente +
+                        this.docenteSeleccionado.nombres +
                         ', y en este sentido, nos permitimos por medio del presente oficio, notificarle su designación como evaluador del examen de valoración. Adjunto a este documento encontrará los documentos que entrega el estudiante para soportar la solicitud.',
                     style: 'value',
 
@@ -365,9 +363,9 @@ export class DocumentoformatoEvaluadoresComponent implements OnInit {
                 {
                     text:
                         'Cualquier inquietud con relación a la evaluación favor comunicarse con el director del trabajo de grado, PhD. ' +
-                        formValues.docente +
+                        this.docenteSeleccionado.nombres +
                         ' (email: ' +
-                        formValues.docente +
+                        this.docenteSeleccionado.correo +
                         ').',
                     style: 'value',
                     margin: [0, 0, 0, 5],
@@ -457,7 +455,7 @@ export class DocumentoformatoEvaluadoresComponent implements OnInit {
                                     opacity: 0.6,
                                 },
                                 {
-                                    text: 'Facultad de Ingeniería Electrónica y Telecomunicaciones\nSector Tulcán   Popayán - Cauca - Colombia\nConmutador 8209800 Exts. 2145 – 2103\nmaestriacomputacion@unicauca.edu.co   www.unicauca.edu.co/maestriacomputacion',
+                                    text: 'Facultad de Ingeniería Electrónica y Telecomunicaciones\nCra 2 No. 4N-140 Edif. de Ingenierías - Sector Tulcán Popayán - Cauca - Colombia\nConmutador 8209800 Ext. 2145 maestriacomputacion@unicauca.edu.co\nwww.unicauca.edu.cowww.unicauca.edu.co/maestriacomputacion',
                                     alignment: 'center',
                                     fontSize: 10,
                                     margin: [0, 5, 0, 5],
@@ -528,8 +526,33 @@ export class DocumentoformatoEvaluadoresComponent implements OnInit {
         }
     }
 
-    nombreCompletoEstudiante(e: any) {
-        return `${e.nombre} ${e.apellido}`;
+    showBuscadorDocente() {
+        return this.dialogService.open(BuscadorDocentesComponent, {
+            header: 'Seleccionar docente',
+            width: '60%',
+        });
+    }
+
+    onSeleccionarDocente() {
+        const ref = this.showBuscadorDocente();
+        ref.onClose.subscribe({
+            next: (response) => {
+                if (response) {
+                    const docente = this.mapDocenteLabel(response);
+                    this.docenteSeleccionado = docente;
+                    this.docente.setValue(docente.nombres);
+                }
+            },
+        });
+    }
+
+    mapDocenteLabel(docente: any) {
+        return {
+            id: docente.id,
+            nombres: docente.nombres ?? docente.nombre + ' ' + docente.apellido,
+            correo: docente.correoElectronico ?? docente.correo,
+            universidad: docente.universidad,
+        };
     }
 
     handlerResponseException(response: any) {

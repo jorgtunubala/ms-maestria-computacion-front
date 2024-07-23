@@ -60,9 +60,9 @@ export class RespuestaExamenComponent implements OnInit {
     evaluacionExpertoIds: number[] = [];
 
     tituloSeleccionado: string;
-    estudianteSeleccionado: Estudiante = {};
-    expertoSeleccionado: Experto;
-    docenteSeleccionado: Docente;
+    estudianteSeleccionado: Estudiante | any = {};
+    expertoSeleccionado: Experto | any;
+    docenteSeleccionado: Docente | any;
 
     estados: string[] = ['APROBADO', 'APLAZADO', 'NO_APROBADO'];
 
@@ -602,11 +602,11 @@ export class RespuestaExamenComponent implements OnInit {
                         respuesta.fechaMaximaEntrega,
                     ],
                     ['asunto' + indexExperto]: [
-                        'Respuesta Examen de Valoracion',
+                        `Respuesta Examen de Valoracion ${this.estudianteSeleccionado.nombre} ${this.estudianteSeleccionado.apellido} - ${this.expertoSeleccionado?.nombres}`,
                         Validators.required,
                     ],
                     ['mensaje' + indexExperto]: [
-                        'Documentos enviados por',
+                        `Documentos enviados por ${this.expertoSeleccionado?.nombres} - ${this.expertoSeleccionado?.universidad}`,
                         Validators.required,
                     ],
                 });
@@ -662,11 +662,11 @@ export class RespuestaExamenComponent implements OnInit {
                         respuesta.fechaMaximaEntrega,
                     ],
                     ['asunto' + indexDocente]: [
-                        'Respuesta Examen de Valoracion',
+                        `Respuesta Examen de Valoracion ${this.estudianteSeleccionado.nombre} ${this.estudianteSeleccionado.apellido} - ${this.docenteSeleccionado?.nombres}`,
                         Validators.required,
                     ],
                     ['mensaje' + indexDocente]: [
-                        'Documentos enviados por',
+                        `Documentos enviados por ${this.docenteSeleccionado?.nombres} - ${this.docenteSeleccionado?.universidad}`,
                         Validators.required,
                     ],
                 });
@@ -1020,11 +1020,25 @@ export class RespuestaExamenComponent implements OnInit {
                       this[formArrayName].length]: [null, Validators.required],
                 ['fechaMaximaEntrega' + this[formArrayName].length]: [null],
                 ['asunto' + this[formArrayName].length]: [
-                    'Respuesta Examen de Valoracion',
+                    `Respuesta Examen de Valoracion ${
+                        this.estudianteSeleccionado?.nombre
+                    } ${this.estudianteSeleccionado?.apellido} - ${
+                        formArrayName === 'expertoEvaluaciones'
+                            ? this.expertoSeleccionado?.nombres
+                            : this.docenteSeleccionado?.nombres
+                    }`,
                     Validators.required,
                 ],
                 ['mensaje' + this[formArrayName].length]: [
-                    'Documentos enviados por',
+                    `Documentos enviados por ${
+                        formArrayName === 'expertoEvaluaciones'
+                            ? this.expertoSeleccionado?.nombres +
+                              ' - ' +
+                              this.expertoSeleccionado?.universidad
+                            : this.docenteSeleccionado?.nombres +
+                              ' - ' +
+                              this.docenteSeleccionado?.universidad
+                    }`,
                     Validators.required,
                 ],
             });

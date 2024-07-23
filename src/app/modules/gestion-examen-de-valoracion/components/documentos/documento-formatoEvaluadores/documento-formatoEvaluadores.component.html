@@ -1,8 +1,8 @@
-<div>
+<p-panel>
     <div id="formatoEvaluadores">
         <div class="flex flex-column w-full mb-4">
             <div
-                class="flex flex-row align-items-center justify-content-evenly header-logo"
+                class="flex align-items-center justify-content-evenly header-logo"
             >
                 <div>
                     <h2>Maestría en Computación</h2>
@@ -17,20 +17,11 @@
                     height="180px"
                 />
             </div>
-            <div
-                class="flex flex-column w-full justify-content-center align-items-center row-gap-4 title-head"
-            >
-                <span style="font-size: 20px; font-weight: bold"
-                    >TESIS DE POSGRADO</span
-                >
-            </div>
         </div>
         <div class="mt-4 form-container px-8">
             <form class="p-fluid" [formGroup]="formatoEvaluadoresForm">
                 <div class="flex flex-column mt-4">
-                    <label class="label-required mb-2" for="consecutivo"
-                        >Consecutivo:</label
-                    >
+                    <label class="mb-2" for="consecutivo">Consecutivo:</label>
                     <input
                         pInputText
                         type="text"
@@ -38,62 +29,6 @@
                         formControlName="consecutivo"
                         readonly
                     />
-                </div>
-                <div class="flex flex-column mt-4">
-                    <label class="label-required mb-2" for="coordinadora"
-                        >Coordinador(a):</label
-                    >
-                    <input
-                        pInputText
-                        type="text"
-                        id="coordinadora"
-                        formControlName="coordinadora"
-                    />
-                </div>
-                <div class="flex flex-column mt-4">
-                    <label class="label-required mb-2" for="docente"
-                        >Docente:</label
-                    >
-                    <input
-                        pInputText
-                        type="text"
-                        id="docente"
-                        formControlName="docente"
-                    />
-                </div>
-                <div class="mt-4">
-                    <label>Evaluador Externo:</label>
-                    <div class="flex align-items-center">
-                        <p-card class="w-full m-0">
-                            <div
-                                class="flex justify-content-between align-items-center"
-                            >
-                                <span>{{
-                                    docente.value?.nombres ??
-                                        docente.value?.nombre +
-                                            " " +
-                                            docente.value?.apellido
-                                }}</span>
-                            </div>
-                        </p-card>
-                    </div>
-                </div>
-                <div class="mt-4">
-                    <label>Evaluador Interno:</label>
-                    <div class="flex align-items-center">
-                        <p-card class="w-full m-0">
-                            <div
-                                class="flex justify-content-between align-items-center"
-                            >
-                                <span>{{
-                                    experto.value?.nombres ??
-                                        experto.value?.nombre +
-                                            " " +
-                                            experto.value?.apellido
-                                }}</span>
-                            </div>
-                        </p-card>
-                    </div>
                 </div>
                 <div class="flex flex-column mt-4">
                     <label class="label-required mb-2" for="asunto"
@@ -106,17 +41,50 @@
                         rows="4"
                     ></textarea>
                 </div>
-                <div class="flex flex-column mt-4">
-                    <label class="label-required mb-2" for="estudiante"
-                        >Estudiante:</label
-                    >
-                    <input
-                        pInputText
-                        type="text"
-                        id="estudiante"
-                        formControlName="estudiante"
-                        readonly
-                    />
+                <div
+                    class="flex justify-content-between align-items-center mt-4"
+                >
+                    <div class="flex align-items-center mr-2">
+                        <label class="label-required mr-2" for="coordinadora"
+                            >Coordinador(a):</label
+                        >
+                        <input
+                            pInputText
+                            type="text"
+                            id="coordinadora"
+                            formControlName="coordinadora"
+                        />
+                    </div>
+                    <div class="flex align-items-center mr-2">
+                        <label class="label-required mr-2" for="docente"
+                            >Docente:</label
+                        >
+                        <input
+                            class="flex-1 mr-2"
+                            pInputText
+                            type="text"
+                            id="docente"
+                            formControlName="docente"
+                            readonly
+                        />
+                        <button
+                            pButton
+                            icon="pi pi-search"
+                            (click)="onSeleccionarDocente()"
+                        ></button>
+                    </div>
+                    <div class="flex align-items-center">
+                        <label class="label-required mr-2" for="estudiante"
+                            >Estudiante:</label
+                        >
+                        <input
+                            pInputText
+                            type="text"
+                            id="estudiante"
+                            formControlName="estudiante"
+                            readonly
+                        />
+                    </div>
                 </div>
                 <div class="flex flex-column mt-4">
                     <label class="label-required mb-2" for="propuesta"
@@ -130,8 +98,42 @@
                         readonly
                     />
                 </div>
+                <div class="mt-4">
+                    <label>Evaluador Externo:</label>
+                    <div class="flex align-items-center">
+                        <p-card class="w-full m-0">
+                            <div
+                                class="flex justify-content-between align-items-center"
+                            >
+                                <span>{{
+                                    evaluadorInterno.value?.nombres ??
+                                        evaluadorInterno.value?.nombre +
+                                            " " +
+                                            evaluadorInterno.value?.apellido
+                                }}</span>
+                            </div>
+                        </p-card>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <label>Evaluador Interno:</label>
+                    <div class="flex align-items-center">
+                        <p-card class="w-full m-0">
+                            <div
+                                class="flex justify-content-between align-items-center"
+                            >
+                                <span>{{
+                                    evaluadorExterno.value?.nombres ??
+                                        evaluadorExterno.value?.nombre +
+                                            " " +
+                                            evaluadorExterno.value?.apellido
+                                }}</span>
+                            </div>
+                        </p-card>
+                    </div>
+                </div>
                 <div class="flex flex-column mt-4 max-w-20rem">
-                    <div class="flex column-gap-2 mb-2">
+                    <div class="flex align-items-center column-gap-2 mb-2">
                         <label class="label-required" for="fechaSesion"
                             >Fecha de Sesión:
                         </label>
@@ -149,7 +151,7 @@
                     ></p-calendar>
                 </div>
                 <div class="flex flex-column mt-4 max-w-20rem">
-                    <div class="flex column-gap-2 mb-2">
+                    <div class="flex align-items-center column-gap-2 mb-2">
                         <label class="label-required" for="fechaRespuesta"
                             >Fecha de Respuestas:
                         </label>
@@ -169,7 +171,7 @@
             </form>
         </div>
         <div
-            class="flex flex-row align-items-center justify-content-center footer-logo footer-content"
+            class="flex flex-row align-items-center justify-content-center footer-logo mt-8"
         >
             <img
                 src="assets/layout/images/logosIcontec.png"
@@ -178,7 +180,7 @@
                 height="140px"
             />
             <div
-                class="flex flex-column align-items-center justify-content-center footer-text"
+                class="flex flex-column align-items-center justify-content-center"
             >
                 <span>Por una Universidad de excelencia y solidaria</span>
                 <hr />
@@ -210,4 +212,4 @@
             [loading]="loading"
         ></button>
     </div>
-</div>
+</p-panel>

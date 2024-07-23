@@ -4,6 +4,7 @@ import {
     Component,
     ElementRef,
     EventEmitter,
+    Input,
     OnInit,
     Output,
     ViewChild,
@@ -17,7 +18,7 @@ import {
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
-import { Subscription } from 'rxjs';
+import { Subscription, firstValueFrom } from 'rxjs';
 import * as PizZip from 'pizzip';
 import * as Docxtemplater from 'docxtemplater';
 import { saveAs } from 'file-saver';
@@ -30,6 +31,7 @@ import {
     warnMessage,
 } from 'src/app/core/utils/message-util';
 import { TrabajoDeGradoService } from '../../../services/trabajoDeGrado.service';
+import { ResolucionService } from '../../../services/resolucion.service';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 @Component({
@@ -38,6 +40,7 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
     styleUrls: ['documento-formatoHvaGrado.component.scss'],
 })
 export class DocumentoFormatoHvaGradoComponent implements OnInit {
+    @Input() trabajoDeGradoId: number;
     @Output() formReady = new EventEmitter<FormGroup>();
     @Output() formatoHvaGradoPdfGenerated = new EventEmitter<File>();
     @ViewChild('formatoHvaGrado') formatoHvaGrado!: ElementRef;
@@ -65,6 +68,10 @@ export class DocumentoFormatoHvaGradoComponent implements OnInit {
         { nombre: 'Asignatura A', creditos: 3 },
         { nombre: 'Asignatura B', creditos: 4 },
         { nombre: 'Asignatura C', creditos: 5 },
+        { nombre: 'Asignatura D', creditos: 2 },
+        { nombre: 'Asignatura E', creditos: 5 },
+        { nombre: 'Asignatura F', creditos: 4 },
+        { nombre: 'Asignatura G', creditos: 5 },
     ];
 
     pruebaSuperadaOptions = [
@@ -76,11 +83,50 @@ export class DocumentoFormatoHvaGradoComponent implements OnInit {
         private fb: FormBuilder,
         private router: Router,
         private messageService: MessageService,
-        private trabajoDeGradoService: TrabajoDeGradoService
+        private trabajoDeGradoService: TrabajoDeGradoService,
+        private resolucionService: ResolucionService
     ) {}
 
     get estudiante(): FormControl {
         return this.formatoHvaGradoForm.get('estudiante') as FormControl;
+    }
+
+    get director(): FormControl {
+        return this.formatoHvaGradoForm.get('director') as FormControl;
+    }
+
+    get codirector(): FormControl {
+        return this.formatoHvaGradoForm.get('codirector') as FormControl;
+    }
+
+    async loadDirector() {
+        try {
+            const response = await firstValueFrom(
+                this.resolucionService.getResolucionDocente(
+                    this.trabajoDeGradoId
+                )
+            );
+            if (response) {
+                this.director.setValue(response.director.nombres);
+            }
+        } catch (error) {
+            console.error('Error al obtener el director:', error);
+        }
+    }
+
+    async loadCodirector() {
+        try {
+            const response = await firstValueFrom(
+                this.resolucionService.getResolucionDocente(
+                    this.trabajoDeGradoId
+                )
+            );
+            if (response) {
+                this.codirector.setValue(response.codirector.nombres);
+            }
+        } catch (error) {
+            console.error('Error al obtener el codirector:', error);
+        }
     }
 
     ngOnInit() {
@@ -115,6 +161,11 @@ export class DocumentoFormatoHvaGradoComponent implements OnInit {
                 },
                 error: (e) => this.handlerResponseException(e),
             });
+
+        if (this.trabajoDeGradoId) {
+            this.loadDirector();
+            this.loadCodirector();
+        }
     }
 
     initForm(): void {
@@ -128,15 +179,9 @@ export class DocumentoFormatoHvaGradoComponent implements OnInit {
             minimoArticulo: [null, Validators.required],
             creditosCumplidos: [null, Validators.required],
             titulo: [null, Validators.required],
-            director: [
-                'Dr. Juan Camilo Rodríguez Fernández',
-                Validators.required,
-            ],
-            codirector: [
-                'Dr. María Fernanda Gómez de la Vega',
-                Validators.required,
-            ],
-            coordinador: ['Alba Catalina Ramírez Mendoza', Validators.required],
+            director: [null, Validators.required],
+            codirector: [null, Validators.required],
+            coordinador: ['Luz Marina Sierra Martínez', Validators.required],
         });
         this.formReady.emit(this.formatoHvaGradoForm);
     }
@@ -208,8 +253,8 @@ export class DocumentoFormatoHvaGradoComponent implements OnInit {
                 (asignatura: any, asignaturaIndex: number) => {
                     const keyNombre = `asignatura${area.tipo}${asignaturaIndex}.nombre`;
                     const keyCreditos = `asignatura${area.tipo}${asignaturaIndex}.creditos`;
-                    transformed[keyNombre] = asignatura.nombre;
-                    transformed[keyCreditos] = asignatura.creditos;
+                    transformed[keyNombre] = asignatura.nombre || 'NA';
+                    transformed[keyCreditos] = asignatura.creditos || 'NA';
                 }
             );
         });
@@ -241,7 +286,7 @@ export class DocumentoFormatoHvaGradoComponent implements OnInit {
 
             Object.keys(transformedData).forEach((key) => {
                 if (key.startsWith('asignatura')) {
-                    docData[key] = transformedData[key];
+                    docData[key] = transformedData[key] || 'NA';
                 }
             });
 

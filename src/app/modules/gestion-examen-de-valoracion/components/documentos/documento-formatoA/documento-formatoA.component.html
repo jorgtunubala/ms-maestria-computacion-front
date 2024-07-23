@@ -18,7 +18,7 @@
                 />
             </div>
             <div
-                class="flex flex-column w-full justify-content-center align-items-center row-gap-4 title-head"
+                class="flex flex-column w-full justify-content-center align-items-center row-gap-4"
             >
                 <span style="font-size: 20px">
                     SOLICITUD EXAMEN DE VALORACION
@@ -29,15 +29,8 @@
         <form class="mt-4" [formGroup]="formatoAForm">
             <div class="flex flex-column gap-4">
                 <div class="field grid">
-                    <!-- FIELD TO PDF -->
-                    <div class="field-content p-show">
-                        <label>Asunto:</label>
-                        <span>{{ formatoAForm.get("asunto").value }}</span>
-                    </div>
-                    <!-- END -->
-
                     <div
-                        class="col-2 col-label text-right mr-2 align-self-start p-hide"
+                        class="col-2 col-label text-right mr-2 align-self-start"
                     >
                         <label
                             class="uppercase font-bold"
@@ -51,17 +44,15 @@
                             [maxLength]="250"
                             class="p-inputtextarea-md w-full"
                             formControlName="asunto"
+                            [ngClass]="{
+                                'ng-invalid ng-dirty':
+                                    getFormControl('asunto').invalid &&
+                                    getFormControl('asunto').touched
+                            }"
                         ></textarea>
                     </div>
                 </div>
                 <div class="field grid">
-                    <!-- FIELD TO PDF -->
-                    <div class="field-content p-show">
-                        <label>Titulo:</label>
-                        <span>{{ formatoAForm.get("titulo").value }}</span>
-                    </div>
-                    <!-- END -->
-
                     <div
                         class="col-2 col-label text-right mr-2 align-self-start"
                     >
@@ -71,24 +62,13 @@
                         <textarea
                             pInputTextarea
                             [maxLength]="250"
-                            class="p-inputtextarea-md w-full p-hide"
+                            class="p-inputtextarea-md w-full"
                             formControlName="titulo"
-                            [ngClass]="{
-                                'ng-invalid ng-dirty':
-                                    getFormControl('titulo').invalid &&
-                                    getFormControl('titulo').touched
-                            }"
+                            readonly
                         ></textarea>
                     </div>
                 </div>
                 <div class="field grid">
-                    <!-- FIELD TO PDF -->
-                    <div class="field-content p-show">
-                        <label>Estudiante:</label>
-                        <span>{{ formatoAForm.get("estudiante").value }}</span>
-                    </div>
-                    <!-- END -->
-
                     <div
                         class="col-2 col-label text-right mr-2 align-self-start"
                     >
@@ -100,6 +80,7 @@
                             [maxLength]="250"
                             class="p-inputtext-md w-full"
                             formControlName="estudiante"
+                            readonly
                         />
                     </div>
                 </div>
@@ -119,19 +100,6 @@
                                 let i = index
                             "
                         >
-                            <!-- FIELD TO PDF -->
-                            <div class="field-content p-show">
-                                <label>
-                                    {{ formatText(orientador?.rol) }}
-                                    {{ formatText(orientador?.tipo) }}:
-                                </label>
-                                <span
-                                    >{{ orientador?.nombre }}
-                                    {{ orientador?.apellido }}</span
-                                >
-                            </div>
-                            <!-- END -->
-
                             <div class="flex align-items-center">
                                 <p-card class="w-full max-w-30rem">
                                     <div class="flex justify-content-between">
@@ -232,13 +200,6 @@
                         class="col-9 col-input field-content"
                         *ngIf="experto.value; else noEvaluadorSelected"
                     >
-                        <!-- FIELD TO PDF -->
-                        <label class="p-show">Evaluador Externo:</label>
-                        <span class="p-show">{{
-                            experto?.value?.nombres
-                        }}</span>
-                        <!-- END -->
-
                         <div class="flex align-items-center">
                             <p-card class="w-full max-w-30rem">
                                 <div class="flex justify-content-between">
@@ -282,13 +243,6 @@
                         class="col-9 col-input field-content"
                         *ngIf="docente.value; else noEvaluadorSelected"
                     >
-                        <!-- FIELD TO PDF -->
-                        <label class="p-show">Evaluador Interno:</label>
-                        <span class="p-show">{{
-                            docente?.value?.nombres
-                        }}</span>
-                        <!-- END -->
-
                         <div class="flex align-items-center">
                             <p-card class="w-full max-w-30rem">
                                 <div class="flex justify-content-between">
@@ -321,21 +275,6 @@
                     </div>
                 </div>
                 <div class="field grid">
-                    <!-- FIELD TO PDF -->
-                    <div class="field-estudiante p-show">
-                        <b>Firma Tutor</b>
-                        <img
-                            [src]="firmaTutor"
-                            alt="Vista Previa de la Firma"
-                            style="
-                                min-height: 120px;
-                                min-width: 150px;
-                                width: 100%;
-                                height: 100%;
-                            "
-                        />
-                    </div>
-                    <!-- END -->
                     <span
                         class="col-9 col-label--firma text-right align-self-start"
                     >

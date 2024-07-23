@@ -1,138 +1,187 @@
 <p-panel>
-    <div id="formatoHva">
-        <div class="header px-8">
-            <table class="p-datatable p-component header-table">
-                <tr class="header-title">
-                    <td>
-                        <img
-                            src="assets/layout/images/logoUnicauca.png"
-                            alt="Logo Unicauca"
-                            width="80px"
-                            height="140px"
-                        />
-                    </td>
-                    <td colspan="2">
-                        <h1 class="text-lg">
-                            Gestión Académica Gestión de Facultades y Programas
-                            Académicos Estudio Hoja de Vida Académica para Grado
-                        </h1>
-                    </td>
-                </tr>
-                <tr class="header-desc">
-                    <td>
-                        <span>Código: PM-FO-4-FOR-27</span>
-                    </td>
-                    <td>
-                        <span>Versión: 1</span>
-                    </td>
-                    <td>
-                        <span>Fecha Vigencia: 30-04-2019</span>
-                    </td>
-                </tr>
-            </table>
-        </div>
-        <form [formGroup]="formatoGForm">
-            <div class="container mt-4 px-8">
-                <div class="flex align-items-center justify-content-start mt-2">
-                    <label
-                        class="label-required"
-                        style="text-wrap: nowrap"
-                        for="facultad"
-                        >Facultad:</label
-                    >
-                    <input
-                        pInputText
-                        class="w-full ml-2"
-                        type="text"
-                        id="facultad"
-                        formControlName="facultad"
-                        readonly
-                    />
+    <div id="formatoG">
+        <div class="flex flex-column w-full mb-4">
+            <div
+                class="flex align-items-center justify-content-evenly header-logo"
+            >
+                <div>
+                    <h2>Maestría en Computación</h2>
+                    <h2>
+                        Facultad de Ingeniería Electrónica y Telecomunicaciones
+                    </h2>
                 </div>
-
-                <div class="flex align-items-center justify-content-start mt-2">
-                    <label
-                        class="label-required"
-                        style="text-wrap: nowrap"
-                        for="programa"
-                        >Programa:</label
-                    >
-                    <input
-                        pInputText
-                        class="w-full ml-2"
-                        type="text"
-                        id="programa"
-                        formControlName="programa"
-                        readonly
-                    />
-                </div>
-
-                <div class="flex align-items-center justify-content-start mt-2">
-                    <label
-                        class="label-required"
-                        style="text-wrap: nowrap"
-                        for="estudiante"
-                        >Nombre del Estudiante:</label
-                    >
-                    <input
-                        pInputText
-                        class="w-full ml-2"
-                        type="text"
-                        id="estudiante"
-                        formControlName="estudiante"
-                        readonly
-                    />
-                </div>
-
-                <div class="flex align-items-center justify-content-start mt-2">
-                    <label
-                        for="coordinador"
-                        class="label-required line-height-3"
-                        >Nombre Coordinador Programa:</label
-                    >
-                    <input
-                        pInputText
-                        class="w-full ml-2"
-                        type="text"
-                        id="coordinador"
-                        formControlName="coordinador"
-                    />
-                </div>
-
-                <div class="flex align-items-center justify-content-start mt-2">
-                    <label>Jurado Interno</label>
-                    <div class="flex align-items-center w-full">
-                        <p-card class="w-full m-0">
-                            <div class="flex justify-content-between">
-                                <span>{{
-                                    juradoInterno.nombres ??
-                                        juradoInterno.nombre +
-                                            " " +
-                                            juradoInterno.apellido
-                                }}</span>
-                            </div>
-                        </p-card>
-                    </div>
-                </div>
-                <div class="flex align-items-center justify-content-start mt-2">
-                    <label>Jurado Externo</label>
-                    <div class="flex align-items-center w-full">
-                        <p-card class="w-full m-0">
-                            <div class="flex justify-content-between">
-                                <span>{{
-                                    juradoExterno.nombres ??
-                                        juradoExterno.nombre +
-                                            " " +
-                                            juradoExterno.apellido
-                                }}</span>
-                            </div>
-                        </p-card>
-                    </div>
-                </div>
+                <img
+                    src="assets/layout/images/logoUnicauca.png"
+                    alt="Logo Unicauca"
+                    width="120px"
+                    height="180px"
+                />
             </div>
-        </form>
+        </div>
+        <div class="mt-4 px-8">
+            <form [formGroup]="formatoGForm">
+                <div class="field grid justify-content-start">
+                    <label class="col-2" for="consecutivo">Consecutivo</label>
+                    <div class="col-10">
+                        <input
+                            pInputText
+                            class="p-inputtext-md"
+                            type="text"
+                            id="consecutivo"
+                            formControlName="consecutivo"
+                            readonly
+                        />
+                    </div>
+                </div>
+
+                <div class="field grid justify-content-start">
+                    <label class="col-2" for="facultad">Facultad</label>
+                    <div class="col-10">
+                        <input
+                            pInputText
+                            class="p-inputtext-md w-full"
+                            type="text"
+                            id="facultad"
+                            formControlName="facultad"
+                            readonly
+                        />
+                    </div>
+                </div>
+
+                <div class="field grid justify-content-start">
+                    <label class="col-2" for="programa">Programa</label>
+                    <div class="col-10">
+                        <input
+                            pInputText
+                            class="p-inputtext-md w-full"
+                            type="text"
+                            id="programa"
+                            formControlName="programa"
+                            readonly
+                        />
+                    </div>
+                </div>
+
+                <div class="field grid justify-content-start">
+                    <label class="col-2" for="estudiante"
+                        >Nombre del estudiante</label
+                    >
+                    <div class="col-10">
+                        <input
+                            pInputText
+                            class="p-inputtext-md w-full"
+                            type="text"
+                            id="estudiante"
+                            formControlName="estudiante"
+                            readonly
+                        />
+                    </div>
+                </div>
+
+                <div class="field grid justify-content-start">
+                    <label class="col-2" for="director"
+                        >Nombre del director</label
+                    >
+                    <div class="col-10">
+                        <input
+                            pInputText
+                            class="p-inputtext-md w-full"
+                            type="text"
+                            id="director"
+                            formControlName="director"
+                            readonly
+                        />
+                    </div>
+                </div>
+
+                <div class="field grid justify-content-start">
+                    <label class="col-2 label-required" for="observaciones"
+                        >Observaciones</label
+                    >
+                    <div class="col-10">
+                        <textarea
+                            pInputTextarea
+                            [maxLength]="250"
+                            id="observaciones"
+                            class="p-inputtextarea-md w-full"
+                            formControlName="observaciones"
+                        ></textarea>
+                    </div>
+                </div>
+
+                <div class="field grid justify-content-start">
+                    <label class="col-2">Jurado Interno</label>
+                    <div class="col-10">
+                        <p-card class="w-full m-0">
+                            <div class="flex">
+                                <span>{{
+                                    juradoInterno?.nombres ??
+                                        juradoInterno?.nombre +
+                                            " " +
+                                            juradoInterno?.apellido
+                                }}</span>
+                            </div>
+                        </p-card>
+                    </div>
+                </div>
+                <div class="field grid justify-content-start">
+                    <label class="col-2">Jurado Externo</label>
+                    <div class="col-10">
+                        <p-card class="w-full m-0">
+                            <div class="flex">
+                                <span>{{
+                                    juradoExterno?.nombres ??
+                                        juradoExterno?.nombre +
+                                            " " +
+                                            juradoExterno?.apellido
+                                }}</span>
+                            </div>
+                        </p-card>
+                    </div>
+                </div>
+
+                <div class="field grid mt-4">
+                    <span class="col-9 text-right">
+                        <b>Firma Director</b>
+                    </span>
+                    <div class="col-3 text-center">
+                        <p-fileUpload
+                            name="firmaCoordinador"
+                            chooseIcon="pi pi-file"
+                            accept=".png"
+                            chooseLabel="Seleccionar"
+                            class="w-full max-w-30rem"
+                            previewWidth="100"
+                            [auto]="true"
+                            (onSelect)="
+                                onFirmaChange($event, 'firmaCoordinador')
+                            "
+                        >
+                            <ng-template
+                                let-file
+                                pTemplate="file"
+                                data-file="firma"
+                            >
+                                <div *ngIf="firmaCoordinador">
+                                    <img
+                                        [src]="firmaCoordinador"
+                                        alt="Vista Previa de la Firma"
+                                        style="
+                                            min-height: 120px;
+                                            min-width: 150px;
+                                            width: 100%;
+                                            height: 100%;
+                                        "
+                                    />
+                                </div>
+                            </ng-template>
+                        </p-fileUpload>
+                    </div>
+                </div>
+            </form>
+        </div>
         <div
-            class="flex flex-row align-items-center justify-content-center footer-logo footer-content mt-8"
+            class="flex flex-row align-items-center justify-content-center footer-logo mt-8"
         >
             <img
                 src="assets/layout/images/logosIcontec.png"
@@ -141,7 +190,7 @@
                 height="140px"
             />
             <div
-                class="flex flex-column align-items-center justify-content-center footer-text"
+                class="flex flex-column align-items-center justify-content-center"
             >
                 <span>Por una Universidad de excelencia y solidaria</span>
                 <hr />
@@ -157,17 +206,14 @@
         <div
             class="flex align-items-center justify-content-end mt-4 column-gap-2"
         >
-            <p-fileUpload
-                #FormatoG
-                mode="basic"
-                [auto]="true"
-                accept=".pdf"
-                chooseIcon="pi pi-paperclip"
-                maxFileSize="5000000"
-                chooseLabel="Adjuntar"
-                (onSelect)="onAdjuntar($event)"
-            >
-            </p-fileUpload>
+            <button
+                pButton
+                type="button"
+                icon="pi pi-paperclip"
+                label="Adjuntar"
+                (click)="onAdjuntar()"
+                [loading]="loading"
+            ></button>
             <button
                 pButton
                 type="button"

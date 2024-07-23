@@ -1,3 +1,5 @@
+import * as pdfMake from 'pdfmake/build/pdfmake';
+import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 import {
     Component,
     ElementRef,
@@ -12,7 +14,6 @@ import {
     FormGroup,
     Validators,
 } from '@angular/forms';
-import { Router } from '@angular/router';
 import { MessageService, SelectItem } from 'primeng/api';
 import { DialogService } from 'primeng/dynamicdialog';
 import { Mensaje, Rol, TipoRol } from 'src/app/core/enums/enums';
@@ -30,6 +31,7 @@ import { Orientador } from '../../../models/orientador';
 import { PdfService } from 'src/app/shared/services/pdf.service';
 import { TrabajoDeGradoService } from '../../../services/trabajoDeGrado.service';
 import { Subscription } from 'rxjs';
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 @Component({
     selector: 'documento-formatoA',
@@ -39,10 +41,9 @@ import { Subscription } from 'rxjs';
 export class DocumentoFormatoAComponent implements OnInit {
     @Output() formReady = new EventEmitter<FormGroup>();
     @Output() formatoAPdfGenerated = new EventEmitter<File>();
+    @ViewChild('formatoA') formatoA!: ElementRef;
 
     formatoAForm: FormGroup;
-
-    @ViewChild('formatoA') formatoA!: ElementRef;
 
     private estudianteSubscription: Subscription;
     private tituloSubscription: Subscription;
@@ -56,19 +57,19 @@ export class DocumentoFormatoAComponent implements OnInit {
 
     fechaActual: Date;
     firmaTutor: string | ArrayBuffer;
-    estudianteSeleccionado: Estudiante = {};
+    logoImage: string;
+    footerImage: string;
 
+    estudianteSeleccionado: Estudiante = {};
     orientadores: Orientador[] = [];
     roles: SelectItem[] = enumToSelectItems(Rol);
     tipos: SelectItem[] = enumToSelectItems(TipoRol);
 
     constructor(
         private fb: FormBuilder,
-        private router: Router,
         private dialogService: DialogService,
         private messageService: MessageService,
-        private trabajoDeGradoService: TrabajoDeGradoService,
-        private pdfService: PdfService
+        private trabajoDeGradoService: TrabajoDeGradoService
     ) {}
 
     get titulo(): FormControl {
@@ -159,7 +160,10 @@ export class DocumentoFormatoAComponent implements OnInit {
 
     initForm(): void {
         this.formatoAForm = this.fb.group({
-            asunto: [null, Validators.required],
+            asunto: [
+                'SOLICITUD PARA PRESENTACIÓN DE EXAMEN DE VALORACIÓN AL COMITÉ DE PROGRAMA DE MAESTRÍA EN COMPUTACIÓN',
+                Validators.required,
+            ],
             titulo: [null, Validators.required],
             estudiante: [null, Validators.required],
             orientador: [null, Validators.required],
@@ -170,11 +174,28 @@ export class DocumentoFormatoAComponent implements OnInit {
             firmaTutor: [null, Validators.required],
         });
 
-        this.formatoAForm.get('titulo').disable();
-        this.formatoAForm.get('estudiante').disable();
-        this.formatoAForm.get('evaluadorInterno').disable();
-        this.formatoAForm.get('evaluadorExterno').disable();
         this.formReady.emit(this.formatoAForm);
+
+        var logoImg = new Image();
+        logoImg.src = 'assets/layout/images/logoUnicauca.png';
+        logoImg.onload = () => {
+            this.logoImage = this.getBase64Image(logoImg);
+        };
+
+        var footerImg = new Image();
+        footerImg.src = 'assets/layout/images/logosIcontec.png';
+        footerImg.onload = () => {
+            this.footerImage = this.getBase64Image(footerImg);
+        };
+    }
+
+    getBase64Image(img: HTMLImageElement) {
+        var canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        var ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+        return canvas.toDataURL('image/png');
     }
 
     ngOnDestroy() {
@@ -192,8 +213,198 @@ export class DocumentoFormatoAComponent implements OnInit {
         }
     }
 
-    onCancel() {
-        this.router.navigate(['examen-de-valoracion/solicitud']);
+    generateDocDefinition() {
+        const formValues = this.formatoAForm.value;
+        const fechaActual = new Date().toLocaleDateString();
+
+        return {
+            content: [
+                {
+                    columns: [
+                        {
+                            text: 'Maestría en Computación\nFacultad de Ingeniería Electrónica y Telecomunicaciones',
+                            fontSize: 14,
+                            alignment: 'left',
+                            margin: [0, 5, 0, 5],
+                            opacity: 0.6,
+                        },
+                        {
+                            image: this.logoImage,
+                            width: 50,
+                            height: 70,
+                            margin: [0, -10, 0, 5],
+                            alignment: 'right',
+                            opacity: 0.6,
+                        },
+                    ],
+                },
+                {
+                    text: 'SOLICITUD EXAMEN DE VALORACIÓN',
+                    style: 'header',
+                    alignment: 'center',
+                },
+                {
+                    text: `Popayán, ${fechaActual}`,
+                    style: 'subheader',
+                    alignment: 'center',
+                },
+                {
+                    columns: [
+                        { text: 'FORMATO A:', style: 'label', width: '25%' },
+                        {
+                            text: formValues.asunto,
+                            style: 'value',
+                            width: '75%',
+                        },
+                    ],
+                    margin: [0, 10, 0, 10],
+                },
+                {
+                    columns: [
+                        { text: 'TITULO:', style: 'label', width: '25%' },
+                        {
+                            text: formValues.titulo,
+                            style: 'value',
+                            width: '75%',
+                        },
+                    ],
+                    margin: [0, 10, 0, 10],
+                },
+                {
+                    columns: [
+                        {
+                            text: 'TUTORES Y ASESORES',
+                            style: 'label',
+                            width: '20%',
+                        },
+                        {
+                            stack: [
+                                ...this.orientadores.map((orientador) => ({
+                                    text: `${orientador.nombre} ${
+                                        orientador.apellido
+                                    } (${this.formatText(orientador.rol)})`,
+                                    margin: [25, 10, 0, 0],
+                                })),
+                            ],
+                            width: '70%',
+                        },
+                    ],
+                    margin: [0, 10, 0, 10],
+                },
+                {
+                    columns: [
+                        {
+                            text: 'EVALUADORES SUGERIDOS:',
+                            style: 'label',
+                            width: '25%',
+                        },
+                        {
+                            stack: [
+                                {
+                                    text: `${this.docente.value.nombres}, ${this.docente.value.universidad}, ${this.docente.value.correo} (Interno)`,
+                                    style: 'value',
+                                },
+                                {
+                                    text: `${this.experto.value.nombres}, ${this.experto.value.universidad}, ${this.experto.value.correo} (Externo)`,
+                                    style: 'value',
+                                },
+                            ],
+                            width: '70%',
+                        },
+                    ],
+                    margin: [0, 10, 0, 10],
+                },
+                {
+                    columns: [
+                        { text: 'FIRMA:', style: 'label', width: '25%' },
+                        {
+                            image: this.firmaTutor,
+                            width: 80,
+                            height: 60,
+                            margin: [0, 5, 0, 0],
+                            alignment: 'left',
+                            style: 'value',
+                        },
+                    ],
+                    margin: [0, 10, 0, 10],
+                },
+            ],
+            footer: (currentPage, pageCount) => {
+                return {
+                    columns: [
+                        {
+                            stack: [
+                                {
+                                    image: this.footerImage,
+                                    width: 100,
+                                    height: 60,
+                                    alignment: 'left',
+                                    margin: [0, 5, 0, 5],
+                                    opacity: 0.6,
+                                },
+                            ],
+                            width: 'auto',
+                        },
+                        {
+                            stack: [
+                                {
+                                    text: 'Hacia una Universidad comprometida con la paz territorial',
+                                    alignment: 'center',
+                                    margin: [0, 2, 0, 2],
+                                    opacity: 0.6,
+                                },
+                                {
+                                    canvas: [
+                                        {
+                                            type: 'line',
+                                            x1: 0,
+                                            y1: 0,
+                                            x2: 320,
+                                            y2: 0,
+                                            lineWidth: 1,
+                                            color: '#ff0000',
+                                        },
+                                    ],
+                                    margin: [0, 2, 0, 2],
+                                    alignment: 'center',
+                                    opacity: 0.6,
+                                },
+                                {
+                                    text: 'Facultad de Ingeniería Electrónica y Telecomunicaciones\nCra 2 No. 4N-140 Edif. de Ingenierías - Sector Tulcán Popayán - Cauca - Colombia\nConmutador 8209800 Ext. 2145 maestriacomputacion@unicauca.edu.co\nwww.unicauca.edu.cowww.unicauca.edu.co/maestriacomputacion',
+                                    alignment: 'center',
+                                    fontSize: 10,
+                                    margin: [0, 5, 0, 5],
+                                    opacity: 0.6,
+                                },
+                            ],
+                            width: '*',
+                        },
+                    ],
+                    margin: [40, -60, 0, 0],
+                };
+            },
+            styles: {
+                header: {
+                    fontSize: 18,
+                    bold: true,
+                    margin: [0, 0, 0, 10],
+                },
+                subheader: {
+                    fontSize: 12,
+                    bold: true,
+                    margin: [0, 0, 0, 10],
+                },
+                label: {
+                    fontSize: 12,
+                    bold: true,
+                    margin: [0, 10, 0, 2],
+                },
+                value: {
+                    fontSize: 12,
+                    margin: [0, 10, 0, 0],
+                },
+            },
+        };
     }
 
     onAdjuntar() {
@@ -201,8 +412,8 @@ export class DocumentoFormatoAComponent implements OnInit {
             this.handleWarningMessage(Mensaje.REGISTRE_CAMPOS_OBLIGATORIOS);
             return;
         } else {
-            const content = document.getElementById('formatoA');
-            this.pdfService.generatePDF(content, '').then((pdfBlob: Blob) => {
+            const docDefinition = this.generateDocDefinition();
+            pdfMake.createPdf(docDefinition).getBlob((pdfBlob: Blob) => {
                 const file = new File(
                     [pdfBlob],
                     `${this.estudianteSeleccionado.codigo} - formatoA.pdf`,
@@ -221,8 +432,8 @@ export class DocumentoFormatoAComponent implements OnInit {
             this.handleWarningMessage(Mensaje.REGISTRE_CAMPOS_OBLIGATORIOS);
             return;
         } else {
-            const content = document.getElementById('formatoA');
-            this.pdfService.generatePDF(content, null).then((pdfBlob: Blob) => {
+            const docDefinition = this.generateDocDefinition();
+            pdfMake.createPdf(docDefinition).getBlob((pdfBlob: Blob) => {
                 const file = new File(
                     [pdfBlob],
                     `${this.estudianteSeleccionado.codigo} - formatoA.pdf`,

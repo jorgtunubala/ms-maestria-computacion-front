@@ -1,41 +1,20 @@
 @import url("https://fonts.googleapis.com/css2?family=Inria+Serif:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap");
 
-table {
-    border-collapse: collapse;
-}
-
-.header-table {
+.header-logo {
     opacity: 0.6;
-}
 
-.header-title {
-    text-align: center;
-    border-collapse: collapse;
-
-    td {
-        border-collapse: collapse;
-        border: 1px solid #444;
+    h2 {
+        width: 100%;
+        color: #3e5270;
+        font-family: "Inria Serif", serif;
+        line-height: 0;
+        font-size: 18px;
+        line-height: 2px;
     }
 
-    h1 {
-        font-size: 1.8rem;
+    & h2:last-child {
+        font-weight: bold;
     }
-}
-
-.header-desc {
-    border-collapse: collapse;
-}
-
-.header-desc td {
-    border: 1px solid #444;
-    vertical-align: middle;
-    padding: 8px;
-    width: 33.33%;
-    text-align: center;
-}
-
-.form-table {
-    margin-top: 2rem;
 }
 
 .footer-logo {

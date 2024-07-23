@@ -57,12 +57,13 @@ export class EmpresaEgresadoComponent implements OnInit {
         this.empresaForm = this.fb.group({
             idEstudiante: [this.config.data?.estudianteId, Validators.required],
             nombre: [null, Validators.required],
-            ubicacion: [null, Validators.required],
             cargo: [null, Validators.required],
-            jefeDirecto: [null, Validators.required],
+            jefeInmediato: [null, Validators.required],
             telefono: [null, Validators.required],
-            correo: [null, [Validators.required, Validators.email]],
-            estado: [null, Validators.required],
+            correoEmpresa: [null, Validators.required],
+            correoPersonal: [null, [Validators.required, Validators.email]],
+            correoUnicauca: [null, Validators.required],
+            celular: [null, Validators.required],
         });
 
         this.formReady.emit(this.empresaForm);

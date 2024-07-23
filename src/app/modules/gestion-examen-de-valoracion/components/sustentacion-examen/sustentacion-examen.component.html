@@ -1,7 +1,7 @@
 <p-panel *ngIf="!isLoading; else spinner">
     <ng-template pTemplate="header">
         <span class="font-bold w-full text-center" style="font-size: 20px"
-            >Examen de Valoración</span
+            >Trabajo de Grado</span
         >
     </ng-template>
     <div class="col flex align-items-center justify-content-center">
@@ -126,6 +126,7 @@
             </div>
         </p-dialog>
         <p-dialog
+            *ngIf="role.includes('ROLE_COORDINADOR')"
             header="Formato Hoja de Vida Academica"
             [(visible)]="displayFormatoHVA"
             [style]="{ width: '70vw' }"
@@ -145,6 +146,7 @@
             </ng-container>
         </p-dialog>
         <p-dialog
+            *ngIf="role.includes('ROLE_ESTUDIANTE')"
             header="Formato Hoja de Vida Academica para Grado"
             [(visible)]="displayFormatoHVAGrado"
             [style]="{ width: '70vw' }"
@@ -156,6 +158,7 @@
         >
             <ng-container>
                 <documento-formatoHvaGrado
+                    [trabajoDeGradoId]="trabajoDeGradoId"
                     (formatoHvaGradoPdfGenerated)="
                         handleFormatoHvaGradoPdfGenerated($event)
                     "
@@ -163,6 +166,7 @@
             </ng-container>
         </p-dialog>
         <p-dialog
+            *ngIf="role.includes('ROLE_DOCENTE')"
             header="Formato F"
             [(visible)]="displayFormatoF"
             [style]="{ width: '70vw' }"
@@ -174,11 +178,15 @@
         >
             <ng-container>
                 <documento-formatoF
+                    [trabajoDeGradoId]="trabajoDeGradoId"
+                    [juradoExternoId]="juradoExterno.value"
+                    [juradoInternoId]="juradoInterno.value"
                     (formatoFPdfGenerated)="handleFormatoFGenerated($event)"
                 ></documento-formatoF>
             </ng-container>
         </p-dialog>
         <p-dialog
+            *ngIf="role.includes('ROLE_COORDINADOR')"
             header="Formato G"
             [(visible)]="displayFormatoG"
             [style]="{ width: '70vw' }"
@@ -190,6 +198,7 @@
         >
             <ng-container>
                 <documento-formatoG
+                    [trabajoDeGradoId]="trabajoDeGradoId"
                     [juradoInterno]="juradoInternoSeleccionado"
                     [juradoExterno]="juradoExternoSeleccionado"
                     (formatoGPdfGenerated)="handleFormatoGGenerated($event)"
@@ -602,26 +611,39 @@
                                 ></button>
                             </div>
                             <div
-                                class="flex m-4 w-full justify-content-center align-items-center column-gap-4"
+                                class="flex flex-column w-full justify-content-center align-items-center row-gap-4"
                             >
-                                <div
-                                    *ngFor="let estado of estados"
-                                    class="field-checkbox"
+                                <strong
+                                    >Concepto Verificación Documentos</strong
                                 >
-                                    <p-radioButton
-                                        [inputId]="estado + 'coordinador'"
-                                        [value]="estado"
-                                        formControlName="conceptoCoordinador"
-                                    ></p-radioButton>
-                                    <label
-                                        [for]="estado + 'coordinador'"
-                                        class="ml-2"
-                                        >{{ estado }}</label
+                                <div
+                                    class="flex w-full justify-content-center align-items-center column-gap-4"
+                                >
+                                    <div
+                                        *ngFor="let estado of estados"
+                                        class="field-checkbox"
                                     >
+                                        <p-radioButton
+                                            [inputId]="estado + 'coordinador'"
+                                            [value]="estado"
+                                            formControlName="conceptoCoordinador"
+                                        ></p-radioButton>
+                                        <label
+                                            [for]="estado + 'coordinador'"
+                                            class="ml-2"
+                                            >{{ estado }}</label
+                                        >
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="field grid justify-content-center">
+                        <div
+                            *ngIf="
+                                sustentacionForm.get('conceptoCoordinador')
+                                    .value == 'Rechazado'
+                            "
+                            class="field grid justify-content-center"
+                        >
                             <div class="col-5">
                                 <div>
                                     <label class="label-required">Asunto</label>
@@ -682,22 +704,27 @@
                                 ></button>
                             </div>
                             <div
-                                class="flex m-4 w-full justify-content-center align-items-center column-gap-4"
+                                class="flex flex-column w-full justify-content-center align-items-center row-gap-4"
                             >
+                                <strong>Concepto Verificación Comite</strong>
                                 <div
-                                    *ngFor="let estado of estadosComite"
-                                    class="field-checkbox"
+                                    class="flex w-full justify-content-center align-items-center column-gap-4"
                                 >
-                                    <p-radioButton
-                                        [inputId]="estado + 'comite'"
-                                        [value]="estado"
-                                        formControlName="conceptoComite"
-                                    ></p-radioButton>
-                                    <label
-                                        [for]="estado + 'comite'"
-                                        class="ml-2"
-                                        >{{ estado }}</label
+                                    <div
+                                        *ngFor="let estado of estadosComite"
+                                        class="field-checkbox"
                                     >
+                                        <p-radioButton
+                                            [inputId]="estado + 'comite'"
+                                            [value]="estado"
+                                            formControlName="conceptoComite"
+                                        ></p-radioButton>
+                                        <label
+                                            [for]="estado + 'comite'"
+                                            class="ml-2"
+                                            >{{ estado }}</label
+                                        >
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -978,7 +1005,7 @@
                         </div>
                         <div class="field grid justify-content-center">
                             <div class="col-5">
-                                <label>Aceptación de Jurados</label>
+                                <label>Nombramiento de Jurados</label>
                                 <div class="flex align-items-center mt-2">
                                     <p-radioButton
                                         value="Aceptado"
@@ -1001,35 +1028,33 @@
                                         class="ml-2"
                                         >Modificar</label
                                     >
+                                    <i
+                                        style="
+                                            color: orangered;
+                                            font-size: 16px;
+                                        "
+                                        class="pi pi-info-circle ml-2"
+                                        pTooltip="Esta parte es opcional y se refiere a la modificación de jurados."
+                                        tooltipPosition="top"
+                                    ></i>
                                 </div>
                             </div>
                         </div>
-                        <!-- <div class="field grid justify-content-center">
-                            <div class="col-5 mt-4">
-                                <div>
-                                    <label class="label-required">Asunto</label>
-                                    <input
-                                        class="p-inputtext-md w-full mt-2"
-                                        pInputText
-                                        [maxLength]="250"
-                                        formControlName="asuntoConsejo"
-                                    />
-                                </div>
+                        <div class="field grid justify-content-center">
+                            <div class="col-5">
                                 <div class="mt-4">
-                                    <label class="label-required"
-                                        >Observación</label
-                                    >
+                                    <label>Observación</label>
                                     <textarea
                                         class="w-full mt-2"
                                         rows="5"
                                         cols="30"
                                         pInputTextarea
                                         [autoResize]="true"
-                                        formControlName="mensajeConsejo"
+                                        formControlName="nota"
                                     ></textarea>
                                 </div>
                             </div>
-                        </div> -->
+                        </div>
                         <div
                             class="field grid justify-content-center"
                             *ngIf="
@@ -1113,23 +1138,10 @@
                             </div>
                         </div>
                         <div class="field grid justify-content-center">
-                            <div
-                                class="col-5 flex flex-nowrap align-items-center justify-content-between"
-                            >
+                            <div class="col-5">
                                 <label class="label-required"
-                                    >Fecha Sustentacion</label
-                                >
-                                <p-calendar
-                                    formControlName="fechaSustentacion"
-                                    [showIcon]="true"
-                                    dateFormat="dd.mm.yy"
-                                ></p-calendar>
-                            </div>
-                        </div>
-                        <div class="field grid justify-content-center">
-                            <div class="col-5 mt-4">
-                                <label class="label-required"
-                                    >Oficio Consejo (.pdf)
+                                    >Carta de aceptación nombramiento de jurados
+                                    (.pdf)
                                 </label>
                                 <div
                                     style="max-width: 50rem"
@@ -1214,23 +1226,22 @@
                             </div>
                         </div>
                         <div class="field grid justify-content-center">
+                            <div class="col-5">
+                                <p-divider></p-divider>
+                            </div>
+                        </div>
+                        <div
+                            *ngIf="isCoordinadorFase3Created"
+                            class="field grid justify-content-center"
+                        >
                             <div
                                 class="col-5 flex flex-nowrap align-items-center justify-content-between"
                             >
-                                <label class="label-required">
-                                    No acta de revisión trabajo final
-                                </label>
-                                <input
-                                    class="max-w-10rem ml-2"
-                                    pInputText
-                                    formControlName="numeroActaConsejo"
-                                />
-                                <label class="label-required ml-4"
-                                    >Fecha del Acta</label
+                                <label class="label-required"
+                                    >Fecha Sustentacion</label
                                 >
                                 <p-calendar
-                                    class="ml-2"
-                                    formControlName="fechaActaConsejo"
+                                    formControlName="fechaSustentacion"
                                     [showIcon]="true"
                                     dateFormat="dd.mm.yy"
                                 ></p-calendar>

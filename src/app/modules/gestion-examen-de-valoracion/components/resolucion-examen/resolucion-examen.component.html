@@ -413,7 +413,7 @@
                         <div class="field grid justify-content-center">
                             <div class="col-5 mt-4">
                                 <label class="label-required"
-                                    >Solicitud al comite para resolución de
+                                    >Solicitud al cómite para resolución de
                                     aprobación de trabajo de grado (.pdf)
                                 </label>
                                 <div
@@ -530,26 +530,42 @@
                                 ></button>
                             </div>
                             <div
-                                class="flex m-4 w-full justify-content-center align-items-center column-gap-4"
+                                class="flex flex-column w-full justify-content-center align-items-center row-gap-4"
                             >
-                                <div
-                                    *ngFor="let estado of estadosVerificacion"
-                                    class="field-checkbox"
+                                <strong
+                                    >Concepto Verificación Documentos</strong
                                 >
-                                    <p-radioButton
-                                        [inputId]="estado + 'coordinador'"
-                                        [value]="estado"
-                                        formControlName="conceptoDocumentosCoordinador"
-                                    ></p-radioButton>
-                                    <label
-                                        [for]="estado + 'coordinador'"
-                                        class="ml-2"
-                                        >{{ estado }}</label
+                                <div
+                                    class="flex w-full justify-content-center align-items-center column-gap-4"
+                                >
+                                    <div
+                                        *ngFor="
+                                            let estado of estadosVerificacion
+                                        "
+                                        class="field-checkbox"
                                     >
+                                        <p-radioButton
+                                            [inputId]="estado + 'coordinador'"
+                                            [value]="estado"
+                                            formControlName="conceptoDocumentosCoordinador"
+                                        ></p-radioButton>
+                                        <label
+                                            [for]="estado + 'coordinador'"
+                                            class="ml-2"
+                                            >{{ estado }}</label
+                                        >
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="field grid justify-content-center">
+                        <div
+                            *ngIf="
+                                resolucionForm.get(
+                                    'conceptoDocumentosCoordinador'
+                                ).value == 'Rechazado'
+                            "
+                            class="field grid justify-content-center"
+                        >
                             <div class="col-5">
                                 <div>
                                     <label class="label-required">Asunto</label>
@@ -610,22 +626,29 @@
                                 ></button>
                             </div>
                             <div
-                                class="flex m-4 w-full justify-content-center align-items-center column-gap-4"
+                                class="flex flex-column w-full justify-content-center align-items-center row-gap-4"
                             >
-                                <div
-                                    *ngFor="let estado of estadosRespuesta"
-                                    class="field-checkbox"
+                                <strong
+                                    >Concepto para Generar Resolución</strong
                                 >
-                                    <p-radioButton
-                                        [inputId]="estado + 'comite'"
-                                        [value]="estado"
-                                        formControlName="conceptoComite"
-                                    ></p-radioButton>
-                                    <label
-                                        [for]="estado + 'comite'"
-                                        class="ml-2"
-                                        >{{ estado }}</label
+                                <div
+                                    class="flex w-full justify-content-center align-items-center column-gap-4"
+                                >
+                                    <div
+                                        *ngFor="let estado of estadosRespuesta"
+                                        class="field-checkbox"
                                     >
+                                        <p-radioButton
+                                            [inputId]="estado + 'comite'"
+                                            [value]="estado"
+                                            formControlName="conceptoComite"
+                                        ></p-radioButton>
+                                        <label
+                                            [for]="estado + 'comite'"
+                                            class="ml-2"
+                                            >{{ estado }}</label
+                                        >
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -660,7 +683,7 @@
                                 class="col-5 flex flex-nowrap align-items-center justify-content-between"
                             >
                                 <label class="label-required">
-                                    No de resolucion generada por el comite
+                                    No de acta generada por el comite
                                 </label>
                                 <input
                                     class="max-w-10rem ml-2"

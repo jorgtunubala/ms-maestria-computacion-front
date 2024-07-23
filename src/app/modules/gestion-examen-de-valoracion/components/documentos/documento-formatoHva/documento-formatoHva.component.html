@@ -31,127 +31,55 @@
                 </tr>
             </table>
         </div>
-        <form [formGroup]="formatoHvaForm">
-            <div class="container mt-4 px-8">
-                <div class="flex align-items-center justify-content-start mt-2">
-                    <label
-                        class="label-required"
-                        style="text-wrap: nowrap"
-                        for="facultad"
-                        >Facultad:</label
-                    >
-                    <input
-                        pInputText
-                        class="w-full ml-2"
-                        type="text"
-                        id="facultad"
-                        formControlName="facultad"
-                        readonly
-                    />
-                </div>
-
-                <div class="flex align-items-center justify-content-start mt-2">
-                    <label
-                        class="label-required"
-                        style="text-wrap: nowrap"
-                        for="programa"
-                        >Programa:</label
-                    >
-                    <input
-                        pInputText
-                        class="w-full ml-2"
-                        type="text"
-                        id="programa"
-                        formControlName="programa"
-                        readonly
-                    />
-                </div>
-
-                <div class="flex align-items-center justify-content-start mt-2">
-                    <label
-                        class="label-required"
-                        style="text-wrap: nowrap"
-                        for="estudiante"
-                        >Nombre del Estudiante:</label
-                    >
-                    <input
-                        pInputText
-                        class="w-full ml-2"
-                        type="text"
-                        id="estudiante"
-                        formControlName="estudiante"
-                        readonly
-                    />
-                </div>
-            </div>
-            <div class="mt-4 px-8">
-                <h2 class="mt-2 text-center text-lg">
-                    Diligenciamiento exclusivo por la Facultad
-                </h2>
-                <div style="max-width: 80%" class="mt-4">
-                    <div class="input-group-inline">
-                        <label
-                            class="label-required line-height-3"
-                            for="program"
-                            >El Coordinador del programa de:</label
-                        >
+        <div class="mt-4 px-8">
+            <form [formGroup]="formatoHvaForm">
+                <div class="field grid">
+                    <label class="col-2" for="facultad">Facultad:</label>
+                    <div class="col-10">
                         <input
                             pInputText
-                            class="ml-2"
+                            class="p-inputtext-md w-full"
                             type="text"
-                            id="programa"
-                            [value]="formatoHvaForm.get('programa')?.value"
+                            id="facultad"
+                            formControlName="facultad"
                             readonly
                         />
                     </div>
-                    <div>
-                        <span class="line-height-3"
-                            >Estudio la petición hecha por el alumno (a):
-                            {{ this.estudianteSeleccionado?.nombre }}
-                            {{ this.estudianteSeleccionado?.apellido }}</span
-                        >
-                        <div class="flex align-items-center">
-                            <span class="line-height-3">
-                                y certifica que ha aprobado todas las
-                                asignaturas y requisitos académicos y los que
-                                establece la Universidad para optar al título
-                                de:
-                                <input
-                                    pInputText
-                                    class="ml-2"
-                                    type="text"
-                                    id="title"
-                                    formControlName="titulo"
-                                />
-                            </span>
-                        </div>
-                    </div>
-                    <div>
-                        <span class="line-height-3"
-                            >En consecuencia recomienda continuar con los
-                            trámites de expedición de Paz y Salvo General para
-                            su graduación.</span
-                        >
-                    </div>
-                    <div>
-                        <label
-                            for="coordinador"
-                            class="label-required line-height-3"
-                            >Nombre Coordinador Programa:</label
-                        >
+                </div>
+
+                <div class="field grid">
+                    <label class="col-2" for="programa">Programa:</label>
+                    <div class="col-10">
                         <input
                             pInputText
-                            class="ml-2"
+                            class="p-inputtext-md w-full"
                             type="text"
-                            id="coordinador"
-                            formControlName="coordinador"
+                            id="programa"
+                            formControlName="programa"
+                            readonly
                         />
                     </div>
                 </div>
-            </div>
-        </form>
+
+                <div class="field grid">
+                    <label class="col-2" for="estudiante"
+                        >Nombre del estudiante:</label
+                    >
+                    <div class="col-10">
+                        <input
+                            pInputText
+                            class="p-inputtext-md w-full"
+                            type="text"
+                            id="estudiante"
+                            formControlName="estudiante"
+                            readonly
+                        />
+                    </div>
+                </div>
+            </form>
+        </div>
         <div
-            class="flex flex-row align-items-center justify-content-center footer-logo footer-content mt-8"
+            class="flex flex-row align-items-center justify-content-center footer-logo mt-8"
         >
             <img
                 src="assets/layout/images/logosIcontec.png"
@@ -160,7 +88,7 @@
                 height="140px"
             />
             <div
-                class="flex flex-column align-items-center justify-content-center footer-text"
+                class="flex flex-column align-items-center justify-content-center"
             >
                 <span>Por una Universidad de excelencia y solidaria</span>
                 <hr />
@@ -177,7 +105,7 @@
             class="flex align-items-center justify-content-end mt-4 column-gap-2"
         >
             <p-fileUpload
-                #FormatoHva
+                #FileFormatoHva
                 mode="basic"
                 [auto]="true"
                 accept=".pdf"

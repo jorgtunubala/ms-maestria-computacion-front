@@ -4,6 +4,7 @@ import {
     Component,
     ElementRef,
     EventEmitter,
+    Input,
     OnInit,
     Output,
     ViewChild,
@@ -15,7 +16,7 @@ import {
     Validators,
 } from '@angular/forms';
 import { MessageService } from 'primeng/api';
-import { Subscription } from 'rxjs';
+import { Subscription, firstValueFrom } from 'rxjs';
 import { Mensaje } from 'src/app/core/enums/enums';
 import { mapResponseException } from 'src/app/core/utils/exception-util';
 import {
@@ -24,6 +25,9 @@ import {
     warnMessage,
 } from 'src/app/core/utils/message-util';
 import { TrabajoDeGradoService } from '../../../services/trabajoDeGrado.service';
+import { DocenteService } from 'src/app/shared/services/docente.service';
+import { ExpertoService } from 'src/app/shared/services/experto.service';
+import { ResolucionService } from '../../../services/resolucion.service';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 @Component({
@@ -32,6 +36,9 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
     styleUrls: ['documento-formatoF.component.scss'],
 })
 export class DocumentoFormatoFComponent implements OnInit {
+    @Input() trabajoDeGradoId: number;
+    @Input() juradoExternoId: number;
+    @Input() juradoInternoId: number;
     @Output() formReady = new EventEmitter<FormGroup>();
     @Output() formatoFPdfGenerated = new EventEmitter<File>();
 
@@ -44,16 +51,21 @@ export class DocumentoFormatoFComponent implements OnInit {
 
     loading = false;
 
+    estudianteSeleccionado: any;
     fechaActual: Date;
     firmaDirector: string;
-    logoImage: string;
     footerImage: string;
-    estudianteSeleccionado: any;
+    juradoInternoSeleccionado: any;
+    juradoExternoSeleccionado: any;
+    logoImage: string;
 
     constructor(
         private fb: FormBuilder,
         private messageService: MessageService,
-        private trabajoDeGradoService: TrabajoDeGradoService
+        private trabajoDeGradoService: TrabajoDeGradoService,
+        private resolucionService: ResolucionService,
+        private docenteService: DocenteService,
+        private expertoService: ExpertoService
     ) {}
 
     get titulo(): FormControl {
@@ -64,12 +76,61 @@ export class DocumentoFormatoFComponent implements OnInit {
         return this.formatoFForm.get('estudiante') as FormControl;
     }
 
-    get experto(): FormControl {
+    get director(): FormControl {
+        return this.formatoFForm.get('director') as FormControl;
+    }
+
+    get juradoExterno(): FormControl {
         return this.formatoFForm.get('juradoExterno') as FormControl;
     }
 
-    get docente(): FormControl {
+    get juradoInterno(): FormControl {
         return this.formatoFForm.get('juradoInterno') as FormControl;
+    }
+
+    async loadDirector() {
+        try {
+            const response = await firstValueFrom(
+                this.resolucionService.getResolucionDocente(
+                    this.trabajoDeGradoId
+                )
+            );
+            if (response) {
+                this.director.setValue(response.director.nombres);
+            }
+        } catch (error) {
+            console.error('Error al obtener el director:', error);
+        }
+    }
+
+    async loadJuradoExterno() {
+        try {
+            const response = await firstValueFrom(
+                this.expertoService.obtenerExperto(this.juradoExternoId)
+            );
+            if (response) {
+                this.juradoExternoSeleccionado =
+                    this.mapJuradoExternoLabel(response);
+                this.juradoExterno.setValue(response.id);
+            }
+        } catch (e) {
+            this.handlerResponseException(e);
+        }
+    }
+
+    async loadJuradoInterno() {
+        try {
+            const response = await firstValueFrom(
+                this.docenteService.obtenerDocente(this.juradoInternoId)
+            );
+            if (response) {
+                this.juradoInternoSeleccionado =
+                    this.mapJuradoInternoLabel(response);
+                this.juradoInterno.setValue(response.id);
+            }
+        } catch (e) {
+            this.handlerResponseException(e);
+        }
     }
 
     ngOnInit() {
@@ -98,6 +159,16 @@ export class DocumentoFormatoFComponent implements OnInit {
                 },
                 error: (e) => this.handlerResponseException(e),
             });
+
+        if (
+            this.trabajoDeGradoId &&
+            this.juradoInternoId &&
+            this.juradoExternoId
+        ) {
+            this.loadDirector();
+            this.loadJuradoExterno();
+            this.loadJuradoInterno();
+        }
     }
 
     initForm(): void {
@@ -109,8 +180,9 @@ export class DocumentoFormatoFComponent implements OnInit {
             trabajoCumpleNo: [false, Validators.required],
             documentoTerminadoNo: [false, Validators.required],
             documentoTerminadoSi: [false, Validators.required],
-            jurados: [null, Validators.required],
             observaciones: [null],
+            juradoInterno: [null, Validators.required],
+            juradoExterno: [null, Validators.required],
             firmaDirector: [null, Validators.required],
         });
 
@@ -215,7 +287,7 @@ export class DocumentoFormatoFComponent implements OnInit {
                 },
                 {
                     text: 'TESIS DE POSGRADO',
-                    style: 'header',
+                    style: 'subheader',
                     alignment: 'center',
                 },
                 {
@@ -232,9 +304,7 @@ export class DocumentoFormatoFComponent implements OnInit {
                     columns: [
                         { text: 'TITULO:', style: 'label', width: '25%' },
                         {
-                            text:
-                                formValues.titulo ||
-                                '______________________________',
+                            text: formValues.titulo,
                             style: 'value',
                             width: '75%',
                         },
@@ -244,9 +314,7 @@ export class DocumentoFormatoFComponent implements OnInit {
                     columns: [
                         { text: 'ESTUDIANTE:', style: 'label', width: '25%' },
                         {
-                            text:
-                                formValues.estudiante ||
-                                '______________________________',
+                            text: formValues.estudiante,
                             style: 'value',
                             width: '75%',
                         },
@@ -256,14 +324,12 @@ export class DocumentoFormatoFComponent implements OnInit {
                     columns: [
                         { text: 'DIRECTOR:', style: 'label', width: '25%' },
                         {
-                            text:
-                                formValues.director ||
-                                '______________________________',
+                            text: formValues.director,
                             style: 'value',
                             width: '75%',
-                            margin: [0, 5, 0, 0],
                         },
                     ],
+                    margin: [0, 0, 0, 20],
                 },
                 {
                     text: 'A) EL TRABAJO CUMPLE CON LAS CONDICIONES DE ENTREGA? SI (  ) NO (  )',
@@ -308,12 +374,11 @@ export class DocumentoFormatoFComponent implements OnInit {
                             width: '10%',
                         },
                     ],
+                    margin: [0, 0, 0, 20],
                 },
                 { text: 'OBSERVACIONES:', style: 'label' },
                 {
-                    text:
-                        formValues?.observaciones ||
-                        '______________________________',
+                    text: formValues?.observaciones,
                     style: 'value',
                 },
                 {
@@ -321,20 +386,19 @@ export class DocumentoFormatoFComponent implements OnInit {
                     style: 'label',
                 },
                 {
-                    text:
-                        formValues.jurados || '______________________________',
+                    text: `${this.juradoInternoSeleccionado?.nombres}, ${this.juradoInternoSeleccionado?.correo}, ${this.juradoInternoSeleccionado?.universidad}\n${this.juradoExternoSeleccionado?.nombres}, ${this.juradoExternoSeleccionado?.correo}, ${this.juradoExternoSeleccionado?.universidad}`,
                     style: 'value',
                 },
                 {
                     columns: [
                         { text: 'FECHA:', style: 'label', width: '25%' },
                         {
-                            text:
-                                fechaActual || '______________________________',
+                            text: fechaActual,
                             style: 'value',
                             width: '75%',
                         },
                     ],
+                    margin: [0, 0, 0, 20],
                 },
                 {
                     columns: [
@@ -391,7 +455,7 @@ export class DocumentoFormatoFComponent implements OnInit {
                                     opacity: 0.6,
                                 },
                                 {
-                                    text: 'Facultad de Ingeniería Electrónica y Telecomunicaciones\nSector Tulcán   Popayán - Cauca - Colombia\nConmutador 8209800 Exts. 2145 – 2103\nmaestriacomputacion@unicauca.edu.co   www.unicauca.edu.co/maestriacomputacion',
+                                    text: 'Facultad de Ingeniería Electrónica y Telecomunicaciones\nCra 2 No. 4N-140 Edif. de Ingenierías - Sector Tulcán Popayán - Cauca - Colombia\nConmutador 8209800 Ext. 2145 maestriacomputacion@unicauca.edu.co\nwww.unicauca.edu.cowww.unicauca.edu.co/maestriacomputacion',
                                     alignment: 'center',
                                     fontSize: 10,
                                     margin: [0, 5, 0, 5],
@@ -475,6 +539,29 @@ export class DocumentoFormatoFComponent implements OnInit {
 
     nombreCompletoEstudiante(e: any) {
         return `${e.nombre} ${e.apellido}`;
+    }
+
+    mapJuradoExternoLabel(experto: any) {
+        return {
+            id: experto.id,
+            nombres: experto.nombre + ' ' + experto.apellido,
+            correo: experto.correoElectronico ?? experto.correo,
+            universidad: experto.universidad,
+        };
+    }
+
+    mapJuradoInternoLabel(docente: any) {
+        const ultimaUniversidad =
+            docente?.titulos?.length > 0
+                ? docente.titulos[docente.titulos.length - 1].universidad
+                : null;
+
+        return {
+            id: docente.id,
+            nombres: docente.nombre + ' ' + docente.apellido,
+            correo: docente.correoElectronico ?? docente.correo,
+            universidad: docente.universidad ?? ultimaUniversidad,
+        };
     }
 
     handlerResponseException(response: any) {

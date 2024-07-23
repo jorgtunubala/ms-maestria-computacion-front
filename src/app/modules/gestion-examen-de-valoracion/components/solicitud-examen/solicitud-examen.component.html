@@ -925,26 +925,42 @@
                                 ></button>
                             </div>
                             <div
-                                class="flex m-4 w-full justify-content-center align-items-center column-gap-4"
+                                class="flex flex-column w-full justify-content-center align-items-center row-gap-4"
                             >
-                                <div
-                                    *ngFor="let estado of estadosVerificacion"
-                                    class="field-checkbox"
+                                <strong
+                                    >Concepto Verificación Documentos</strong
                                 >
-                                    <p-radioButton
-                                        [inputId]="estado + 'coordinador'"
-                                        [value]="estado"
-                                        formControlName="conceptoCoordinadorDocumentos"
-                                    ></p-radioButton>
-                                    <label
-                                        [for]="estado + 'coordinador'"
-                                        class="ml-2"
-                                        >{{ estado }}</label
+                                <div
+                                    class="flex w-full justify-content-center align-items-center column-gap-4"
+                                >
+                                    <div
+                                        *ngFor="
+                                            let estado of estadosVerificacion
+                                        "
+                                        class="field-checkbox"
                                     >
+                                        <p-radioButton
+                                            [inputId]="estado + 'coordinador'"
+                                            [value]="estado"
+                                            formControlName="conceptoCoordinadorDocumentos"
+                                        ></p-radioButton>
+                                        <label
+                                            [for]="estado + 'coordinador'"
+                                            class="ml-2"
+                                            >{{ estado }}</label
+                                        >
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="field grid justify-content-center">
+                        <div
+                            *ngIf="
+                                solicitudForm.get(
+                                    'conceptoCoordinadorDocumentos'
+                                ).value == 'Rechazado'
+                            "
+                            class="field grid justify-content-center"
+                        >
                             <div class="col-5">
                                 <div>
                                     <label class="label-required">Asunto</label>
@@ -1005,7 +1021,7 @@
                                 ></button>
                             </div>
                             <div
-                                class="flex m-4 w-full justify-content-center align-items-center column-gap-4"
+                                class="flex mt-4 w-full justify-content-center align-items-center column-gap-4"
                             >
                                 <div
                                     *ngFor="let estado of estadosRespuesta"
@@ -1025,6 +1041,37 @@
                             </div>
                         </div>
                         <div class="field grid justify-content-center">
+                            <div class="col-5">
+                                <p-card class="w-full m-0">
+                                    <div class="text-center mb-4">
+                                        <span>
+                                            Aval nombramiento de evaluadores
+                                        </span>
+                                    </div>
+                                    <div class="text-left">
+                                        <p>
+                                            <strong>Evaluador Interno:</strong>
+                                            {{
+                                                evaluadorInternoSeleccionado?.nombres
+                                            }}
+                                        </p>
+                                        <p>
+                                            <strong>Evaluador Externo:</strong>
+                                            {{
+                                                evaluadorExternoSeleccionado?.nombres
+                                            }}
+                                        </p>
+                                    </div>
+                                </p-card>
+                            </div>
+                        </div>
+                        <div
+                            *ngIf="
+                                solicitudForm.get('conceptoComite').value ==
+                                'No Avalado'
+                            "
+                            class="field grid justify-content-center"
+                        >
                             <div class="col-5">
                                 <div>
                                     <label class="label-required">Asunto</label>
@@ -1057,7 +1104,7 @@
                                 'Avalado'
                             "
                         >
-                            <div class="col-5 mt-4">
+                            <div class="col-5 mt-2">
                                 <label class="label-required"
                                     >Ofcio dirigido a evaluadores sobre
                                     instrucciones para el examen de valoración
@@ -1195,7 +1242,7 @@
                             "
                         >
                             <div
-                                class="col-5 mt-4 flex flex-nowrap justify-content-between align-items-center"
+                                class="col-5 flex flex-nowrap justify-content-between align-items-center"
                             >
                                 <label class="label-required"
                                     >Fecha maxima de la evaluación</label

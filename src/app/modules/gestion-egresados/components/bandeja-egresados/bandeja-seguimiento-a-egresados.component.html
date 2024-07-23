@@ -174,28 +174,21 @@
                                     class="text-left"
                                     style="min-width: 150px"
                                 >
-                                    Empresa
-                                </th>
-                                <th
-                                    scope="col"
-                                    class="text-left"
-                                    style="min-width: 150px"
-                                >
-                                    Ubicación
+                                    Empresa donde labora
                                 </th>
                                 <th
                                     scope="col"
                                     class="text-left"
                                     style="min-width: 200px"
                                 >
-                                    Cargo
+                                    Cargo que desempeña el egresado
                                 </th>
                                 <th
                                     scope="col"
                                     class="text-left"
                                     style="min-width: 200px"
                                 >
-                                    Jefe Directo
+                                    Jefe inmediato
                                 </th>
                                 <th
                                     scope="col"
@@ -209,14 +202,28 @@
                                     class="text-left"
                                     style="min-width: 200px"
                                 >
-                                    Correo Electrónico
+                                    Correo de la empresa o del jefe
                                 </th>
                                 <th
                                     scope="col"
                                     class="text-left"
                                     style="min-width: 200px"
                                 >
-                                    Estado
+                                    Correo personal
+                                </th>
+                                <th
+                                    scope="col"
+                                    class="text-left"
+                                    style="min-width: 200px"
+                                >
+                                    Correo UNICAUCA
+                                </th>
+                                <th
+                                    scope="col"
+                                    class="text-left"
+                                    style="min-width: 200px"
+                                >
+                                    Celular
                                 </th>
                                 <th
                                     scope="col"
@@ -232,23 +239,26 @@
                                 <td style="min-width: 150px">
                                     {{ empresa.nombre }}
                                 </td>
-                                <td style="min-width: 150px">
-                                    {{ empresa.ubicacion }}
-                                </td>
                                 <td style="min-width: 200px">
                                     {{ empresa.cargo }}
                                 </td>
                                 <td style="min-width: 200px">
-                                    {{ empresa.jefeDirecto }}
+                                    {{ empresa.jefeInmediato }}
                                 </td>
                                 <td style="min-width: 150px">
                                     {{ empresa.telefono }}
                                 </td>
                                 <td style="min-width: 200px">
-                                    {{ empresa.correo }}
+                                    {{ empresa.correoEmpresa }}
                                 </td>
                                 <td style="min-width: 200px">
-                                    {{ empresa.estado }}
+                                    {{ empresa.correoPersonal }}
+                                </td>
+                                <td style="min-width: 200px">
+                                    {{ empresa.correoUnicauca }}
+                                </td>
+                                <td style="min-width: 200px">
+                                    {{ empresa.celular }}
                                 </td>
                                 <td style="min-width: 200px">
                                     <button

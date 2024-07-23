@@ -1,8 +1,8 @@
-<div>
+<p-panel>
     <div id="formatoF">
         <div class="flex flex-column w-full mb-4">
             <div
-                class="flex flex-row align-items-center justify-content-evenly header-logo"
+                class="flex align-items-center justify-content-evenly header-logo"
             >
                 <div>
                     <h2>Maestría en Computación</h2>
@@ -17,20 +17,11 @@
                     height="180px"
                 />
             </div>
-            <div
-                class="flex flex-column w-full justify-content-center align-items-center row-gap-4 title-head"
-            >
-                <span style="font-size: 20px; font-weight: bold"
-                    >TESIS DE POSGRADO</span
-                >
-            </div>
         </div>
-        <div class="mt-4 form-container pl-8 pr-8">
+        <div class="mt-4 px-8">
             <form [formGroup]="formatoFForm">
                 <div class="field grid justify-content-start">
-                    <label class="col-2 label-required" for="titulo"
-                        >TÍTULO:</label
-                    >
+                    <label class="col-2" for="titulo">Titulo</label>
                     <div class="col-10">
                         <input
                             pInputText
@@ -44,9 +35,7 @@
                 </div>
 
                 <div class="field grid justify-content-start">
-                    <label class="col-2 label-required" for="estudiante"
-                        >ESTUDIANTE:</label
-                    >
+                    <label class="col-2" for="estudiante">Estudiante</label>
                     <div class="col-10">
                         <input
                             pInputText
@@ -60,9 +49,7 @@
                 </div>
 
                 <div class="field grid justify-content-start">
-                    <label class="col-2 label-required" for="director"
-                        >DIRECTOR:</label
-                    >
+                    <label class="col-2" for="director">Director</label>
                     <div class="col-10">
                         <input
                             pInputText
@@ -70,19 +57,20 @@
                             id="director"
                             class="p-inputtext-md w-full"
                             formControlName="director"
+                            readonly
                         />
                     </div>
                 </div>
 
                 <div class="field grid justify-content-start">
-                    <label class="col-2 label-required" for="trabajoCumple"
-                        >A) EL TRABAJO CUMPLE CON LAS CONDICIONES DE
-                        ENTREGA?</label
+                    <label class="col-2" for="trabajoCumple"
+                        >A) El trabajo cumple con las condiciones de
+                        entrega?</label
                     >
-                    <div class="col-10">
-                        <div
-                            class="flex justify-content-start align-items-center column-gap-2"
-                        >
+                    <div
+                        class="col-10 flex justify-content-start align-items-center"
+                    >
+                        <div class="flex align-items-center column-gap-2">
                             <label for="trabajoCumpleSi">SI</label>
                             <p-checkbox
                                 type="checkbox"
@@ -102,13 +90,13 @@
                 </div>
 
                 <div class="field grid justify-content-start">
-                    <label class="col-2 label-required" for="documentoTerminado"
-                        >B) DOCUMENTO Y ANEXOS COMPLETAMENTE TERMINADOS?</label
+                    <label class="col-2" for="documentoTerminado"
+                        >B) Documentos y anexos completamente terminados?</label
                     >
-                    <div class="col-10">
-                        <div
-                            class="flex justify-content-start align-items-center column-gap-2"
-                        >
+                    <div
+                        class="col-10 flex justify-content-start align-items-center"
+                    >
+                        <div class="flex align-items-center column-gap-2">
                             <label for="documentoTerminadoSi">SI</label>
                             <p-checkbox
                                 type="checkbox"
@@ -128,8 +116,8 @@
                 </div>
 
                 <div class="field grid justify-content-start">
-                    <label class="col-2" for="observaciones"
-                        >OBSERVACIONES:</label
+                    <label class="col-2 label-required" for="observaciones"
+                        >Observaciones</label
                     >
                     <div class="col-10">
                         <textarea
@@ -143,29 +131,46 @@
                 </div>
 
                 <div class="field grid justify-content-start">
-                    <label class="col-2 label-required" for="jurados"
-                        >JURADOS SUGERIDOS Y DATOS DE CONTACTO:</label
+                    <label class="col-2"
+                        >Jurados sugeridos y datos de contacto</label
                     >
-                    <div class="col-10">
-                        <textarea
-                            pInputTextarea
-                            [maxLength]="250"
-                            id="jurados"
-                            class="p-inputtextarea-md w-full"
-                            formControlName="jurados"
-                        ></textarea>
+                    <div
+                        *ngIf="
+                            juradoExternoSeleccionado &&
+                            juradoInternoSeleccionado
+                        "
+                        class="col-10"
+                    >
+                        <div
+                            class="flex flex-column justify-content-start align-items-start column-gap-4"
+                        >
+                            <span
+                                >{{ juradoExternoSeleccionado?.nombres }},
+                                {{ juradoExternoSeleccionado?.correo }},
+                                {{
+                                    juradoExternoSeleccionado?.universidad
+                                }}</span
+                            >
+                            <span
+                                >{{ juradoInternoSeleccionado.nombres }},
+                                {{ juradoInternoSeleccionado?.correo }},
+                                {{
+                                    juradoInternoSeleccionado?.universidad
+                                }}</span
+                            >
+                        </div>
                     </div>
                 </div>
 
                 <div class="field grid justify-content-start">
-                    <label class="col-2" for="fecha">FECHA:</label>
+                    <label class="col-2" for="fecha">FECHA</label>
                     <div class="col-10">
                         <span> {{ fechaActual | date : "dd/MM/yyyy" }} </span>
                     </div>
                 </div>
 
                 <div class="field grid mt-4">
-                    <span class="col-9 text-right align-self-start">
+                    <span class="col-9 text-right">
                         <b>Firma Director</b>
                     </span>
                     <div class="col-3 text-center">
@@ -203,7 +208,7 @@
             </form>
         </div>
         <div
-            class="flex flex-row align-items-center justify-content-center footer-logo footer-content"
+            class="flex flex-row align-items-center justify-content-center footer-logo mt-8"
         >
             <img
                 src="assets/layout/images/logosIcontec.png"
@@ -212,7 +217,7 @@
                 height="140px"
             />
             <div
-                class="flex flex-column align-items-center justify-content-center footer-text"
+                class="flex flex-column align-items-center justify-content-center"
             >
                 <span>Por una Universidad de excelencia y solidaria</span>
                 <hr />
@@ -244,4 +249,4 @@
             [loading]="loading"
         ></button>
     </div>
-</div>
+</p-panel>
