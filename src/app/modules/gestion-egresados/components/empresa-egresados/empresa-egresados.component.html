@@ -15,6 +15,19 @@
         </div>
         <div class="field grid">
             <div class="col-4 col-label text-right align-self-center">
+                <label class="label-required">Ubicación de la Empresa</label>
+            </div>
+            <div class="col-8 col-input">
+                <input
+                    pInputText
+                    [maxLength]="250"
+                    class="p-inputtext-md w-full"
+                    formControlName="ubicacion"
+                />
+            </div>
+        </div>
+        <div class="field grid">
+            <div class="col-4 col-label text-right align-self-center">
                 <label class="label-required">Cargo</label>
             </div>
             <div class="col-8 col-input">
@@ -28,14 +41,14 @@
         </div>
         <div class="field grid">
             <div class="col-4 col-label text-right align-self-center">
-                <label class="label-required">Jefe Inmediato</label>
+                <label class="label-required">Jefe Directo</label>
             </div>
             <div class="col-8 col-input">
                 <input
                     pInputText
                     [maxLength]="250"
                     class="p-inputtext-md w-full"
-                    formControlName="jefeInmediato"
+                    formControlName="jefeDirecto"
                 />
             </div>
         </div>
@@ -54,58 +67,28 @@
         </div>
         <div class="field grid">
             <div class="col-4 col-label text-right align-self-center">
-                <label class="label-required">Correo Electrónico Empresa</label>
+                <label class="label-required">Correo Electrónico</label>
             </div>
             <div class="col-8 col-input">
                 <input
                     pInputText
                     [maxLength]="250"
                     class="p-inputtext-md w-full"
-                    formControlName="correoEmpresa"
+                    formControlName="correo"
                 />
             </div>
         </div>
         <div class="field grid">
             <div class="col-4 col-label text-right align-self-center">
-                <label class="label-required"
-                    >Correo Electrónico Personal</label
-                >
+                <label class="label-required">Estado</label>
             </div>
             <div class="col-8 col-input">
-                <input
-                    pInputText
-                    [maxLength]="250"
-                    class="p-inputtext-md w-full"
-                    formControlName="correoPersonal"
-                />
-            </div>
-        </div>
-        <div class="field grid">
-            <div class="col-4 col-label text-right align-self-center">
-                <label class="label-required"
-                    >Correo Electrónico Institucional</label
-                >
-            </div>
-            <div class="col-8 col-input">
-                <input
-                    pInputText
-                    [maxLength]="250"
-                    class="p-inputtext-md w-full"
-                    formControlName="correoUnicauca"
-                />
-            </div>
-        </div>
-        <div class="field grid">
-            <div class="col-4 col-label text-right align-self-center">
-                <label class="label-required">Celular</label>
-            </div>
-            <div class="col-8 col-input">
-                <input
-                    pInputText
-                    [maxLength]="250"
-                    class="p-inputtext-md w-full"
-                    formControlName="celular"
-                />
+                <p-dropdown
+                    [options]="estados"
+                    placeholder="Seleccione"
+                    styleClass="p-inputtext-md w-full"
+                    formControlName="estado"
+                ></p-dropdown>
             </div>
         </div>
     </div>

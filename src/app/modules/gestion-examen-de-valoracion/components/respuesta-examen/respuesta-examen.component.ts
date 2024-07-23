@@ -598,9 +598,6 @@ export class RespuestaExamenComponent implements OnInit {
                         respuesta.respuestaExamenValoracion,
                         Validators.required,
                     ],
-                    ['fechaMaximaEntrega' + indexExperto]: [
-                        respuesta.fechaMaximaEntrega,
-                    ],
                     ['asunto' + indexExperto]: [
                         `Respuesta Examen de Valoracion ${this.estudianteSeleccionado.nombre} ${this.estudianteSeleccionado.apellido} - ${this.expertoSeleccionado?.nombres}`,
                         Validators.required,
@@ -611,12 +608,6 @@ export class RespuestaExamenComponent implements OnInit {
                     ],
                 });
                 this.expertoEvaluaciones.push(evaluacionFormGroup);
-                this.expertoEvaluaciones.at(indexExperto).patchValue({
-                    ['fechaMaximaEntrega' + indexExperto]:
-                        respuesta?.fechaMaximaEntrega
-                            ? new Date(respuesta.fechaMaximaEntrega)
-                            : null,
-                });
                 this.setup('linkFormatoB', 'expertoEvaluaciones');
                 this.setup('linkFormatoC', 'expertoEvaluaciones');
                 this.setup('linkObservaciones', 'expertoEvaluaciones');
@@ -658,9 +649,6 @@ export class RespuestaExamenComponent implements OnInit {
                         respuesta.respuestaExamenValoracion,
                         Validators.required,
                     ],
-                    ['fechaMaximaEntrega' + indexDocente]: [
-                        respuesta.fechaMaximaEntrega,
-                    ],
                     ['asunto' + indexDocente]: [
                         `Respuesta Examen de Valoracion ${this.estudianteSeleccionado.nombre} ${this.estudianteSeleccionado.apellido} - ${this.docenteSeleccionado?.nombres}`,
                         Validators.required,
@@ -671,12 +659,6 @@ export class RespuestaExamenComponent implements OnInit {
                     ],
                 });
                 this.docenteEvaluaciones.push(evaluacionFormGroup);
-                this.docenteEvaluaciones.at(indexDocente).patchValue({
-                    ['fechaMaximaEntrega' + indexDocente]:
-                        respuesta?.fechaMaximaEntrega
-                            ? new Date(respuesta.fechaMaximaEntrega)
-                            : null,
-                });
                 this.setup('linkFormatoB', 'docenteEvaluaciones');
                 this.setup('linkFormatoC', 'docenteEvaluaciones');
                 this.setup('linkObservaciones', 'docenteEvaluaciones');
@@ -798,7 +780,6 @@ export class RespuestaExamenComponent implements OnInit {
                 formArrayName === 'expertoEvaluaciones'
                     ? evaluacion['respuestaExamenValoracionExperto' + i]
                     : evaluacion['respuestaExamenValoracionDocente' + i],
-            fechaMaximaEntrega: evaluacion['fechaMaximaEntrega' + i],
             asunto: evaluacion['asunto' + i],
             mensaje: evaluacion['mensaje' + i],
         };
@@ -853,8 +834,6 @@ export class RespuestaExamenComponent implements OnInit {
 
         respuestaData.linkFormatoB = formatoB;
         respuestaData.linkFormatoC = formatoC;
-        if (respuestaData.respuestaExamenValoracion == 'APROBADO')
-            respuestaData.fechaMaximaEntrega = '';
 
         this.respuestaService
             .updateRespuestaExamen(respuestaId, respuestaData)
@@ -1018,7 +997,6 @@ export class RespuestaExamenComponent implements OnInit {
                       this[formArrayName].length
                     : 'respuestaExamenValoracionDocente' +
                       this[formArrayName].length]: [null, Validators.required],
-                ['fechaMaximaEntrega' + this[formArrayName].length]: [null],
                 ['asunto' + this[formArrayName].length]: [
                     `Respuesta Examen de Valoracion ${
                         this.estudianteSeleccionado?.nombre

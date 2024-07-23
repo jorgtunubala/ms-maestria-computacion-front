@@ -683,41 +683,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div
-                                        class="grid column-gap-4 mb-6"
-                                        *ngIf="
-                                            expertoEvaluaciones
-                                                .at(i)
-                                                .get(
-                                                    'respuestaExamenValoracionExperto' +
-                                                        i
-                                                )?.value == 'APLAZADO' ||
-                                            expertoEvaluaciones
-                                                .at(i)
-                                                .get(
-                                                    'respuestaExamenValoracionExperto' +
-                                                        i
-                                                )?.value == 'NO_APROBADO'
-                                        "
-                                    >
-                                        <div
-                                            class="label-required col-2 text-right"
-                                        >
-                                            <label
-                                                >Fecha Maxima Entrega de
-                                                Correciones</label
-                                            >
-                                        </div>
-                                        <div class="col-9 flex column-gap-4">
-                                            <p-calendar
-                                                [formControlName]="
-                                                    'fechaMaximaEntrega' + i
-                                                "
-                                                [showIcon]="true"
-                                                dateFormat="dd.mm.yy"
-                                            ></p-calendar>
-                                        </div>
-                                    </div>
                                     <div class="field grid column-gap-4">
                                         <div class="col-2 text-right">
                                             <label class="label-required"
@@ -1386,41 +1351,6 @@
                                                     >{{ estado }}</label
                                                 >
                                             </div>
-                                        </div>
-                                    </div>
-                                    <div
-                                        class="grid column-gap-4 mb-6"
-                                        *ngIf="
-                                            docenteEvaluaciones
-                                                .at(i)
-                                                .get(
-                                                    'respuestaExamenValoracionDocente' +
-                                                        i
-                                                )?.value == 'APLAZADO' ||
-                                            docenteEvaluaciones
-                                                .at(i)
-                                                .get(
-                                                    'respuestaExamenValoracionDocente' +
-                                                        i
-                                                )?.value == 'NO_APROBADO'
-                                        "
-                                    >
-                                        <div
-                                            class="label-required col-2 text-right"
-                                        >
-                                            <label
-                                                >Fecha Maxima Entrega de
-                                                Correciones</label
-                                            >
-                                        </div>
-                                        <div class="col-9 flex column-gap-4">
-                                            <p-calendar
-                                                [formControlName]="
-                                                    'fechaMaximaEntrega' + i
-                                                "
-                                                [showIcon]="true"
-                                                dateFormat="dd.mm.yy"
-                                            ></p-calendar>
                                         </div>
                                     </div>
                                     <div class="field grid column-gap-4">

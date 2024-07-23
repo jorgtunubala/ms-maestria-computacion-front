@@ -1,11 +1,10 @@
 export interface Empresa {
     id?: number;
     nombre?: string;
+    ubicacion?: string;
     cargo?: string;
-    jefeInmediato?: string;
+    jefeDirecto?: string;
     telefono?: string;
-    correoEmpresa?: string;
-    correoPersonal?: string;
-    correoUnicauca?: string;
-    celular?: string;
+    correo?: string;
+    estado?: string;
 }

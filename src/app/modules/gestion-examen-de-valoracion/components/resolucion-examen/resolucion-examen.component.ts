@@ -414,6 +414,12 @@ export class ResolucionExamenComponent implements OnInit {
                 this.isCoordinadorFase3 = false;
                 break;
             case EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE2_GENERACION_RESOLUCION:
+                this.messageService.add({
+                    severity: 'info',
+                    summary: 'Informacion',
+                    detail: 'En este paso, se anexan Anteproyecto Final, Formato B de cada Evaluador.',
+                    life: 4000,
+                });
                 this.isDocente = true;
                 this.isCoordinadorFase1 = true;
                 this.isCoordinadorFase2 = false;
@@ -472,7 +478,7 @@ export class ResolucionExamenComponent implements OnInit {
     async loadPdfFiles() {
         const filesToConvert = [];
 
-        if (this.isDocente && !this.isCoordinadorFase3) {
+        if (!this.isCoordinadorFase1 && !this.isCoordinadorFase3) {
             filesToConvert.push(
                 {
                     file: this.FileAnteproyectoFinal,
@@ -482,21 +488,8 @@ export class ResolucionExamenComponent implements OnInit {
                     file: this.FileSolicitudComite,
                     fieldName:
                         'Solicitud al cómite para resolución de aprobación de trabajo de grado',
-                },
-                {
-                    file: this.FileSolicitudConsejo,
-                    fieldName:
-                        'Solicitud al consejo de facultad para resolución de aprobación de trabajo de grado',
                 }
             );
-        }
-
-        if (this.isCoordinadorFase2 && this.isCoordinadorFase3) {
-            filesToConvert.push({
-                file: this.FileOficioConsejo,
-                fieldName:
-                    'Respuesta consejo de resolución generada - Oficio Consejo',
-            });
         }
 
         if (this.isCoordinadorFase1 && !this.isCoordinadorFase2) {
@@ -514,6 +507,15 @@ export class ResolucionExamenComponent implements OnInit {
 
             filesToConvert.push(
                 {
+                    file: this.FileAnteproyectoFinal,
+                    fieldName: 'Anteproyecto Final',
+                },
+                {
+                    file: this.FileSolicitudConsejo,
+                    fieldName:
+                        'Solicitud al consejo de facultad para resolución de aprobación de trabajo de grado',
+                },
+                {
                     file: FileFormatoBEv1,
                     fieldName: 'Formato B Evaluador Interno',
                 },
@@ -522,6 +524,14 @@ export class ResolucionExamenComponent implements OnInit {
                     fieldName: 'Formato B Evaluador Externo',
                 }
             );
+        }
+
+        if (this.isCoordinadorFase2) {
+            filesToConvert.push({
+                file: this.FileOficioConsejo,
+                fieldName:
+                    'Respuesta consejo de resolución generada - Oficio Consejo',
+            });
         }
 
         const errorFiles = new Set<File>();
