@@ -37,6 +37,7 @@ export class ResumenComponent implements OnInit {
     guardadoEnProceso: boolean = false;
     mostrarBtnFirmar: boolean = false;
     habilitarEnvio: boolean = false;
+    bloquearBoton: boolean = false;
 
     constructor(
         public radicar: RadicarService,
@@ -108,6 +109,13 @@ export class ResumenComponent implements OnInit {
     }
 
     async enviarSolicitud() {
+        if (this.guardadoEnProceso) {
+            return;
+        }
+
+        //this.bloquearBoton = true;
+        console.log('entre');
+
         if (this.validarFirmaCargada()) {
             this.guardadoEnProceso = true;
 
@@ -197,13 +205,19 @@ export class ResumenComponent implements OnInit {
     }
 
     navigateToBack() {
+        if (this.guardadoEnProceso) {
+            return;
+        }
+
+        console.log(this.radicar.tipoSolicitudEscogida.codigoSolicitud);
+
         if (
             [
                 'AD_ASIG',
                 'CA_ASIG',
                 'AP_SEME',
                 'CU_ASIG',
-                'RE_CRED_PAS',
+                'RE_CRED_PR_DOC',
                 'AV_COMI_PR',
                 'SO_BECA',
             ].includes(this.radicar.tipoSolicitudEscogida.codigoSolicitud)

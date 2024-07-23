@@ -37,3 +37,4 @@ export { DatosAvalPracticaDocente } from './solicitudes/solicitud-aval-pract-doc
 export { DatosAvalPracticaDResponse } from './solicitudes/solicitud-aval-pract-docente/datosAvalPracticaDResponse';
 export { EventoHistorial } from './historial/eventoHistorial';
 export { NumeroRadicado } from './historial/numeroRadicado';
+export { DocumentoRequerido } from './requisitos/documentoRequerido';

@@ -30,6 +30,7 @@ export class RadicarService {
 
     fechaEnvio: Date = null;
     tipoSolicitudEscogida: TipoSolicitud;
+    radicadoAsignado: string = '';
     actividadesReCreditos: InfoActividadesReCreditos[];
     actividadesSeleccionadas: InfoActividadesReCreditos[];
     requisitosSolicitudEscogida: RequisitosSolicitud;
@@ -141,6 +142,7 @@ export class RadicarService {
             null
         );
         this.tipoSolicitudEscogida = null;
+        this.radicadoAsignado = '';
         this.asignaturasAdicCancel = [];
         this.documentosAdjuntos = [];
         this.tutor = null;
@@ -236,6 +238,9 @@ export class RadicarService {
 
         //Fecha de radicado
         this.fechaEnvio = infoSolicitud.datosComunSolicitud.fechaEnvioSolicitud;
+
+        //Número de radicado
+        this.radicadoAsignado = infoSolicitud.datosComunSolicitud.radicado;
 
         //Firma Solicitante
         this.firmaSolicitante = this.utilidades.convertirBase64AFile(
@@ -474,7 +479,9 @@ export class RadicarService {
             case 'AV_COMI_PR':
                 try {
                     const actividadesReCreditos = await this.gestorHttp
-                        .obtenerActividadesReCreditos()
+                        .obtenerActividadesDePracticaDocente(
+                            this.tipoSolicitudEscogida.idSolicitud
+                        )
                         .toPromise();
 
                     this.actividadesReCreditos = actividadesReCreditos;
@@ -521,7 +528,9 @@ export class RadicarService {
             case 'RE_CRED_PAS':
                 try {
                     const actividadesReCreditos = await this.gestorHttp
-                        .obtenerActividadesReCreditos()
+                        .obtenerActividadesDePracticaDocente(
+                            this.tipoSolicitudEscogida.idSolicitud
+                        )
                         .toPromise();
                     this.actividadesReCreditos = actividadesReCreditos;
 
