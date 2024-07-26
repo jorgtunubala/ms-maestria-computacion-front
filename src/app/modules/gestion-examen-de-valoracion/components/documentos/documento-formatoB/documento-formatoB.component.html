@@ -21,7 +21,7 @@
             <span style="font-size: 20px; font-weight: bold">
                 ACTA DE EXAMEN DE VALORACION
             </span>
-            <span> Popayán {{ fechaActual | date : "dd/MM/yyyy" }} </span>
+            <span> Popayán {{ getFormattedDate() }} </span>
         </div>
     </div>
     <form class="mt-4" [formGroup]="formatoBForm">
@@ -35,7 +35,13 @@
                     >
                 </div>
                 <div class="col-9 col-input">
-                    <span>Maestría en Computación</span>
+                    <input
+                        pInputText
+                        [maxLength]="250"
+                        class="p-inputtext-md w-full"
+                        formControlName="programa"
+                        readonly
+                    />
                 </div>
             </div>
             <div class="field grid">
@@ -169,7 +175,7 @@
             #FormatoB
             mode="basic"
             [auto]="true"
-            accept=".pdf"
+            accept=".docx"
             chooseIcon="pi pi-paperclip"
             maxFileSize="5000000"
             (onSelect)="onAdjuntar($event)"
@@ -177,7 +183,7 @@
             [pTooltip]="
                 !!formatoBEv1 || !!formatoBEv2
                     ? 'Ya se ha adjuntado el documento.'
-                    : 'Descargar documentos, rellenar/firmar y adjuntar en PDF.'
+                    : 'Descargar documentos, rellenar/firmar y adjuntar.'
             "
             tooltipPosition="top"
         >

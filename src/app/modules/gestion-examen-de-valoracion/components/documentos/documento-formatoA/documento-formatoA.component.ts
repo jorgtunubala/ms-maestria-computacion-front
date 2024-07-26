@@ -28,9 +28,8 @@ import { BuscadorDocentesComponent } from 'src/app/shared/components/buscador-do
 import { BuscadorExpertosComponent } from 'src/app/shared/components/buscador-expertos/buscador-expertos.component';
 import { Estudiante } from 'src/app/modules/gestion-estudiantes/models/estudiante';
 import { Orientador } from '../../../models/orientador';
-import { PdfService } from 'src/app/shared/services/pdf.service';
 import { TrabajoDeGradoService } from '../../../services/trabajoDeGrado.service';
-import { Subscription } from 'rxjs';
+import { Subscription, firstValueFrom } from 'rxjs';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 @Component({
@@ -407,7 +406,7 @@ export class DocumentoFormatoAComponent implements OnInit {
         };
     }
 
-    onAdjuntar() {
+    onInsertar() {
         if (this.formatoAForm.invalid) {
             this.handleWarningMessage(Mensaje.REGISTRE_CAMPOS_OBLIGATORIOS);
             return;
@@ -506,24 +505,22 @@ export class DocumentoFormatoAComponent implements OnInit {
         return `${e.nombre} ${e.apellido}`;
     }
 
-    onSeleccionarOrientador(tipo: string): void {
-        const ref =
-            tipo === 'INTERNO'
-                ? this.showBuscadorDocentes()
-                : this.showBuscadorExpertos();
+    async onSeleccionarOrientador(tipo: string): Promise<void> {
+        try {
+            const ref =
+                tipo === 'INTERNO'
+                    ? this.showBuscadorDocentes()
+                    : this.showBuscadorExpertos();
 
-        ref.onClose.subscribe({
-            next: (response) => {
-                if (response) {
-                    const orientador =
-                        tipo === 'INTERNO'
-                            ? this.mapOrientadorLabel(response)
-                            : this.mapOrientadorLabel(response);
-                    this.orientador.setValue(orientador);
-                    this.orientadores.push(orientador);
-                }
-            },
-        });
+            const response = await firstValueFrom(ref.onClose);
+            if (response) {
+                const orientador = this.mapOrientadorLabel(response);
+                this.orientador.setValue(orientador);
+                this.orientadores.push(orientador);
+            }
+        } catch (error) {
+            console.error('Error al seleccionar orientador:', error);
+        }
     }
 
     handlerResponseException(response: any) {

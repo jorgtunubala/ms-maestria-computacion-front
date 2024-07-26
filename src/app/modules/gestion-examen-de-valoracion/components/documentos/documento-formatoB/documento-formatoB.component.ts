@@ -14,21 +14,24 @@ import {
     Validators,
 } from '@angular/forms';
 import { MessageService } from 'primeng/api';
+import { FileUpload } from 'primeng/fileupload';
 import { Subscription } from 'rxjs';
-import * as PizZip from 'pizzip';
-import * as Docxtemplater from 'docxtemplater';
 import { saveAs } from 'file-saver';
+import * as pdfMake from 'pdfmake/build/pdfmake';
+import * as pdfFonts from 'pdfmake/build/vfs_fonts';
+import * as PizZip from 'pizzip';
 import * as JSZipUtils from 'pizzip/utils/index.js';
-import { Estudiante } from 'src/app/modules/gestion-estudiantes/models/estudiante';
-import { TrabajoDeGradoService } from '../../../services/trabajoDeGrado.service';
+import * as Docxtemplater from 'docxtemplater';
 import { Mensaje } from 'src/app/core/enums/enums';
+import { Estudiante } from 'src/app/modules/gestion-estudiantes/models/estudiante';
 import { mapResponseException } from 'src/app/core/utils/exception-util';
 import {
     errorMessage,
     infoMessage,
     warnMessage,
 } from 'src/app/core/utils/message-util';
-import { FileUpload } from 'primeng/fileupload';
+import { TrabajoDeGradoService } from '../../../services/trabajoDeGrado.service';
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 interface Evaluador {
     id?: number;
@@ -43,11 +46,11 @@ interface Evaluador {
     styleUrls: ['documento-formatoB.component.scss'],
 })
 export class DocumentoFormatoBComponent implements OnInit {
+    @Output() formReady = new EventEmitter<FormGroup>();
+    @Output() formatoBDocxGenerated = new EventEmitter<any>();
     @Input() formatoBEv1: File;
     @Input() formatoBEv2: File;
     @Input() evaluador: Evaluador;
-    @Output() formReady = new EventEmitter<FormGroup>();
-    @Output() formatoBPdfGenerated = new EventEmitter<File>();
 
     @ViewChild('formatoB') formatoB!: ElementRef;
     @ViewChild('FormatoB') FormatoB!: FileUpload;
@@ -56,7 +59,8 @@ export class DocumentoFormatoBComponent implements OnInit {
     private tituloSubscription: Subscription;
 
     formatoBForm: FormGroup;
-    fechaActual: Date;
+    footerImage: string;
+    logoImage: string;
 
     isPending = true;
     loading = false;
@@ -80,7 +84,6 @@ export class DocumentoFormatoBComponent implements OnInit {
 
     ngOnInit() {
         this.initForm();
-        this.fechaActual = new Date();
         this.tituloSubscription =
             this.trabajoDeGradoService.tituloSeleccionadoSubject$.subscribe({
                 next: (response) => {
@@ -103,13 +106,12 @@ export class DocumentoFormatoBComponent implements OnInit {
                 },
                 error: (e) => this.handlerResponseException(e),
             });
-
-        this.formatoBForm.get('fecha').setValue(this.fechaActual);
     }
 
     initForm(): void {
         this.formatoBForm = this.fb.group({
-            fecha: [null, Validators.required],
+            fecha: [new Date(), Validators.required],
+            programa: ['Maestría en Computación', Validators.required],
             titulo: [null, Validators.required],
             estudiante: [null, Validators.required],
             conceptoJurado: [null, Validators.required],
@@ -117,6 +119,27 @@ export class DocumentoFormatoBComponent implements OnInit {
         this.formatoBForm.get('fecha').disable();
         this.formatoBForm.get('conceptoJurado').disable();
         this.formReady.emit(this.formatoBForm);
+
+        var logoImg = new Image();
+        logoImg.src = 'assets/layout/images/logoUnicauca.png';
+        logoImg.onload = () => {
+            this.logoImage = this.getBase64Image(logoImg);
+        };
+
+        var footerImg = new Image();
+        footerImg.src = 'assets/layout/images/logosIcontec.png';
+        footerImg.onload = () => {
+            this.footerImage = this.getBase64Image(footerImg);
+        };
+    }
+
+    getBase64Image(img: HTMLImageElement) {
+        var canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        var ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+        return canvas.toDataURL('image/png');
     }
 
     ngOnDestroy() {
@@ -134,6 +157,250 @@ export class DocumentoFormatoBComponent implements OnInit {
         const month = rawDate.toLocaleString('default', { month: 'short' });
         const year = rawDate.getFullYear();
         return `${day} de ${month} de ${year}`;
+    }
+
+    generateDocDefinition() {
+        const formValues = this.formatoBForm.value;
+        return {
+            content: [
+                {
+                    columns: [
+                        {
+                            text: 'Maestría en Computación\nFacultad de Ingeniería Electrónica y Telecomunicaciones',
+                            fontSize: 14,
+                            alignment: 'left',
+                            margin: [0, 5, 0, 5],
+                            opacity: 0.6,
+                        },
+                        {
+                            image: this.logoImage,
+                            width: 50,
+                            height: 70,
+                            margin: [0, -10, 0, 5],
+                            alignment: 'right',
+                            opacity: 0.6,
+                        },
+                    ],
+                },
+                {
+                    text: 'FORMATO B',
+                    style: 'header',
+                    alignment: 'center',
+                },
+                {
+                    text: `ACTA DE EXAMEN DE VALORACIÓN`,
+                    style: 'subheader',
+                    alignment: 'center',
+                },
+                {
+                    text: `Popayán, ${this.getFormattedDate()}`,
+                    style: 'subheader',
+                    alignment: 'center',
+                },
+                {
+                    columns: [
+                        { text: 'Programa:', style: 'label', width: '25%' },
+                        {
+                            text: formValues.titulo,
+                            style: 'value',
+                            width: '75%',
+                        },
+                    ],
+                    margin: [0, 10, 0, 10],
+                },
+                {
+                    columns: [
+                        { text: 'Titulo:', style: 'label', width: '25%' },
+                        {
+                            text: formValues.titulo,
+                            style: 'value',
+                            width: '75%',
+                        },
+                    ],
+                    margin: [0, 10, 0, 10],
+                },
+                {
+                    columns: [
+                        { text: 'Estudiante:', style: 'label', width: '25%' },
+                        {
+                            text: formValues.estudiante,
+                            style: 'value',
+                            width: '75%',
+                        },
+                    ],
+                    margin: [0, 10, 0, 10],
+                },
+                {
+                    columns: [
+                        { text: 'Jurado:', style: 'label', width: '25%' },
+                        {
+                            text:
+                                this.evaluador.nombres +
+                                ', ' +
+                                this.evaluador.universidad +
+                                ', ' +
+                                this.evaluador.correo,
+                            style: 'value',
+                            width: '75%',
+                        },
+                    ],
+                    margin: [0, 10, 0, 10],
+                },
+                {
+                    columns: [
+                        { text: 'Fecha:', style: 'label', width: '25%' },
+                        {
+                            text: this.getFormattedDate(),
+                            style: 'value',
+                            width: '75%',
+                        },
+                    ],
+                    margin: [0, 10, 0, 10],
+                },
+                {
+                    columns: [
+                        {
+                            text: 'Concepto del Jurado:',
+                            style: 'label',
+                            width: '25%',
+                        },
+                        {
+                            stack: [
+                                {
+                                    text: 'Aprobado',
+                                    style: 'value',
+                                    width: '75%',
+                                },
+                                {
+                                    text: 'Aplazado',
+                                    style: 'value',
+                                    width: '75%',
+                                },
+                                {
+                                    text: 'No Aprobado',
+                                    style: 'value',
+                                    width: '75%',
+                                },
+                            ],
+                        },
+                    ],
+                    margin: [0, 10, 0, 30],
+                },
+                {
+                    columns: [
+                        {
+                            text: 'Firman',
+                            style: 'value',
+                            width: '100%',
+                        },
+                    ],
+                },
+                {
+                    columns: [
+                        {
+                            stack: [
+                                {
+                                    canvas: [
+                                        {
+                                            type: 'line',
+                                            x1: 0,
+                                            y1: 0,
+                                            x2: 300,
+                                            y2: 0,
+                                            lineWidth: 1,
+                                        },
+                                    ],
+                                },
+                                {
+                                    text:
+                                        this.evaluador.nombres +
+                                        ', ' +
+                                        this.evaluador.universidad,
+                                    style: 'value',
+                                    width: '100%',
+                                },
+                            ],
+                        },
+                    ],
+                    margin: [0, 60, 0, 0],
+                },
+            ],
+            footer: (currentPage, pageCount) => {
+                return {
+                    columns: [
+                        {
+                            stack: [
+                                {
+                                    image: this.footerImage,
+                                    width: 100,
+                                    height: 60,
+                                    alignment: 'left',
+                                    margin: [0, 5, 0, 5],
+                                    opacity: 0.6,
+                                },
+                            ],
+                            width: 'auto',
+                        },
+                        {
+                            stack: [
+                                {
+                                    text: 'Hacia una Universidad comprometida con la paz territorial',
+                                    alignment: 'center',
+                                    margin: [0, 2, 0, 2],
+                                    opacity: 0.6,
+                                },
+                                {
+                                    canvas: [
+                                        {
+                                            type: 'line',
+                                            x1: 0,
+                                            y1: 0,
+                                            x2: 320,
+                                            y2: 0,
+                                            lineWidth: 1,
+                                            color: '#ff0000',
+                                        },
+                                    ],
+                                    margin: [0, 2, 0, 2],
+                                    alignment: 'center',
+                                    opacity: 0.6,
+                                },
+                                {
+                                    text: 'Facultad de Ingeniería Electrónica y Telecomunicaciones\nCra 2 No. 4N-140 Edif. de Ingenierías - Sector Tulcán Popayán - Cauca - Colombia\nConmutador 8209800 Ext. 2145 maestriacomputacion@unicauca.edu.co\nwww.unicauca.edu.cowww.unicauca.edu.co/maestriacomputacion',
+                                    alignment: 'center',
+                                    fontSize: 10,
+                                    margin: [0, 5, 0, 5],
+                                    opacity: 0.6,
+                                },
+                            ],
+                            width: '*',
+                        },
+                    ],
+                    margin: [40, -60, 0, 0],
+                };
+            },
+            styles: {
+                header: {
+                    fontSize: 18,
+                    bold: true,
+                    margin: [0, 0, 0, 10],
+                },
+                subheader: {
+                    fontSize: 12,
+                    bold: true,
+                    margin: [0, 0, 0, 10],
+                },
+                label: {
+                    fontSize: 12,
+                    bold: true,
+                    margin: [0, 10, 0, 2],
+                },
+                value: {
+                    fontSize: 12,
+                    margin: [0, 10, 0, 0],
+                },
+            },
+        };
     }
 
     onDownload() {
@@ -206,10 +473,23 @@ export class DocumentoFormatoBComponent implements OnInit {
             return;
         } else {
             this.loading = true;
-            const file: File = event.files[0];
-            if (file) {
-                this.formatoBPdfGenerated.emit(file);
-                this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
+            const fileDoc: File = event.files[0];
+            if (fileDoc) {
+                const docDefinition = this.generateDocDefinition();
+                pdfMake.createPdf(docDefinition).getBlob((pdfBlob: Blob) => {
+                    const filePdf = new File(
+                        [pdfBlob],
+                        `${this.estudianteSeleccionado.codigo} - formatoB.pdf`,
+                        {
+                            type: 'application/pdf',
+                        }
+                    );
+                    this.formatoBDocxGenerated.emit({
+                        doc: fileDoc,
+                        pdf: filePdf,
+                    });
+                    this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
+                });
             }
             this.loading = false;
             this.FormatoB.clear();

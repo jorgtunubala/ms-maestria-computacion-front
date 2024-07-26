@@ -18,6 +18,16 @@
     display: none;
 }
 
+.responsive-dialog {
+    width: 50vw;
+}
+
+@media (max-width: 768px) {
+    .responsive-dialog {
+        width: 95vw;
+    }
+}
+
 .spinner {
     transform: translate(-50%, 50%);
     position: absolute;

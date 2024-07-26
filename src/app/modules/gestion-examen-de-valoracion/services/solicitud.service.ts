@@ -105,7 +105,7 @@ export class SolicitudService {
     }
 
     updateSolicitudCoordinadorFase1(
-        solicitud: Solicitud,
+        solicitud: any,
         idTrabajoGrado: number
     ): Observable<any> {
         return this.http.put<any>(

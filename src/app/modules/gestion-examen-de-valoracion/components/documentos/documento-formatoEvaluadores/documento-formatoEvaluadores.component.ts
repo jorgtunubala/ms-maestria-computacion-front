@@ -15,7 +15,7 @@ import {
     Validators,
 } from '@angular/forms';
 import { MessageService } from 'primeng/api';
-import { Subscription } from 'rxjs';
+import { Subscription, firstValueFrom } from 'rxjs';
 import { Mensaje } from 'src/app/core/enums/enums';
 import { mapResponseException } from 'src/app/core/utils/exception-util';
 import {
@@ -506,7 +506,7 @@ export class DocumentoformatoEvaluadoresComponent implements OnInit {
         }
     }
 
-    onAdjuntar() {
+    onInsertar() {
         if (this.formatoEvaluadoresForm.invalid) {
             this.handleWarningMessage(Mensaje.REGISTRE_CAMPOS_OBLIGATORIOS);
             return;
@@ -533,17 +533,18 @@ export class DocumentoformatoEvaluadoresComponent implements OnInit {
         });
     }
 
-    onSeleccionarDocente() {
-        const ref = this.showBuscadorDocente();
-        ref.onClose.subscribe({
-            next: (response) => {
-                if (response) {
-                    const docente = this.mapDocenteLabel(response);
-                    this.docenteSeleccionado = docente;
-                    this.docente.setValue(docente.nombres);
-                }
-            },
-        });
+    async onSeleccionarDocente(): Promise<void> {
+        try {
+            const ref = this.showBuscadorDocente();
+            const response = await firstValueFrom(ref.onClose);
+            if (response) {
+                const docente = this.mapDocenteLabel(response);
+                this.docenteSeleccionado = docente;
+                this.docente.setValue(docente.nombres);
+            }
+        } catch (error) {
+            console.error('Error al seleccionar docente:', error);
+        }
     }
 
     mapDocenteLabel(docente: any) {

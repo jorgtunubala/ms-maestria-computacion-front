@@ -61,6 +61,21 @@ export class RespuestaService {
         );
     }
 
+    insertarInformacionCancelado(
+        idTrabajoGrado: number,
+        observacion: any
+    ): Observable<any> {
+        return this.http.post<any>(
+            backendGestionTrabajoDeGrado(
+                `respuesta_examen_valoracion/insertarInformacionCancelado/${idTrabajoGrado}`
+            ),
+            observacion,
+            {
+                headers: getHeaders(),
+            }
+        );
+    }
+
     getFormatosB(trabajoDeGradoId: number): Observable<any> {
         return this.http.get<any>(
             backendGestionTrabajoDeGrado(

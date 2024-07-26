@@ -142,7 +142,7 @@ export class DocumentoFormatoGComponent implements OnInit {
             estudiante: [null, Validators.required],
             titulo: [null, Validators.required],
             director: [null, Validators.required],
-            observaciones: [null, Validators.required],
+            observaciones: [null],
             juradoInterno: [this.juradoInterno.nombres, Validators.required],
             juradoExterno: [this.juradoExterno.nombres, Validators.required],
             firmaCoordinador: [null, Validators.required],
@@ -294,7 +294,7 @@ export class DocumentoFormatoGComponent implements OnInit {
                 },
                 { text: 'OBSERVACIONES:', style: 'label' },
                 {
-                    text: formValues?.observaciones,
+                    text: formValues?.observaciones || '',
                     style: 'value',
                 },
                 {
@@ -434,7 +434,7 @@ export class DocumentoFormatoGComponent implements OnInit {
         }
     }
 
-    onAdjuntar() {
+    onInsertar() {
         if (this.formatoGForm.invalid) {
             this.handleWarningMessage(Mensaje.REGISTRE_CAMPOS_OBLIGATORIOS);
             return;

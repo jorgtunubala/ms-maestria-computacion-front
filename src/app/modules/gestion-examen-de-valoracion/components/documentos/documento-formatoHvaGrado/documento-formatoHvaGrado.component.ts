@@ -1,5 +1,3 @@
-import * as pdfMake from 'pdfmake/build/pdfmake';
-import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 import {
     Component,
     ElementRef,
@@ -10,15 +8,13 @@ import {
     ViewChild,
 } from '@angular/core';
 import {
-    FormArray,
     FormBuilder,
     FormControl,
     FormGroup,
     Validators,
 } from '@angular/forms';
-import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
-import { Subscription, firstValueFrom } from 'rxjs';
+import { Subscription } from 'rxjs';
 import * as PizZip from 'pizzip';
 import * as Docxtemplater from 'docxtemplater';
 import { saveAs } from 'file-saver';
@@ -31,8 +27,7 @@ import {
     warnMessage,
 } from 'src/app/core/utils/message-util';
 import { TrabajoDeGradoService } from '../../../services/trabajoDeGrado.service';
-import { ResolucionService } from '../../../services/resolucion.service';
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
+import { FileUpload } from 'primeng/fileupload';
 
 @Component({
     selector: 'documento-formatoHvaGrado',
@@ -40,110 +35,34 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
     styleUrls: ['documento-formatoHvaGrado.component.scss'],
 })
 export class DocumentoFormatoHvaGradoComponent implements OnInit {
-    @Input() trabajoDeGradoId: number;
+    @Input() fileFormatoHvaGrado: File;
     @Output() formReady = new EventEmitter<FormGroup>();
     @Output() formatoHvaGradoPdfGenerated = new EventEmitter<File>();
     @ViewChild('formatoHvaGrado') formatoHvaGrado!: ElementRef;
+    @ViewChild('FileFormatoHvaGrado') FileFormatoHvaGrado!: FileUpload;
 
-    estudianteSubscription: Subscription;
     tituloSubscription: Subscription;
+    estudianteSubscription: Subscription;
 
     formatoHvaGradoForm: FormGroup;
 
+    isPending = true;
     loading = false;
 
-    fechaActual: string;
-
-    title: string = 'docx-generator';
     estudianteSeleccionado: any;
-
-    tiposAreaFormacion = [
-        { nombre: 'Fundamentación' },
-        { nombre: 'Electiva' },
-        { nombre: 'Investigación' },
-        { nombre: 'Complementación' },
-    ];
-
-    asignaturas = [
-        { nombre: 'Asignatura A', creditos: 3 },
-        { nombre: 'Asignatura B', creditos: 4 },
-        { nombre: 'Asignatura C', creditos: 5 },
-        { nombre: 'Asignatura D', creditos: 2 },
-        { nombre: 'Asignatura E', creditos: 5 },
-        { nombre: 'Asignatura F', creditos: 4 },
-        { nombre: 'Asignatura G', creditos: 5 },
-    ];
-
-    pruebaSuperadaOptions = [
-        { label: 'Sí', value: 'Si' },
-        { label: 'No', value: 'No' },
-    ];
 
     constructor(
         private fb: FormBuilder,
-        private router: Router,
         private messageService: MessageService,
-        private trabajoDeGradoService: TrabajoDeGradoService,
-        private resolucionService: ResolucionService
+        private trabajoDeGradoService: TrabajoDeGradoService
     ) {}
 
     get estudiante(): FormControl {
         return this.formatoHvaGradoForm.get('estudiante') as FormControl;
     }
 
-    get director(): FormControl {
-        return this.formatoHvaGradoForm.get('director') as FormControl;
-    }
-
-    get codirector(): FormControl {
-        return this.formatoHvaGradoForm.get('codirector') as FormControl;
-    }
-
-    async loadDirector() {
-        try {
-            const response = await firstValueFrom(
-                this.resolucionService.getResolucionDocente(
-                    this.trabajoDeGradoId
-                )
-            );
-            if (response) {
-                this.director.setValue(response.director.nombres);
-            }
-        } catch (error) {
-            console.error('Error al obtener el director:', error);
-        }
-    }
-
-    async loadCodirector() {
-        try {
-            const response = await firstValueFrom(
-                this.resolucionService.getResolucionDocente(
-                    this.trabajoDeGradoId
-                )
-            );
-            if (response) {
-                this.codirector.setValue(response.codirector.nombres);
-            }
-        } catch (error) {
-            console.error('Error al obtener el codirector:', error);
-        }
-    }
-
     ngOnInit() {
         this.initForm();
-        this.fechaActual = new Date().toLocaleString();
-
-        this.tituloSubscription =
-            this.trabajoDeGradoService.tituloSeleccionadoSubject$.subscribe({
-                next: (response) => {
-                    if (response) {
-                        this.formatoHvaGradoForm
-                            .get('titulo')
-                            .setValue(response);
-                    }
-                },
-                error: (e) => this.handlerResponseException(e),
-            });
 
         this.estudianteSubscription =
             this.trabajoDeGradoService.estudianteSeleccionado$.subscribe({
@@ -161,26 +80,25 @@ export class DocumentoFormatoHvaGradoComponent implements OnInit {
                 },
                 error: (e) => this.handlerResponseException(e),
             });
-
-        if (this.trabajoDeGradoId) {
-            this.loadDirector();
-            this.loadCodirector();
-        }
     }
 
     initForm(): void {
+        const today = new Date();
+        const dia = today.getDate();
+        const mes = today.getMonth() + 1;
+        const anio = today.getFullYear();
+
         this.formatoHvaGradoForm = this.fb.group({
+            dia: [dia, Validators.required],
+            mes: [mes, Validators.required],
+            anio: [anio, Validators.required],
+            facultad: [
+                'Ingeniería Electrónica y Telecomunicaciones',
+                Validators.required,
+            ],
+            programa: ['Maestría en Computación', Validators.required],
             estudiante: [null, Validators.required],
-            codigo: ['123', Validators.required],
-            planEstudios: ['2024-2', Validators.required],
-            fechaRevision: [null, Validators.required],
-            areasFormacion: this.fb.array([], Validators.required),
-            pruebaSuperada: [null, Validators.required],
-            minimoArticulo: [null, Validators.required],
-            creditosCumplidos: [null, Validators.required],
-            titulo: [null, Validators.required],
-            director: [null, Validators.required],
-            codirector: [null, Validators.required],
+            titulo: [null],
             coordinador: ['Luz Marina Sierra Martínez', Validators.required],
         });
         this.formReady.emit(this.formatoHvaGradoForm);
@@ -190,105 +108,27 @@ export class DocumentoFormatoHvaGradoComponent implements OnInit {
         if (this.estudianteSubscription) {
             this.estudianteSubscription.unsubscribe();
         }
-        if (this.tituloSubscription) {
-            this.tituloSubscription.unsubscribe();
-        }
-    }
-
-    addAreaFormacion(event: any): void {
-        const areaSeleccionada = event.value;
-        const areasFormacionArray = this.formatoHvaGradoForm.get(
-            'areasFormacion'
-        ) as FormArray;
-        const areaExistente = areasFormacionArray.controls.find(
-            (control) => control.get('tipo').value === areaSeleccionada.nombre
-        );
-
-        if (!areaExistente) {
-            const areaFormGroup = this.fb.group({
-                tipo: areaSeleccionada.nombre,
-                asignaturas: this.fb.array([]),
-            });
-
-            areasFormacionArray.push(areaFormGroup);
-        }
-    }
-
-    addAsignatura(areaIndex: number, asignaturaSeleccionada: any): void {
-        const asignaturaFormGroup = this.fb.group({
-            nombre: asignaturaSeleccionada.nombre,
-            creditos: asignaturaSeleccionada.creditos,
-        });
-
-        const asignaturasFormArray = (
-            this.formatoHvaGradoForm.get('areasFormacion') as FormArray
-        )
-            .at(areaIndex)
-            .get('asignaturas') as FormArray;
-
-        asignaturasFormArray.push(asignaturaFormGroup);
-    }
-
-    removeAsignatura(areaIndex: number, asignaturaIndex: number): void {
-        const asignaturasFormArray = (
-            this.formatoHvaGradoForm.get('areasFormacion') as FormArray
-        )
-            .at(areaIndex)
-            .get('asignaturas') as FormArray;
-
-        asignaturasFormArray.removeAt(asignaturaIndex);
-    }
-
-    get areasFormacionControls() {
-        return (this.formatoHvaGradoForm.get('areasFormacion') as FormArray)
-            .controls;
-    }
-
-    transformFormValues(formValues: any): any {
-        const transformed = { ...formValues };
-        delete transformed.areasFormacion;
-
-        formValues.areasFormacion.forEach((area: any, areaIndex: number) => {
-            area.asignaturas.forEach(
-                (asignatura: any, asignaturaIndex: number) => {
-                    const keyNombre = `asignatura${area.tipo}${asignaturaIndex}.nombre`;
-                    const keyCreditos = `asignatura${area.tipo}${asignaturaIndex}.creditos`;
-                    transformed[keyNombre] = asignatura.nombre || 'NA';
-                    transformed[keyCreditos] = asignatura.creditos || 'NA';
-                }
-            );
-        });
-
-        return transformed;
     }
 
     onDownload() {
+        this.isPending = false;
         if (this.formatoHvaGradoForm.invalid) {
             this.handleWarningMessage(Mensaje.REGISTRE_CAMPOS_OBLIGATORIOS);
             return;
         } else {
+            this.loading = true;
             const formValues = this.formatoHvaGradoForm.value;
-            const transformedData = this.transformFormValues(formValues);
 
             const docData: any = {
-                estudiante: transformedData.estudiante,
-                codigo: transformedData.codigo,
-                planEstudios: transformedData.planEstudios,
-                fechaRevision: this.fechaActual,
-                pruebaSuperada: transformedData.pruebaSuperada.value,
-                minimoArticulo: transformedData.minimoArticulo,
-                creditosCumplidos: transformedData.creditosCumplidos,
-                titulo: transformedData.titulo,
-                director: transformedData.director,
-                codirector: transformedData.codirector,
-                coordinador: transformedData.coordinador,
+                dia: formValues.dia,
+                mes: formValues.mes,
+                anio: formValues.anio,
+                facultad: formValues.facultad,
+                programa: formValues.programa,
+                estudiante: formValues.estudiante,
+                titulo: formValues.titulo,
+                coordinador: formValues.coordinador,
             };
-
-            Object.keys(transformedData).forEach((key) => {
-                if (key.startsWith('asignatura')) {
-                    docData[key] = transformedData[key] || 'NA';
-                }
-            });
 
             this.loadFile(
                 'assets/plantillas/formatoHvaGrado.docx',
@@ -321,6 +161,7 @@ export class DocumentoFormatoHvaGradoComponent implements OnInit {
                     this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
                 }
             );
+            this.loading = false;
         }
     }
 
@@ -328,8 +169,25 @@ export class DocumentoFormatoHvaGradoComponent implements OnInit {
         JSZipUtils.default.getBinaryContent(url, callback);
     }
 
-    onCancel() {
-        this.router.navigate(['examen-de-valoracion/solicitud']);
+    onAdjuntar(event: any) {
+        if (this.formatoHvaGradoForm.invalid) {
+            this.FileFormatoHvaGrado.clear();
+            this.handleWarningMessage(Mensaje.REGISTRE_CAMPOS_OBLIGATORIOS);
+            return;
+        } else {
+            this.loading = true;
+            const file: File = event.files[0];
+            if (file) {
+                this.formatoHvaGradoPdfGenerated.emit(file);
+                this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
+            }
+            this.loading = false;
+            this.FileFormatoHvaGrado.clear();
+        }
+    }
+
+    getFormControl(formControlName: string): FormControl {
+        return this.formatoHvaGradoForm.get(formControlName) as FormControl;
     }
 
     nombreCompletoEstudiante(e: any) {

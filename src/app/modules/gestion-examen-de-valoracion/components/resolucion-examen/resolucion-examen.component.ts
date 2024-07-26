@@ -478,7 +478,16 @@ export class ResolucionExamenComponent implements OnInit {
     async loadPdfFiles() {
         const filesToConvert = [];
 
-        if (!this.isCoordinadorFase1 && !this.isCoordinadorFase3) {
+        if (
+            this.estado ==
+                EstadoProceso.EXAMEN_DE_VALORACION_APROBADO_EVALUADOR_2 ||
+            this.estado ==
+                EstadoProceso.DEVUELTO_GENERACION_DE_RESOLUCION_POR_COORDINADOR ||
+            this.estado ==
+                EstadoProceso.DEVUELTO_GENERACION_DE_RESOLUCION_POR_COMITE ||
+            this.estado ==
+                EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE1_GENERACION_RESOLUCION
+        ) {
             filesToConvert.push(
                 {
                     file: this.FileAnteproyectoFinal,
@@ -490,43 +499,49 @@ export class ResolucionExamenComponent implements OnInit {
                         'Solicitud al cómite para resolución de aprobación de trabajo de grado',
                 }
             );
-        }
+        } else if (
+            this.estado ==
+            EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE2_GENERACION_RESOLUCION
+        ) {
+            if (this.formatoBEv1 && this.formatoBEv2) {
+                const FileFormatoBEv1 = this.convertBase64ToFile(
+                    this.formatoBEv1,
+                    'formatoBEv1',
+                    'application/pdf'
+                );
 
-        if (this.isCoordinadorFase1 && !this.isCoordinadorFase2) {
-            const FileFormatoBEv1 = this.convertBase64ToFile(
-                this.formatoBEv1,
-                'formatoBEv1',
-                'application/pdf'
-            );
+                const FileFormatoBEv2 = this.convertBase64ToFile(
+                    this.formatoBEv2,
+                    'formatoBEv2',
+                    'application/pdf'
+                );
 
-            const FileFormatoBEv2 = this.convertBase64ToFile(
-                this.formatoBEv2,
-                'formatoBEv2',
-                'application/pdf'
-            );
-
-            filesToConvert.push(
-                {
-                    file: this.FileAnteproyectoFinal,
-                    fieldName: 'Anteproyecto Final',
-                },
-                {
-                    file: this.FileSolicitudConsejo,
-                    fieldName:
-                        'Solicitud al consejo de facultad para resolución de aprobación de trabajo de grado',
-                },
-                {
-                    file: FileFormatoBEv1,
-                    fieldName: 'Formato B Evaluador Interno',
-                },
-                {
-                    file: FileFormatoBEv2,
-                    fieldName: 'Formato B Evaluador Externo',
-                }
-            );
-        }
-
-        if (this.isCoordinadorFase2) {
+                filesToConvert.push(
+                    {
+                        file: this.FileAnteproyectoFinal,
+                        fieldName: 'Anteproyecto Final',
+                    },
+                    {
+                        file: this.FileSolicitudConsejo,
+                        fieldName:
+                            'Solicitud al consejo de facultad para resolución de aprobación de trabajo de grado',
+                    },
+                    {
+                        file: FileFormatoBEv1,
+                        fieldName: 'Formato B Evaluador Interno',
+                    },
+                    {
+                        file: FileFormatoBEv2,
+                        fieldName: 'Formato B Evaluador Externo',
+                    }
+                );
+            }
+        } else if (
+            this.estado ==
+                EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE3_GENERACION_RESOLUCION ||
+            this.estado ==
+                EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_DOCENTE_SUSTENTACION
+        ) {
             filesToConvert.push({
                 file: this.FileOficioConsejo,
                 fieldName:
@@ -602,48 +617,50 @@ export class ResolucionExamenComponent implements OnInit {
     }
     //#endregion
 
-    setup(fieldName: string) {
-        this.trabajoDeGradoService
-            .getFile(this.resolucionForm.get(fieldName).value)
-            .subscribe({
-                next: (response: any) => {
-                    if (response) {
-                        const byteCharacters = atob(response);
-                        const byteNumbers = new Array(byteCharacters.length);
-                        for (let i = 0; i < byteCharacters.length; i++) {
-                            byteNumbers[i] = byteCharacters.charCodeAt(i);
-                        }
-                        const byteArray = new Uint8Array(byteNumbers);
-                        const file = new File([byteArray], fieldName, {
-                            type: response.type,
-                        });
-                        switch (fieldName) {
-                            case 'linkAnteproyectoFinal':
-                                this.FileAnteproyectoFinal = file;
-                                break;
-                            case 'linkSolicitudComite':
-                                this.FileSolicitudComite = file;
-                                break;
-                            case 'linkSolicitudConsejoFacultad':
-                                this.FileSolicitudConsejo = file;
-                                break;
-                            case 'linkOficioConsejo':
-                                this.FileOficioConsejo = file;
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                },
-                error: (e) => {
-                    if (!this.errorMessageShown) {
-                        this.messageService.add(
-                            warnMessage('Pendiente subir archivos.')
-                        );
-                        this.errorMessageShown = true;
-                    }
-                },
-            });
+    async setup(fieldName: string) {
+        try {
+            const response: any = await firstValueFrom(
+                this.trabajoDeGradoService.getFile(
+                    this.resolucionForm.get(fieldName).value
+                )
+            );
+
+            if (response) {
+                const byteCharacters = atob(response);
+                const byteNumbers = new Array(byteCharacters.length);
+                for (let i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+                const byteArray = new Uint8Array(byteNumbers);
+                const file = new File([byteArray], fieldName, {
+                    type: response.type,
+                });
+
+                switch (fieldName) {
+                    case 'linkAnteproyectoFinal':
+                        this.FileAnteproyectoFinal = file;
+                        break;
+                    case 'linkSolicitudComite':
+                        this.FileSolicitudComite = file;
+                        break;
+                    case 'linkSolicitudConsejoFacultad':
+                        this.FileSolicitudConsejo = file;
+                        break;
+                    case 'linkOficioConsejo':
+                        this.FileOficioConsejo = file;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        } catch (e) {
+            if (!this.errorMessageShown) {
+                this.messageService.add(
+                    warnMessage('Pendiente subir archivos.')
+                );
+                this.errorMessageShown = true;
+            }
+        }
     }
 
     setValuesForm(resolucion: Resolucion) {
@@ -786,10 +803,16 @@ export class ResolucionExamenComponent implements OnInit {
                     if (this.role.includes('ROLE_COORDINADOR')) {
                         this.setup('linkAnteproyectoFinal');
                         this.setup('linkSolicitudComite');
-                        if (this.isCoordinadorFase2Created) {
+                        if (
+                            this.isCoordinadorFase1 &&
+                            this.isCoordinadorFase2Created
+                        ) {
                             this.setup('linkSolicitudConsejoFacultad');
                         }
-                        if (this.isCoordinadorFase3Created) {
+                        if (
+                            this.isCoordinadorFase2 &&
+                            this.isCoordinadorFase3Created
+                        ) {
                             this.setup('linkOficioConsejo');
                         }
                     }
@@ -807,7 +830,9 @@ export class ResolucionExamenComponent implements OnInit {
                 if (
                     this.isDocenteCreated == true &&
                     (this.estado ==
-                        EstadoProceso.DEVUELTO_GENERACION_DE_RESOLUCION_POR_COORDINADOR ||
+                        EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE1_GENERACION_RESOLUCION ||
+                        this.estado ==
+                            EstadoProceso.DEVUELTO_GENERACION_DE_RESOLUCION_POR_COORDINADOR ||
                         this.estado ==
                             EstadoProceso.DEVUELTO_GENERACION_DE_RESOLUCION_POR_COMITE)
                 ) {
@@ -821,6 +846,7 @@ export class ResolucionExamenComponent implements OnInit {
                         this.FileSolicitudComite,
                         'linkSolicitudComite'
                     );
+
                     resolucionData.linkAnteproyectoFinal =
                         base64AnteproyectoFinal;
                     resolucionData.linkSolicitudComite = base64SolicitudComite;
@@ -903,7 +929,6 @@ export class ResolucionExamenComponent implements OnInit {
                         numeroActa,
                         fechaActa,
                         linkSolicitudConsejoFacultad,
-                        ...restFormValues
                     } = this.resolucionForm.value;
 
                     const resolucionData =
@@ -1108,34 +1133,33 @@ export class ResolucionExamenComponent implements OnInit {
         }
     }
 
-    createResolucion(): void {
+    async createResolucion(): Promise<void> {
         this.isLoading = true;
-        if (
-            this.role.includes('ROLE_DOCENTE') == true &&
-            this.isDocenteCreated == false
-        ) {
-            this.resolucionService
-                .createResolucionDocente(
-                    this.resolucionForm.value,
-                    this.trabajoDeGradoId
-                )
-                .subscribe({
-                    next: (response) => {
-                        if (response) {
-                            this.trabajoDeGradoService.setResolucionSeleccionada(
-                                response
-                            );
-                            this.messageService.add(
-                                infoMessage(Mensaje.GUARDADO_EXITOSO)
-                            );
-                            timer(2000).subscribe(() => {
-                                this.isLoading = false;
-                                this.router.navigate([`examen-de-valoracion`]);
-                            });
-                        }
-                    },
-                    error: (e) => this.handlerResponseException(e),
-                });
+        try {
+            if (this.role.includes('ROLE_DOCENTE') && !this.isDocenteCreated) {
+                const response = await firstValueFrom(
+                    this.resolucionService.createResolucionDocente(
+                        this.resolucionForm.value,
+                        this.trabajoDeGradoId
+                    )
+                );
+
+                if (response) {
+                    this.trabajoDeGradoService.setResolucionSeleccionada(
+                        response
+                    );
+                    this.messageService.add(
+                        infoMessage(Mensaje.GUARDADO_EXITOSO)
+                    );
+
+                    await firstValueFrom(timer(2000));
+                    this.router.navigate(['examen-de-valoracion']);
+                }
+            }
+        } catch (e) {
+            this.handlerResponseException(e);
+        } finally {
+            this.isLoading = false;
         }
     }
 
@@ -1153,28 +1177,28 @@ export class ResolucionExamenComponent implements OnInit {
             : this.createResolucion();
     }
 
-    onFileSelectFirst(event: any) {
+    onFileSelectAnteproyectoFinal(event: any) {
         this.FileAnteproyectoFinal = this.uploadFileAndSetValue(
             'linkAnteproyectoFinal',
             event
         );
     }
 
-    onFileSelectSecond(event: any) {
+    onFileSelectSolicitudComite(event: any) {
         this.FileSolicitudComite = this.uploadFileAndSetValue(
             'linkSolicitudComite',
             event
         );
     }
 
-    onFileSelectThird(event: any) {
+    onFileSelectSolicitudConsejo(event: any) {
         this.FileSolicitudConsejo = this.uploadFileAndSetValue(
             'linkSolicitudConsejoFacultad',
             event
         );
     }
 
-    onFileSelectFourth(event: any) {
+    onFileSelectOficioConsejo(event: any) {
         this.FileOficioConsejo = this.uploadFileAndSetValue(
             'linkOficioConsejo',
             event
@@ -1280,43 +1304,35 @@ export class ResolucionExamenComponent implements OnInit {
         return null;
     }
 
-    getFileAndSetValue(fieldName: string) {
-        this.trabajoDeGradoService
-            .getFile(this.resolucionForm.get(fieldName).value)
-            .subscribe({
-                next: (response: string) => {
-                    const rutaArchivo =
-                        this.resolucionForm.get(fieldName).value;
-                    const byteCharacters = atob(response);
-                    const byteNumbers = new Array(byteCharacters.length);
-                    for (let i = 0; i < byteCharacters.length; i++) {
-                        byteNumbers[i] = byteCharacters.charCodeAt(i);
-                    }
-                    const byteArray = new Uint8Array(byteNumbers);
-                    const blob = new Blob([byteArray]);
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    const extension = rutaArchivo.slice(
-                        rutaArchivo.lastIndexOf('.') + 1
-                    );
-                    document.body.appendChild(a);
-                    a.style.display = 'none';
-                    a.href = url;
-                    a.download = fieldName + `.${extension}`;
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                    document.body.removeChild(a);
-                },
-                error: (response) => {
-                    if (response) {
-                        this.messageService.add(
-                            warnMessage(
-                                'Modifica la informacion para ver los cambios.'
-                            )
-                        );
-                    }
-                },
-            });
+    async getFileAndSetValue(fieldName: string): Promise<void> {
+        try {
+            const rutaArchivo = this.resolucionForm.get(fieldName).value;
+            const response: string = await firstValueFrom(
+                this.trabajoDeGradoService.getFile(rutaArchivo)
+            );
+            const byteCharacters = atob(response);
+            const byteNumbers = Array.from(byteCharacters).map((char) =>
+                char.charCodeAt(0)
+            );
+            const byteArray = new Uint8Array(byteNumbers);
+            const blob = new Blob([byteArray]);
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const extension = rutaArchivo.slice(
+                rutaArchivo.lastIndexOf('.') + 1
+            );
+            a.style.display = 'none';
+            a.href = url;
+            a.download = `${fieldName}.${extension}`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        } catch (error) {
+            this.messageService.add(
+                warnMessage('Modifica la información para ver los cambios.')
+            );
+        }
     }
 
     //#region Director and Coodirector
@@ -1354,30 +1370,32 @@ export class ResolucionExamenComponent implements OnInit {
         };
     }
 
-    onSeleccionarDirector() {
+    async onSeleccionarDirector(): Promise<void> {
         const ref = this.showBuscadorDirector();
-        ref.onClose.subscribe({
-            next: (response) => {
-                if (response) {
-                    const director = this.mapDirectorLabel(response);
-                    this.directorSeleccionado = director;
-                    this.director.setValue(director.id);
-                }
-            },
-        });
+        try {
+            const response = await firstValueFrom(ref.onClose);
+            if (response) {
+                const director = this.mapDirectorLabel(response);
+                this.directorSeleccionado = director;
+                this.director.setValue(director.id);
+            }
+        } catch (error) {
+            console.error('Error al seleccionar director:', error);
+        }
     }
 
-    onSeleccionarCodirector() {
+    async onSeleccionarCodirector(): Promise<void> {
         const ref = this.showBuscadorCodirector();
-        ref.onClose.subscribe({
-            next: (response) => {
-                if (response) {
-                    const coodirector = this.mapCodirectorLabel(response);
-                    this.codirectorSeleccionado = coodirector;
-                    this.codirector.setValue(coodirector.id);
-                }
-            },
-        });
+        try {
+            const response = await firstValueFrom(ref.onClose);
+            if (response) {
+                const codirector = this.mapCodirectorLabel(response);
+                this.codirectorSeleccionado = codirector;
+                this.codirector.setValue(codirector.id);
+            }
+        } catch (error) {
+            console.error('Error al seleccionar codirector:', error);
+        }
     }
 
     limpiarCodirector() {
@@ -1414,7 +1432,7 @@ export class ResolucionExamenComponent implements OnInit {
     }
 
     handlerResponseException(response: any) {
-        if (response.status != 500) return;
+        if (response.status != 500 && response.status != 409) return;
         const mapException = mapResponseException(response.error);
         mapException.forEach((value, _) => {
             this.messageService.add(errorMessage(value));

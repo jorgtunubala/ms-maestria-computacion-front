@@ -15,13 +15,15 @@ import {
     Validators,
 } from '@angular/forms';
 import { MessageService } from 'primeng/api';
+import { FileUpload } from 'primeng/fileupload';
 import { Subscription } from 'rxjs';
+import { saveAs } from 'file-saver';
 import * as PizZip from 'pizzip';
 import * as Docxtemplater from 'docxtemplater';
-import { saveAs } from 'file-saver';
 import * as JSZipUtils from 'pizzip/utils/index.js';
+import * as pdfMake from 'pdfmake/build/pdfmake';
+import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 import { Estudiante } from 'src/app/modules/gestion-estudiantes/models/estudiante';
-import { TrabajoDeGradoService } from '../../../services/trabajoDeGrado.service';
 import { Mensaje } from 'src/app/core/enums/enums';
 import { mapResponseException } from 'src/app/core/utils/exception-util';
 import {
@@ -29,7 +31,8 @@ import {
     infoMessage,
     warnMessage,
 } from 'src/app/core/utils/message-util';
-import { FileUpload } from 'primeng/fileupload';
+import { TrabajoDeGradoService } from '../../../services/trabajoDeGrado.service';
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 interface Evaluador {
     id?: number;
@@ -44,11 +47,11 @@ interface Evaluador {
     styleUrls: ['documento-formatoC.component.scss'],
 })
 export class DocumentoFormatoCComponent implements OnInit {
+    @Output() formReady = new EventEmitter<FormGroup>();
+    @Output() formatoCDocxGenerated = new EventEmitter<any>();
     @Input() formatoCEv1: File;
     @Input() formatoCEv2: File;
     @Input() evaluador: Evaluador;
-    @Output() formReady = new EventEmitter<FormGroup>();
-    @Output() formatoCPdfGenerated = new EventEmitter<File>();
 
     @ViewChild('formatoC') formatoC!: ElementRef;
     @ViewChild('FormatoC') FormatoC!: FileUpload;
@@ -61,7 +64,9 @@ export class DocumentoFormatoCComponent implements OnInit {
     loading = false;
     isPending = true;
 
-    fechaActual: Date;
+    footerImage: string;
+    logoImage: string;
+
     estudianteSeleccionado: Estudiante = {};
 
     constructor(
@@ -84,8 +89,6 @@ export class DocumentoFormatoCComponent implements OnInit {
 
     ngOnInit() {
         this.initForm();
-        this.fechaActual = new Date();
-
         this.tituloSubscription =
             this.trabajoDeGradoService.tituloSeleccionadoSubject$.subscribe({
                 next: (response) => {
@@ -109,13 +112,34 @@ export class DocumentoFormatoCComponent implements OnInit {
 
     initForm(): void {
         this.formatoCForm = this.fb.group({
-            receptor: ['Luz Marina Sierra Martínez', Validators.required],
+            coordinador: ['Luz Marina Sierra Martínez', Validators.required],
             asunto: ['Examen de Valoración', Validators.required],
             titulo: [null, Validators.required],
             observaciones: [null, Validators.required],
         });
         this.formatoCForm.get('observaciones').disable();
         this.formReady.emit(this.formatoCForm);
+
+        var logoImg = new Image();
+        logoImg.src = 'assets/layout/images/logoUnicauca.png';
+        logoImg.onload = () => {
+            this.logoImage = this.getBase64Image(logoImg);
+        };
+
+        var footerImg = new Image();
+        footerImg.src = 'assets/layout/images/logosIcontec.png';
+        footerImg.onload = () => {
+            this.footerImage = this.getBase64Image(footerImg);
+        };
+    }
+
+    getBase64Image(img: HTMLImageElement) {
+        var canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        var ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+        return canvas.toDataURL('image/png');
     }
 
     ngOnDestroy() {
@@ -148,7 +172,7 @@ export class DocumentoFormatoCComponent implements OnInit {
                 fecha: this.getFormattedDate(),
                 titulo: formValues.titulo,
                 asunto: formValues.asunto,
-                receptor: formValues.receptor,
+                coordinador: formValues.coordinador,
                 jurado:
                     this.evaluador.nombres + ', ' + this.evaluador.universidad,
             };
@@ -192,6 +216,181 @@ export class DocumentoFormatoCComponent implements OnInit {
         JSZipUtils.default.getBinaryContent(url, callback);
     }
 
+    generateDocDefinition() {
+        const formValues = this.formatoCForm.value;
+        const fechaActual = new Date().toLocaleDateString();
+
+        return {
+            content: [
+                {
+                    columns: [
+                        {
+                            text: 'Maestría en Computación\nFacultad de Ingeniería Electrónica y Telecomunicaciones',
+                            fontSize: 14,
+                            alignment: 'left',
+                            margin: [0, 5, 0, 5],
+                            opacity: 0.6,
+                        },
+                        {
+                            image: this.logoImage,
+                            width: 50,
+                            height: 70,
+                            margin: [0, -10, 0, 5],
+                            alignment: 'right',
+                            opacity: 0.6,
+                        },
+                    ],
+                },
+                {
+                    text: 'FORMATO C',
+                    style: 'header',
+                    alignment: 'center',
+                },
+                {
+                    text: `Popayán, ${fechaActual}`,
+                    style: 'subheader',
+                    alignment: 'left',
+                },
+                {
+                    text: `Doctor(a) ${formValues.coordinador}\nCoordinadora\nMaestría en Computación\nUniversidad del Cauca\nPopayán`,
+                    style: 'subheader',
+                    width: '100%',
+                },
+                {
+                    columns: [
+                        { text: 'Asunto:', style: 'label', width: '25%' },
+                        {
+                            text: formValues.asunto,
+                            style: 'value',
+                            width: '75%',
+                        },
+                    ],
+                    margin: [0, 10, 0, 10],
+                },
+                {
+                    columns: [
+                        {
+                            text: 'Título del Trabajo:',
+                            style: 'label',
+                            width: '25%',
+                        },
+                        {
+                            text: formValues.titulo,
+                            style: 'value',
+                            width: '75%',
+                        },
+                    ],
+                    margin: [0, 10, 0, 10],
+                },
+                {
+                    columns: [
+                        {
+                            text: 'Observaciones y recomendaciones para el estudiante:',
+                            style: 'label',
+                            width: '25%',
+                        },
+                    ],
+                    margin: [0, 10, 0, 60],
+                },
+                {
+                    stack: [
+                        {
+                            canvas: [
+                                {
+                                    type: 'line',
+                                    x1: 0,
+                                    y1: 0,
+                                    x2: 300,
+                                    y2: 0,
+                                    lineWidth: 1,
+                                },
+                            ],
+                        },
+                        {
+                            text: `Nombre Jurado`,
+                            style: 'label',
+                            width: '100%',
+                        },
+                    ],
+                },
+            ],
+            footer: (currentPage, pageCount) => {
+                return {
+                    columns: [
+                        {
+                            stack: [
+                                {
+                                    image: this.footerImage,
+                                    width: 100,
+                                    height: 60,
+                                    alignment: 'left',
+                                    margin: [0, 5, 0, 5],
+                                    opacity: 0.6,
+                                },
+                            ],
+                            width: 'auto',
+                        },
+                        {
+                            stack: [
+                                {
+                                    text: 'Hacia una Universidad comprometida con la paz territorial',
+                                    alignment: 'center',
+                                    margin: [0, 2, 0, 2],
+                                    opacity: 0.6,
+                                },
+                                {
+                                    canvas: [
+                                        {
+                                            type: 'line',
+                                            x1: 0,
+                                            y1: 0,
+                                            x2: 320,
+                                            y2: 0,
+                                            lineWidth: 1,
+                                            color: '#ff0000',
+                                        },
+                                    ],
+                                    margin: [0, 2, 0, 2],
+                                    alignment: 'center',
+                                    opacity: 0.6,
+                                },
+                                {
+                                    text: 'Facultad de Ingeniería Electrónica y Telecomunicaciones\nCra 2 No. 4N-140 Edif. de Ingenierías - Sector Tulcán Popayán - Cauca - Colombia\nConmutador 8209800 Ext. 2145 maestriacomputacion@unicauca.edu.co\nwww.unicauca.edu.cowww.unicauca.edu.co/maestriacomputacion',
+                                    alignment: 'center',
+                                    fontSize: 10,
+                                    margin: [0, 5, 0, 5],
+                                    opacity: 0.6,
+                                },
+                            ],
+                            width: '*',
+                        },
+                    ],
+                    margin: [40, -60, 0, 0],
+                };
+            },
+            styles: {
+                header: {
+                    fontSize: 18,
+                    bold: true,
+                    margin: [0, 0, 0, 10],
+                },
+                subheader: {
+                    fontSize: 12,
+                    margin: [0, 0, 0, 10],
+                },
+                label: {
+                    fontSize: 12,
+                    bold: true,
+                    margin: [0, 10, 0, 2],
+                },
+                value: {
+                    fontSize: 12,
+                    margin: [0, 10, 0, 0],
+                },
+            },
+        };
+    }
+
     onAdjuntar(event: any) {
         if (this.formatoCForm.invalid) {
             this.FormatoC.clear();
@@ -199,10 +398,23 @@ export class DocumentoFormatoCComponent implements OnInit {
             return;
         } else {
             this.loading = true;
-            const file: File = event.files[0];
-            if (file) {
-                this.formatoCPdfGenerated.emit(file);
-                this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
+            const fileDoc: File = event.files[0];
+            if (fileDoc) {
+                const docDefinition = this.generateDocDefinition();
+                pdfMake.createPdf(docDefinition).getBlob((pdfBlob: Blob) => {
+                    const filePdf = new File(
+                        [pdfBlob],
+                        `${this.estudianteSeleccionado.codigo} - formatoC.pdf`,
+                        {
+                            type: 'application/pdf',
+                        }
+                    );
+                    this.formatoCDocxGenerated.emit({
+                        doc: fileDoc,
+                        pdf: filePdf,
+                    });
+                    this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
+                });
             }
             this.loading = false;
             this.FormatoC.clear();

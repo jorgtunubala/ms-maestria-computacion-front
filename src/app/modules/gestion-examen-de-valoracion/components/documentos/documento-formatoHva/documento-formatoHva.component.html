@@ -1,80 +1,208 @@
 <p-panel>
     <div id="formatoHva">
-        <div class="header px-8">
-            <table class="p-datatable p-component header-table">
-                <tr class="header-title">
-                    <td>
-                        <img
-                            src="assets/layout/images/logoUnicauca.png"
-                            alt="Logo Unicauca"
-                            width="80px"
-                            height="140px"
-                        />
-                    </td>
-                    <td colspan="2">
-                        <h1 class="text-lg">
-                            Gestión Académica Gestión de Facultades y Programas
-                            Académicos Estudio Hoja de Vida Académica para Grado
-                        </h1>
-                    </td>
-                </tr>
-                <tr class="header-desc">
-                    <td>
-                        <span>Código: PM-FO-4-FOR-27</span>
-                    </td>
-                    <td>
-                        <span>Versión: 1</span>
-                    </td>
-                    <td>
-                        <span>Fecha Vigencia: 30-04-2019</span>
-                    </td>
-                </tr>
-            </table>
+        <div class="flex flex-column w-full mb-4">
+            <div
+                class="flex flex-row align-items-center justify-content-evenly header-logo"
+            >
+                <div>
+                    <h2>Maestría en Computación</h2>
+                    <h2>
+                        Facultad de Ingeniería Electrónica y Telecomunicaciones
+                    </h2>
+                </div>
+                <img
+                    src="assets/layout/images/logoUnicauca.png"
+                    alt="Logo Unicauca"
+                    width="120px"
+                    height="180px"
+                />
+            </div>
         </div>
-        <div class="mt-4 px-8">
-            <form [formGroup]="formatoHvaForm">
-                <div class="field grid">
-                    <label class="col-2" for="facultad">Facultad:</label>
-                    <div class="col-10">
-                        <input
-                            pInputText
-                            class="p-inputtext-md w-full"
-                            type="text"
-                            id="facultad"
-                            formControlName="facultad"
-                            readonly
-                        />
-                    </div>
-                </div>
-
-                <div class="field grid">
-                    <label class="col-2" for="programa">Programa:</label>
-                    <div class="col-10">
-                        <input
-                            pInputText
-                            class="p-inputtext-md w-full"
-                            type="text"
-                            id="programa"
-                            formControlName="programa"
-                            readonly
-                        />
-                    </div>
-                </div>
-
-                <div class="field grid">
-                    <label class="col-2" for="estudiante"
-                        >Nombre del estudiante:</label
+        <div class="px-8">
+            <form class="p-fluid" [formGroup]="formatoHvaForm">
+                <div class="flex flex-column mt-4">
+                    <label class="label-required mb-2" for="titulo"
+                        >Título:</label
                     >
-                    <div class="col-10">
-                        <input
-                            pInputText
-                            class="p-inputtext-md w-full"
-                            type="text"
-                            id="estudiante"
-                            formControlName="estudiante"
-                            readonly
-                        />
+                    <input
+                        pInputText
+                        type="text"
+                        id="titulo"
+                        formControlName="titulo"
+                        readonly
+                    />
+                </div>
+                <div class="flex flex-column mt-4">
+                    <label class="mb-2" for="estudiante">Estudiante:</label>
+                    <input
+                        pInputText
+                        type="text"
+                        id="estudiante"
+                        formControlName="estudiante"
+                        readonly
+                    />
+                </div>
+                <div class="flex flex-column mt-4">
+                    <label class="mb-2" for="codigo">Código:</label>
+                    <input
+                        pInputText
+                        type="text"
+                        id="codigo"
+                        formControlName="codigo"
+                    />
+                </div>
+                <div class="flex flex-column mt-4">
+                    <label class="mb-2" for="planEstudios"
+                        >Plan de Estudios:</label
+                    >
+                    <input
+                        pInputText
+                        type="text"
+                        id="planEstudios"
+                        formControlName="planEstudios"
+                    />
+                </div>
+                <div class="flex flex-column mt-4 max-w-20rem">
+                    <label class="label-required mb-2" for="fechaRevision"
+                        >Fecha de Revisión:</label
+                    >
+                    <p-calendar
+                        id="fechaRevision"
+                        formControlName="fechaRevision"
+                        [showIcon]="true"
+                        dateFormat="dd.mm.yy"
+                    ></p-calendar>
+                </div>
+                <div class="flex flex-column mt-4">
+                    <label class="label-required mb-2"
+                        >Tipo de Área de Formación:</label
+                    >
+                    <p-dropdown
+                        placeholder="Seleccione"
+                        styleClass="p-inputtext-md w-full max-w-35rem"
+                        optionLabel="nombre"
+                        [options]="tiposAreaFormacion"
+                        (onChange)="addAreaFormacion($event)"
+                    ></p-dropdown>
+                    <div
+                        class="mt-2"
+                        *ngFor="
+                            let area of areasFormacionControls;
+                            let areaIndex = index
+                        "
+                    >
+                        <p-card class="w-full mt-2">
+                            <div class="card-title font-bold">
+                                {{ area.get("tipo").value }}
+                            </div>
+                            <div class="flex flex-column mb-2">
+                                <label class="label-required mb-2"
+                                    >Seleccionar Asignatura:</label
+                                >
+                                <p-dropdown
+                                    placeholder="Seleccione"
+                                    styleClass="p-inputtext-md w-full"
+                                    optionLabel="nombre"
+                                    [options]="asignaturas"
+                                    (onChange)="
+                                        addAsignatura(areaIndex, $event.value)
+                                    "
+                                ></p-dropdown>
+                            </div>
+                            <div class="card-data flex flex-column row-gap-1">
+                                <div
+                                    class="flex flex-row align-items-center justify-content-between column-gap-2"
+                                    *ngFor="
+                                        let asignatura of area.get(
+                                            'asignaturas'
+                                        ).controls;
+                                        let i = index
+                                    "
+                                >
+                                    <span>
+                                        {{ asignatura.get("nombre").value }} -
+                                        {{ asignatura.get("creditos").value }}
+                                        créditos</span
+                                    >
+                                    <button
+                                        pButton
+                                        icon="pi pi-times"
+                                        (click)="removeAsignatura(areaIndex, i)"
+                                    ></button>
+                                </div>
+                            </div>
+                        </p-card>
                     </div>
+                </div>
+                <div class="flex flex-column mt-4">
+                    <label class="label-required mb-2" for="pruebaSuperada"
+                        >Prueba Superada:</label
+                    >
+                    <p-dropdown
+                        id="pruebaSuperada"
+                        formControlName="pruebaSuperada"
+                        [options]="pruebaSuperadaOptions"
+                        optionLabel="label"
+                        placeholder="Seleccione"
+                    ></p-dropdown>
+                </div>
+                <div class="flex flex-column mt-4">
+                    <label class="label-required mb-2" for="minimoArticulo"
+                        >Mínimo Artículo:</label
+                    >
+                    <input
+                        pInputText
+                        type="text"
+                        id="minimoArticulo"
+                        formControlName="minimoArticulo"
+                    />
+                </div>
+                <div class="flex flex-column mt-4">
+                    <label class="label-required mb-2" for="creditosCumplidos"
+                        >Créditos Cumplidos:</label
+                    >
+                    <input
+                        pInputText
+                        type="text"
+                        id="creditosCumplidos"
+                        formControlName="creditosCumplidos"
+                    />
+                </div>
+                <div class="flex flex-column mt-4">
+                    <label class="label-required mb-2" for="director"
+                        >Director:</label
+                    >
+                    <input
+                        pInputText
+                        type="text"
+                        id="director"
+                        formControlName="director"
+                        readonly
+                    />
+                </div>
+                <div class="flex flex-column mt-4">
+                    <label class="label-required mb-2" for="codirector"
+                        >Codirector:</label
+                    >
+                    <input
+                        pInputText
+                        type="text"
+                        id="codirector"
+                        formControlName="codirector"
+                        readonly
+                    />
+                </div>
+                <div class="flex flex-column mt-4">
+                    <label class="label-required mb-2" for="coordinador"
+                        >Coordinador:</label
+                    >
+                    <input
+                        pInputText
+                        type="text"
+                        id="coordinador"
+                        formControlName="coordinador"
+                        readonly
+                    />
                 </div>
             </form>
         </div>
@@ -104,23 +232,6 @@
         <div
             class="flex align-items-center justify-content-end mt-4 column-gap-2"
         >
-            <p-fileUpload
-                #FileFormatoHva
-                mode="basic"
-                [auto]="true"
-                accept=".pdf"
-                chooseIcon="pi pi-paperclip"
-                maxFileSize="5000000"
-                chooseLabel="Adjuntar"
-                [pTooltip]="
-                    !!fileFormatoHva
-                        ? 'Ya se ha adjuntado el documento.'
-                        : 'Descargar documentos, rellenar/firmar y adjuntar en PDF.'
-                "
-                tooltipPosition="top"
-                (onSelect)="onAdjuntar($event)"
-            >
-            </p-fileUpload>
             <button
                 pButton
                 type="button"

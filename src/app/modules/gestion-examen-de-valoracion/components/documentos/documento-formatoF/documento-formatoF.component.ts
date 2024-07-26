@@ -378,7 +378,7 @@ export class DocumentoFormatoFComponent implements OnInit {
                 },
                 { text: 'OBSERVACIONES:', style: 'label' },
                 {
-                    text: formValues?.observaciones,
+                    text: formValues?.observaciones || '',
                     style: 'value',
                 },
                 {
@@ -517,7 +517,7 @@ export class DocumentoFormatoFComponent implements OnInit {
         }
     }
 
-    onAdjuntar() {
+    onInsertar() {
         if (this.formatoFForm.invalid) {
             this.handleWarningMessage(Mensaje.REGISTRE_CAMPOS_OBLIGATORIOS);
             return;

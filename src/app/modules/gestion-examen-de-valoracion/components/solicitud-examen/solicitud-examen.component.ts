@@ -15,6 +15,7 @@ import { Router } from '@angular/router';
 import {
     Subscription,
     catchError,
+    firstValueFrom,
     forkJoin,
     lastValueFrom,
     of,
@@ -37,13 +38,13 @@ import { BuscadorDocentesComponent } from 'src/app/shared/components/buscador-do
 import { BuscadorExpertosComponent } from 'src/app/shared/components/buscador-expertos/buscador-expertos.component';
 import { DocenteService } from 'src/app/shared/services/docente.service';
 import { ExpertoService } from 'src/app/shared/services/experto.service';
+import { AutenticacionService } from 'src/app/modules/gestion-autenticacion/services/autenticacion.service';
 import { Experto } from '../../models/experto';
 import { Solicitud } from '../../models/solicitud';
 import { RespuestaService } from '../../services/respuesta.service';
 import { ResolucionService } from '../../services/resolucion.service';
 import { SolicitudService } from '../../services/solicitud.service';
 import { TrabajoDeGradoService } from '../../services/trabajoDeGrado.service';
-import { AutenticacionService } from 'src/app/modules/gestion-autenticacion/services/autenticacion.service';
 
 @Component({
     selector: 'app-solicitud-examen',
@@ -103,6 +104,10 @@ export class SolicitudExamenComponent implements OnInit {
     evaluadorExternoSeleccionado: Experto;
 
     formatoA: File | null;
+    formatoBEv1Preview: File | null;
+    formatoCEv1Preview: File | null;
+    formatoBEv2Preview: File | null;
+    formatoCEv2Preview: File | null;
     formatoBEv1: File | null;
     formatoCEv1: File | null;
     formatoBEv2: File | null;
@@ -245,34 +250,45 @@ export class SolicitudExamenComponent implements OnInit {
                 this.trabajoDeGradoService.setTituloSeleccionadoSubject(
                     data.titulo
                 );
-                if (data?.idEvaluadorExterno) {
-                    this.expertoService
-                        .obtenerExperto(data?.idEvaluadorExterno)
-                        .subscribe({
-                            next: (response) => {
-                                this.evaluadorExternoSeleccionado =
-                                    this.mapEvaluadorExternoLabel(response);
-                                this.trabajoDeGradoService.setEvaluadorExternoSeleccionadoSubject(
-                                    this.evaluadorExternoSeleccionado
-                                );
-                                this.evaluadorExterno.setValue(response.id);
-                            },
-                        });
+                this.setupEvaluadores(data);
+            }
+        }
+    }
+
+    async setupEvaluadores(data: any): Promise<void> {
+        if (data?.idEvaluadorExterno) {
+            try {
+                const responseExterno = await firstValueFrom(
+                    this.expertoService.obtenerExperto(data.idEvaluadorExterno)
+                );
+                if (responseExterno) {
+                    this.evaluadorExternoSeleccionado =
+                        this.mapEvaluadorExternoLabel(responseExterno);
+                    this.trabajoDeGradoService.setEvaluadorExternoSeleccionadoSubject(
+                        this.evaluadorExternoSeleccionado
+                    );
+                    this.evaluadorExterno.setValue(responseExterno.id);
                 }
-                if (data?.idEvaluadorInterno) {
-                    this.docenteService
-                        .obtenerDocente(data?.idEvaluadorInterno)
-                        .subscribe({
-                            next: (response) => {
-                                this.evaluadorInternoSeleccionado =
-                                    this.mapEvaluadorInternoLabel(response);
-                                this.trabajoDeGradoService.setEvaluadorInternoSeleccionadoSubject(
-                                    this.evaluadorInternoSeleccionado
-                                );
-                                this.evaluadorInterno.setValue(response.id);
-                            },
-                        });
+            } catch (error) {
+                console.error('Error al obtener evaluador externo:', error);
+            }
+        }
+
+        if (data?.idEvaluadorInterno) {
+            try {
+                const responseInterno = await firstValueFrom(
+                    this.docenteService.obtenerDocente(data.idEvaluadorInterno)
+                );
+                if (responseInterno) {
+                    this.evaluadorInternoSeleccionado =
+                        this.mapEvaluadorInternoLabel(responseInterno);
+                    this.trabajoDeGradoService.setEvaluadorInternoSeleccionadoSubject(
+                        this.evaluadorInternoSeleccionado
+                    );
+                    this.evaluadorInterno.setValue(responseInterno.id);
                 }
+            } catch (error) {
+                console.error('Error al obtener evaluador interno:', error);
             }
         }
     }
@@ -643,20 +659,20 @@ export class SolicitudExamenComponent implements OnInit {
                 fieldName: 'Oficio Dirigido a Evaluadores',
             },
             {
-                file: this.formatoBEv1,
-                fieldName: 'Formato B Evaluador Interno',
+                file: this.formatoBEv1Preview,
+                fieldName: 'Formato B - Evaluador Interno',
             },
             {
-                file: this.formatoBEv2,
-                fieldName: 'Formato B Evaluador Externo',
+                file: this.formatoBEv2Preview,
+                fieldName: 'Formato B - Evaluador Externo',
             },
             {
-                file: this.formatoCEv1,
-                fieldName: 'Formato C Evaluador Interno',
+                file: this.formatoCEv1Preview,
+                fieldName: 'Formato C - Evaluador Interno',
             },
             {
-                file: this.formatoCEv2,
-                fieldName: 'Formato C Evaluador Externo',
+                file: this.formatoCEv2Preview,
+                fieldName: 'Formato C - Evaluador Externo',
             },
             ...this.anexosFiles.map((file) => ({ file, fieldName: 'Anexo' })),
         ];
@@ -816,32 +832,48 @@ export class SolicitudExamenComponent implements OnInit {
             });
     }
 
-    handleFormatoBEv1PdfGenerated(file: File) {
-        const pdfFile = new File([file], 'formatoBEv1.pdf', {
+    handleFormatoBEv1DocxGenerated(obj: any) {
+        const docxFile = new File([obj.doc], 'formatoBEv1.docx', {
+            type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        });
+        const pdfFile = new File([obj.pdf], 'formatoBEv1.pdf', {
             type: 'application/pdf',
         });
-        this.formatoBEv1 = pdfFile;
+        this.formatoBEv1 = docxFile;
+        this.formatoBEv1Preview = pdfFile;
     }
 
-    handleFormatoBEv2PdfGenerated(file: File) {
-        const pdfFile = new File([file], 'formatoBEv2.pdf', {
+    handleFormatoBEv2DocxGenerated(obj: any) {
+        const docxFile = new File([obj.doc], 'formatoBEv2.docx', {
+            type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        });
+        const pdfFile = new File([obj.pdf], 'formatoBEv2.pdf', {
             type: 'application/pdf',
         });
-        this.formatoBEv2 = pdfFile;
+        this.formatoBEv2 = docxFile;
+        this.formatoBEv2Preview = pdfFile;
     }
 
-    handleFormatoCEv1PdfGenerated(file: File) {
-        const pdfFile = new File([file], 'formatoCEv1.pdf', {
+    handleFormatoCEv1DocxGenerated(obj: any) {
+        const docxFile = new File([obj.doc], 'formatoCEv1.docx', {
+            type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        });
+        const pdfFile = new File([obj.pdf], 'formatoCEv1.pdf', {
             type: 'application/pdf',
         });
-        this.formatoCEv1 = pdfFile;
+        this.formatoCEv1 = docxFile;
+        this.formatoCEv1Preview = pdfFile;
     }
 
-    handleFormatoCEv2PdfGenerated(file: File) {
-        const pdfFile = new File([file], 'formatoCEv2.pdf', {
+    handleFormatoCEv2DocxGenerated(obj: any) {
+        const docxFile = new File([obj.doc], 'formatoCEv2.docx', {
+            type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        });
+        const pdfFile = new File([obj.pdf], 'formatoCEv2.pdf', {
             type: 'application/pdf',
         });
-        this.formatoCEv2 = pdfFile;
+        this.formatoCEv2 = docxFile;
+        this.formatoCEv2Preview = pdfFile;
     }
     //#endregion
 
@@ -1012,7 +1044,10 @@ export class SolicitudExamenComponent implements OnInit {
                     this.isCoordinadorFase1Created == false &&
                     this.estado == EstadoProceso.PENDIENTE_REVISION_COORDINADOR
                 ) {
-                    const mailData =
+                    const { asuntoCoordinador, mensajeCoordinador } =
+                        this.solicitudForm.value;
+
+                    const solicitudData =
                         this.solicitudForm.get('conceptoCoordinadorDocumentos')
                             .value == 'Aceptado'
                             ? {
@@ -1021,26 +1056,10 @@ export class SolicitudExamenComponent implements OnInit {
                             : {
                                   conceptoCoordinadorDocumentos: 'RECHAZADO',
                                   envioEmail: {
-                                      asunto: this.solicitudForm.get(
-                                          'asuntoCoordinador'
-                                      ).value,
-                                      mensaje:
-                                          this.solicitudForm.get(
-                                              'mensajeCoordinador'
-                                          ).value,
+                                      asunto: asuntoCoordinador,
+                                      mensaje: mensajeCoordinador,
                                   },
                               };
-
-                    const {
-                        asuntoCoordinador,
-                        mensajeCoordinador,
-                        ...restData
-                    } = this.solicitudForm.value;
-
-                    const solicitudData = {
-                        ...restData,
-                        ...mailData,
-                    };
 
                     await lastValueFrom(
                         this.solicitudService.createSolicitudCoordinadorFase1(
@@ -1070,14 +1089,16 @@ export class SolicitudExamenComponent implements OnInit {
                         numeroActa,
                         fechaActa,
                         conceptoComite,
+                        asuntoComite,
+                        mensajeComite,
                         ...restOfFormValues
                     } = this.solicitudForm.value;
 
-                    let b64FormatoBEv1 = '';
-                    let b64FormatoCEv1 = '';
-                    let b64FormatoBEv2 = '';
-                    let b64FormatoCEv2 = '';
-                    let b64Oficio = '';
+                    let b64FormatoBEv1 = null;
+                    let b64FormatoCEv1 = null;
+                    let b64FormatoBEv2 = null;
+                    let b64FormatoCEv2 = null;
+                    let b64Oficio = null;
 
                     if (conceptoComite == 'Avalado') {
                         if (
@@ -1127,13 +1148,8 @@ export class SolicitudExamenComponent implements OnInit {
                                       },
                                   ],
                                   envioEmailDto: {
-                                      asunto: this.solicitudForm.get(
-                                          'asuntoComite'
-                                      ).value,
-                                      mensaje:
-                                          this.solicitudForm.get(
-                                              'mensajeComite'
-                                          ).value,
+                                      asunto: asuntoComite,
+                                      mensaje: mensajeComite,
                                   },
                                   informacionEnvioEvaluador: {
                                       b64FormatoD,
@@ -1155,13 +1171,8 @@ export class SolicitudExamenComponent implements OnInit {
                                       },
                                   ],
                                   envioEmailDto: {
-                                      asunto: this.solicitudForm.get(
-                                          'asuntoComite'
-                                      ).value,
-                                      mensaje:
-                                          this.solicitudForm.get(
-                                              'mensajeComite'
-                                          ).value,
+                                      asunto: asuntoComite,
+                                      mensaje: mensajeComite,
                                   },
                               };
                     await lastValueFrom(
@@ -1172,9 +1183,15 @@ export class SolicitudExamenComponent implements OnInit {
                     );
                 } else if (
                     this.isCoordinadorFase1Created == true &&
-                    this.estado == EstadoProceso.PENDIENTE_REVISION_COORDINADOR
+                    (this.estado ==
+                        EstadoProceso.PENDIENTE_REVISION_COORDINADOR ||
+                        this.estado ==
+                            EstadoProceso.DEVUELTO_EXAMEN_DE_VALORACION_POR_COORDINADOR)
                 ) {
-                    const mailData =
+                    const { asuntoCoordinador, mensajeCoordinador } =
+                        this.solicitudForm.value;
+
+                    const solicitudData =
                         this.solicitudForm.get('conceptoCoordinadorDocumentos')
                             .value == 'Aceptado'
                             ? {
@@ -1183,26 +1200,10 @@ export class SolicitudExamenComponent implements OnInit {
                             : {
                                   conceptoCoordinadorDocumentos: 'RECHAZADO',
                                   envioEmail: {
-                                      asunto: this.solicitudForm.get(
-                                          'asuntoCoordinador'
-                                      ).value,
-                                      mensaje:
-                                          this.solicitudForm.get(
-                                              'mensajeCoordinador'
-                                          ).value,
+                                      asunto: asuntoCoordinador,
+                                      mensaje: mensajeCoordinador,
                                   },
                               };
-
-                    const {
-                        asuntoCoordinador,
-                        mensajeCoordinador,
-                        ...restData
-                    } = this.solicitudForm.value;
-
-                    const solicitudData = {
-                        ...restData,
-                        ...mailData,
-                    };
 
                     await lastValueFrom(
                         this.solicitudService.updateSolicitudCoordinadorFase1(
@@ -1212,8 +1213,12 @@ export class SolicitudExamenComponent implements OnInit {
                     );
                 } else if (
                     this.isCoordinadorFase2Created == true &&
-                    this.estado ==
-                        EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR
+                    (this.estado ==
+                        EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR ||
+                        this.estado ==
+                            EstadoProceso.DEVUELTO_EXAMEN_DE_VALORACION_POR_COMITE ||
+                        this.estado ==
+                            EstadoProceso.PENDIENTE_RESULTADO_EXAMEN_DE_VALORACION)
                 ) {
                     const b64FormatoD = await this.formatFileString(
                         this.FileFormatoD,
@@ -1232,14 +1237,16 @@ export class SolicitudExamenComponent implements OnInit {
                         numeroActa,
                         fechaActa,
                         conceptoComite,
+                        asuntoComite,
+                        mensajeComite,
                         ...restOfFormValues
                     } = this.solicitudForm.value;
 
-                    let b64FormatoBEv1 = '';
-                    let b64FormatoCEv1 = '';
-                    let b64FormatoBEv2 = '';
-                    let b64FormatoCEv2 = '';
-                    let b64Oficio = '';
+                    let b64FormatoBEv1 = null;
+                    let b64FormatoCEv1 = null;
+                    let b64FormatoBEv2 = null;
+                    let b64FormatoCEv2 = null;
+                    let b64Oficio = null;
 
                     if (conceptoComite == 'Avalado') {
                         if (
@@ -1289,13 +1296,8 @@ export class SolicitudExamenComponent implements OnInit {
                                       },
                                   ],
                                   envioEmailDto: {
-                                      asunto: this.solicitudForm.get(
-                                          'asuntoComite'
-                                      ).value,
-                                      mensaje:
-                                          this.solicitudForm.get(
-                                              'mensajeComite'
-                                          ).value,
+                                      asunto: asuntoComite,
+                                      mensaje: mensajeComite,
                                   },
                                   informacionEnvioEvaluador: {
                                       b64FormatoD,
@@ -1317,13 +1319,8 @@ export class SolicitudExamenComponent implements OnInit {
                                       },
                                   ],
                                   envioEmailDto: {
-                                      asunto: this.solicitudForm.get(
-                                          'asuntoComite'
-                                      ).value,
-                                      mensaje:
-                                          this.solicitudForm.get(
-                                              'mensajeComite'
-                                          ).value,
+                                      asunto: asuntoComite,
+                                      mensaje: mensajeComite,
                                   },
                               };
                     await lastValueFrom(
@@ -1348,10 +1345,11 @@ export class SolicitudExamenComponent implements OnInit {
             this.messageService.add(
                 errorMessage('Error al actualizar los datos en el backend')
             );
+            this.messageService.add(errorMessage(e?.error?.mensaje));
         }
     }
 
-    createSolicitudExamen(): void {
+    async createSolicitudExamen(): Promise<void> {
         if (this.solicitudForm.invalid) {
             this.messageService.clear();
             this.messageService.add(
@@ -1359,95 +1357,53 @@ export class SolicitudExamenComponent implements OnInit {
             );
             return;
         }
+
         this.isLoading = true;
-        this.trabajoDeGradoService
-            .createTrabajoDeGrado(this.estudianteSeleccionado.id)
-            .subscribe({
-                next: (response) => {
-                    if (response) {
-                        this.trabajoDeGradoId = response.id;
-                        this.trabajoDeGradoService.setTrabajoSeleccionado(
-                            response
-                        );
-                    }
-                },
-                error: (e) => {
-                    console.error(
-                        'Error al guardar los datos en el backend:',
-                        e
-                    );
-                },
-                complete: () => {
-                    if (this.role.includes('ROLE_DOCENTE') == true) {
-                        this.solicitudService
-                            .createSolicitudDocente(
-                                this.solicitudForm.value,
-                                this.trabajoDeGradoId
-                            )
-                            .subscribe({
-                                next: (_) => {},
-                                error: (e) => {
-                                    console.error(
-                                        'Error al guardar los datos en el backend:',
-                                        e
-                                    );
-                                },
-                                complete: () => {
-                                    localStorage.removeItem(
-                                        'solicitudFormState'
-                                    );
-                                    this.messageService.add(
-                                        infoMessage(Mensaje.GUARDADO_EXITOSO)
-                                    );
-                                    timer(2000).subscribe(() => {
-                                        this.isLoading = false;
-                                        this.router.navigate([
-                                            'examen-de-valoracion',
-                                        ]);
-                                    });
-                                },
-                            });
-                    }
-                },
-            });
+        try {
+            const response = await firstValueFrom(
+                this.trabajoDeGradoService.createTrabajoDeGrado(
+                    this.estudianteSeleccionado.id
+                )
+            );
+            if (response) {
+                this.trabajoDeGradoId = response.id;
+                this.trabajoDeGradoService.setTrabajoSeleccionado(response);
+            }
+
+            if (this.role.includes('ROLE_DOCENTE')) {
+                await firstValueFrom(
+                    this.solicitudService.createSolicitudDocente(
+                        this.solicitudForm.value,
+                        this.trabajoDeGradoId
+                    )
+                );
+                localStorage.removeItem('solicitudFormState');
+                this.messageService.add(infoMessage(Mensaje.GUARDADO_EXITOSO));
+
+                await firstValueFrom(timer(2000));
+                this.isLoading = false;
+                this.router.navigate(['examen-de-valoracion']);
+            }
+        } catch (e) {
+            this.messageService.add(
+                errorMessage('Error al guardar los datos en el backend')
+            );
+            if (e?.error?.mensaje) {
+                this.messageService.add(errorMessage(e.error.mensaje));
+            } else {
+                console.error('Error:', e);
+            }
+            this.isLoading = false;
+        }
     }
 
-    setup(fieldName: string) {
-        if (fieldName == 'anexos') {
+    async setup(fieldName: string): Promise<void> {
+        if (fieldName === 'anexos') {
             for (let anexo of this.solicitudForm.get(fieldName).value) {
-                this.trabajoDeGradoService.getFile(anexo).subscribe({
-                    next: (response: any) => {
-                        if (response) {
-                            const byteCharacters = atob(response);
-                            const byteNumbers = new Array(
-                                byteCharacters.length
-                            );
-                            for (let i = 0; i < byteCharacters.length; i++) {
-                                byteNumbers[i] = byteCharacters.charCodeAt(i);
-                            }
-                            const byteArray = new Uint8Array(byteNumbers);
-                            const file = new File([byteArray], fieldName, {
-                                type: response.type,
-                            });
-                            this.anexosFiles.push(file);
-                        }
-                    },
-                    error: (e) => {
-                        if (!this.errorMessageShown) {
-                            this.messageService.add(
-                                warnMessage('Pendiente subir archivos.')
-                            );
-                            this.errorMessageShown = true;
-                        }
-                    },
-                });
-            }
-            return;
-        }
-        this.trabajoDeGradoService
-            .getFile(this.solicitudForm.get(fieldName).value)
-            .subscribe({
-                next: (response: any) => {
+                try {
+                    const response: any = await firstValueFrom(
+                        this.trabajoDeGradoService.getFile(anexo)
+                    );
                     if (response) {
                         const byteCharacters = atob(response);
                         const byteNumbers = new Array(byteCharacters.length);
@@ -1458,33 +1414,61 @@ export class SolicitudExamenComponent implements OnInit {
                         const file = new File([byteArray], fieldName, {
                             type: response.type,
                         });
-                        switch (fieldName) {
-                            case 'linkFormatoA':
-                                this.FileFormatoA = file;
-                                break;
-                            case 'linkFormatoD':
-                                this.FileFormatoD = file;
-                                break;
-                            case 'linkFormatoE':
-                                this.FileFormatoE = file;
-                                break;
-                            case 'linkOficioDirigidoEvaluadores':
-                                this.FileOficioDirigidoEvaluadores = file;
-                                break;
-                            default:
-                                break;
-                        }
+                        this.anexosFiles.push(file);
                     }
-                },
-                error: (e) => {
+                } catch (e) {
                     if (!this.errorMessageShown) {
                         this.messageService.add(
                             warnMessage('Pendiente subir archivos.')
                         );
                         this.errorMessageShown = true;
                     }
-                },
-            });
+                }
+            }
+            return;
+        }
+
+        try {
+            const response: any = await firstValueFrom(
+                this.trabajoDeGradoService.getFile(
+                    this.solicitudForm.get(fieldName).value
+                )
+            );
+            if (response) {
+                const byteCharacters = atob(response);
+                const byteNumbers = new Array(byteCharacters.length);
+                for (let i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+                const byteArray = new Uint8Array(byteNumbers);
+                const file = new File([byteArray], fieldName, {
+                    type: response.type,
+                });
+                switch (fieldName) {
+                    case 'linkFormatoA':
+                        this.FileFormatoA = file;
+                        break;
+                    case 'linkFormatoD':
+                        this.FileFormatoD = file;
+                        break;
+                    case 'linkFormatoE':
+                        this.FileFormatoE = file;
+                        break;
+                    case 'linkOficioDirigidoEvaluadores':
+                        this.FileOficioDirigidoEvaluadores = file;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        } catch (e) {
+            if (!this.errorMessageShown) {
+                this.messageService.add(
+                    warnMessage('Pendiente subir archivos.')
+                );
+                this.errorMessageShown = true;
+            }
+        }
     }
 
     setValuesForm(solicitud: Solicitud) {
@@ -1634,7 +1618,10 @@ export class SolicitudExamenComponent implements OnInit {
                         this.setup('linkFormatoD');
                         this.setup('linkFormatoE');
                         this.setup('anexos');
-                        if (this.isCoordinadorFase2Created) {
+                        if (
+                            this.isCoordinadorFase1 &&
+                            this.isCoordinadorFase2Created
+                        ) {
                             this.setup('linkOficioDirigidoEvaluadores');
                         }
                     }
@@ -1779,7 +1766,7 @@ export class SolicitudExamenComponent implements OnInit {
         document.body.removeChild(a);
     };
 
-    getFileAndSetValue(fieldName: string) {
+    async getFileAndSetValue(fieldName: string): Promise<void> {
         let errorShown = false;
 
         const handleError = () => {
@@ -1791,21 +1778,31 @@ export class SolicitudExamenComponent implements OnInit {
             }
         };
 
-        if (fieldName === 'anexos') {
-            for (const anexo of this.solicitudForm.get(fieldName).value) {
-                this.trabajoDeGradoService.getFile(anexo).subscribe({
-                    next: (response: string) =>
-                        this.downloadFile(response, anexo, fieldName),
-                    error: handleError,
-                });
+        try {
+            if (fieldName === 'anexos') {
+                for (const anexo of this.solicitudForm.get(fieldName).value) {
+                    try {
+                        const response = await firstValueFrom(
+                            this.trabajoDeGradoService.getFile(anexo)
+                        );
+                        this.downloadFile(response, anexo, fieldName);
+                    } catch (error) {
+                        handleError();
+                    }
+                }
+            } else {
+                const rutaArchivo = this.solicitudForm.get(fieldName).value;
+                try {
+                    const response = await firstValueFrom(
+                        this.trabajoDeGradoService.getFile(rutaArchivo)
+                    );
+                    this.downloadFile(response, rutaArchivo, fieldName);
+                } catch (error) {
+                    handleError();
+                }
             }
-        } else {
-            const rutaArchivo = this.solicitudForm.get(fieldName).value;
-            this.trabajoDeGradoService.getFile(rutaArchivo).subscribe({
-                next: (response: string) =>
-                    this.downloadFile(response, rutaArchivo, fieldName),
-                error: handleError,
-            });
+        } catch (error) {
+            handleError();
         }
     }
 
@@ -1827,36 +1824,40 @@ export class SolicitudExamenComponent implements OnInit {
         });
     }
 
-    onSeleccionarEvaluadorInterno() {
+    async onSeleccionarEvaluadorInterno(): Promise<void> {
         const ref = this.showBuscadorEvaluadorInterno();
-        ref.onClose.subscribe({
-            next: (response) => {
-                if (response) {
-                    const docente = this.mapEvaluadorInternoLabel(response);
-                    this.evaluadorInternoSeleccionado = docente;
-                    this.trabajoDeGradoService.setEvaluadorInternoSeleccionadoSubject(
-                        this.evaluadorInternoSeleccionado
-                    );
-                    this.evaluadorInterno.setValue(docente.id);
-                }
-            },
-        });
+
+        try {
+            const response = await firstValueFrom(ref.onClose);
+            if (response) {
+                const docente = this.mapEvaluadorInternoLabel(response);
+                this.evaluadorInternoSeleccionado = docente;
+                this.trabajoDeGradoService.setEvaluadorInternoSeleccionadoSubject(
+                    this.evaluadorInternoSeleccionado
+                );
+                this.evaluadorInterno.setValue(docente.id);
+            }
+        } catch (error) {
+            console.error('Error al seleccionar el evaluador interno:', error);
+        }
     }
 
-    onSeleccionarEvaluadorExterno() {
+    async onSeleccionarEvaluadorExterno(): Promise<void> {
         const ref = this.showBuscadorEvaluadorExterno();
-        ref.onClose.subscribe({
-            next: (response) => {
-                if (response) {
-                    const experto = this.mapEvaluadorExternoLabel(response);
-                    this.evaluadorExternoSeleccionado = experto;
-                    this.trabajoDeGradoService.setEvaluadorExternoSeleccionadoSubject(
-                        this.evaluadorExternoSeleccionado
-                    );
-                    this.evaluadorExterno.setValue(experto.id);
-                }
-            },
-        });
+
+        try {
+            const response = await firstValueFrom(ref.onClose);
+            if (response) {
+                const experto = this.mapEvaluadorExternoLabel(response);
+                this.evaluadorExternoSeleccionado = experto;
+                this.trabajoDeGradoService.setEvaluadorExternoSeleccionadoSubject(
+                    this.evaluadorExternoSeleccionado
+                );
+                this.evaluadorExterno.setValue(experto.id);
+            }
+        } catch (error) {
+            console.error('Error al seleccionar el evaluador externo:', error);
+        }
     }
 
     limpiarEvaluadorExterno() {

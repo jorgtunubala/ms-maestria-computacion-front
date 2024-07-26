@@ -42,8 +42,8 @@
                 <documento-formatoB
                     [formatoBEv1]="formatoBEv1"
                     [evaluador]="evaluadorInternoSeleccionado"
-                    (formatoBPdfGenerated)="
-                        handleFormatoBEv1PdfGenerated($event)
+                    (formatoBDocxGenerated)="
+                        handleFormatoBEv1DocxGenerated($event)
                     "
                 ></documento-formatoB>
             </ng-container>
@@ -51,8 +51,8 @@
                 <documento-formatoC
                     [formatoCEv1]="formatoCEv1"
                     [evaluador]="evaluadorInternoSeleccionado"
-                    (formatoCPdfGenerated)="
-                        handleFormatoCEv1PdfGenerated($event)
+                    (formatoCDocxGenerated)="
+                        handleFormatoCEv1DocxGenerated($event)
                     "
                 ></documento-formatoC>
             </ng-container>
@@ -61,8 +61,8 @@
                 <documento-formatoB
                     [formatoBEv2]="formatoBEv2"
                     [evaluador]="evaluadorExternoSeleccionado"
-                    (formatoBPdfGenerated)="
-                        handleFormatoBEv2PdfGenerated($event)
+                    (formatoBDocxGenerated)="
+                        handleFormatoBEv2DocxGenerated($event)
                     "
                 ></documento-formatoB>
             </ng-container>
@@ -70,8 +70,8 @@
                 <documento-formatoC
                     [formatoCEv2]="formatoCEv2"
                     [evaluador]="evaluadorExternoSeleccionado"
-                    (formatoCPdfGenerated)="
-                        handleFormatoCEv2PdfGenerated($event)
+                    (formatoCDocxGenerated)="
+                        handleFormatoCEv2DocxGenerated($event)
                     "
                 ></documento-formatoC>
             </ng-container>
@@ -620,7 +620,7 @@
                             <div class="col-5 mt-4">
                                 <label class="label-required"
                                     >Anteproyecto presentado a Examen (Formato D
-                                    .pdf, .rar, .zip)
+                                    .pdf)
                                 </label>
                                 <div
                                     style="max-width: 50rem"
@@ -637,7 +637,7 @@
                                                 name="linkFormatoD"
                                                 mode="basic"
                                                 [auto]="true"
-                                                accept=".pdf,.zip,.rar"
+                                                accept=".pdf"
                                                 chooseIcon="pi pi-file"
                                                 class="w-full max-w-30rem"
                                                 maxFileSize="5000000"
@@ -696,8 +696,7 @@
                         <div class="field grid justify-content-center">
                             <div class="col-5 mt-4">
                                 <label class="label-required"
-                                    >Examen de valoración (Formato E, .pdf,
-                                    .rar, .zip)
+                                    >Examen de valoración (Formato E, .pdf)
                                 </label>
                                 <div
                                     style="max-width: 50rem"
@@ -715,7 +714,7 @@
                                                 [auto]="true"
                                                 name="linkFormatoE"
                                                 chooseIcon="pi pi-file"
-                                                accept=".pdf,.zip,.rar"
+                                                accept=".pdf"
                                                 class="w-full max-w-30rem"
                                                 maxFileSize="5000000"
                                                 (onSelect)="
@@ -772,7 +771,7 @@
                         <div class="field grid justify-content-center">
                             <div class="col-5 mt-4">
                                 <label class="label-required"
-                                    >Anexos (.pdf, .rar, .zip)
+                                    >Anexos (.pdf)
                                 </label>
                                 <div
                                     style="max-width: 50rem"
@@ -884,7 +883,6 @@
                             *ngIf="role.includes('ROLE_DOCENTE')"
                         >
                             <button
-                                *ngIf="!editMode"
                                 pButton
                                 icon="pi pi-eye"
                                 label="Revisar documentos"
@@ -1007,20 +1005,6 @@
                     <p-fieldset legend="Comite" styleClass="bg-bluegray-50">
                         <div class="field grid">
                             <div
-                                class="flex flex-1 justify-content-end align-items-center"
-                                *ngIf="
-                                    isCoordinadorFase1 && !isCoordinadorFase2
-                                "
-                            >
-                                <button
-                                    *ngIf="editMode"
-                                    pButton
-                                    icon="pi pi-eye"
-                                    label="Revisar documentos"
-                                    (click)="openModal()"
-                                ></button>
-                            </div>
-                            <div
                                 class="flex mt-4 w-full justify-content-center align-items-center column-gap-4"
                             >
                                 <div
@@ -1065,13 +1049,7 @@
                                 </p-card>
                             </div>
                         </div>
-                        <div
-                            *ngIf="
-                                solicitudForm.get('conceptoComite').value ==
-                                'No Avalado'
-                            "
-                            class="field grid justify-content-center"
-                        >
+                        <div class="field grid justify-content-center">
                             <div class="col-5">
                                 <div>
                                     <label class="label-required">Asunto</label>
@@ -1254,6 +1232,18 @@
                                 ></p-calendar>
                             </div>
                         </div>
+                        <div
+                            class="flex flex-1 justify-content-end align-items-center"
+                            *ngIf="isCoordinadorFase1 && !isCoordinadorFase2"
+                        >
+                            <button
+                                *ngIf="editMode"
+                                pButton
+                                icon="pi pi-eye"
+                                label="Revisar documentos"
+                                (click)="openModal()"
+                            ></button>
+                        </div>
                     </p-fieldset>
                 </div>
             </div>
@@ -1299,7 +1289,7 @@
                     icon="pi pi-pencil"
                     [label]="getButtonLabel()"
                     (click)="updateSolicitudExamen()"
-                    [disabled]="isCoordinadorFase1 && !isReviewed"
+                    [disabled]="!isReviewed"
                 ></button>
                 <button
                     *ngIf="editMode && role.includes('ROLE_COORDINADOR')"
@@ -1307,9 +1297,7 @@
                     icon="pi pi-pencil"
                     [label]="getButtonLabel()"
                     (click)="updateSolicitudExamen()"
-                    [disabled]="
-                        role.includes('ROLE_COORDINADOR') && !isReviewed
-                    "
+                    [disabled]="!isReviewed"
                 ></button>
             </div>
         </form>
