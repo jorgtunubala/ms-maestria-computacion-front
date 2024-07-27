@@ -1,4 +1,10 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import {
+    Component,
+    ElementRef,
+    HostListener,
+    OnInit,
+    ViewChild,
+} from '@angular/core';
 import { GestorService } from '../../../services/gestor.service';
 import { RadicarService } from '../../../services/radicar.service';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -8,6 +14,7 @@ import { OficioComponent } from '../../utilidades/oficio/oficio.component';
 import { DatosAvalSolicitud } from '../../../models/indiceModelos';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { UtilidadesService } from '../../../services/utilidades.service';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-visoraval',
@@ -16,6 +23,12 @@ import { UtilidadesService } from '../../../services/utilidades.service';
     providers: [ConfirmationService, MessageService],
 })
 export class VisoravalComponent implements OnInit {
+    @HostListener('window:beforeunload', ['$event'])
+    beforeUnloadHander(event: Event) {
+        event.returnValue = true;
+        return '¿Estás seguro de que quieres salir de la página?';
+    }
+
     @ViewChild(OficioComponent) oficio: OficioComponent;
     @ViewChild('firmaImage') firmaImage: ElementRef;
 
@@ -26,8 +39,11 @@ export class VisoravalComponent implements OnInit {
     mostrarBtnAvalar: boolean = false;
     mostrarPFSet: boolean = true;
     habilitarAval: boolean = false;
+    avalEnProceso: boolean = false;
+    rechazoEnProceso: boolean = false;
     deshabilitarRechazo: boolean = false;
     deshabilitarAval: boolean = false;
+    cargandoDatos: boolean = true;
 
     urlPdf: SafeResourceUrl;
 
@@ -38,6 +54,7 @@ export class VisoravalComponent implements OnInit {
         public gestor: GestorService,
         public radicar: RadicarService,
         public http: HttpService,
+        private router: Router,
         private sanitizer: DomSanitizer,
         private messageService: MessageService,
         private confirmationService: ConfirmationService,
@@ -45,7 +62,19 @@ export class VisoravalComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-        this.cargarDatosOficio();
+        try {
+            this.cargarDatosOficio();
+        } catch (error) {
+            const isExpectedError =
+                error instanceof TypeError &&
+                error.message.includes('idSolicitud');
+
+            if (isExpectedError) {
+                this.router.navigate(['/gestionsolicitudes/avales/pendientes']);
+            } else {
+                console.error('Error no esperado:', error);
+            }
+        }
     }
 
     capturarInformacionAdjunta() {
@@ -108,6 +137,7 @@ export class VisoravalComponent implements OnInit {
                     this.mostrarBtnAvalar = true;
                     this.mostrarBtnRechazar = true;
                     this.capturarInformacionAdjunta();
+                    this.cargandoDatos = false;
                 },
                 (error) => {
                     console.error(
@@ -168,7 +198,16 @@ export class VisoravalComponent implements OnInit {
     }
 
     async enviarOficioAvalado() {
+        if (
+            this.avalEnProceso ||
+            this.firmaEnProceso ||
+            this.rechazoEnProceso
+        ) {
+            return;
+        }
+
         if (this.habilitarAval) {
+            this.avalEnProceso = true;
             this.deshabilitarRechazo = true;
             await this.convertirOficioEnPDF();
 
@@ -200,7 +239,8 @@ export class VisoravalComponent implements OnInit {
             this.http.guardarAvalesSolicitud(aval).subscribe(
                 (resultado) => {
                     if (resultado) {
-                        this.gestor.ejecutarCargarSolicitudes();
+                        //this.gestor.ejecutarCargarSolicitudes();
+                        this.avalEnProceso = false;
                         this.confirmationService.confirm({
                             message: 'La solicitud se ha avalado exitosamente',
                             header: 'Solicitud avalada',
@@ -219,6 +259,7 @@ export class VisoravalComponent implements OnInit {
                             },
                         });
                     } else {
+                        this.avalEnProceso = false;
                         this.confirmationService.confirm({
                             message:
                                 'Ha ocurrido un error inesperado al avalar la solicitud, intentelo nuevamente.',
@@ -240,7 +281,11 @@ export class VisoravalComponent implements OnInit {
     }
 
     rechazarSolicitud() {
-        this.deshabilitarAval = true;
+        if (this.rechazoEnProceso || this.avalEnProceso) {
+            return;
+        }
+
+        this.rechazoEnProceso = true;
     }
 
     renderizarImagen(imagen: File, firmante: any): void {
