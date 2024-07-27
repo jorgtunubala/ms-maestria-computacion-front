@@ -19,6 +19,7 @@ export class PendientesavalComponent implements OnInit {
     correoUsuario: string = 'mellizohurt@gmail.com';
     solicitudes: SolicitudRecibida[] = [];
     cargando: boolean = true;
+    buzonVacio: boolean = false;
     solicitudSeleccionada: SolicitudRecibida = {
         idSolicitud: 0,
         codigoSolicitud: '',
@@ -50,6 +51,13 @@ export class PendientesavalComponent implements OnInit {
             (solicitudes: SolicitudRecibida[]) => {
                 this.solicitudes = solicitudes;
                 this.cargando = false;
+
+                // Verifica si el arreglo está vacío correctamente
+                if (solicitudes.length === 0) {
+                    this.buzonVacio = true;
+                } else {
+                    this.buzonVacio = false;
+                }
             },
             (error) => {
                 console.error('Error al cargar las solicitudes:', error);
