@@ -311,6 +311,14 @@ export class DocumentoFormatoCComponent implements OnInit {
                             style: 'label',
                             width: '100%',
                         },
+                        {
+                            text: `${
+                                this.evaluador.nombres +
+                                ', ' +
+                                this.evaluador.universidad
+                            }`,
+                            width: '100%',
+                        },
                     ],
                 },
             ],

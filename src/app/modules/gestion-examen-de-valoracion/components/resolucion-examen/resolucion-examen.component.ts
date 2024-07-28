@@ -24,7 +24,6 @@ import {
 import { MessageService } from 'primeng/api';
 import { FileUpload } from 'primeng/fileupload';
 import { DialogService } from 'primeng/dynamicdialog';
-import { mapResponseException } from 'src/app/core/utils/exception-util';
 import {
     errorMessage,
     infoMessage,
@@ -33,12 +32,12 @@ import {
 import { Aviso, EstadoProceso, Mensaje } from 'src/app/core/enums/enums';
 import { ResolucionService } from '../../services/resolucion.service';
 import { TrabajoDeGradoService } from '../../services/trabajoDeGrado.service';
+import { RespuestaService } from '../../services/respuesta.service';
+import { Resolucion } from '../../models/resolucion';
 import { Docente } from 'src/app/modules/gestion-docentes/models/docente';
 import { Estudiante } from 'src/app/modules/gestion-estudiantes/models/estudiante';
-import { Resolucion } from '../../models/resolucion';
 import { BuscadorDocentesComponent } from 'src/app/shared/components/buscador-docentes/buscador-docentes.component';
 import { AutenticacionService } from 'src/app/modules/gestion-autenticacion/services/autenticacion.service';
-import { RespuestaService } from '../../services/respuesta.service';
 
 @Component({
     selector: 'app-resolucion-examen',
@@ -417,8 +416,8 @@ export class ResolucionExamenComponent implements OnInit {
                 this.messageService.add({
                     severity: 'info',
                     summary: 'Informacion',
-                    detail: 'En este paso, se anexan Anteproyecto Final, Formato B de cada Evaluador.',
-                    life: 4000,
+                    detail: 'Se han anexado los formatos de Anteproyecto Final - Formato B de cada evaluador.',
+                    life: 6000,
                 });
                 this.isDocente = true;
                 this.isCoordinadorFase1 = true;
@@ -867,16 +866,6 @@ export class ResolucionExamenComponent implements OnInit {
 
             if (this.role.includes('ROLE_COORDINADOR')) {
                 if (
-                    this.estado ==
-                        EstadoProceso.DEVUELTO_GENERACION_DE_RESOLUCION_POR_COORDINADOR ||
-                    this.estado ==
-                        EstadoProceso.DEVUELTO_GENERACION_DE_RESOLUCION_POR_COMITE
-                ) {
-                    this.isLoading = false;
-                    return this.messageService.add(
-                        errorMessage('No puedes modificar los datos.')
-                    );
-                } else if (
                     this.isCoordinadorFase1Created == false &&
                     this.estado ==
                         EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE1_GENERACION_RESOLUCION
@@ -997,8 +986,10 @@ export class ResolucionExamenComponent implements OnInit {
                     );
                 } else if (
                     this.isCoordinadorFase1Created == true &&
-                    this.estado ==
-                        EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE1_GENERACION_RESOLUCION
+                    (this.estado ==
+                        EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE1_GENERACION_RESOLUCION ||
+                        this.estado ==
+                            EstadoProceso.DEVUELTO_GENERACION_DE_RESOLUCION_POR_COORDINADOR)
                 ) {
                     const resolucionData =
                         this.resolucionForm.get('conceptoDocumentosCoordinador')
@@ -1027,8 +1018,10 @@ export class ResolucionExamenComponent implements OnInit {
                     );
                 } else if (
                     this.isCoordinadorFase2Created == true &&
-                    this.estado ==
-                        EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE2_GENERACION_RESOLUCION
+                    (this.estado ==
+                        EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE2_GENERACION_RESOLUCION ||
+                        this.estado ==
+                            EstadoProceso.DEVUELTO_GENERACION_DE_RESOLUCION_POR_COMITE)
                 ) {
                     const b64AnteproyectoFinal = await this.formatFileString(
                         this.FileAnteproyectoFinal,
@@ -1048,7 +1041,6 @@ export class ResolucionExamenComponent implements OnInit {
                         numeroActa,
                         fechaActa,
                         linkSolicitudConsejoFacultad,
-                        ...restFormValues
                     } = this.resolucionForm.value;
 
                     const resolucionData =
@@ -1105,13 +1097,27 @@ export class ResolucionExamenComponent implements OnInit {
                         )
                     );
                 } else if (
-                    this.isCoordinadorFase3Created == true &&
+                    (this.isCoordinadorFase3Created == true &&
+                        this.estado ==
+                            EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE3_GENERACION_RESOLUCION) ||
                     this.estado ==
-                        EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE3_GENERACION_RESOLUCION
+                        EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_DOCENTE_SUSTENTACION
                 ) {
+                    const b64OficioConsejo = await this.formatFileString(
+                        this.FileOficioConsejo,
+                        'linkOficioConsejo'
+                    );
+
+                    const { linkOficioConsejo, ...restFormValues } =
+                        this.resolucionForm.value;
+
+                    const resolucionData = {
+                        ...restFormValues,
+                        linkOficioConsejo: b64OficioConsejo,
+                    };
                     await lastValueFrom(
                         this.resolucionService.updateResolucionCoordinadorFase3(
-                            this.resolucionForm.value,
+                            resolucionData,
                             this.trabajoDeGradoId
                         )
                     );
@@ -1127,9 +1133,7 @@ export class ResolucionExamenComponent implements OnInit {
             this.router.navigate(['examen-de-valoracion']);
         } catch (error) {
             this.isLoading = false;
-            this.messageService.add(
-                errorMessage('Error al actualizar los datos en el backend')
-            );
+            this.handlerResponseException(error);
         }
     }
 
@@ -1304,34 +1308,47 @@ export class ResolucionExamenComponent implements OnInit {
         return null;
     }
 
+    isValidFilePath = (filePath: string): boolean => {
+        return filePath.startsWith('./files/') && filePath.includes('.pdf');
+    };
+
     async getFileAndSetValue(fieldName: string): Promise<void> {
-        try {
-            const rutaArchivo = this.resolucionForm.get(fieldName).value;
-            const response: string = await firstValueFrom(
-                this.trabajoDeGradoService.getFile(rutaArchivo)
-            );
-            const byteCharacters = atob(response);
-            const byteNumbers = Array.from(byteCharacters).map((char) =>
-                char.charCodeAt(0)
-            );
-            const byteArray = new Uint8Array(byteNumbers);
-            const blob = new Blob([byteArray]);
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            const extension = rutaArchivo.slice(
-                rutaArchivo.lastIndexOf('.') + 1
-            );
-            a.style.display = 'none';
-            a.href = url;
-            a.download = `${fieldName}.${extension}`;
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(a);
-        } catch (error) {
+        const handleError = () => {
             this.messageService.add(
                 warnMessage('Modifica la información para ver los cambios.')
             );
+        };
+
+        try {
+            const rutaArchivo = this.resolucionForm.get(fieldName).value;
+
+            if (this.isValidFilePath(rutaArchivo)) {
+                const response: string = await firstValueFrom(
+                    this.trabajoDeGradoService.getFile(rutaArchivo)
+                );
+                const byteCharacters = atob(response);
+                const byteNumbers = Array.from(byteCharacters).map((char) =>
+                    char.charCodeAt(0)
+                );
+                const byteArray = new Uint8Array(byteNumbers);
+                const blob = new Blob([byteArray]);
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                const extension = rutaArchivo.slice(
+                    rutaArchivo.lastIndexOf('.') + 1
+                );
+                a.style.display = 'none';
+                a.href = url;
+                a.download = `${fieldName}.${extension}`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            } else {
+                handleError();
+            }
+        } catch (error) {
+            handleError();
         }
     }
 
@@ -1431,12 +1448,14 @@ export class ResolucionExamenComponent implements OnInit {
         this.router.navigate(['examen-de-valoracion']);
     }
 
-    handlerResponseException(response: any) {
-        if (response.status != 500 && response.status != 409) return;
-        const mapException = mapResponseException(response.error);
-        mapException.forEach((value, _) => {
-            this.messageService.add(errorMessage(value));
-        });
+    handlerResponseException(response: any): void {
+        if (response.status === 500 || response.status === 409) {
+            const errorMsg =
+                response?.error?.mensaje ||
+                response?.error ||
+                'Error al actualizar los datos en el backend';
+            this.messageService.add(errorMessage(errorMsg));
+        }
     }
 
     isActiveIndex(): Boolean {
@@ -1449,7 +1468,8 @@ export class ResolucionExamenComponent implements OnInit {
     getButtonLabel(): string {
         if (this.role.includes('ROLE_DOCENTE') && this.isDocenteCreated) {
             return 'Modificar Informacion';
-        } else if (
+        }
+        if (
             this.role.includes('ROLE_COORDINADOR') &&
             this.isCoordinadorFase1Created &&
             this.isCoordinadorFase2Created &&

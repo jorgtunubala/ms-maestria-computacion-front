@@ -801,10 +801,24 @@ export class SustentacionExamenComponent implements OnInit {
             this.estado ==
             EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE4_SUSTENTACION
         ) {
-            filesToConvert.push({
-                file: this.FileActaSustentacionP,
-                fieldName: 'Acta de Sustentación Publica',
-            });
+            filesToConvert.push(
+                {
+                    file: this.FileFormatoH,
+                    fieldName: 'Formato H',
+                },
+                {
+                    file: this.FileFormatoI,
+                    fieldName: 'Formato I',
+                },
+                {
+                    file: this.FileEstudioHVAGrado,
+                    fieldName: 'Estudio Hoja de Vida Academica para Grado',
+                },
+                {
+                    file: this.FileActaSustentacionP,
+                    fieldName: 'Acta de Sustentación Publica',
+                }
+            );
         }
 
         const errorFiles = new Set<File>();
@@ -889,6 +903,22 @@ export class SustentacionExamenComponent implements OnInit {
 
     showFormatoG() {
         this.displayFormatoG = true;
+    }
+
+    handleFormatoHvaPdfGenerated(file: File) {
+        const pdfFile = new File([file], 'EstudioHojaVidaAcademica.pdf', {
+            type: 'application/pdf',
+        });
+        this.FileEstudioHVA = pdfFile;
+        this.convertFileToBase64(pdfFile)
+            .then((base64) => {
+                this.sustentacionForm
+                    .get('linkEstudioHojaVidaAcademica')
+                    .setValue(`linkEstudioHojaVidaAcademica.pdf-${base64}`);
+            })
+            .catch((error) => {
+                console.error('Error al convertir el archivo a base64:', error);
+            });
     }
 
     handleFormatoHvaGradoPdfGenerated(file: File) {
@@ -977,6 +1007,7 @@ export class SustentacionExamenComponent implements OnInit {
         this.isChanged = true;
         this.anexosFiles.splice(index, 1);
         this.anexosBase64.splice(index, 1);
+        this.sustentacionForm.get('anexos').setValue(this.anexosFiles);
     }
     //#endregion
 
@@ -1266,25 +1297,13 @@ export class SustentacionExamenComponent implements OnInit {
     async updateSustentacion() {
         this.isLoading = true;
         try {
-            if (this.role.includes('ROLE_COORDINADOR')) {
-                if (
-                    this.estado ==
-                        EstadoProceso.DEVUELTO_SUSTENTACION_PARA_CORREGIR_AL_DOCENTE_COORDINADOR ||
-                    this.estado ==
-                        EstadoProceso.DEVUELTO_SUSTENTACION_PARA_CORREGIR_AL_DOCENTE_COMITE
-                ) {
-                    this.isLoading = false;
-                    return this.messageService.add(
-                        errorMessage('No puedes modificar los datos.')
-                    );
-                }
-            }
-
             if (this.role.includes('ROLE_DOCENTE')) {
                 if (
                     this.isDocenteCreated &&
                     (this.estado ===
-                        EstadoProceso.DEVUELTO_SUSTENTACION_PARA_CORREGIR_AL_DOCENTE_COORDINADOR ||
+                        EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE1_SUSTENTACION ||
+                        this.estado ===
+                            EstadoProceso.DEVUELTO_SUSTENTACION_PARA_CORREGIR_AL_DOCENTE_COORDINADOR ||
                         this.estado ===
                             EstadoProceso.DEVUELTO_SUSTENTACION_PARA_CORREGIR_AL_DOCENTE_COMITE)
                 ) {
@@ -1329,6 +1348,7 @@ export class SustentacionExamenComponent implements OnInit {
                     );
                 }
             }
+
             if (this.role.includes('ROLE_COORDINADOR')) {
                 if (
                     this.isCoordinadorFase1Created == false &&
@@ -1382,6 +1402,15 @@ export class SustentacionExamenComponent implements OnInit {
                         'anexos'
                     );
 
+                    const b64HistoriaAcademica =
+                        this.sustentacionForm.get('conceptoComite').value ==
+                        'Aprobado'
+                            ? await this.formatFileString(
+                                  this.FileEstudioHVA,
+                                  'linkEstudioHojaVidaAcademica'
+                              )
+                            : '';
+
                     const b64FormatoG =
                         this.sustentacionForm.get('conceptoComite').value ==
                         'Aprobado'
@@ -1421,6 +1450,7 @@ export class SustentacionExamenComponent implements OnInit {
                                       b64Monografia,
                                       b64Anexos,
                                       b64FormatoG,
+                                      b64HistoriaAcademica,
                                   },
                               }
                             : {
@@ -1461,6 +1491,18 @@ export class SustentacionExamenComponent implements OnInit {
                         fechaActaConsejo,
                         numeroActaConsejo,
                     } = this.sustentacionForm.value;
+
+                    const today = new Date();
+                    const fechaSustentacionDate = new Date(fechaSustentacion);
+
+                    if (fechaSustentacionDate <= today) {
+                        this.messageService.add(
+                            warnMessage(
+                                'La fecha de sustentación debe ser mayor que la fecha actual.'
+                            )
+                        );
+                        return;
+                    }
 
                     const sustentacionData =
                         this.sustentacionForm.get('juradosAceptados').value ==
@@ -1518,8 +1560,10 @@ export class SustentacionExamenComponent implements OnInit {
                     );
                 } else if (
                     this.isCoordinadorFase1Created == true &&
-                    this.estado ==
-                        EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE1_SUSTENTACION
+                    (this.estado ==
+                        EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE1_SUSTENTACION ||
+                        this.estado ==
+                            EstadoProceso.DEVUELTO_SUSTENTACION_PARA_CORREGIR_AL_DOCENTE_COORDINADOR)
                 ) {
                     const sustentacionData =
                         this.sustentacionForm.get('conceptoCoordinador')
@@ -1548,8 +1592,10 @@ export class SustentacionExamenComponent implements OnInit {
                     );
                 } else if (
                     this.isCoordinadorFase2Created == true &&
-                    this.estado ==
-                        EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE2_SUSTENTACION
+                    (this.estado ==
+                        EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE2_SUSTENTACION ||
+                        this.estado ==
+                            EstadoProceso.DEVUELTO_SUSTENTACION_PARA_CORREGIR_AL_DOCENTE_COMITE)
                 ) {
                     const {
                         fechaActa,
@@ -1557,6 +1603,38 @@ export class SustentacionExamenComponent implements OnInit {
                         linkEstudioHojaVidaAcademica,
                         linkFormatoG,
                     } = this.sustentacionForm.value;
+
+                    const b64Monografia = await this.formatFileString(
+                        this.FileMonografia,
+                        'linkMonografia'
+                    );
+
+                    const anexos = await this.formatFileString(
+                        this.anexosFiles,
+                        'anexos'
+                    );
+
+                    const b64HistoriaAcademica =
+                        this.sustentacionForm.get('conceptoComite').value ==
+                        'Aprobado'
+                            ? await this.formatFileString(
+                                  this.FileEstudioHVA,
+                                  'linkEstudioHojaVidaAcademica'
+                              )
+                            : '';
+
+                    const b64FormatoG =
+                        this.sustentacionForm.get('conceptoComite').value ==
+                        'Aprobado'
+                            ? await this.formatFileString(
+                                  this.FileFormatoG,
+                                  'linkFormatoG'
+                              )
+                            : '';
+
+                    const b64Anexos = anexos.map(
+                        (anexo: string, _: number) => anexo
+                    );
 
                     const sustentacionData =
                         this.sustentacionForm.get('conceptoComite').value ==
@@ -1580,6 +1658,12 @@ export class SustentacionExamenComponent implements OnInit {
                                   },
                                   linkEstudioHojaVidaAcademica,
                                   linkFormatoG,
+                                  informacionEnvioConsejo: {
+                                      b64Monografia,
+                                      b64Anexos,
+                                      b64FormatoG,
+                                      b64HistoriaAcademica,
+                                  },
                               }
                             : {
                                   actaFechaRespuestaComite: [
@@ -1621,6 +1705,18 @@ export class SustentacionExamenComponent implements OnInit {
                         numeroActaConsejo,
                         fechaActaConsejo,
                     } = this.sustentacionForm.value;
+
+                    const today = new Date();
+                    const fechaSustentacionDate = new Date(fechaSustentacion);
+
+                    if (fechaSustentacionDate <= today) {
+                        this.messageService.add(
+                            warnMessage(
+                                'La fecha de sustentación debe ser mayor que la fecha actual.'
+                            )
+                        );
+                        return;
+                    }
 
                     const sustentacionData =
                         this.sustentacionForm.get('juradosAceptados').value ==
@@ -2007,6 +2103,10 @@ export class SustentacionExamenComponent implements OnInit {
         document.body.removeChild(a);
     };
 
+    isValidFilePath = (filePath: string): boolean => {
+        return filePath.startsWith('./files/') && filePath.includes('.pdf');
+    };
+
     async getFileAndSetValue(fieldName: string) {
         let errorShown = false;
         const handleError = () => {
@@ -2019,26 +2119,33 @@ export class SustentacionExamenComponent implements OnInit {
         };
 
         try {
+            const fieldValues = this.sustentacionForm.get(fieldName).value;
             if (fieldName === 'anexos') {
-                const anexos = this.sustentacionForm.get(fieldName).value;
-                for (const anexo of anexos) {
-                    try {
-                        const response = await firstValueFrom(
-                            this.trabajoDeGradoService.getFile(anexo)
-                        );
-                        this.downloadFile(response, anexo, fieldName);
-                    } catch (error) {
+                for (const anexo of fieldValues) {
+                    if (this.isValidFilePath(anexo)) {
+                        try {
+                            const response = await firstValueFrom(
+                                this.trabajoDeGradoService.getFile(anexo)
+                            );
+                            this.downloadFile(response, anexo, fieldName);
+                        } catch (error) {
+                            handleError();
+                        }
+                    } else {
                         handleError();
                     }
                 }
             } else {
-                const rutaArchivo = this.sustentacionForm.get(fieldName).value;
-                try {
-                    const response = await firstValueFrom(
-                        this.trabajoDeGradoService.getFile(rutaArchivo)
-                    );
-                    this.downloadFile(response, rutaArchivo, fieldName);
-                } catch (error) {
+                if (this.isValidFilePath(fieldValues)) {
+                    try {
+                        const response = await firstValueFrom(
+                            this.trabajoDeGradoService.getFile(fieldValues)
+                        );
+                        this.downloadFile(response, fieldValues, fieldName);
+                    } catch (error) {
+                        handleError();
+                    }
+                } else {
                     handleError();
                 }
             }
@@ -2150,12 +2257,14 @@ export class SustentacionExamenComponent implements OnInit {
         this.router.navigate(['examen-de-valoracion']);
     }
 
-    handlerResponseException(response: any) {
-        if (response.status != 500) return;
-        const mapException = mapResponseException(response.error);
-        mapException.forEach((value, _) => {
-            this.messageService.add(errorMessage(value));
-        });
+    handlerResponseException(response: any): void {
+        if (response.status === 500 || response.status === 409) {
+            const errorMsg =
+                response?.error?.mensaje ||
+                response?.error ||
+                'Error al actualizar los datos en el backend';
+            this.messageService.add(errorMessage(errorMsg));
+        }
     }
 
     isActiveIndex(): Boolean {

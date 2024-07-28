@@ -33,48 +33,181 @@
         </div>
         <div class="mt-4 px-8">
             <form [formGroup]="formatoHvaGradoForm">
-                <div class="field grid">
-                    <label class="col-2" for="facultad">Facultad:</label>
-                    <div class="col-10">
-                        <input
-                            pInputText
-                            class="p-inputtext-md w-full"
-                            type="text"
-                            id="facultad"
-                            formControlName="facultad"
-                            readonly
-                        />
-                    </div>
-                </div>
-
-                <div class="field grid">
-                    <label class="col-2" for="programa">Programa:</label>
-                    <div class="col-10">
-                        <input
-                            pInputText
-                            class="p-inputtext-md w-full"
-                            type="text"
-                            id="programa"
-                            formControlName="programa"
-                            readonly
-                        />
-                    </div>
-                </div>
-
-                <div class="field grid">
-                    <label class="col-2" for="estudiante"
-                        >Nombre del estudiante:</label
+                <div class="flex align-items-center justify-content-start mt-2">
+                    <label
+                        class="label-required"
+                        style="text-wrap: nowrap"
+                        for="facultad"
+                        >Facultad:</label
                     >
-                    <div class="col-10">
-                        <input
-                            pInputText
-                            class="p-inputtext-md w-full"
-                            type="text"
-                            id="estudiante"
-                            formControlName="estudiante"
-                            readonly
-                        />
-                    </div>
+                    <input
+                        pInputText
+                        class="w-full ml-2"
+                        type="text"
+                        id="facultad"
+                        formControlName="facultad"
+                        readonly
+                    />
+                </div>
+
+                <div class="flex align-items-center justify-content-start mt-2">
+                    <label
+                        class="label-required"
+                        style="text-wrap: nowrap"
+                        for="programa"
+                        >Programa:</label
+                    >
+                    <input
+                        pInputText
+                        class="w-full ml-2"
+                        type="text"
+                        id="programa"
+                        formControlName="programa"
+                        readonly
+                    />
+                </div>
+
+                <div class="flex align-items-center justify-content-start mt-2">
+                    <label
+                        class="label-required"
+                        style="text-wrap: nowrap"
+                        for="estudiante"
+                        >Nombre del Estudiante:</label
+                    >
+                    <input
+                        pInputText
+                        class="w-full ml-2"
+                        type="text"
+                        id="estudiante"
+                        formControlName="estudiante"
+                        readonly
+                    />
+                </div>
+
+                <div class="flex align-items-center justify-content-start mt-2">
+                    <label style="text-wrap: nowrap" for="cedula"
+                        >Cédula de Ciudadanía:</label
+                    >
+                    <input
+                        pInputText
+                        class="w-full ml-2"
+                        type="text"
+                        id="cedula"
+                        formControlName="cedula"
+                    />
+                </div>
+
+                <div class="flex align-items-center justify-content-start mt-2">
+                    <label style="text-wrap: nowrap" for="lugar-expedicion"
+                        >Lugar de Expedición:</label
+                    >
+                    <input
+                        pInputText
+                        class="w-full ml-2"
+                        type="text"
+                        id="lugar-expedicion"
+                        formControlName="lugarExpedicion"
+                    />
+                </div>
+
+                <div class="flex align-items-center justify-content-start mt-2">
+                    <label style="text-wrap: nowrap" for="codigo"
+                        >Código:</label
+                    >
+                    <input
+                        pInputText
+                        class="w-full ml-2"
+                        type="text"
+                        id="codigo"
+                        formControlName="codigo"
+                    />
+                </div>
+
+                <div class="flex align-items-center justify-content-start mt-2">
+                    <label style="text-wrap: nowrap" for="telefono-fijo"
+                        >Teléfono Fijo:</label
+                    >
+                    <input
+                        pInputText
+                        class="w-full ml-2"
+                        type="text"
+                        id="telefono-fijo"
+                        formControlName="telefonoFijo"
+                    />
+                    <label
+                        style="text-wrap: nowrap"
+                        class="ml-4"
+                        for="telefono-celular"
+                        >Teléfono Celular:</label
+                    >
+                    <input
+                        pInputText
+                        class="w-full ml-2"
+                        type="text"
+                        id="telefono-celular"
+                        formControlName="telefonoCelular"
+                    />
+                </div>
+
+                <div class="flex align-items-center justify-content-start mt-2">
+                    <label style="text-wrap: nowrap" for="codigo-saber-pro"
+                        >Código Pruebas SABER PRO:</label
+                    >
+                    <input
+                        pInputText
+                        class="w-full ml-2"
+                        type="text"
+                        id="codigo-saber-pro"
+                        formControlName="codigoSaberPro"
+                    />
+                </div>
+
+                <div class="flex align-items-center justify-content-start mt-2">
+                    <label style="text-wrap: nowrap" for="residencia"
+                        >Residencia Actual:</label
+                    >
+                    <input
+                        pInputText
+                        class="w-full ml-2"
+                        type="text"
+                        id="residencia"
+                        formControlName="residenciaActual"
+                    />
+                </div>
+
+                <div class="flex align-items-center justify-content-start mt-2">
+                    <label style="text-wrap: nowrap" for="departamento"
+                        >Departamento:</label
+                    >
+                    <input
+                        pInputText
+                        class="w-full ml-2"
+                        type="text"
+                        id="departamento"
+                        formControlName="departamento"
+                    />
+                </div>
+                <div class="flex align-items-center justify-content-start mt-2">
+                    <label style="text-wrap: nowrap" for="municipio"
+                        >Municipio:</label
+                    >
+                    <input
+                        pInputText
+                        class="w-full ml-2"
+                        type="text"
+                        id="municipio"
+                        formControlName="municipio"
+                    />
+                    <label style="text-wrap: nowrap" class="ml-4" for="email"
+                        >Email:</label
+                    >
+                    <input
+                        pInputText
+                        class="w-full ml-2"
+                        type="email"
+                        id="email"
+                        formControlName="email"
+                    />
                 </div>
             </form>
         </div>
@@ -115,7 +248,7 @@
                 [pTooltip]="
                     !!fileFormatoHvaGrado
                         ? 'Ya se ha adjuntado el documento.'
-                        : 'Descargar documentos, rellenar/firmar y adjuntar en PDF.'
+                        : 'Descargar documento, rellenar/firmar y adjuntar en PDF.'
                 "
                 tooltipPosition="top"
                 (onSelect)="onAdjuntar($event)"

@@ -32,6 +32,7 @@ import {
 } from 'src/app/core/utils/message-util';
 import { TrabajoDeGradoService } from '../../../services/trabajoDeGrado.service';
 import { ResolucionService } from '../../../services/resolucion.service';
+import { FileUpload } from 'primeng/fileupload';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 @Component({
@@ -41,8 +42,12 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 })
 export class DocumentoFormatoHvaComponent implements OnInit {
     @Input() trabajoDeGradoId: number;
+    @Input() fileFormatoHva: File;
     @Output() formReady = new EventEmitter<FormGroup>();
+    @Output() formatoHvaPdfGenerated = new EventEmitter<File>();
+
     @ViewChild('formatoHva') formatoHva!: ElementRef;
+    @ViewChild('FileFormatoHva') FileFormatoHva!: FileUpload;
 
     estudianteSubscription: Subscription;
     tituloSubscription: Subscription;
@@ -318,6 +323,23 @@ export class DocumentoFormatoHvaComponent implements OnInit {
                     this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
                 }
             );
+        }
+    }
+
+    onAdjuntar(event: any) {
+        if (this.formatoHvaForm.invalid) {
+            this.FileFormatoHva.clear();
+            this.handleWarningMessage(Mensaje.REGISTRE_CAMPOS_OBLIGATORIOS);
+            return;
+        } else {
+            this.loading = true;
+            const file: File = event.files[0];
+            if (file) {
+                this.formatoHvaPdfGenerated.emit(file);
+                this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
+            }
+            this.loading = false;
+            this.FileFormatoHva.clear();
         }
     }
 

@@ -188,4 +188,14 @@ export class TrabajoDeGradoService {
             { params, responseType: 'text' }
         );
     }
+
+    verificarDocente(idTrabajoGrado: number): Observable<any> {
+        const params = new HttpParams().set('idTrabajoGrado', idTrabajoGrado);
+        return this.http.get(
+            backendGestionTrabajoDeGrado(
+                'inicio_trabajo_grado/verificarDocente'
+            ),
+            { params, responseType: 'text' }
+        );
+    }
 }

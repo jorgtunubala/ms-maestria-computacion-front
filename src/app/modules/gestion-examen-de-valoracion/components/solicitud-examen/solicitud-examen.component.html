@@ -81,7 +81,7 @@
                         <button
                             pButton
                             class="p-button-secondary"
-                            label="Cancelar"
+                            label="Salir"
                             (click)="closeModal()"
                         ></button>
                     </div>
@@ -910,18 +910,6 @@
                         styleClass="bg-bluegray-50"
                     >
                         <div class="field grid">
-                            <div
-                                class="flex flex-1 justify-content-end align-items-center"
-                                *ngIf="isDocente && !isCoordinadorFase1"
-                            >
-                                <button
-                                    *ngIf="editMode"
-                                    pButton
-                                    icon="pi pi-eye"
-                                    label="Revisar documentos"
-                                    (click)="openModal()"
-                                ></button>
-                            </div>
                             <div
                                 class="flex flex-column w-full justify-content-center align-items-center row-gap-4"
                             >

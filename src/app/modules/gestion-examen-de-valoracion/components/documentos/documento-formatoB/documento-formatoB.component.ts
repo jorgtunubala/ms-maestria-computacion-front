@@ -201,7 +201,7 @@ export class DocumentoFormatoBComponent implements OnInit {
                     columns: [
                         { text: 'Programa:', style: 'label', width: '25%' },
                         {
-                            text: formValues.titulo,
+                            text: formValues.programa,
                             style: 'value',
                             width: '75%',
                         },

@@ -38,6 +38,7 @@ export class DocumentoFormatoHvaGradoComponent implements OnInit {
     @Input() fileFormatoHvaGrado: File;
     @Output() formReady = new EventEmitter<FormGroup>();
     @Output() formatoHvaGradoPdfGenerated = new EventEmitter<File>();
+
     @ViewChild('formatoHvaGrado') formatoHvaGrado!: ElementRef;
     @ViewChild('FileFormatoHvaGrado') FileFormatoHvaGrado!: FileUpload;
 
@@ -98,7 +99,16 @@ export class DocumentoFormatoHvaGradoComponent implements OnInit {
             ],
             programa: ['Maestría en Computación', Validators.required],
             estudiante: [null, Validators.required],
-            titulo: [null],
+            cedula: [null, Validators.required],
+            lugarExpedicion: [null, Validators.required],
+            codigo: [null, Validators.required],
+            telefonoFijo: [null, Validators.required],
+            telefonoCelular: [null, Validators.required],
+            codigoSaberPro: [null, Validators.required],
+            residenciaActual: [null, Validators.required],
+            departamento: [null, Validators.required],
+            municipio: [null, Validators.required],
+            email: [null, Validators.required],
             coordinador: ['Luz Marina Sierra Martínez', Validators.required],
         });
         this.formReady.emit(this.formatoHvaGradoForm);
@@ -126,7 +136,16 @@ export class DocumentoFormatoHvaGradoComponent implements OnInit {
                 facultad: formValues.facultad,
                 programa: formValues.programa,
                 estudiante: formValues.estudiante,
-                titulo: formValues.titulo,
+                cedula: formValues.cedula,
+                lugarExpedicion: formValues.lugarExpedicion,
+                codigo: formValues.codigo,
+                telefonoFijo: formValues.telefonoFijo,
+                telefonoCelular: formValues.telefonoCelular,
+                codigoSaberPro: formValues.codigoSaberPro,
+                residenciaActual: formValues.residenciaActual,
+                departamento: formValues.departamento,
+                municipio: formValues.municipio,
+                email: formValues.email,
                 coordinador: formValues.coordinador,
             };
 

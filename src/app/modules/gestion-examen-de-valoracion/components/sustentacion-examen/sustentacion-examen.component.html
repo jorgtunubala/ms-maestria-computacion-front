@@ -138,7 +138,11 @@
         >
             <ng-container>
                 <documento-formatoHva
+                    [fileFormatoHva]="FileEstudioHVA"
                     [trabajoDeGradoId]="trabajoDeGradoId"
+                    (formatoHvaPdfGenerated)="
+                        handleFormatoHvaPdfGenerated($event)
+                    "
                 ></documento-formatoHva>
             </ng-container>
         </p-dialog>
@@ -382,7 +386,7 @@
                         <div class="field grid justify-content-center">
                             <div class="col-5 mt-4">
                                 <label class="label-required"
-                                    >Monografía
+                                    >Monografía (.pdf)
                                 </label>
                                 <div
                                     style="max-width: 50rem"
@@ -466,7 +470,7 @@
                         <div class="field grid justify-content-center">
                             <div class="col-5 mt-4">
                                 <label class="label-required"
-                                    >Anexos (.pdf, .rar, .zip)
+                                    >Anexos (.pdf)
                                 </label>
                                 <div
                                     style="max-width: 50rem"

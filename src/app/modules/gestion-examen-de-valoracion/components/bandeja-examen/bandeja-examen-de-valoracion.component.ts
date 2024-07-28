@@ -1,21 +1,21 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subscription, catchError, firstValueFrom, of } from 'rxjs';
+import { catchError, firstValueFrom, of } from 'rxjs';
+import { ConfirmationService, MessageService, PrimeIcons } from 'primeng/api';
 import { DialogService } from 'primeng/dynamicdialog';
-import { BuscadorEstudiantesComponent } from 'src/app/shared/components/buscador-estudiantes/buscador-estudiantes.component';
-import { LocalStorageService } from 'src/app/shared/services/localstorage.service';
 import { Aviso, EstadoProceso } from 'src/app/core/enums/enums';
+import { infoMessage } from 'src/app/core/utils/message-util';
+import { LocalStorageService } from 'src/app/shared/services/localstorage.service';
+import { EstudianteService } from 'src/app/shared/services/estudiante.service';
+import { BuscadorEstudiantesComponent } from 'src/app/shared/components/buscador-estudiantes/buscador-estudiantes.component';
 import { Estudiante } from 'src/app/modules/gestion-estudiantes/models/estudiante';
+import { AutenticacionService } from 'src/app/modules/gestion-autenticacion/services/autenticacion.service';
 import { Solicitud } from '../../models/solicitud';
 import { SolicitudService } from '../../services/solicitud.service';
-import { EstudianteService } from 'src/app/shared/services/estudiante.service';
-import { TrabajoDeGradoService } from '../../services/trabajoDeGrado.service';
 import { RespuestaService } from '../../services/respuesta.service';
 import { ResolucionService } from '../../services/resolucion.service';
 import { SustentacionService } from '../../services/sustentacion.service';
-import { AutenticacionService } from 'src/app/modules/gestion-autenticacion/services/autenticacion.service';
-import { ConfirmationService, MessageService, PrimeIcons } from 'primeng/api';
-import { infoMessage } from 'src/app/core/utils/message-util';
+import { TrabajoDeGradoService } from '../../services/trabajoDeGrado.service';
 
 @Component({
     selector: 'app-bandeja-examen-de-valoracion',
@@ -45,13 +45,6 @@ export class BandejaExamenDeValoracionComponent implements OnInit {
     solicitudesPorEstudiante: Solicitud[] | any[] = [];
     role: string[];
 
-    private estudianteSubscription: Subscription;
-    private trabajoDeGradoSubscription: Subscription;
-    private solicitudSubscription: Subscription;
-    private respuestaSubscription: Subscription;
-    private resolucionSubscription: Subscription;
-    private sustentacionSubscription: Subscription;
-
     constructor(
         private autenticacion: AutenticacionService,
         private cdr: ChangeDetectorRef,
@@ -74,14 +67,14 @@ export class BandejaExamenDeValoracionComponent implements OnInit {
 
     async initializeComponent() {
         this.role = this.autenticacion.getRole();
-        const isCoordinatorOrCommittee =
+        const isCoordinadorOrCommite =
             this.role.includes('ROLE_COORDINADOR') ||
             this.role.includes('ROLE_COMITE');
         const isDocenteOrEstudiante =
             this.role.includes('ROLE_DOCENTE') ||
             this.role.includes('ROLE_ESTUDIANTE');
 
-        if (isCoordinatorOrCommittee) {
+        if (isCoordinadorOrCommite) {
             await this.listTrabajosDeGradoPorEstados(this.selectedEstados);
             this.selectedEstados = [...this.estados];
             this.cdr.detectChanges();
@@ -106,68 +99,67 @@ export class BandejaExamenDeValoracionComponent implements OnInit {
         this.listTrabajosDeGradoPorEstados(selectedIndices);
     }
 
-    listTrabajosDeGradoPorEstudiante(estudianteId: number) {
-        return new Promise<void>((resolve, reject) => {
-            this.loading = true;
-            this.trabajoDeGradoSubscription = this.trabajoDeGradoService
-                .listTrabajosDeGradoPorEstudiante(estudianteId)
-                .subscribe({
-                    next: (response) => {
-                        if (response) {
-                            this.solicitudesPorEstudiante =
-                                response.trabajoGrado;
-                            resolve();
-                        }
-                    },
-                    error: (e) => {
-                        console.error(e);
-                    },
-                    complete: () => {
-                        this.loading = false;
-                    },
-                });
-        });
-    }
-
-    listTrabajosDeGradoPorEstados(estados: number[]) {
-        return new Promise<void>((resolve, reject) => {
-            this.loading = true;
-            this.trabajoDeGradoSubscription = this.trabajoDeGradoService
-                .listTrabajosDeGradoPorEstado(estados.length ? estados : [0])
-                .subscribe({
-                    next: (response) => {
-                        if (response) {
-                            this.solicitudesPorEstado = response;
-                            resolve();
-                        }
-                    },
-                    error: (e) => {
-                        console.error(e);
-                    },
-                    complete: () => {
-                        this.loading = false;
-                    },
-                });
-        });
-    }
-
-    isCrearExamenDisabled(): boolean {
-        if (this.solicitudesPorEstudiante.length == 0) {
-            return false;
+    async listTrabajosDeGradoPorEstudiante(
+        estudianteId: number
+    ): Promise<void> {
+        this.loading = true;
+        try {
+            const response = await firstValueFrom(
+                this.trabajoDeGradoService.listTrabajosDeGradoPorEstudiante(
+                    estudianteId
+                )
+            );
+            if (response) {
+                this.solicitudesPorEstudiante = response.trabajoGrado.sort(
+                    (a: any, b: any) => b.id - a.id
+                );
+            }
+        } catch (error) {
+            console.error(error);
+        } finally {
+            this.loading = false;
         }
-        const ultimoTrabajoDeGrado =
-            this.solicitudesPorEstudiante[
-                this.solicitudesPorEstudiante.length - 1
-            ];
-        return !this.estadosPermitidos.includes(ultimoTrabajoDeGrado.estado);
     }
 
-    onProcesoExamen() {
-        this.router.navigate(['examen-de-valoracion/solicitud']);
+    async listTrabajosDeGradoPorEstados(estados: number[]): Promise<void> {
+        this.loading = true;
+        try {
+            const response = await firstValueFrom(
+                this.trabajoDeGradoService.listTrabajosDeGradoPorEstado(
+                    estados.length ? estados : [0]
+                )
+            );
+            if (response) {
+                this.solicitudesPorEstado = response.sort(
+                    (a: any, b: any) => b.id - a.id
+                );
+            }
+        } catch (error) {
+            console.error(error);
+        } finally {
+            this.loading = false;
+        }
     }
 
     async onEditar(id: number, estudianteId: number, titulo: string) {
-        this.unsubscribePreviousSubscriptions();
+        this.resetState();
+
+        if (this.role.includes('ROLE_DOCENTE')) {
+            try {
+                const response = await firstValueFrom(
+                    this.trabajoDeGradoService
+                        .verificarDocente(id)
+                        .pipe(catchError(() => of(null)))
+                );
+
+                if (response !== 'true') {
+                    return;
+                }
+            } catch (error) {
+                console.error('Error al verificar docente:', error);
+                return;
+            }
+        }
 
         if (estudianteId) {
             try {
@@ -186,6 +178,7 @@ export class BandejaExamenDeValoracionComponent implements OnInit {
                 }
             } catch (error) {
                 // Manejar error si es necesario
+                console.error('Error al obtener estudiante:', error);
             }
         }
 
@@ -203,6 +196,7 @@ export class BandejaExamenDeValoracionComponent implements OnInit {
             }
         } catch (error) {
             // Manejar error si es necesario
+            console.error('Error al obtener trabajo de grado:', error);
         }
 
         try {
@@ -219,6 +213,7 @@ export class BandejaExamenDeValoracionComponent implements OnInit {
             }
         } catch (error) {
             // Manejar error si es necesario
+            console.error('Error al obtener solicitud:', error);
         }
 
         try {
@@ -235,6 +230,7 @@ export class BandejaExamenDeValoracionComponent implements OnInit {
             }
         } catch (error) {
             // Manejar error si es necesario
+            console.error('Error al obtener respuestas:', error);
         }
 
         try {
@@ -251,6 +247,7 @@ export class BandejaExamenDeValoracionComponent implements OnInit {
             }
         } catch (error) {
             // Manejar error si es necesario
+            console.error('Error al obtener resolución:', error);
         }
 
         try {
@@ -265,8 +262,9 @@ export class BandejaExamenDeValoracionComponent implements OnInit {
                     sustentacionResponse
                 );
                 this.trabajoDeGradoService.setTituloSeleccionadoSubject(titulo);
+
                 if (this.role.includes('ROLE_ESTUDIANTE')) {
-                    await this.router.navigate([
+                    this.router.navigate([
                         'examen-de-valoracion/sustentacion/editar',
                         id,
                     ]);
@@ -275,35 +273,34 @@ export class BandejaExamenDeValoracionComponent implements OnInit {
             }
         } catch (error) {
             // Manejar error si es necesario
+            console.error('Error al obtener sustentación:', error);
         }
 
         if (!this.role.includes('ROLE_ESTUDIANTE')) {
-            await this.router.navigate([
-                'examen-de-valoracion/solicitud/editar',
-                id,
-            ]);
+            this.router.navigate(['examen-de-valoracion/solicitud/editar', id]);
         }
     }
 
-    private unsubscribePreviousSubscriptions() {
-        if (this.estudianteSubscription) {
-            this.estudianteSubscription.unsubscribe();
+    resetState() {
+        this.trabajoDeGradoService.setSolicitudSeleccionada(null);
+        this.trabajoDeGradoService.setRespuestaSeleccionada(null);
+        this.trabajoDeGradoService.setResolucionSeleccionada(null);
+        this.trabajoDeGradoService.setSustentacionSeleccionada(null);
+    }
+
+    isCrearExamenDisabled(): boolean {
+        if (this.solicitudesPorEstudiante.length == 0) {
+            return false;
         }
-        if (this.trabajoDeGradoSubscription) {
-            this.trabajoDeGradoSubscription.unsubscribe();
-        }
-        if (this.solicitudSubscription) {
-            this.solicitudSubscription.unsubscribe();
-        }
-        if (this.respuestaSubscription) {
-            this.respuestaSubscription.unsubscribe();
-        }
-        if (this.resolucionSubscription) {
-            this.resolucionSubscription.unsubscribe();
-        }
-        if (this.sustentacionSubscription) {
-            this.sustentacionSubscription.unsubscribe();
-        }
+        const ultimoTrabajoDeGrado =
+            this.solicitudesPorEstudiante[
+                this.solicitudesPorEstudiante.length - 1
+            ];
+        return !this.estadosPermitidos.includes(ultimoTrabajoDeGrado.estado);
+    }
+
+    onProcesoExamen() {
+        this.router.navigate(['examen-de-valoracion/solicitud']);
     }
 
     mapEstudianteLabel(estudiante: any) {
@@ -330,6 +327,28 @@ export class BandejaExamenDeValoracionComponent implements OnInit {
         this.solicitudesPorEstudiante = [];
     }
 
+    async onSeleccionarEstudiante(): Promise<void> {
+        const ref = this.showBuscadorEstudiantes();
+        try {
+            const response = await firstValueFrom(ref.onClose);
+            if (response) {
+                this.estudianteSeleccionado = this.mapEstudianteLabel(response);
+                this.trabajoDeGradoService.setEstudianteSeleccionado(
+                    this.estudianteSeleccionado
+                );
+                this.localStorageService.saveLocalStorage(
+                    this.estudianteSeleccionado,
+                    'est'
+                );
+                await this.listTrabajosDeGradoPorEstudiante(
+                    this.estudianteSeleccionado.id
+                );
+            }
+        } catch (error) {
+            console.error('Error al seleccionar estudiante:', error);
+        }
+    }
+
     onDelete(event: any, id: number) {
         this.confirmationService.confirm({
             target: event.target,
@@ -341,36 +360,17 @@ export class BandejaExamenDeValoracionComponent implements OnInit {
         });
     }
 
-    cancelarTrabajoDeGrado(id: number) {
-        this.trabajoDeGradoService.cancelTrabajoDeGrado(id).subscribe({
-            next: () => {
-                this.messageService.add(
-                    infoMessage(Aviso.SOLICITUD_ELIMINADA_CORRECTAMENTE)
-                );
-                this.listTrabajosDeGradoPorEstados([34]);
-            },
-        });
-    }
-
-    onSeleccionarEstudiante() {
-        const ref = this.showBuscadorEstudiantes();
-        ref.onClose.subscribe({
-            next: (response) => {
-                if (response) {
-                    this.estudianteSeleccionado =
-                        this.mapEstudianteLabel(response);
-                    this.trabajoDeGradoService.setEstudianteSeleccionado(
-                        this.estudianteSeleccionado
-                    );
-                    this.localStorageService.saveLocalStorage(
-                        this.mapEstudianteLabel(response),
-                        'est'
-                    );
-                    this.listTrabajosDeGradoPorEstudiante(
-                        this.estudianteSeleccionado.id
-                    );
-                }
-            },
-        });
+    async cancelarTrabajoDeGrado(id: number): Promise<void> {
+        try {
+            await firstValueFrom(
+                this.trabajoDeGradoService.cancelTrabajoDeGrado(id)
+            );
+            this.messageService.add(
+                infoMessage(Aviso.SOLICITUD_ELIMINADA_CORRECTAMENTE)
+            );
+            await this.listTrabajosDeGradoPorEstados([34]);
+        } catch (error) {
+            console.error('Error en cancelarTrabajoDeGrado:', error);
+        }
     }
 }

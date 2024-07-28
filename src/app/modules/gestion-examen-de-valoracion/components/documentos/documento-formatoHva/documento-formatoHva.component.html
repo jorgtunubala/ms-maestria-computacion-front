@@ -232,6 +232,23 @@
         <div
             class="flex align-items-center justify-content-end mt-4 column-gap-2"
         >
+            <p-fileUpload
+                #FileFormatoHva
+                mode="basic"
+                [auto]="true"
+                accept=".pdf"
+                chooseIcon="pi pi-paperclip"
+                maxFileSize="5000000"
+                chooseLabel="Adjuntar"
+                [pTooltip]="
+                    !!fileFormatoHva
+                        ? 'Ya se ha adjuntado el documento.'
+                        : 'Descargar documento, revisar y adjuntar en PDF.'
+                "
+                tooltipPosition="top"
+                (onSelect)="onAdjuntar($event)"
+            >
+            </p-fileUpload>
             <button
                 pButton
                 type="button"
