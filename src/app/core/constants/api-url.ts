@@ -1,15 +1,10 @@
 import {
-    environment,
     gestion_autenticacion,
     gestion_docentes_estudiantes,
     gestion_egresados,
     gestion_expertos,
     gestion_trabajo_grado,
-} from 'src/environments/environment';
-
-export function backend(path: string): string {
-    return environment.api_url.concat(path);
-}
+} from 'src/environments/environment.prod';
 
 export function backendAuth(path: string): string {
     return gestion_autenticacion.api_url.concat(path);

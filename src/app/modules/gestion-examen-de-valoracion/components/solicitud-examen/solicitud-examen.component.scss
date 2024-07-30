@@ -6,15 +6,7 @@
     display: none;
 }
 
-.solicitud
-    ::ng-deep.p-fileupload-buttonbar
-    p-button[ng-reflect-label="Upload"] {
-    display: none;
-}
-
-.solicitud
-    ::ng-deep.p-fileupload-buttonbar
-    p-button[ng-reflect-label="Cancel"] {
+.solicitud ::ng-deep.p-fileupload-buttonbar p-button {
     display: none;
 }
 
@@ -58,32 +50,32 @@
 }
 
 @media (max-width: 1240px) {
-    ::ng-deep.p-dialog {
+    .solicitud ::ng-deep.p-dialog {
         width: 60% !important;
     }
 }
 
 @media (max-width: 1024px) {
-    ::ng-deep.p-dialog {
+    .solicitud ::ng-deep.p-dialog {
         width: 70% !important;
     }
 }
 
 @media (max-width: 900px) {
-    ::ng-deep.p-dialog {
+    .solicitud ::ng-deep.p-dialog {
         width: 80% !important;
     }
 }
 
 @media (max-width: 768px) {
-    ::ng-deep.p-dialog {
+    .solicitud ::ng-deep.p-dialog {
         width: 90% !important;
         top: -10% !important;
     }
 }
 
 @media (max-width: 425px) {
-    ::ng-deep.p-card .p-card-title {
+    .solicitud ::ng-deep.p-card .p-card-title {
         text-align: center;
     }
 }

@@ -1,10 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import {
-    backend,
-    backendGestionTrabajoDeGrado,
-} from 'src/app/core/constants/api-url';
+import { backendGestionTrabajoDeGrado } from 'src/app/core/constants/api-url';
 import { getHeaders } from 'src/app/core/constants/header';
 import { Docente } from 'src/app/modules/gestion-docentes/models/docente';
 

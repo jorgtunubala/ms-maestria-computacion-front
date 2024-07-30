@@ -6,15 +6,7 @@
     display: none;
 }
 
-.sustentacion
-    ::ng-deep.p-fileupload-buttonbar
-    p-button[ng-reflect-label="Upload"] {
-    display: none;
-}
-
-.sustentacion
-    ::ng-deep.p-fileupload-buttonbar
-    p-button[ng-reflect-label="Cancel"] {
+.sustentacion ::ng-deep.p-fileupload-buttonbar p-button {
     display: none;
 }
 

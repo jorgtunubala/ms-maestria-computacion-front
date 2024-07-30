@@ -23,8 +23,8 @@
         "date-fns": "^2.30.0",
         "docxtemplater": "^3.48.0",
         "file-saver": "^2.0.5",
-        "ng2-pdf-viewer": "^9.1.5",
         "jspdf": "^2.5.1",
+        "ng2-pdf-viewer": "^9.1.5",
         "pdfmake": "^0.2.10",
         "pizzip": "^3.1.7",
         "primeflex": "^3.1.0",
@@ -38,7 +38,7 @@
         "zone.js": "~0.11.4"
     },
     "devDependencies": {
-        "@angular-devkit/build-angular": "~13.0.4",
+        "@angular-devkit/build-angular": "~13.2.5",
         "@angular/cli": "~13.0.4",
         "@angular/compiler-cli": "~13.0.0",
         "@types/jasmine": "~3.10.0",

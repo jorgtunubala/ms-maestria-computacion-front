@@ -714,24 +714,6 @@
                     <p-fieldset legend="Comite" styleClass="bg-bluegray-50">
                         <div class="field grid">
                             <div
-                                class="flex flex-1 justify-content-end align-items-center"
-                                *ngIf="
-                                    isCoordinadorFase1 &&
-                                    !isCoordinadorFase2 &&
-                                    this.sustentacionForm.get('conceptoComite')
-                                        .value == 'Aprobado'
-                                "
-                            >
-                                <button
-                                    *ngIf="editMode"
-                                    pButton
-                                    icon="pi pi-eye"
-                                    label="Revisar documentos"
-                                    (click)="openModal()"
-                                    [disabled]="disableButton || displayModal"
-                                ></button>
-                            </div>
-                            <div
                                 class="flex flex-column w-full justify-content-center align-items-center row-gap-4"
                             >
                                 <strong>Concepto Verificación Comite</strong>
@@ -1005,6 +987,24 @@
                                     dateFormat="dd.mm.yy"
                                 ></p-calendar>
                             </div>
+                        </div>
+                        <div
+                            class="flex flex-1 justify-content-end align-items-center"
+                            *ngIf="
+                                isCoordinadorFase1 &&
+                                !isCoordinadorFase2 &&
+                                this.sustentacionForm.get('conceptoComite')
+                                    .value == 'Aprobado'
+                            "
+                        >
+                            <button
+                                *ngIf="editMode"
+                                pButton
+                                icon="pi pi-eye"
+                                label="Revisar documentos"
+                                (click)="openModal()"
+                                [disabled]="disableButton || displayModal"
+                            ></button>
                         </div>
                     </p-fieldset>
                 </div>

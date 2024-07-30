@@ -2,15 +2,7 @@
     display: none;
 }
 
-.respuesta
-    ::ng-deep.p-fileupload-buttonbar
-    p-button[ng-reflect-label="Upload"] {
-    display: none;
-}
-
-.respuesta
-    ::ng-deep.p-fileupload-buttonbar
-    p-button[ng-reflect-label="Cancel"] {
+.respuesta ::ng-deep.p-fileupload-buttonbar p-button {
     display: none;
 }
 
