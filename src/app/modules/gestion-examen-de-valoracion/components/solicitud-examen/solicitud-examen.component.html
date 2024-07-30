@@ -389,6 +389,11 @@
                                                     (click)="
                                                         limpiarEvaluadorExterno()
                                                     "
+                                                    [disabled]="
+                                                        !role.includes(
+                                                            'ROLE_DOCENTE'
+                                                        )
+                                                    "
                                                 ></button>
                                             </div>
                                             <div
@@ -472,6 +477,11 @@
                                                     icon="pi pi-times"
                                                     (click)="
                                                         limpiarEvaluadorInterno()
+                                                    "
+                                                    [disabled]="
+                                                        !role.includes(
+                                                            'ROLE_DOCENTE'
+                                                        )
                                                     "
                                                 ></button>
                                             </div>
@@ -562,6 +572,11 @@
                                                 (click)="
                                                     onFileClear('linkFormatoA')
                                                 "
+                                                [disabled]="
+                                                    !role.includes(
+                                                        'ROLE_DOCENTE'
+                                                    )
+                                                "
                                             ></button>
                                         </div>
                                         <div
@@ -592,9 +607,8 @@
                                         class="align-self-center"
                                         label="Crear Documento"
                                         [pTooltip]="
-                                            !this
-                                                .evaluadorInternoSeleccionado ||
-                                            !this.evaluadorExternoSeleccionado
+                                            !evaluadorInternoSeleccionado ||
+                                            !evaluadorExternoSeleccionado
                                                 ? 'Debes seleccionar los evaluadores'
                                                 : ''
                                         "
@@ -602,9 +616,8 @@
                                         (click)="showFormatoA()"
                                         [loading]="loading"
                                         [disabled]="
-                                            !this
-                                                .evaluadorInternoSeleccionado ||
-                                            !this.evaluadorExternoSeleccionado
+                                            !evaluadorInternoSeleccionado ||
+                                            !evaluadorExternoSeleccionado
                                         "
                                     ></button>
                                 </div>
@@ -660,6 +673,11 @@
                                                 type="button"
                                                 (click)="
                                                     onFileClear('linkFormatoD')
+                                                "
+                                                [disabled]="
+                                                    !role.includes(
+                                                        'ROLE_DOCENTE'
+                                                    )
                                                 "
                                             ></button>
                                         </div>
@@ -736,6 +754,11 @@
                                                 (click)="
                                                     onFileClear('linkFormatoE')
                                                 "
+                                                [disabled]="
+                                                    !role.includes(
+                                                        'ROLE_DOCENTE'
+                                                    )
+                                                "
                                             ></button>
                                         </div>
                                         <div
@@ -770,9 +793,7 @@
                         </div>
                         <div class="field grid justify-content-center">
                             <div class="col-5 mt-4">
-                                <label class="label-required"
-                                    >Anexos (.pdf)
-                                </label>
+                                <label>Anexos (.pdf) </label>
                                 <div
                                     style="max-width: 50rem"
                                     class="flex flex-wrap gap-2 mt-2 align-items-start"
@@ -795,7 +816,7 @@
                                                 [disabled]="
                                                     editMode &&
                                                     solicitudForm.get('anexos')
-                                                        .value &&
+                                                        .value.length &&
                                                     !isChanged
                                                 "
                                             >
@@ -868,6 +889,11 @@
                                                                         i
                                                                     )
                                                                 "
+                                                                [disabled]="
+                                                                    !role.includes(
+                                                                        'ROLE_DOCENTE'
+                                                                    )
+                                                                "
                                                             ></button>
                                                         </li>
                                                     </ul>
@@ -883,10 +909,20 @@
                             *ngIf="role.includes('ROLE_DOCENTE')"
                         >
                             <button
+                                *ngIf="!editMode"
                                 pButton
                                 icon="pi pi-eye"
                                 label="Revisar documentos"
                                 (click)="openModal()"
+                                [disabled]="disableButton || displayModal"
+                            ></button>
+                            <button
+                                *ngIf="editMode"
+                                pButton
+                                icon="pi pi-eye"
+                                label="Revisar documentos"
+                                (click)="openModal()"
+                                [disabled]="displayModal"
                             ></button>
                         </div>
                     </p-fieldset>
@@ -909,6 +945,19 @@
                         legend="Coordinador"
                         styleClass="bg-bluegray-50"
                     >
+                        <div
+                            class="flex flex-1 justify-content-end align-items-center"
+                            *ngIf="isDocente && !isCoordinadorFase1"
+                        >
+                            <button
+                                *ngIf="editMode"
+                                pButton
+                                icon="pi pi-eye"
+                                label="Revisar documentos"
+                                (click)="openModal()"
+                                [disabled]="disableButton || displayModal"
+                            ></button>
+                        </div>
                         <div class="field grid">
                             <div
                                 class="flex flex-column w-full justify-content-center align-items-center row-gap-4"
@@ -1012,7 +1061,10 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="field grid justify-content-center">
+                        <div
+                            *ngIf="solicitudForm.get('conceptoComite').value"
+                            class="field grid justify-content-center"
+                        >
                             <div class="col-5">
                                 <p-card class="w-full m-0">
                                     <div class="text-center mb-4">
@@ -1037,7 +1089,10 @@
                                 </p-card>
                             </div>
                         </div>
-                        <div class="field grid justify-content-center">
+                        <div
+                            *ngIf="solicitudForm.get('conceptoComite').value"
+                            class="field grid justify-content-center"
+                        >
                             <div class="col-5">
                                 <div>
                                     <label class="label-required">Asunto</label>
@@ -1064,11 +1119,11 @@
                             </div>
                         </div>
                         <div
-                            class="field grid justify-content-center"
                             *ngIf="
                                 solicitudForm.get('conceptoComite').value ==
                                 'Avalado'
                             "
+                            class="field grid justify-content-center"
                         >
                             <div class="col-5 mt-2">
                                 <label class="label-required"
@@ -1177,7 +1232,10 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="field grid justify-content-center">
+                        <div
+                            *ngIf="solicitudForm.get('conceptoComite').value"
+                            class="field grid justify-content-center"
+                        >
                             <div
                                 class="col-5 flex flex-nowrap justify-content-between align-items-center"
                             >
@@ -1222,7 +1280,12 @@
                         </div>
                         <div
                             class="flex flex-1 justify-content-end align-items-center"
-                            *ngIf="isCoordinadorFase1 && !isCoordinadorFase2"
+                            *ngIf="
+                                isCoordinadorFase1 &&
+                                !isCoordinadorFase2 &&
+                                solicitudForm.get('conceptoComite').value ==
+                                    'Avalado'
+                            "
                         >
                             <button
                                 *ngIf="editMode"
@@ -1230,6 +1293,7 @@
                                 icon="pi pi-eye"
                                 label="Revisar documentos"
                                 (click)="openModal()"
+                                [disabled]="disableButton || displayModal"
                             ></button>
                         </div>
                     </p-fieldset>
@@ -1251,6 +1315,7 @@
                     icon="pi pi-external-link"
                     label="Adjuntar"
                     (click)="showFormatoB()"
+                    [disabled]="isRespuestaCreated"
                 ></button>
                 <button
                     *ngIf="
@@ -1262,6 +1327,7 @@
                     icon="pi pi-eye"
                     label="Revisar documentos"
                     (click)="openModal()"
+                    [disabled]="!displayModal && isRespuestaCreated"
                 ></button>
                 <button
                     *ngIf="!editMode"
@@ -1272,15 +1338,7 @@
                     [disabled]="!isReviewed"
                 ></button>
                 <button
-                    *ngIf="editMode && role.includes('ROLE_DOCENTE')"
-                    pButton
-                    icon="pi pi-pencil"
-                    [label]="getButtonLabel()"
-                    (click)="updateSolicitudExamen()"
-                    [disabled]="!isReviewed"
-                ></button>
-                <button
-                    *ngIf="editMode && role.includes('ROLE_COORDINADOR')"
+                    *ngIf="editMode"
                     pButton
                     icon="pi pi-pencil"
                     [label]="getButtonLabel()"

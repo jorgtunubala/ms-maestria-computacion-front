@@ -544,10 +544,7 @@ export class RespuestaExamenComponent implements OnInit {
                         respuesta.linkObservaciones,
                         Validators.required,
                     ],
-                    ['anexos' + indexExperto]: [
-                        respuesta.anexos,
-                        Validators.required,
-                    ],
+                    ['anexos' + indexExperto]: [respuesta.anexos],
                     ['idEvaluador' + indexExperto]: [respuesta.idEvaluador],
                     ['tipoEvaluador' + indexExperto]: [respuesta.tipoEvaluador],
                     ['respuestaExamenValoracionExperto' + indexExperto]: [
@@ -592,10 +589,7 @@ export class RespuestaExamenComponent implements OnInit {
                         respuesta.linkObservaciones,
                         Validators.required,
                     ],
-                    ['anexos' + indexDocente]: [
-                        respuesta.anexos,
-                        Validators.required,
-                    ],
+                    ['anexos' + indexDocente]: [respuesta.anexos],
                     ['idEvaluador' + indexDocente]: [respuesta.idEvaluador],
                     ['tipoEvaluador' + indexDocente]: [respuesta.tipoEvaluador],
                     ['respuestaExamenValoracionDocente' + indexDocente]: [
@@ -783,10 +777,12 @@ export class RespuestaExamenComponent implements OnInit {
             ...respuestaMail,
         };
 
-        const anexos = await this.formatFileString(
-            this.selectedFiles[`${formArrayName}.anexos${index}`],
-            'anexos'
-        );
+        const anexosFiles =
+            this.selectedFiles[`${formArrayName}.anexos${index}`];
+
+        const anexos = anexosFiles
+            ? await this.formatFileString(anexosFiles, 'anexos')
+            : null;
 
         const formatoB = await this.formatFileString(
             this.selectedFiles[`${formArrayName}.linkFormatoB${index}`],
@@ -798,9 +794,16 @@ export class RespuestaExamenComponent implements OnInit {
             'linkFormatoC'
         );
 
+        const observaciones = await this.formatFileString(
+            this.selectedFiles[`${formArrayName}.linkObservaciones${index}`],
+            'linkObservaciones'
+        );
+
         respuestaData.anexos = anexos;
         respuestaData.linkFormatoB = formatoB;
         respuestaData.linkFormatoC = formatoC;
+        respuestaData.linkFormatoC = formatoC;
+        respuestaData.linkObservaciones = observaciones;
 
         try {
             const response = await firstValueFrom(
@@ -921,10 +924,12 @@ export class RespuestaExamenComponent implements OnInit {
             ...respuestaMail,
         };
 
-        const anexos = await this.formatFileString(
-            this.selectedFiles[`${formArrayName}.anexos${index}`],
-            'anexos'
-        );
+        const anexosFiles =
+            this.selectedFiles[`${formArrayName}.anexos${index}`];
+
+        const anexos = anexosFiles
+            ? await this.formatFileString(anexosFiles, 'anexos')
+            : null;
 
         const formatoB = await this.formatFileString(
             this.selectedFiles[`${formArrayName}.linkFormatoB${index}`],
@@ -936,9 +941,16 @@ export class RespuestaExamenComponent implements OnInit {
             'linkFormatoC'
         );
 
+        const observaciones = await this.formatFileString(
+            this.selectedFiles[`${formArrayName}.linkObservaciones${index}`],
+            'linkObservaciones'
+        );
+
         respuestaData.anexos = anexos;
         respuestaData.linkFormatoB = formatoB;
         respuestaData.linkFormatoC = formatoC;
+        respuestaData.linkFormatoC = formatoC;
+        respuestaData.linkObservaciones = observaciones;
 
         try {
             const response = await firstValueFrom(
@@ -992,10 +1004,7 @@ export class RespuestaExamenComponent implements OnInit {
                     null,
                     Validators.required,
                 ],
-                ['anexos' + this[formArrayName].length]: [
-                    null,
-                    Validators.required,
-                ],
+                ['anexos' + this[formArrayName].length]: [null],
                 ['tipoEvaluador' + this[formArrayName].length]: [
                     formArrayName === 'expertoEvaluaciones'
                         ? 'EXTERNO'

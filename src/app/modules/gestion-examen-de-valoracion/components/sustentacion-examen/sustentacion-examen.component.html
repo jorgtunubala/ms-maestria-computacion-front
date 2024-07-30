@@ -160,8 +160,8 @@
             <ng-container>
                 <documento-formatoHvaGrado
                     [fileFormatoHvaGrado]="FileEstudioHVAGrado"
-                    (formatoHvaGradoPdfGenerated)="
-                        handleFormatoHvaGradoPdfGenerated($event)
+                    (formatoHvaGradoDocxGenerated)="
+                        handleFormatoHvaGradoDocxGenerated($event)
                     "
                 ></documento-formatoHvaGrado>
             </ng-container>
@@ -293,6 +293,15 @@
                                 icon="pi pi-eye"
                                 label="Revisar documentos"
                                 (click)="openModal()"
+                                [disabled]="disableButton || displayModal"
+                            ></button>
+                            <button
+                                *ngIf="editMode"
+                                pButton
+                                icon="pi pi-eye"
+                                label="Revisar documentos"
+                                (click)="openModal()"
+                                [disabled]="displayModal"
                             ></button>
                         </div>
                         <div class="field grid justify-content-center">
@@ -339,6 +348,11 @@
                                                 type="button"
                                                 (click)="
                                                     onFileClear('linkFormatoF')
+                                                "
+                                                [disabled]="
+                                                    !role.includes(
+                                                        'ROLE_DOCENTE'
+                                                    )
                                                 "
                                             ></button>
                                         </div>
@@ -431,6 +445,11 @@
                                                         'linkMonografia'
                                                     )
                                                 "
+                                                [disabled]="
+                                                    !role.includes(
+                                                        'ROLE_DOCENTE'
+                                                    )
+                                                "
                                             ></button>
                                         </div>
                                         <div
@@ -469,9 +488,7 @@
                         </div>
                         <div class="field grid justify-content-center">
                             <div class="col-5 mt-4">
-                                <label class="label-required"
-                                    >Anexos (.pdf)
-                                </label>
+                                <label>Anexos (.pdf) </label>
                                 <div
                                     style="max-width: 50rem"
                                     class="flex flex-wrap gap-2 mt-2 align-items-start"
@@ -495,7 +512,7 @@
                                                     editMode &&
                                                     sustentacionForm.get(
                                                         'anexos'
-                                                    ).value &&
+                                                    ).value.length &&
                                                     !isChanged
                                                 "
                                             >
@@ -568,6 +585,11 @@
                                                                         i
                                                                     )
                                                                 "
+                                                                [disabled]="
+                                                                    !role.includes(
+                                                                        'ROLE_DOCENTE'
+                                                                    )
+                                                                "
                                                             ></button>
                                                         </li>
                                                     </ul>
@@ -609,6 +631,7 @@
                                     icon="pi pi-eye"
                                     label="Revisar documentos"
                                     (click)="openModal()"
+                                    [disabled]="disableButton || displayModal"
                                 ></button>
                             </div>
                             <div
@@ -705,6 +728,7 @@
                                     icon="pi pi-eye"
                                     label="Revisar documentos"
                                     (click)="openModal()"
+                                    [disabled]="disableButton || displayModal"
                                 ></button>
                             </div>
                             <div
@@ -732,7 +756,10 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="field grid justify-content-center">
+                        <div
+                            *ngIf="sustentacionForm.get('conceptoComite').value"
+                            class="field grid justify-content-center"
+                        >
                             <div class="col-5">
                                 <div>
                                     <label class="label-required">Asunto</label>
@@ -953,8 +980,10 @@
                                 </div>
                             </div>
                         </div>
-
-                        <div class="field grid justify-content-center">
+                        <div
+                            *ngIf="sustentacionForm.get('conceptoComite').value"
+                            class="field grid justify-content-center"
+                        >
                             <div
                                 class="col-5 flex flex-nowrap align-items-center justify-content-between"
                             >
@@ -996,18 +1025,6 @@
                         </p>
                     </div>
                     <p-fieldset legend="Consejo" styleClass="bg-bluegray-50">
-                        <div
-                            class="flex flex-1 justify-content-end align-items-center"
-                            *ngIf="isCoordinadorFase2 && !isCoordinadorFase3"
-                        >
-                            <button
-                                *ngIf="editMode"
-                                pButton
-                                icon="pi pi-eye"
-                                label="Revisar documentos"
-                                (click)="openModal()"
-                            ></button>
-                        </div>
                         <div class="field grid justify-content-center">
                             <div class="col-5">
                                 <label>Nombramiento de Jurados</label>
@@ -1275,6 +1292,19 @@
                                 ></p-calendar>
                             </div>
                         </div>
+                        <div
+                            class="flex flex-1 justify-content-end align-items-center"
+                            *ngIf="isCoordinadorFase2 && !isCoordinadorFase3"
+                        >
+                            <button
+                                *ngIf="editMode"
+                                pButton
+                                icon="pi pi-eye"
+                                label="Revisar documentos"
+                                (click)="openModal()"
+                                [disabled]="displayModal"
+                            ></button>
+                        </div>
                     </p-fieldset>
                 </div>
                 <div
@@ -1298,7 +1328,7 @@
                     <p-fieldset legend="Estudiante" styleClass="bg-bluegray-50">
                         <div
                             class="flex flex-1 justify-content-end align-items-center"
-                            *ngIf="isCoordinadorFase3 && !isEstudiante"
+                            *ngIf="isCoordinadorFase3"
                         >
                             <button
                                 *ngIf="editMode"
@@ -1306,6 +1336,7 @@
                                 icon="pi pi-eye"
                                 label="Revisar documentos"
                                 (click)="openModal()"
+                                [disabled]="displayModal"
                             ></button>
                         </div>
                         <div class="field grid justify-content-center">
@@ -1470,7 +1501,7 @@
                             <div class="col-5">
                                 <label class="label-required"
                                     >Estudio hoja de vida academica para grado
-                                    (PM-FO-4-FOR-27 .pdf)
+                                    (PM-FO-4-FOR-27 .docx)
                                 </label>
                                 <div
                                     style="max-width: 50rem"
@@ -1487,7 +1518,7 @@
                                                 name="linkEstudioHojaVidaAcademicaGrado"
                                                 mode="basic"
                                                 [auto]="true"
-                                                accept=".pdf"
+                                                accept=".docx"
                                                 chooseIcon="pi pi-file"
                                                 class="w-full"
                                                 maxFileSize="5000000"
@@ -1590,6 +1621,7 @@
                                 icon="pi pi-eye"
                                 label="Revisar documentos"
                                 (click)="openModal()"
+                                [disabled]="disableButton || displayModal"
                             ></button>
                         </div>
                         <div class="field grid justify-content-center">
@@ -1753,18 +1785,21 @@
                     icon="pi pi-save"
                     label="Guardar"
                     (click)="createOrUpdateSustentacion()"
-                    [disabled]="role.includes('ROLE_DOCENTE') && !isReviewed"
+                    [disabled]="!isReviewed"
                 ></button>
                 <button
                     *ngIf="
                         editMode &&
                         role.includes('ROLE_COORDINADOR') &&
-                        isCoordinadorFase4
+                        isCoordinadorFase4 &&
+                        sustentacionForm.get('respuestaSustentacion').value ==
+                            'Aprobado'
                     "
                     pButton
                     icon="pi pi-eye"
                     label="Revisar documentos"
                     (click)="openModal()"
+                    [disabled]="disableButton || displayModal"
                 ></button>
                 <button
                     *ngIf="editMode"
@@ -1772,9 +1807,7 @@
                     icon="pi pi-pencil"
                     [label]="getButtonLabel()"
                     (click)="createOrUpdateSustentacion()"
-                    [disabled]="
-                        role.includes('ROLE_COORDINADOR') && !isReviewed
-                    "
+                    [disabled]="!isReviewed"
                 ></button>
             </div>
         </form>

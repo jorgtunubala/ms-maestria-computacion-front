@@ -11,8 +11,8 @@ import { ConfirmationService, MessageService } from 'primeng/api';
     providedIn: 'root',
 })
 export class AsignaturasService {
-    private apiUrl = 'http://localhost:8021/api/asignaturas';
-    private apiUrlDocentes = 'http://localhost:8091/api/docentes';
+    private apiUrl = 'http://dockertest.unicauca.edu.co:4405/api/asignaturas';
+    private apiUrlDocentes = 'http://dockertest.unicauca.edu.co:4402/api/docentes';
 
     private actas: Acta[] = [];
 

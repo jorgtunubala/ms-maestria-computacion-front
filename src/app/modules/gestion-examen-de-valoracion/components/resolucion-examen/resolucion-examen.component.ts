@@ -74,6 +74,7 @@ export class ResolucionExamenComponent implements OnInit {
     displayModal: boolean = false;
     errorMessageShown: boolean = false;
     editMode: boolean = false;
+    disableButton: boolean = true;
     isPdfLoaded: boolean = false;
     isLoading: boolean;
     isDocente: boolean = false;
@@ -85,6 +86,7 @@ export class ResolucionExamenComponent implements OnInit {
     isCoordinadorFase2Created: boolean = false;
     isCoordinadorFase3Created: boolean = false;
     isResolucionValid: boolean = false;
+    isSustentacionCreated: boolean = false;
     isReviewed: boolean = false;
 
     role: string[];
@@ -127,12 +129,12 @@ export class ResolucionExamenComponent implements OnInit {
         this.initializeComponent();
     }
 
-    initializeComponent() {
+    async initializeComponent() {
         this.role = this.autenticacion.getRole();
         this.initForm();
         this.subscribeToObservers();
         if (this.router.url.includes('editar')) {
-            this.loadEditMode();
+            await this.loadEditMode();
         }
         this.checkEstados();
     }
@@ -148,12 +150,12 @@ export class ResolucionExamenComponent implements OnInit {
             idCodirector: [null, Validators.required],
             linkAnteproyectoFinal: [null, Validators.required],
             linkSolicitudComite: [null, Validators.required],
+            conceptoDocumentosCoordinador: [null, Validators.required],
             asuntoCoordinador: [null],
             mensajeCoordinador: [null],
+            conceptoComite: [null, Validators.required],
             asuntoComite: [null],
             mensajeComite: [null],
-            conceptoDocumentosCoordinador: [null, Validators.required],
-            conceptoComite: [null, Validators.required],
             numeroActa: [null, Validators.required],
             fechaActa: [null, Validators.required],
             linkSolicitudConsejoFacultad: [null, Validators.required],
@@ -227,19 +229,20 @@ export class ResolucionExamenComponent implements OnInit {
                 formControls['asuntoCoordinador'].enable();
                 formControls['mensajeCoordinador'].enable();
             }
-
             if (this.isCoordinadorFase1 && !this.isCoordinadorFase2) {
                 this.resolucionForm
                     .get('conceptoComite')
                     .valueChanges.subscribe((value) => {
                         if (value == 'Aprobado') {
-                            this.resolucionForm
-                                .get('linkSolicitudConsejoFacultad')
-                                .enable();
+                            formControls[
+                                'linkSolicitudConsejoFacultad'
+                            ].enable();
+                            this.isReviewed = false;
                         } else if (value == 'No Aprobado') {
-                            this.resolucionForm
-                                .get('linkSolicitudConsejoFacultad')
-                                .disable();
+                            formControls[
+                                'linkSolicitudConsejoFacultad'
+                            ].disable();
+                            this.isReviewed = true;
                         }
                     });
                 formControls['conceptoComite'].enable();
@@ -247,11 +250,8 @@ export class ResolucionExamenComponent implements OnInit {
                 formControls['mensajeComite'].enable();
                 formControls['numeroActa'].enable();
                 formControls['fechaActa'].enable();
-                formControls['linkSolicitudConsejoFacultad'].enable();
-
                 this.getFormatosBEvaluadores();
             }
-
             if (this.isCoordinadorFase2) {
                 formControls['numeroActaConsejoFacultad'].enable();
                 formControls['fechaActaConsejoFacultad'].enable();
@@ -453,6 +453,7 @@ export class ResolucionExamenComponent implements OnInit {
                 this.isCoordinadorFase1 = true;
                 this.isCoordinadorFase2 = true;
                 this.isCoordinadorFase3 = true;
+                this.isSustentacionCreated = true;
                 break;
         }
 
@@ -483,8 +484,6 @@ export class ResolucionExamenComponent implements OnInit {
             this.estado ==
                 EstadoProceso.DEVUELTO_GENERACION_DE_RESOLUCION_POR_COORDINADOR ||
             this.estado ==
-                EstadoProceso.DEVUELTO_GENERACION_DE_RESOLUCION_POR_COMITE ||
-            this.estado ==
                 EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE1_GENERACION_RESOLUCION
         ) {
             filesToConvert.push(
@@ -500,7 +499,9 @@ export class ResolucionExamenComponent implements OnInit {
             );
         } else if (
             this.estado ==
-            EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE2_GENERACION_RESOLUCION
+                EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE2_GENERACION_RESOLUCION ||
+            this.estado ==
+                EstadoProceso.DEVUELTO_GENERACION_DE_RESOLUCION_POR_COMITE
         ) {
             if (this.formatoBEv1 && this.formatoBEv2) {
                 const FileFormatoBEv1 = this.convertBase64ToFile(
@@ -519,6 +520,11 @@ export class ResolucionExamenComponent implements OnInit {
                     {
                         file: this.FileAnteproyectoFinal,
                         fieldName: 'Anteproyecto Final',
+                    },
+                    {
+                        file: this.FileSolicitudComite,
+                        fieldName:
+                            'Solicitud al cómite para resolución de aprobación de trabajo de grado',
                     },
                     {
                         file: this.FileSolicitudConsejo,
@@ -634,6 +640,10 @@ export class ResolucionExamenComponent implements OnInit {
                 const file = new File([byteArray], fieldName, {
                     type: response.type,
                 });
+
+                file
+                    ? (this.disableButton = false)
+                    : (this.disableButton = true);
 
                 switch (fieldName) {
                     case 'linkAnteproyectoFinal':
@@ -765,7 +775,11 @@ export class ResolucionExamenComponent implements OnInit {
 
                         this.resolucionForm
                             .get('fechaActa')
-                            .setValue(actaDate ? new Date(actaDate) : null);
+                            .setValue(
+                                actaDate
+                                    ? new Date(`${actaDate}T00:00:00`)
+                                    : null
+                            );
 
                         this.resolucionForm
                             .get('numeroActa')
@@ -788,7 +802,9 @@ export class ResolucionExamenComponent implements OnInit {
                             .get('fechaActaConsejoFacultad')
                             .setValue(
                                 data?.fechaActaConsejoFacultad
-                                    ? new Date(data.fechaActaConsejoFacultad)
+                                    ? new Date(
+                                          `${data?.fechaActaConsejoFacultad}T00:00:00`
+                                      )
                                     : null
                             );
                     }
@@ -803,15 +819,13 @@ export class ResolucionExamenComponent implements OnInit {
                         this.setup('linkAnteproyectoFinal');
                         this.setup('linkSolicitudComite');
                         if (
-                            this.isCoordinadorFase1 &&
-                            this.isCoordinadorFase2Created
+                            this.isCoordinadorFase2Created &&
+                            this.resolucionForm.get('conceptoComite').value ==
+                                'Aprobado'
                         ) {
                             this.setup('linkSolicitudConsejoFacultad');
                         }
-                        if (
-                            this.isCoordinadorFase2 &&
-                            this.isCoordinadorFase3Created
-                        ) {
+                        if (this.isCoordinadorFase3Created) {
                             this.setup('linkOficioConsejo');
                         }
                     }
@@ -1210,6 +1224,7 @@ export class ResolucionExamenComponent implements OnInit {
     }
 
     onFileClear(field: string) {
+        this.disableButton = true;
         if (field == 'linkAnteproyectoFinal') {
             this.FileAnteproyectoFinal = null;
             this.AnteproyectoFinal.clear();
@@ -1303,6 +1318,7 @@ export class ResolucionExamenComponent implements OnInit {
                         error
                     );
                 });
+            this.disableButton = false;
             return selectedFile;
         }
         return null;

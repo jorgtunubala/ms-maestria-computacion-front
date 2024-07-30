@@ -7,7 +7,7 @@ import { catchError, map } from 'rxjs/operators';
     providedIn: 'root',
 })
 export class DocumentosService {
-    private apiUrl = 'http://localhost:8020'; // URL de la API del servidor
+    private apiUrl = 'http://dockertest.unicauca.edu.co:4404'; // URL de la API del servidor
 
     constructor(private http: HttpClient) {}
 
@@ -46,12 +46,14 @@ export class DocumentosService {
     createDocumentoActa(documento: any): Observable<any> {
         return this.http
             .post<any>(this.apiUrl + '/api/actas', documento, this.httpOptions)
-            .pipe( catchError(error => {
-                // Aquí capturas el error completo y devuelves el mensaje con detalles
-                console.log(error)
-                const errorMessage = `Error al crear el documento tipo Acta: ${error.message}`;
-                return throwError(error);
-            }));
+            .pipe(
+                catchError((error) => {
+                    // Aquí capturas el error completo y devuelves el mensaje con detalles
+                    console.log(error);
+                    const errorMessage = `Error al crear el documento tipo Acta: ${error.message}`;
+                    return throwError(error);
+                })
+            );
     }
 
     // Método para crear un nuevo documento tipo Oficio
@@ -74,7 +76,7 @@ export class DocumentosService {
 
     // Método para actualizar un documento existente
     updateDocumento(documento: any): Observable<any> {
-        console.log(documento)
+        console.log(documento);
         if (documento.tipo === 'Acta') {
             return this.updateDocumentoActa(documento);
         } else if (documento.tipo === 'Oficio') {
@@ -89,7 +91,7 @@ export class DocumentosService {
 
     // Método para actualizar un documento tipo Acta
     private updateDocumentoActa(documento: any): Observable<any> {
-        console.log(documento, documento.idDocMaestria.idDocMaestria)
+        console.log(documento, documento.idDocMaestria.idDocMaestria);
         const url = `${this.apiUrl}/api/actas/${documento.idActa}`;
         return this.http
             .put<any>(url, documento, this.httpOptions)

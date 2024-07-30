@@ -4,7 +4,7 @@ import { catchError, firstValueFrom, of } from 'rxjs';
 import { ConfirmationService, MessageService, PrimeIcons } from 'primeng/api';
 import { DialogService } from 'primeng/dynamicdialog';
 import { Aviso, EstadoProceso } from 'src/app/core/enums/enums';
-import { infoMessage } from 'src/app/core/utils/message-util';
+import { infoMessage, warnMessage } from 'src/app/core/utils/message-util';
 import { LocalStorageService } from 'src/app/shared/services/localstorage.service';
 import { EstudianteService } from 'src/app/shared/services/estudiante.service';
 import { BuscadorEstudiantesComponent } from 'src/app/shared/components/buscador-estudiantes/buscador-estudiantes.component';
@@ -153,6 +153,9 @@ export class BandejaExamenDeValoracionComponent implements OnInit {
                 );
 
                 if (response !== 'true') {
+                    this.messageService.add(
+                        warnMessage('No puedes editar este trabajo de grado.')
+                    );
                     return;
                 }
             } catch (error) {
@@ -352,7 +355,7 @@ export class BandejaExamenDeValoracionComponent implements OnInit {
     onDelete(event: any, id: number) {
         this.confirmationService.confirm({
             target: event.target,
-            message: Aviso.CONFIRMAR_ELIMINAR_REGISTRO,
+            message: Aviso.CONFIRMAR_CANCELAR_SOLICITUD,
             icon: PrimeIcons.EXCLAMATION_TRIANGLE,
             acceptLabel: 'Si, eliminar',
             rejectLabel: 'No',
@@ -366,7 +369,7 @@ export class BandejaExamenDeValoracionComponent implements OnInit {
                 this.trabajoDeGradoService.cancelTrabajoDeGrado(id)
             );
             this.messageService.add(
-                infoMessage(Aviso.SOLICITUD_ELIMINADA_CORRECTAMENTE)
+                infoMessage(Aviso.SOLICITUD_CANCELADA_CORRECTAMENTE)
             );
             await this.listTrabajosDeGradoPorEstados([34]);
         } catch (error) {

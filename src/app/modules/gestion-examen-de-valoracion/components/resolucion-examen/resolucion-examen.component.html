@@ -202,18 +202,6 @@
                         </p>
                     </div>
                     <p-fieldset legend="Docente" styleClass="bg-bluegray-50">
-                        <div
-                            class="flex flex-1 justify-content-end align-items-center"
-                            *ngIf="role.includes('ROLE_DOCENTE')"
-                        >
-                            <button
-                                *ngIf="!editMode"
-                                pButton
-                                icon="pi pi-eye"
-                                label="Revisar documentos"
-                                (click)="openModal()"
-                            ></button>
-                        </div>
                         <div class="field grid justify-content-center">
                             <div class="col-5">
                                 <label class="label-required"
@@ -231,7 +219,7 @@
                         </div>
                         <div class="field grid justify-content-center">
                             <div class="col-5 mt-4">
-                                <label>Director</label>
+                                <label class="label-required">Director</label>
                                 <div class="mt-2" *ngIf="directorSeleccionado">
                                     <p-card class="w-full m-0">
                                         <div
@@ -259,6 +247,11 @@
                                                 class="p-button-secondary"
                                                 icon="pi pi-times"
                                                 (click)="limpiarDirector()"
+                                                [disabled]="
+                                                    !role.includes(
+                                                        'ROLE_DOCENTE'
+                                                    )
+                                                "
                                             ></button>
                                         </div>
                                     </p-card>
@@ -275,7 +268,9 @@
                         </div>
                         <div class="field grid justify-content-center">
                             <div class="col-5 mt-4">
-                                <label>Co-director</label>
+                                <label class="label-required"
+                                    >Co-Director</label
+                                >
                                 <div
                                     class="mt-2"
                                     *ngIf="codirectorSeleccionado"
@@ -306,6 +301,11 @@
                                                 class="p-button-secondary"
                                                 icon="pi pi-times"
                                                 (click)="limpiarCodirector()"
+                                                [disabled]="
+                                                    !role.includes(
+                                                        'ROLE_DOCENTE'
+                                                    )
+                                                "
                                             ></button>
                                         </div>
                                     </p-card>
@@ -369,6 +369,11 @@
                                                 (click)="
                                                     onFileClear(
                                                         'linkAnteproyectoFinal'
+                                                    )
+                                                "
+                                                [disabled]="
+                                                    !role.includes(
+                                                        'ROLE_DOCENTE'
                                                     )
                                                 "
                                             ></button>
@@ -461,6 +466,11 @@
                                                         'linkSolicitudComite'
                                                     )
                                                 "
+                                                [disabled]="
+                                                    !role.includes(
+                                                        'ROLE_DOCENTE'
+                                                    )
+                                                "
                                             ></button>
                                         </div>
                                         <div
@@ -500,6 +510,27 @@
                                 </div>
                             </div>
                         </div>
+                        <div
+                            class="flex flex-1 justify-content-end align-items-center"
+                            *ngIf="role.includes('ROLE_DOCENTE')"
+                        >
+                            <button
+                                *ngIf="!editMode"
+                                pButton
+                                icon="pi pi-eye"
+                                label="Revisar documentos"
+                                (click)="openModal()"
+                                [disabled]="disableButton || displayModal"
+                            ></button>
+                            <button
+                                *ngIf="editMode"
+                                pButton
+                                icon="pi pi-eye"
+                                label="Revisar documentos"
+                                (click)="openModal()"
+                                [disabled]="displayModal"
+                            ></button>
+                        </div>
                     </p-fieldset>
                 </div>
                 <div
@@ -531,6 +562,7 @@
                                     icon="pi pi-eye"
                                     label="Revisar documentos"
                                     (click)="openModal()"
+                                    [disabled]="disableButton || displayModal"
                                 ></button>
                             </div>
                             <div
@@ -616,20 +648,6 @@
                     <p-fieldset legend="Comite" styleClass="bg-bluegray-50">
                         <div class="field grid">
                             <div
-                                class="flex flex-1 justify-content-end align-items-center"
-                                *ngIf="
-                                    isCoordinadorFase1 && !isCoordinadorFase2
-                                "
-                            >
-                                <button
-                                    *ngIf="editMode"
-                                    pButton
-                                    icon="pi pi-eye"
-                                    label="Revisar documentos"
-                                    (click)="openModal()"
-                                ></button>
-                            </div>
-                            <div
                                 class="flex flex-column w-full justify-content-center align-items-center row-gap-4"
                             >
                                 <strong
@@ -656,7 +674,10 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="field grid justify-content-center">
+                        <div
+                            *ngIf="resolucionForm.get('conceptoComite').value"
+                            class="field grid justify-content-center"
+                        >
                             <div class="col-5">
                                 <div>
                                     <label class="label-required">Asunto</label>
@@ -682,7 +703,10 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="field grid justify-content-center">
+                        <div
+                            *ngIf="resolucionForm.get('conceptoComite').value"
+                            class="field grid justify-content-center"
+                        >
                             <div
                                 class="col-5 flex flex-nowrap align-items-center justify-content-between"
                             >
@@ -695,7 +719,7 @@
                                     formControlName="numeroActa"
                                 />
                                 <label class="label-required ml-4"
-                                    >Fecha del Acta</label
+                                    >Fecha del acta</label
                                 >
                                 <p-calendar
                                     class="ml-2"
@@ -706,11 +730,11 @@
                             </div>
                         </div>
                         <div
-                            class="field grid justify-content-center"
                             *ngIf="
                                 resolucionForm.get('conceptoComite').value ==
                                 'Aprobado'
                             "
+                            class="field grid justify-content-center"
                         >
                             <div class="col-5 mt-4">
                                 <label class="label-required"
@@ -800,6 +824,24 @@
                                 </div>
                             </div>
                         </div>
+                        <div
+                            class="flex flex-1 justify-content-end align-items-center"
+                            *ngIf="
+                                isCoordinadorFase1 &&
+                                !isCoordinadorFase2 &&
+                                resolucionForm.get('conceptoComite').value ==
+                                    'Aprobado'
+                            "
+                        >
+                            <button
+                                *ngIf="editMode"
+                                pButton
+                                icon="pi pi-eye"
+                                label="Revisar documentos"
+                                (click)="openModal()"
+                                [disabled]="disableButton || displayModal"
+                            ></button>
+                        </div>
                     </p-fieldset>
                 </div>
                 <div
@@ -819,18 +861,6 @@
                         </p>
                     </div>
                     <p-fieldset legend="Consejo" styleClass="bg-bluegray-50">
-                        <div
-                            class="flex flex-1 justify-content-end align-items-center"
-                            *ngIf="isCoordinadorFase2 && !isCoordinadorFase3"
-                        >
-                            <button
-                                *ngIf="editMode"
-                                pButton
-                                icon="pi pi-eye"
-                                label="Revisar documentos"
-                                (click)="openModal()"
-                            ></button>
-                        </div>
                         <div class="field grid justify-content-center">
                             <div
                                 class="col-5 flex flex-nowrap align-items-center justify-content-between"
@@ -942,6 +972,19 @@
                                 </div>
                             </div>
                         </div>
+                        <div
+                            class="flex flex-1 justify-content-end align-items-center"
+                            *ngIf="isCoordinadorFase2 && !isCoordinadorFase3"
+                        >
+                            <button
+                                *ngIf="editMode"
+                                pButton
+                                icon="pi pi-eye"
+                                label="Revisar documentos"
+                                (click)="openModal()"
+                                [disabled]="disableButton || displayModal"
+                            ></button>
+                        </div>
                     </p-fieldset>
                 </div>
             </div>
@@ -954,7 +997,7 @@
                     icon="pi pi-save"
                     label="Guardar"
                     (click)="createOrUpdateResolucion()"
-                    [disabled]="role.includes('ROLE_DOCENTE') && !isReviewed"
+                    [disabled]="!isReviewed"
                 ></button>
                 <button
                     *ngIf="
@@ -966,6 +1009,7 @@
                     icon="pi pi-eye"
                     label="Revisar documentos"
                     (click)="openModal()"
+                    [disabled]="!displayModal && isSustentacionCreated"
                 ></button>
                 <button
                     *ngIf="editMode"
@@ -973,9 +1017,7 @@
                     icon="pi pi-pencil"
                     [label]="getButtonLabel()"
                     (click)="createOrUpdateResolucion()"
-                    [disabled]="
-                        role.includes('ROLE_COORDINADOR') && !isReviewed
-                    "
+                    [disabled]="!isReviewed"
                 ></button>
             </div>
         </form>

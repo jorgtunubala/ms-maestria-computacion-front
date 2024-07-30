@@ -37,7 +37,7 @@ import { FileUpload } from 'primeng/fileupload';
 export class DocumentoFormatoHvaGradoComponent implements OnInit {
     @Input() fileFormatoHvaGrado: File;
     @Output() formReady = new EventEmitter<FormGroup>();
-    @Output() formatoHvaGradoPdfGenerated = new EventEmitter<File>();
+    @Output() formatoHvaGradoDocxGenerated = new EventEmitter<File>();
 
     @ViewChild('formatoHvaGrado') formatoHvaGrado!: ElementRef;
     @ViewChild('FileFormatoHvaGrado') FileFormatoHvaGrado!: FileUpload;
@@ -197,7 +197,7 @@ export class DocumentoFormatoHvaGradoComponent implements OnInit {
             this.loading = true;
             const file: File = event.files[0];
             if (file) {
-                this.formatoHvaGradoPdfGenerated.emit(file);
+                this.formatoHvaGradoDocxGenerated.emit(file);
                 this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
             }
             this.loading = false;

@@ -14,7 +14,6 @@ import {
     Validators,
 } from '@angular/forms';
 import { MessageService } from 'primeng/api';
-import { FileUpload } from 'primeng/fileupload';
 import { Subscription } from 'rxjs';
 import { saveAs } from 'file-saver';
 import * as pdfMake from 'pdfmake/build/pdfmake';
@@ -53,7 +52,6 @@ export class DocumentoFormatoBComponent implements OnInit {
     @Input() evaluador: Evaluador;
 
     @ViewChild('formatoB') formatoB!: ElementRef;
-    @ViewChild('FormatoB') FormatoB!: FileUpload;
 
     private estudianteSubscription: Subscription;
     private tituloSubscription: Subscription;
@@ -466,33 +464,75 @@ export class DocumentoFormatoBComponent implements OnInit {
         JSZipUtils.default.getBinaryContent(url, callback);
     }
 
-    onAdjuntar(event: any) {
+    onInsertar() {
         if (this.formatoBForm.invalid) {
-            this.FormatoB.clear();
             this.handleWarningMessage(Mensaje.REGISTRE_CAMPOS_OBLIGATORIOS);
             return;
         } else {
             this.loading = true;
-            const fileDoc: File = event.files[0];
-            if (fileDoc) {
-                const docDefinition = this.generateDocDefinition();
-                pdfMake.createPdf(docDefinition).getBlob((pdfBlob: Blob) => {
-                    const filePdf = new File(
-                        [pdfBlob],
-                        `${this.estudianteSeleccionado.codigo} - formatoB.pdf`,
-                        {
-                            type: 'application/pdf',
-                        }
-                    );
-                    this.formatoBDocxGenerated.emit({
-                        doc: fileDoc,
-                        pdf: filePdf,
+            const formValues = this.formatoBForm.value;
+            const docData: any = {
+                fecha: this.getFormattedDate(),
+                programa: 'Maestría en Computación',
+                estudiante: formValues.estudiante,
+                titulo: formValues.titulo,
+                jurado:
+                    this.evaluador.nombres +
+                    ', ' +
+                    this.evaluador.correo +
+                    ',' +
+                    this.evaluador.universidad,
+                juradoFirma:
+                    this.evaluador.nombres + ', ' + this.evaluador.universidad,
+            };
+
+            let fileDoc: Blob;
+
+            this.loadFile(
+                'assets/plantillas/formatoB.docx',
+                (error: any, content: any) => {
+                    if (error) {
+                        throw error;
+                    }
+                    const zip = new PizZip(content);
+                    const doc = new Docxtemplater(zip, {
+                        paragraphLoop: true,
+                        linebreaks: true,
                     });
-                    this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
+
+                    doc.setData(docData);
+
+                    try {
+                        doc.render();
+                    } catch (error) {
+                        console.error(error);
+                        throw error;
+                    }
+
+                    fileDoc = doc.getZip().generate({
+                        type: 'blob',
+                        mimeType:
+                            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                    });
+                }
+            );
+
+            const docDefinition = this.generateDocDefinition();
+            pdfMake.createPdf(docDefinition).getBlob((pdfBlob: Blob) => {
+                const filePdf = new File(
+                    [pdfBlob],
+                    `${this.estudianteSeleccionado.codigo} - formatoB.pdf`,
+                    {
+                        type: 'application/pdf',
+                    }
+                );
+                this.formatoBDocxGenerated.emit({
+                    doc: fileDoc,
+                    pdf: filePdf,
                 });
-            }
+                this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
+            });
             this.loading = false;
-            this.FormatoB.clear();
         }
     }
 

@@ -81,6 +81,7 @@ export class SolicitudExamenComponent implements OnInit {
     displayFormatoA: boolean = false;
     displayFormatoOficioDirigidoEvaluadores: boolean = false;
     displayModal: boolean = false;
+    disableButton: boolean = true;
     errorMessageShown: boolean = false;
     editMode: boolean = false;
     isLoading: boolean;
@@ -94,6 +95,7 @@ export class SolicitudExamenComponent implements OnInit {
     isPdfLoaded: boolean = false;
     isSolicitudValid: boolean = false;
     isRespuestaValid: boolean = false;
+    isRespuestaCreated: boolean = false;
     isResolucionValid: boolean = false;
     isSustentacionValid: boolean = false;
     isReviewed: boolean = false;
@@ -174,7 +176,7 @@ export class SolicitudExamenComponent implements OnInit {
             linkFormatoA: [null, Validators.required],
             linkFormatoD: [null, Validators.required],
             linkFormatoE: [null, Validators.required],
-            anexos: [[], Validators.required],
+            anexos: [[]],
             idEvaluadorExterno: [null, Validators.required],
             idEvaluadorInterno: [null, Validators.required],
             asuntoCoordinador: [null],
@@ -218,6 +220,7 @@ export class SolicitudExamenComponent implements OnInit {
                         .setValue(
                             'Envio documentos para que por favor los revisen y den respuesta oportuna.'
                         );
+                    this.isReviewed = false;
                 }
                 if (value == 'No Avalado') {
                     this.solicitudForm
@@ -226,8 +229,9 @@ export class SolicitudExamenComponent implements OnInit {
                     this.solicitudForm
                         .get('mensajeComite')
                         .setValue(
-                            'Por favor corregir el apartado de metolodogia y dar respuesta oportuna a las correciones.'
+                            'Por favor corregir el apartado de x y dar respuesta oportuna a las correciones.'
                         );
+                    this.isReviewed = true;
                 }
             });
 
@@ -511,48 +515,43 @@ export class SolicitudExamenComponent implements OnInit {
         }
 
         if (role.includes('ROLE_DOCENTE')) {
-            this.solicitudForm.get('titulo').enable();
-            this.solicitudForm.get('linkFormatoA').enable();
-            this.solicitudForm.get('linkFormatoD').enable();
-            this.solicitudForm.get('linkFormatoE').enable();
-            this.solicitudForm.get('anexos').enable();
-            this.solicitudForm.get('idEvaluadorExterno').enable();
-            this.solicitudForm.get('idEvaluadorInterno').enable();
+            formControls['titulo'].enable();
+            formControls['linkFormatoA'].enable();
+            formControls['linkFormatoD'].enable();
+            formControls['linkFormatoE'].enable();
+            formControls['anexos'].enable();
+            formControls['idEvaluadorExterno'].enable();
+            formControls['idEvaluadorInterno'].enable();
         }
 
         if (role.includes('ROLE_COORDINADOR')) {
             if (this.isDocente && !this.isCoordinadorFase1) {
-                this.solicitudForm
-                    .get('conceptoCoordinadorDocumentos')
-                    .enable();
-                this.solicitudForm.get('asuntoCoordinador').enable();
-                this.solicitudForm.get('mensajeCoordinador').enable();
+                formControls['conceptoCoordinadorDocumentos'].enable();
+                formControls['asuntoCoordinador'].enable();
+                formControls['mensajeCoordinador'].enable();
+                this.disableButton = false;
             }
             if (this.isCoordinadorFase1) {
                 this.solicitudForm
                     .get('conceptoComite')
                     .valueChanges.subscribe((value) => {
                         if (value == 'Avalado') {
-                            this.solicitudForm
-                                .get('linkOficioDirigidoEvaluadores')
-                                .enable();
-                            this.solicitudForm
-                                .get('fechaMaximaEvaluacion')
-                                .enable();
+                            formControls[
+                                'linkOficioDirigidoEvaluadores'
+                            ].enable();
+                            formControls['fechaMaximaEvaluacion'].enable();
                         } else if (value == 'No Avalado') {
-                            this.solicitudForm
-                                .get('linkOficioDirigidoEvaluadores')
-                                .disable();
-                            this.solicitudForm
-                                .get('fechaMaximaEvaluacion')
-                                .disable();
+                            formControls[
+                                'linkOficioDirigidoEvaluadores'
+                            ].disable();
+                            formControls['fechaMaximaEvaluacion'].disable();
                         }
                     });
-                this.solicitudForm.get('conceptoComite').enable();
-                this.solicitudForm.get('asuntoComite').enable();
-                this.solicitudForm.get('mensajeComite').enable();
-                this.solicitudForm.get('numeroActa').enable();
-                this.solicitudForm.get('fechaActa').enable();
+                formControls['conceptoComite'].enable();
+                formControls['asuntoComite'].enable();
+                formControls['mensajeComite'].enable();
+                formControls['numeroActa'].enable();
+                formControls['fechaActa'].enable();
             }
         }
     }
@@ -598,7 +597,6 @@ export class SolicitudExamenComponent implements OnInit {
                 this.isDocente = true;
                 this.isCoordinadorFase1 = false;
                 this.isCoordinadorFase2 = false;
-                this.isReviewed = true;
                 break;
             case EstadoProceso.DEVUELTO_EXAMEN_DE_VALORACION_POR_COORDINADOR:
                 this.messageService.add({
@@ -610,7 +608,6 @@ export class SolicitudExamenComponent implements OnInit {
                 this.isDocente = true;
                 this.isCoordinadorFase1 = false;
                 this.isCoordinadorFase2 = false;
-                this.isReviewed = true;
                 break;
             case EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR:
                 this.isDocente = true;
@@ -637,6 +634,7 @@ export class SolicitudExamenComponent implements OnInit {
                 this.isDocente = true;
                 this.isCoordinadorFase1 = true;
                 this.isCoordinadorFase2 = true;
+                this.isRespuestaCreated = true;
                 break;
         }
 
@@ -936,7 +934,11 @@ export class SolicitudExamenComponent implements OnInit {
                         this.estado ==
                             EstadoProceso.DEVUELTO_EXAMEN_DE_VALORACION_POR_COMITE ||
                         this.estado ==
-                            EstadoProceso.PENDIENTE_REVISION_COORDINADOR)
+                            EstadoProceso.PENDIENTE_REVISION_COORDINADOR ||
+                        this.estado ==
+                            EstadoProceso.EXAMEN_DE_VALORACION_NO_APROBADO_EVALUADOR_1 ||
+                        this.estado ==
+                            EstadoProceso.EXAMEN_DE_VALORACION_APROBADO_Y_NO_APROBADO_EVALUADOR)
                 ) {
                     const formatoA = await this.formatFileString(
                         this.FileFormatoA,
@@ -1329,10 +1331,7 @@ export class SolicitudExamenComponent implements OnInit {
                 this.router.navigate(['examen-de-valoracion']);
             }
         } catch (e) {
-            console.error(e);
-            this.messageService.add(
-                errorMessage('Error al guardar los datos en el backend')
-            );
+            this.handlerResponseException(e);
             this.isLoading = false;
         }
     }
@@ -1384,6 +1383,7 @@ export class SolicitudExamenComponent implements OnInit {
                 const file = new File([byteArray], fieldName, {
                     type: response.type,
                 });
+
                 switch (fieldName) {
                     case 'linkFormatoA':
                         this.FileFormatoA = file;
@@ -1519,7 +1519,11 @@ export class SolicitudExamenComponent implements OnInit {
 
                         this.solicitudForm
                             .get('fechaActa')
-                            .setValue(actaDate ? new Date(actaDate) : null);
+                            .setValue(
+                                actaDate
+                                    ? new Date(`${actaDate}T00:00:00`)
+                                    : null
+                            );
 
                         this.solicitudForm
                             .get('numeroActa')
@@ -1533,11 +1537,16 @@ export class SolicitudExamenComponent implements OnInit {
                                     : 'No Avalado'
                             );
 
+                        const fechaMaximaEvaluacion =
+                            data?.fechaMaximaEvaluacion;
+
                         this.solicitudForm
                             .get('fechaMaximaEvaluacion')
                             .setValue(
-                                data?.fechaMaximaEvaluacion
-                                    ? new Date(data.fechaMaximaEvaluacion)
+                                fechaMaximaEvaluacion
+                                    ? new Date(
+                                          `${fechaMaximaEvaluacion}T00:00:00`
+                                      )
                                     : null
                             );
                     }
@@ -1558,7 +1567,11 @@ export class SolicitudExamenComponent implements OnInit {
                         this.setup('linkFormatoD');
                         this.setup('linkFormatoE');
                         this.setup('anexos');
-                        if (this.isCoordinadorFase2Created) {
+                        if (
+                            this.isCoordinadorFase2Created &&
+                            this.solicitudForm.get('conceptoComite').value ==
+                                'Avalado'
+                        ) {
                             this.setup('linkOficioDirigidoEvaluadores');
                         }
                     }
@@ -1589,6 +1602,7 @@ export class SolicitudExamenComponent implements OnInit {
     }
 
     onFileClear(field: string) {
+        this.disableButton = true;
         if (field == 'linkFormatoA') {
             this.FileFormatoA = null;
             this.FormatoA.clear();
@@ -1674,6 +1688,7 @@ export class SolicitudExamenComponent implements OnInit {
                         error
                     );
                 });
+            this.disableButton = false;
             return selectedFile;
         }
         return null;

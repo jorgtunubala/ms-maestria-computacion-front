@@ -1,6 +1,6 @@
 import {
-    dev_login,
     environment,
+    gestion_autenticacion,
     gestion_docentes_estudiantes,
     gestion_egresados,
     gestion_expertos,
@@ -12,7 +12,7 @@ export function backend(path: string): string {
 }
 
 export function backendAuth(path: string): string {
-    return dev_login.api_url.concat(path);
+    return gestion_autenticacion.api_url.concat(path);
 }
 
 export function backendGestionExpertos(path: string): string {

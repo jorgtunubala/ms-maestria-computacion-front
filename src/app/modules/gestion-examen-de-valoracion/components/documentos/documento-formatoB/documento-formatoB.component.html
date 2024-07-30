@@ -171,23 +171,20 @@
         </div>
     </form>
     <div class="flex align-items-center justify-content-end mt-4 column-gap-2">
-        <p-fileUpload
-            #FormatoB
-            mode="basic"
-            [auto]="true"
-            accept=".docx"
-            chooseIcon="pi pi-paperclip"
-            maxFileSize="5000000"
-            (onSelect)="onAdjuntar($event)"
-            chooseLabel="Adjuntar"
+        <button
+            pButton
+            type="button"
+            icon="pi pi-upload"
+            label="Insertar"
+            (click)="onInsertar()"
+            [loading]="loading"
             [pTooltip]="
                 !!formatoBEv1 || !!formatoBEv2
                     ? 'Ya se ha adjuntado el documento.'
-                    : 'Revisa el documento, como siguiente paso: adjuntar.'
+                    : ''
             "
             tooltipPosition="top"
-        >
-        </p-fileUpload>
+        ></button>
         <button
             pButton
             type="button"
@@ -195,7 +192,6 @@
             label="Descargar"
             (click)="onDownload()"
             [loading]="loading"
-            [disabled]="!!formatoBEv1 || !!formatoBEv2"
         ></button>
     </div>
 </div>

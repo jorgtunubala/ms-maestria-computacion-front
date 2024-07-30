@@ -22,13 +22,14 @@ export enum Aviso {
     RESPUESTA_ACTUALIZADA_CORRECTAMENTE = 'Respuesta actualizada correctamente',
 
     SOLICITUD_SIN_MODIFICAR = 'Selecciona modificar informacion (*)',
-    SOLICITUD_ELIMINADA_CORRECTAMENTE = 'Solicitud eliminada correctamente',
+    SOLICITUD_CANCELADA_CORRECTAMENTE = 'Solicitud cancelada correctamente',
 
     CREDENCIALES_INCORRECTAS = 'Credenciales incorrectas',
     CORREGIR_CAMPOS_OBLIGATORIOS = 'Con correciones pendientes',
     CAMPOS_COORDINADOR_PENDIENTE = 'Pendiente subir informacion de coordinador (*)',
     CAMPOS_DOCENTE_PENDIENTE = 'Pendiente subir informacion de docente (*)',
 
+    CONFIRMAR_CANCELAR_SOLICITUD = '¿Está seguro de cancelar esta solicitud?',
     CONFIRMAR_ELIMINAR_REGISTRO = '¿Está seguro de eliminar este registro?',
     ARCHIVO_ELIMINADO_CORRECTAMENTE = 'Archivo eliminado correctamente',
     ARCHIVO_DEMASIADO_GRANDE = 'El tamaño del archivo excede el límite máximo de 5 MB.',

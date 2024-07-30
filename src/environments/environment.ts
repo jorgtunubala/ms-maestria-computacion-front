@@ -7,29 +7,29 @@ export const environment = {
     api_url: 'http://localhost:8091/api/',
 };
 
-export const dev_login = {
+export const gestion_autenticacion = {
     production: false,
-    api_url: 'http://localhost:8080/api/',
+    api_url: 'http://dockertest.unicauca.edu.co:4400/api/',
 };
 
 export const gestion_expertos = {
     production: false,
-    api_url: 'http://localhost:8082/api/',
+    api_url: 'http://dockertest.unicauca.edu.co:4402/api/',
 };
 
 export const gestion_egresados = {
     production: false,
-    api_url: 'http://localhost:8084/api/',
+    api_url: 'http://dockertest.unicauca.edu.co:4403/api/',
 };
 
 export const gestion_trabajo_grado = {
     production: false,
-    api_url: 'http://localhost:8083/api/',
+    api_url: 'http://dockertest.unicauca.edu.co:4401/api/',
 };
 
 export const gestion_docentes_estudiantes = {
     production: false,
-    api_url: 'http://localhost:8082/api/',
+    api_url: 'http://dockertest.unicauca.edu.co:4402/api/',
 };
 /*
  * For easier debugging in development mode, you can import the following file

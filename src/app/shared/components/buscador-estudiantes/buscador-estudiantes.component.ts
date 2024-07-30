@@ -46,9 +46,22 @@ export class BuscadorEstudiantesComponent implements OnInit {
         if (filter?.trim().length > 0) {
             this.estudianteService.listEstudiantes().subscribe({
                 next: (response) => {
-                    this.estudiantes = response.filter((e) =>
-                        e.nombre.includes(filter.trim())
-                    );
+                    const lowercasedFilter = filter.trim().toLowerCase();
+
+                    this.estudiantes = response.filter((e) => {
+                        const fullName =
+                            `${e.nombre} ${e.apellido}`.toLowerCase();
+                        return fullName.includes(lowercasedFilter);
+                    });
+                },
+                error: (error: any) => {
+                    this.handlerResponseException(error);
+                },
+            });
+        } else {
+            this.estudianteService.listEstudiantes().subscribe({
+                next: (response) => {
+                    this.estudiantes = response;
                 },
                 error: (error: any) => {
                     this.handlerResponseException(error);
@@ -68,7 +81,7 @@ export class BuscadorEstudiantesComponent implements OnInit {
     }
 
     handlerResponseException(response: any) {
-        if (response.status != 501) return;
+        if (response.status != 500 && response.status != 409) return;
         const mapException = mapResponseException(response.error);
         mapException.forEach((value, _) => {
             this.messageService.add(errorMessage(value));

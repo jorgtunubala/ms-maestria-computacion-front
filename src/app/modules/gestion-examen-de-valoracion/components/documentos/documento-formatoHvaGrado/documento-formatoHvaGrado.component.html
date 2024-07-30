@@ -241,14 +241,14 @@
                 #FileFormatoHvaGrado
                 mode="basic"
                 [auto]="true"
-                accept=".pdf"
+                accept=".docx"
                 chooseIcon="pi pi-paperclip"
                 maxFileSize="5000000"
                 chooseLabel="Adjuntar"
                 [pTooltip]="
                     !!fileFormatoHvaGrado
                         ? 'Ya se ha adjuntado el documento.'
-                        : 'Descargar documento, rellenar/firmar y adjuntar en PDF.'
+                        : 'Descargar documento, rellenar/firmar y adjuntar.'
                 "
                 tooltipPosition="top"
                 (onSelect)="onAdjuntar($event)"
