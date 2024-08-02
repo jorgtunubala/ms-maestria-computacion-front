@@ -5,8 +5,13 @@
                 <span
                     class="font-medium w-full text-center"
                     *ngIf="!estudianteSeleccionado"
-                    >PPor favor, seleccione su nombre para continuar</span
                 >
+                    {{
+                        role.includes("ROLE_ESTUDIANTE") === "estudiante"
+                            ? "Por favor, seleccione su nombre para continuar"
+                            : "Por favor, seleccione un estudiante para continuar"
+                    }}
+                </span>
                 <span
                     class="font-bold w-full text-center"
                     *ngIf="estudianteSeleccionado"
@@ -18,6 +23,17 @@
                     <div class="col-2 card-label">
                         <div class="flex justify-content-center">
                             <button
+                                *ngIf="role.includes('ROLE_COORDINADOR')"
+                                pButton
+                                icon="pi pi-plus"
+                                label="Seleccionar Estudiante"
+                                (click)="onSeleccionarEstudiante()"
+                            ></button>
+                            <button
+                                *ngIf="
+                                    role.includes('ROLE_ESTUDIANTE') &&
+                                    !estudianteSeleccionado
+                                "
                                 pButton
                                 icon="pi pi-plus"
                                 label="Seleccionar Estudiante"

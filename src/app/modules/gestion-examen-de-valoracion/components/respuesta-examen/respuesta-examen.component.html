@@ -567,6 +567,11 @@
                                                                     i
                                                                 )
                                                             "
+                                                            [disabled]="
+                                                                !!anexosFilesExpertos[
+                                                                    i
+                                                                ]?.length
+                                                            "
                                                         >
                                                             <ng-template
                                                                 pTemplate="content"
@@ -1235,6 +1240,11 @@
                                                                     'docenteEvaluaciones',
                                                                     i
                                                                 )
+                                                            "
+                                                            [disabled]="
+                                                                !!anexosFilesDocentes[
+                                                                    i
+                                                                ]?.length
                                                             "
                                                         >
                                                             <ng-template

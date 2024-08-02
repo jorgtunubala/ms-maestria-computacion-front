@@ -74,7 +74,6 @@ export class ResolucionExamenComponent implements OnInit {
     displayModal: boolean = false;
     errorMessageShown: boolean = false;
     editMode: boolean = false;
-    disableButton: boolean = true;
     isPdfLoaded: boolean = false;
     isLoading: boolean;
     isDocente: boolean = false;
@@ -86,6 +85,7 @@ export class ResolucionExamenComponent implements OnInit {
     isCoordinadorFase2Created: boolean = false;
     isCoordinadorFase3Created: boolean = false;
     isResolucionValid: boolean = false;
+    isResolucionCreated: boolean = false;
     isSustentacionCreated: boolean = false;
     isReviewed: boolean = false;
 
@@ -454,6 +454,7 @@ export class ResolucionExamenComponent implements OnInit {
                 this.isCoordinadorFase2 = true;
                 this.isCoordinadorFase3 = true;
                 this.isSustentacionCreated = true;
+                this.isResolucionCreated = true;
                 break;
         }
 
@@ -640,10 +641,6 @@ export class ResolucionExamenComponent implements OnInit {
                 const file = new File([byteArray], fieldName, {
                     type: response.type,
                 });
-
-                file
-                    ? (this.disableButton = false)
-                    : (this.disableButton = true);
 
                 switch (fieldName) {
                     case 'linkAnteproyectoFinal':
@@ -1224,7 +1221,6 @@ export class ResolucionExamenComponent implements OnInit {
     }
 
     onFileClear(field: string) {
-        this.disableButton = true;
         if (field == 'linkAnteproyectoFinal') {
             this.FileAnteproyectoFinal = null;
             this.AnteproyectoFinal.clear();
@@ -1318,7 +1314,6 @@ export class ResolucionExamenComponent implements OnInit {
                         error
                     );
                 });
-            this.disableButton = false;
             return selectedFile;
         }
         return null;

@@ -16,7 +16,6 @@ import {
     FormGroup,
     Validators,
 } from '@angular/forms';
-import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { Subscription, firstValueFrom } from 'rxjs';
 import * as PizZip from 'pizzip';
@@ -32,7 +31,6 @@ import {
 } from 'src/app/core/utils/message-util';
 import { TrabajoDeGradoService } from '../../../services/trabajoDeGrado.service';
 import { ResolucionService } from '../../../services/resolucion.service';
-import { FileUpload } from 'primeng/fileupload';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 @Component({
@@ -44,10 +42,9 @@ export class DocumentoFormatoHvaComponent implements OnInit {
     @Input() trabajoDeGradoId: number;
     @Input() fileFormatoHva: File;
     @Output() formReady = new EventEmitter<FormGroup>();
-    @Output() formatoHvaPdfGenerated = new EventEmitter<File>();
+    @Output() formatoHvaDocxGenerated = new EventEmitter<Blob>();
 
     @ViewChild('formatoHva') formatoHva!: ElementRef;
-    @ViewChild('FileFormatoHva') FileFormatoHva!: FileUpload;
 
     estudianteSubscription: Subscription;
     tituloSubscription: Subscription;
@@ -85,7 +82,6 @@ export class DocumentoFormatoHvaComponent implements OnInit {
 
     constructor(
         private fb: FormBuilder,
-        private router: Router,
         private messageService: MessageService,
         private trabajoDeGradoService: TrabajoDeGradoService,
         private resolucionService: ResolucionService
@@ -326,20 +322,68 @@ export class DocumentoFormatoHvaComponent implements OnInit {
         }
     }
 
-    onAdjuntar(event: any) {
+    onInsertar() {
         if (this.formatoHvaForm.invalid) {
-            this.FileFormatoHva.clear();
             this.handleWarningMessage(Mensaje.REGISTRE_CAMPOS_OBLIGATORIOS);
             return;
         } else {
             this.loading = true;
-            const file: File = event.files[0];
-            if (file) {
-                this.formatoHvaPdfGenerated.emit(file);
-                this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
-            }
+            const formValues = this.formatoHvaForm.value;
+            const transformedData = this.transformFormValues(formValues);
+
+            const docData: any = {
+                estudiante: transformedData.estudiante,
+                codigo: transformedData.codigo,
+                planEstudios: transformedData.planEstudios,
+                fechaRevision: this.fechaActual,
+                pruebaSuperada: transformedData.pruebaSuperada.value,
+                minimoArticulo: transformedData.minimoArticulo,
+                creditosCumplidos: transformedData.creditosCumplidos,
+                titulo: transformedData.titulo,
+                director: transformedData.director,
+                codirector: transformedData.codirector,
+                coordinador: transformedData.coordinador,
+            };
+
+            Object.keys(transformedData).forEach((key) => {
+                if (key.startsWith('asignatura')) {
+                    docData[key] = transformedData[key] || 'NA';
+                }
+            });
+
+            let fileDoc: Blob;
+
+            this.loadFile(
+                'assets/plantillas/formatoHva.docx',
+                (error: any, content: any) => {
+                    if (error) {
+                        throw error;
+                    }
+                    const zip = new PizZip(content);
+                    const doc = new Docxtemplater(zip, {
+                        paragraphLoop: true,
+                        linebreaks: true,
+                    });
+
+                    doc.setData(docData);
+
+                    try {
+                        doc.render();
+                    } catch (error) {
+                        console.error(error);
+                        throw error;
+                    }
+
+                    fileDoc = doc.getZip().generate({
+                        type: 'blob',
+                        mimeType:
+                            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                    });
+                    this.formatoHvaDocxGenerated.emit(fileDoc);
+                    this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
+                }
+            );
             this.loading = false;
-            this.FileFormatoHva.clear();
         }
     }
 

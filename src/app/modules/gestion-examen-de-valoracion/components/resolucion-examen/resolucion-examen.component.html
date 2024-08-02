@@ -1,7 +1,7 @@
 <p-panel *ngIf="!isLoading; else spinner">
     <ng-template pTemplate="header">
         <span class="font-bold w-full text-center" style="font-size: 20px"
-            >Examen de Valoración</span
+            >Generación de resolución</span
         >
     </ng-template>
     <div class="col flex align-items-center justify-content-center">
@@ -260,7 +260,7 @@
                                     <button
                                         pButton
                                         icon="pi pi-plus"
-                                        label="Seleccionar Evaluador"
+                                        label="Seleccionar"
                                         (click)="onSeleccionarDirector()"
                                     ></button>
                                 </div>
@@ -317,7 +317,7 @@
                                     <button
                                         pButton
                                         icon="pi pi-plus"
-                                        label="Seleccionar Evaluador"
+                                        label="Seleccionar"
                                         (click)="onSeleccionarCodirector()"
                                     ></button>
                                 </div>
@@ -515,15 +515,6 @@
                             *ngIf="role.includes('ROLE_DOCENTE')"
                         >
                             <button
-                                *ngIf="!editMode"
-                                pButton
-                                icon="pi pi-eye"
-                                label="Revisar documentos"
-                                (click)="openModal()"
-                                [disabled]="disableButton || displayModal"
-                            ></button>
-                            <button
-                                *ngIf="editMode"
                                 pButton
                                 icon="pi pi-eye"
                                 label="Revisar documentos"
@@ -562,7 +553,7 @@
                                     icon="pi pi-eye"
                                     label="Revisar documentos"
                                     (click)="openModal()"
-                                    [disabled]="disableButton || displayModal"
+                                    [disabled]="displayModal"
                                 ></button>
                             </div>
                             <div
@@ -785,6 +776,7 @@
                                                         'linkSolicitudConsejoFacultad'
                                                     )
                                                 "
+                                                [disabled]="isResolucionCreated"
                                             ></button>
                                         </div>
                                         <div
@@ -839,7 +831,7 @@
                                 icon="pi pi-eye"
                                 label="Revisar documentos"
                                 (click)="openModal()"
-                                [disabled]="disableButton || displayModal"
+                                [disabled]="displayModal"
                             ></button>
                         </div>
                     </p-fieldset>
@@ -933,6 +925,7 @@
                                                         'linkOficioConsejo'
                                                     )
                                                 "
+                                                [disabled]="isResolucionCreated"
                                             ></button>
                                         </div>
                                         <div
@@ -982,7 +975,7 @@
                                 icon="pi pi-eye"
                                 label="Revisar documentos"
                                 (click)="openModal()"
-                                [disabled]="disableButton || displayModal"
+                                [disabled]="displayModal"
                             ></button>
                         </div>
                     </p-fieldset>

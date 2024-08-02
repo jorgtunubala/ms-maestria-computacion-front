@@ -26,7 +26,6 @@ import { MessageService } from 'primeng/api';
 import { DialogService } from 'primeng/dynamicdialog';
 import { FileUpload } from 'primeng/fileupload';
 import { Aviso, EstadoProceso, Mensaje } from 'src/app/core/enums/enums';
-import { mapResponseException } from 'src/app/core/utils/exception-util';
 import {
     errorMessage,
     infoMessage,
@@ -83,7 +82,6 @@ export class SustentacionExamenComponent implements OnInit {
     editMode: boolean = false;
     errorMessageShown: boolean = false;
     displayModal: boolean = false;
-    disableButton: boolean = true;
     displayFormatoHVA: boolean = false;
     displayFormatoHVAGrado: boolean = false;
     displayFormatoF: boolean = false;
@@ -102,6 +100,7 @@ export class SustentacionExamenComponent implements OnInit {
     isCoordinadorFase2Created: boolean = false;
     isCoordinadorFase3Created: boolean = false;
     isCoordinadorFase4Created: boolean = false;
+    isSustentacionCreated: boolean = false;
     isLoading: boolean = false;
     isChanged: boolean = false;
     isReviewed: boolean = false;
@@ -300,7 +299,6 @@ export class SustentacionExamenComponent implements OnInit {
                 formControls['asuntoCoordinador'].enable();
                 formControls['mensajeCoordinador'].enable();
                 formControls['conceptoCoordinador'].enable();
-                this.disableButton = false;
             }
 
             if (this.isCoordinadorFase1 && !this.isCoordinadorFase2) {
@@ -685,6 +683,7 @@ export class SustentacionExamenComponent implements OnInit {
                 this.isCoordinadorFase2 = true;
                 this.isCoordinadorFase3 = true;
                 this.isCoordinadorFase4 = true;
+                this.isSustentacionCreated = true;
                 break;
 
             case EstadoProceso.SUSTENTACION_NO_APROBADA:
@@ -700,6 +699,7 @@ export class SustentacionExamenComponent implements OnInit {
                 this.isCoordinadorFase2 = true;
                 this.isCoordinadorFase3 = true;
                 this.isCoordinadorFase4 = true;
+                this.isSustentacionCreated = true;
                 break;
 
             case EstadoProceso.SUSTENTACION_APLAZADA:
@@ -715,6 +715,7 @@ export class SustentacionExamenComponent implements OnInit {
                 this.isCoordinadorFase2 = true;
                 this.isCoordinadorFase3 = true;
                 this.isCoordinadorFase4 = true;
+                this.isSustentacionCreated = true;
                 break;
 
             default:
@@ -744,10 +745,6 @@ export class SustentacionExamenComponent implements OnInit {
         ) {
             filesToConvert.push(
                 {
-                    file: this.FileMonografia,
-                    fieldName: 'Monografia',
-                },
-                {
                     file: this.FileFormatoF,
                     fieldName: 'Formato F',
                 },
@@ -764,10 +761,6 @@ export class SustentacionExamenComponent implements OnInit {
         ) {
             filesToConvert.push(
                 {
-                    file: this.FileMonografia,
-                    fieldName: 'Monografia',
-                },
-                {
                     file: this.FileFormatoF,
                     fieldName: 'Formato F',
                 },
@@ -782,16 +775,10 @@ export class SustentacionExamenComponent implements OnInit {
             this.estado ==
             EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE2_SUSTENTACION
         ) {
-            filesToConvert.push(
-                {
-                    file: this.FileFormatoG,
-                    fieldName: 'Formato G',
-                },
-                {
-                    file: this.FileEstudioHVA,
-                    fieldName: 'Estudio Hoja de Vida Academica',
-                }
-            );
+            filesToConvert.push({
+                file: this.FileFormatoG,
+                fieldName: 'Formato G',
+            });
         }
 
         if (
@@ -928,25 +915,25 @@ export class SustentacionExamenComponent implements OnInit {
         this.displayFormatoG = true;
     }
 
-    handleFormatoHvaPdfGenerated(file: File) {
-        const pdfFile = new File([file], 'EstudioHojaVidaAcademica.pdf', {
-            type: 'application/pdf',
+    handleFormatoHvaDocxGenerated(blob: Blob) {
+        const docxFile = new File([blob], 'EstudioHojaVidaAcademica.docx', {
+            type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         });
-        this.FileEstudioHVA = pdfFile;
-        this.convertFileToBase64(pdfFile)
+        this.FileEstudioHVA = docxFile;
+        this.convertFileToBase64(docxFile)
             .then((base64) => {
                 this.sustentacionForm
                     .get('linkEstudioHojaVidaAcademica')
-                    .setValue(`linkEstudioHojaVidaAcademica.pdf-${base64}`);
+                    .setValue(`linkEstudioHojaVidaAcademica.docx-${base64}`);
             })
             .catch((error) => {
                 console.error('Error al convertir el archivo a base64:', error);
             });
     }
 
-    handleFormatoHvaGradoDocxGenerated(file: File) {
+    handleFormatoHvaGradoDocxGenerated(blob: Blob) {
         const docxFile = new File(
-            [file],
+            [blob],
             'EstudioHojaVidaAcademicaGrado.docx',
             {
                 type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -2020,7 +2007,6 @@ export class SustentacionExamenComponent implements OnInit {
     }
 
     onFileClear(field: string) {
-        this.disableButton = true;
         if (field == 'linkFormatoF') {
             this.FileFormatoF = null;
             this.FormatoF.clear();
@@ -2091,7 +2077,8 @@ export class SustentacionExamenComponent implements OnInit {
             } else {
                 const base64 = await this.convertFileToBase64(file);
                 const fileExtension =
-                    fileControlName === 'linkEstudioHojaVidaAcademicaGrado'
+                    fileControlName === 'linkEstudioHojaVidaAcademicaGrado' ||
+                    fileControlName === 'linkEstudioHojaVidaAcademica'
                         ? 'docx'
                         : 'pdf';
                 const result = fileControlName
@@ -2152,7 +2139,6 @@ export class SustentacionExamenComponent implements OnInit {
                         error
                     );
                 });
-            this.disableButton = false;
             return selectedFile;
         }
         return null;
@@ -2308,12 +2294,10 @@ export class SustentacionExamenComponent implements OnInit {
 
     limpiarJuradoExterno() {
         this.juradoExterno.setValue(null);
-        // this.juradoExternoSeleccionado = null;
     }
 
     limpiarJuradoInterno() {
         this.juradoInterno.setValue(null);
-        // this.juradoInternoSeleccionado = null;
     }
     //#endregion
 

@@ -514,24 +514,25 @@ export class DocumentoFormatoBComponent implements OnInit {
                         mimeType:
                             'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
                     });
+                    const docDefinition = this.generateDocDefinition();
+                    pdfMake
+                        .createPdf(docDefinition)
+                        .getBlob((pdfBlob: Blob) => {
+                            const filePdf = new File(
+                                [pdfBlob],
+                                `${this.estudianteSeleccionado.codigo} - formatoB.pdf`,
+                                {
+                                    type: 'application/pdf',
+                                }
+                            );
+                            this.formatoBDocxGenerated.emit({
+                                doc: fileDoc,
+                                pdf: filePdf,
+                            });
+                            this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
+                        });
                 }
             );
-
-            const docDefinition = this.generateDocDefinition();
-            pdfMake.createPdf(docDefinition).getBlob((pdfBlob: Blob) => {
-                const filePdf = new File(
-                    [pdfBlob],
-                    `${this.estudianteSeleccionado.codigo} - formatoB.pdf`,
-                    {
-                        type: 'application/pdf',
-                    }
-                );
-                this.formatoBDocxGenerated.emit({
-                    doc: fileDoc,
-                    pdf: filePdf,
-                });
-                this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
-            });
             this.loading = false;
         }
     }

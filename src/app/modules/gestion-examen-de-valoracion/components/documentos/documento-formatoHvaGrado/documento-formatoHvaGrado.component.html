@@ -237,23 +237,14 @@
         <div
             class="flex align-items-center justify-content-end mt-4 column-gap-2"
         >
-            <p-fileUpload
-                #FileFormatoHvaGrado
-                mode="basic"
-                [auto]="true"
-                accept=".docx"
-                chooseIcon="pi pi-paperclip"
-                maxFileSize="5000000"
-                chooseLabel="Adjuntar"
-                [pTooltip]="
-                    !!fileFormatoHvaGrado
-                        ? 'Ya se ha adjuntado el documento.'
-                        : 'Descargar documento, rellenar/firmar y adjuntar.'
-                "
-                tooltipPosition="top"
-                (onSelect)="onAdjuntar($event)"
-            >
-            </p-fileUpload>
+            <button
+                pButton
+                type="button"
+                icon="pi pi-upload"
+                label="Insertar"
+                (click)="onInsertar()"
+                [loading]="loading"
+            ></button>
             <button
                 pButton
                 type="button"

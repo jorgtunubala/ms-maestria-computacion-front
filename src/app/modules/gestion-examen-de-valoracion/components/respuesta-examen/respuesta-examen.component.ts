@@ -55,7 +55,8 @@ export class RespuestaExamenComponent implements OnInit {
 
     respuestaForm: FormGroup;
 
-    anexosFiles: File[] = [];
+    anexosFilesExpertos: { [key: string]: any } = {};
+    anexosFilesDocentes: { [key: string]: any } = {};
     anexosBase64: { linkAnexo: string }[] = [];
     estados: string[] = ['APROBADO', 'APLAZADO', 'NO_APROBADO'];
     evaluacionDocenteIds: number[] = [];
@@ -530,6 +531,7 @@ export class RespuestaExamenComponent implements OnInit {
                 this.respuestaForm.patchValue({
                     observacion: respuesta.observacion,
                 });
+                this.anexosFilesExpertos[indexExperto] = respuesta.anexos;
                 const evaluacionFormGroup = this.fb.group({
                     ['id']: [respuesta.id, Validators.required],
                     ['linkFormatoB' + indexExperto]: [
@@ -575,6 +577,7 @@ export class RespuestaExamenComponent implements OnInit {
                 this.respuestaForm.patchValue({
                     observacion: respuesta.observacion,
                 });
+                this.anexosFilesDocentes[indexDocente] = respuesta.anexos;
                 const evaluacionFormGroup = this.fb.group({
                     ['id']: [respuesta.id, Validators.required],
                     ['linkFormatoB' + indexDocente]: [
@@ -663,6 +666,28 @@ export class RespuestaExamenComponent implements OnInit {
     removeFile(formArrayName: string, indexFiles: number, indexAnexos: number) {
         const anexosKey = `${formArrayName}.anexos${indexAnexos}`;
         const anexos = this.selectedFiles[anexosKey];
+
+        if (formArrayName === 'expertoEvaluaciones') {
+            if (
+                this.anexosFilesExpertos[indexAnexos] &&
+                this.anexosFilesExpertos[indexAnexos][indexFiles]
+            ) {
+                this.anexosFilesExpertos[indexAnexos].splice(indexFiles, 1);
+                if (this.anexosFilesExpertos[indexAnexos].length === 0) {
+                    delete this.anexosFilesExpertos[indexAnexos];
+                }
+            }
+        } else if (formArrayName === 'docenteEvaluaciones') {
+            if (
+                this.anexosFilesDocentes[indexAnexos] &&
+                this.anexosFilesDocentes[indexAnexos][indexFiles]
+            ) {
+                this.anexosFilesDocentes[indexAnexos].splice(indexFiles, 1);
+                if (this.anexosFilesDocentes[indexAnexos].length === 0) {
+                    delete this.anexosFilesDocentes[indexAnexos];
+                }
+            }
+        }
 
         if (Array.isArray(anexos)) {
             anexos.splice(indexFiles, 1);

@@ -32,6 +32,7 @@ export class BandejaExamenDeValoracionComponent implements OnInit {
         EstadoProceso.EXAMEN_DE_VALORACION_CANCELADO,
         EstadoProceso.CANCELADO_TRABAJO_GRADO,
         EstadoProceso.SUSTENTACION_APROBADA,
+        EstadoProceso.SUSTENTACION_NO_APROBADA,
     ];
     estados: any[] = Object.keys(EstadoProceso).map((value, index) => ({
         index,
@@ -295,10 +296,7 @@ export class BandejaExamenDeValoracionComponent implements OnInit {
         if (this.solicitudesPorEstudiante.length == 0) {
             return false;
         }
-        const ultimoTrabajoDeGrado =
-            this.solicitudesPorEstudiante[
-                this.solicitudesPorEstudiante.length - 1
-            ];
+        const ultimoTrabajoDeGrado = this.solicitudesPorEstudiante[0];
         return !this.estadosPermitidos.includes(ultimoTrabajoDeGrado.estado);
     }
 

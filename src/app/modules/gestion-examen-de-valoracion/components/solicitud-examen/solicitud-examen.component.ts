@@ -81,7 +81,6 @@ export class SolicitudExamenComponent implements OnInit {
     displayFormatoA: boolean = false;
     displayFormatoOficioDirigidoEvaluadores: boolean = false;
     displayModal: boolean = false;
-    disableButton: boolean = true;
     errorMessageShown: boolean = false;
     editMode: boolean = false;
     isLoading: boolean;
@@ -529,7 +528,6 @@ export class SolicitudExamenComponent implements OnInit {
                 formControls['conceptoCoordinadorDocumentos'].enable();
                 formControls['asuntoCoordinador'].enable();
                 formControls['mensajeCoordinador'].enable();
-                this.disableButton = false;
             }
             if (this.isCoordinadorFase1) {
                 this.solicitudForm
@@ -1602,7 +1600,6 @@ export class SolicitudExamenComponent implements OnInit {
     }
 
     onFileClear(field: string) {
-        this.disableButton = true;
         if (field == 'linkFormatoA') {
             this.FileFormatoA = null;
             this.FormatoA.clear();
@@ -1688,7 +1685,6 @@ export class SolicitudExamenComponent implements OnInit {
                         error
                     );
                 });
-            this.disableButton = false;
             return selectedFile;
         }
         return null;

@@ -3,33 +3,33 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-    production: true,
+    production: false,
     api_url: 'http://localhost:8091/api/',
 };
 
 export const gestion_autenticacion = {
     production: false,
-    api_url: 'http://dockertest.unicauca.edu.co:4400/api/',
+    api_url: 'http://localhost:8080/api/',
 };
 
 export const gestion_expertos = {
     production: false,
-    api_url: 'http://dockertest.unicauca.edu.co:4402/api/',
+    api_url: 'http://localhost:8082/api/',
 };
 
 export const gestion_egresados = {
     production: false,
-    api_url: 'http://dockertest.unicauca.edu.co:4403/api/',
+    api_url: 'http://localhost:8084/api/',
 };
 
 export const gestion_trabajo_grado = {
     production: false,
-    api_url: 'http://dockertest.unicauca.edu.co:4401/api/',
+    api_url: 'http://localhost:8083/api/',
 };
 
 export const gestion_docentes_estudiantes = {
     production: false,
-    api_url: 'http://dockertest.unicauca.edu.co:4402/api/',
+    api_url: 'http://localhost:8082/api/',
 };
 /*
  * For easier debugging in development mode, you can import the following file

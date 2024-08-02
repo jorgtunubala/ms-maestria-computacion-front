@@ -439,23 +439,25 @@ export class DocumentoFormatoCComponent implements OnInit {
                         mimeType:
                             'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
                     });
+                    const docDefinition = this.generateDocDefinition();
+                    pdfMake
+                        .createPdf(docDefinition)
+                        .getBlob((pdfBlob: Blob) => {
+                            const filePdf = new File(
+                                [pdfBlob],
+                                `${this.estudianteSeleccionado.codigo} - formatoC.pdf`,
+                                {
+                                    type: 'application/pdf',
+                                }
+                            );
+                            this.formatoCDocxGenerated.emit({
+                                doc: fileDoc,
+                                pdf: filePdf,
+                            });
+                            this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
+                        });
                 }
             );
-            const docDefinition = this.generateDocDefinition();
-            pdfMake.createPdf(docDefinition).getBlob((pdfBlob: Blob) => {
-                const filePdf = new File(
-                    [pdfBlob],
-                    `${this.estudianteSeleccionado.codigo} - formatoC.pdf`,
-                    {
-                        type: 'application/pdf',
-                    }
-                );
-                this.formatoCDocxGenerated.emit({
-                    doc: fileDoc,
-                    pdf: filePdf,
-                });
-                this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
-            });
             this.loading = false;
         }
     }

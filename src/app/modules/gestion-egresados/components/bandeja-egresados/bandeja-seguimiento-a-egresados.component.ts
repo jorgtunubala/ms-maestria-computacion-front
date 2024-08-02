@@ -11,6 +11,7 @@ import { EmpresaService } from '../../services/empresas.service';
 import { CursoService } from '../../services/cursos.service';
 import { EmpresaEgresadoComponent } from '../empresa-egresados/empresa-egresados.component';
 import { CursoEgresadoComponent } from '../curso-egresados/curso-egresados.component';
+import { AutenticacionService } from 'src/app/modules/gestion-autenticacion/services/autenticacion.service';
 
 @Component({
     selector: 'app-bandeja-seguimiento-a-egresados',
@@ -23,6 +24,7 @@ export class BandejaSeguimientoAEgresadosComponent implements OnInit {
 
     estudianteSeleccionado: Estudiante;
 
+    role: string[];
     loading: boolean;
 
     constructor(
@@ -30,10 +32,12 @@ export class BandejaSeguimientoAEgresadosComponent implements OnInit {
         private dialogService: DialogService,
         private empresaService: EmpresaService,
         private estudianteService: EstudianteService,
-        private localStorageService: LocalStorageService
+        private localStorageService: LocalStorageService,
+        private autenticacion: AutenticacionService
     ) {}
 
     ngOnInit() {
+        this.role = this.autenticacion.getRole();
         this.loadData();
     }
 

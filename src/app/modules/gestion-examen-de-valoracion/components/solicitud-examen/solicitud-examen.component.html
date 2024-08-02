@@ -814,10 +814,14 @@
                                                 chooseLabel="Buscar documento"
                                                 (onSelect)="onUpload($event)"
                                                 [disabled]="
-                                                    editMode &&
-                                                    solicitudForm.get('anexos')
-                                                        .value.length &&
-                                                    !isChanged
+                                                    (editMode &&
+                                                        solicitudForm.get(
+                                                            'anexos'
+                                                        ).value.length &&
+                                                        !isChanged) ||
+                                                    !role.includes(
+                                                        'ROLE_DOCENTE'
+                                                    )
                                                 "
                                             >
                                                 <ng-template
@@ -909,15 +913,6 @@
                             *ngIf="role.includes('ROLE_DOCENTE')"
                         >
                             <button
-                                *ngIf="!editMode"
-                                pButton
-                                icon="pi pi-eye"
-                                label="Revisar documentos"
-                                (click)="openModal()"
-                                [disabled]="disableButton || displayModal"
-                            ></button>
-                            <button
-                                *ngIf="editMode"
                                 pButton
                                 icon="pi pi-eye"
                                 label="Revisar documentos"
@@ -955,7 +950,7 @@
                                 icon="pi pi-eye"
                                 label="Revisar documentos"
                                 (click)="openModal()"
-                                [disabled]="disableButton || displayModal"
+                                [disabled]="displayModal"
                             ></button>
                         </div>
                         <div class="field grid">
@@ -1042,22 +1037,27 @@
                     <p-fieldset legend="Comite" styleClass="bg-bluegray-50">
                         <div class="field grid">
                             <div
-                                class="flex mt-4 w-full justify-content-center align-items-center column-gap-4"
+                                class="flex flex-column w-full justify-content-center align-items-center row-gap-4"
                             >
+                                <strong>Concepto Verificación Comite</strong>
                                 <div
-                                    *ngFor="let estado of estadosRespuesta"
-                                    class="field-checkbox"
+                                    class="flex w-full justify-content-center align-items-center column-gap-4"
                                 >
-                                    <p-radioButton
-                                        [inputId]="estado + 'comite'"
-                                        [value]="estado"
-                                        formControlName="conceptoComite"
-                                    ></p-radioButton>
-                                    <label
-                                        [for]="estado + 'comite'"
-                                        class="ml-2"
-                                        >{{ estado }}</label
+                                    <div
+                                        *ngFor="let estado of estadosRespuesta"
+                                        class="field-checkbox"
                                     >
+                                        <p-radioButton
+                                            [inputId]="estado + 'comite'"
+                                            [value]="estado"
+                                            formControlName="conceptoComite"
+                                        ></p-radioButton>
+                                        <label
+                                            [for]="estado + 'comite'"
+                                            class="ml-2"
+                                            >{{ estado }}</label
+                                        >
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1176,6 +1176,7 @@
                                                         'linkOficioDirigidoEvaluadores'
                                                     )
                                                 "
+                                                [disabled]="isRespuestaCreated"
                                             ></button>
                                         </div>
                                         <div
@@ -1293,7 +1294,7 @@
                                 icon="pi pi-eye"
                                 label="Revisar documentos"
                                 (click)="openModal()"
-                                [disabled]="disableButton || displayModal"
+                                [disabled]="displayModal"
                             ></button>
                         </div>
                     </p-fieldset>
@@ -1313,7 +1314,7 @@
                     pTooltip="Formatos B y C"
                     tooltipPosition="top"
                     icon="pi pi-external-link"
-                    label="Adjuntar"
+                    label="Adjuntar (.pdf)"
                     (click)="showFormatoB()"
                     [disabled]="isRespuestaCreated"
                 ></button>
