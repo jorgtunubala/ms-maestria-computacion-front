@@ -12,6 +12,7 @@ import { DatosSolicitudRequest } from '../models/solicitudes/datosSolicitudReque
 import { InfoAsingAdicionCancelacion } from '../models/solicitudes/solicitud-adic-cancel-asig/infoAsignAdicionCancelacion';
 import { HttpService } from './http.service';
 import { UtilidadesService } from './utilidades.service';
+import { FormGroup } from '@angular/forms';
 
 interface AdjuntosActividad {
     archivos: File[];
@@ -27,6 +28,8 @@ interface AdjuntosDeActividades {
 export class RadicarService {
     private clickSubject = new Subject<void>();
     listadoTutoresYDirectores: TutorYDirector[];
+
+    formInfoDePrueba: FormGroup = new FormGroup({});
 
     fechaEnvio: Date = null;
     tipoSolicitudEscogida: TipoSolicitud;
@@ -479,9 +482,7 @@ export class RadicarService {
             case 'AV_COMI_PR':
                 try {
                     const actividadesReCreditos = await this.gestorHttp
-                        .obtenerActividadesDePracticaDocente(
-                            this.tipoSolicitudEscogida.idSolicitud
-                        )
+                        .obtenerActividadesDePracticaDocente()
                         .toPromise();
 
                     this.actividadesReCreditos = actividadesReCreditos;
@@ -528,9 +529,7 @@ export class RadicarService {
             case 'RE_CRED_PAS':
                 try {
                     const actividadesReCreditos = await this.gestorHttp
-                        .obtenerActividadesDePracticaDocente(
-                            this.tipoSolicitudEscogida.idSolicitud
-                        )
+                        .obtenerActividadesDePracticaDocente()
                         .toPromise();
                     this.actividadesReCreditos = actividadesReCreditos;
 

@@ -136,9 +136,7 @@ export class FormulariosComponent implements OnInit {
                 )
             ) {
                 this.gestorHttp
-                    .obtenerActividadesDePracticaDocente(
-                        radicar.tipoSolicitudEscogida.idSolicitud
-                    )
+                    .obtenerActividadesDePracticaDocente()
                     .subscribe((respuesta) => {
                         this.radicar.actividadesReCreditos = respuesta;
                     });
