@@ -41,6 +41,7 @@ import { AvalpracticadocenteComponent } from './components/presentacion-solicitu
 import { BecaComponent } from './components/presentacion-solicitudes/formularios/complementarios/beca/beca.component';
 import { SkelinfosolicitudComponent } from './components/utilidades/skeleton/skelinfosolicitud/skelinfosolicitud.component';
 import { SkeltablaComponent } from './components/utilidades/skeleton/skeltabla/skeltabla.component';
+import { PruebaComponent } from './components/presentacion-solicitudes/formularios/complementarios/prueba/prueba.component';
 
 @NgModule({
     declarations: [
@@ -79,6 +80,7 @@ import { SkeltablaComponent } from './components/utilidades/skeleton/skeltabla/s
         BecaComponent,
         SkelinfosolicitudComponent,
         SkeltablaComponent,
+        PruebaComponent,
     ],
     imports: [
         CommonModule,

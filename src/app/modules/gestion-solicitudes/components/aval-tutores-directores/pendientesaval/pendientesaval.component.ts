@@ -16,7 +16,7 @@ import { Router } from '@angular/router';
     providers: [DialogService],
 })
 export class PendientesavalComponent implements OnInit {
-    correoUsuario: string = 'mellizohurt@gmail.com';
+    correoUsuario: string = 'julio2.mellizo@gse.com.co';
     solicitudes: SolicitudRecibida[] = [];
     cargando: boolean = true;
     buzonVacio: boolean = false;
