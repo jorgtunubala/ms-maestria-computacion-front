@@ -1395,7 +1395,7 @@ export class ResolucionExamenComponent implements OnInit {
 
     showBuscadorCodirector() {
         return this.dialogService.open(BuscadorDocentesComponent, {
-            header: 'Seleccionar experto',
+            header: 'Seleccionar docente',
             width: '60%',
             styleClass: 'custom-experto-dialog',
         });

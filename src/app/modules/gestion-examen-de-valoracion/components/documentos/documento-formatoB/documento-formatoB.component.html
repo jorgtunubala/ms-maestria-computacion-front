@@ -175,13 +175,13 @@
             pButton
             type="button"
             icon="pi pi-upload"
-            label="Insertar"
+            label="Subir"
             (click)="onInsertar()"
             [loading]="loading"
             [pTooltip]="
                 !!formatoBEv1 || !!formatoBEv2
                     ? 'Ya se ha adjuntado el documento.'
-                    : 'Haz clic para insertar el documento en el área de carga de archivos.'
+                    : 'Haz clic para subir el documento que se enviará junto con los datos del formulario.'
             "
             tooltipPosition="top"
         ></button>

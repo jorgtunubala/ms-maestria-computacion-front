@@ -1464,7 +1464,7 @@ export class SustentacionExamenComponent implements OnInit {
 
                     const b64Monografia = await this.formatFileString(
                         this.FileMonografia,
-                        'linkMonografia'
+                        null
                     );
 
                     const anexos = await this.formatFileString(
@@ -1477,7 +1477,7 @@ export class SustentacionExamenComponent implements OnInit {
                         'Aprobado'
                             ? await this.formatFileString(
                                   this.FileEstudioHVA,
-                                  'linkEstudioHojaVidaAcademica'
+                                  null
                               )
                             : '';
 
@@ -1486,7 +1486,7 @@ export class SustentacionExamenComponent implements OnInit {
                         'Aprobado'
                             ? await this.formatFileString(
                                   this.FileFormatoG,
-                                  'linkFormatoG'
+                                  null
                               )
                             : '';
 
@@ -1676,7 +1676,7 @@ export class SustentacionExamenComponent implements OnInit {
 
                     const b64Monografia = await this.formatFileString(
                         this.FileMonografia,
-                        'linkMonografia'
+                        null
                     );
 
                     const anexos = await this.formatFileString(
@@ -1689,7 +1689,7 @@ export class SustentacionExamenComponent implements OnInit {
                         'Aprobado'
                             ? await this.formatFileString(
                                   this.FileEstudioHVA,
-                                  'linkEstudioHojaVidaAcademica'
+                                  null
                               )
                             : '';
 
@@ -1698,7 +1698,7 @@ export class SustentacionExamenComponent implements OnInit {
                         'Aprobado'
                             ? await this.formatFileString(
                                   this.FileFormatoG,
-                                  'linkFormatoG'
+                                  null
                               )
                             : '';
 

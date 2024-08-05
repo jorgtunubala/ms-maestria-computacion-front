@@ -696,6 +696,8 @@ export class SolicitudExamenComponent implements OnInit {
             this.role.includes('ROLE_COORDINADOR') &&
             (this.estado == EstadoProceso.PENDIENTE_REVISION_COORDINADOR ||
                 this.estado ==
+                    EstadoProceso.DEVUELTO_EXAMEN_DE_VALORACION_POR_COORDINADOR ||
+                this.estado ==
                     EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR ||
                 this.estado ==
                     EstadoProceso.DEVUELTO_EXAMEN_DE_VALORACION_POR_COMITE ||
