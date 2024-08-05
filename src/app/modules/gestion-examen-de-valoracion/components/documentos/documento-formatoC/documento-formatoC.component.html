@@ -133,6 +133,7 @@
                     : 'Haz clic para subir el documento que se enviará junto con los datos del formulario.'
             "
             tooltipPosition="top"
+            [disabled]="!!formatoCEv1 || !!formatoCEv2"
         ></button>
         <button
             pButton

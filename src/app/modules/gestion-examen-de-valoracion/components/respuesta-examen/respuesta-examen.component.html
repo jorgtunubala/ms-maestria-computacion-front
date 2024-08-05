@@ -225,6 +225,9 @@
                                                         [selected]="
                                                             selectedFiles
                                                         "
+                                                        [isRespuestaValid]="
+                                                            isRespuestaValid
+                                                        "
                                                         [evaluacionId]="
                                                             this
                                                                 .evaluacionExpertoIds[
@@ -333,6 +336,9 @@
                                                         "
                                                         [selected]="
                                                             selectedFiles
+                                                        "
+                                                        [isRespuestaValid]="
+                                                            isRespuestaValid
                                                         "
                                                         [evaluacionId]="
                                                             this
@@ -444,6 +450,9 @@
                                                         "
                                                         [selected]="
                                                             selectedFiles
+                                                        "
+                                                        [isRespuestaValid]="
+                                                            isRespuestaValid
                                                         "
                                                         [evaluacionId]="
                                                             this
@@ -570,7 +579,8 @@
                                                             [disabled]="
                                                                 !!anexosFilesExpertos[
                                                                     i
-                                                                ]?.length
+                                                                ]?.length ||
+                                                                isRespuestaValid
                                                             "
                                                         >
                                                             <ng-template
@@ -677,6 +687,9 @@
                                                                                     i
                                                                                 )
                                                                             "
+                                                                            [disabled]="
+                                                                                isRespuestaValid
+                                                                            "
                                                                         ></button>
                                                                     </li>
                                                                 </ul>
@@ -707,6 +720,9 @@
                                                     [formControlName]="
                                                         'respuestaExamenValoracionExperto' +
                                                         i
+                                                    "
+                                                    [disabled]="
+                                                        isRespuestaValid
                                                     "
                                                 ></p-radioButton>
                                                 <label
@@ -775,6 +791,7 @@
                                                     i
                                                 )
                                             "
+                                            [disabled]="isRespuestaValid"
                                         ></button>
                                         <button
                                             *ngIf="
@@ -899,6 +916,9 @@
                                                         [selected]="
                                                             selectedFiles
                                                         "
+                                                        [isRespuestaValid]="
+                                                            isRespuestaValid
+                                                        "
                                                         [evaluacionId]="
                                                             this
                                                                 .evaluacionDocenteIds[
@@ -1007,6 +1027,9 @@
                                                         "
                                                         [selected]="
                                                             selectedFiles
+                                                        "
+                                                        [isRespuestaValid]="
+                                                            isRespuestaValid
                                                         "
                                                         [evaluacionId]="
                                                             this
@@ -1118,6 +1141,9 @@
                                                         "
                                                         [selected]="
                                                             selectedFiles
+                                                        "
+                                                        [isRespuestaValid]="
+                                                            isRespuestaValid
                                                         "
                                                         [evaluacionId]="
                                                             this
@@ -1244,7 +1270,8 @@
                                                             [disabled]="
                                                                 !!anexosFilesDocentes[
                                                                     i
-                                                                ]?.length
+                                                                ]?.length ||
+                                                                isRespuestaValid
                                                             "
                                                         >
                                                             <ng-template
@@ -1351,6 +1378,9 @@
                                                                                     i
                                                                                 )
                                                                             "
+                                                                            [disabled]="
+                                                                                isRespuestaValid
+                                                                            "
                                                                         ></button>
                                                                     </li>
                                                                 </ul>
@@ -1381,6 +1411,9 @@
                                                     [formControlName]="
                                                         'respuestaExamenValoracionDocente' +
                                                         i
+                                                    "
+                                                    [disabled]="
+                                                        isRespuestaValid
                                                     "
                                                 ></p-radioButton>
                                                 <label
@@ -1449,6 +1482,7 @@
                                                     i
                                                 )
                                             "
+                                            [disabled]="isRespuestaValid"
                                         ></button>
                                         <button
                                             *ngIf="

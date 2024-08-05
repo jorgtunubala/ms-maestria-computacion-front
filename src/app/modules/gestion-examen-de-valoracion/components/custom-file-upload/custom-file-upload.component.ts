@@ -26,14 +26,18 @@ import { mapResponseException } from 'src/app/core/utils/exception-util';
     ],
 })
 export class CustomFileUploadComponent implements ControlValueAccessor {
-    @ViewChild('fileUpload') fileUpload!: FileUpload;
+    @Input() arrayName: string;
     @Input() evaluacionId: number;
     @Input() filename: string;
-    @Input() arrayName: string;
+    @Input() isRespuestaValid: boolean;
     @Input() selected: any;
+
     @Output() archivoSeleccionado: EventEmitter<any> = new EventEmitter<any>();
     @Output() archivoDeseleccionado: EventEmitter<any> =
         new EventEmitter<any>();
+
+    @ViewChild('fileUpload') fileUpload!: FileUpload;
+
     value: File | any = null;
     onChange: any = () => {};
     onTouched: any = () => {};

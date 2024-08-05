@@ -11,7 +11,7 @@
         class="w-full max-w-30rem"
         chooseLabel="Buscar documento"
         [disabled]="selected && selected[arrayName + '.' + filename]"
-        >
+    >
     </p-fileUpload>
     <button
         *ngIf="selected && selected[arrayName + '.' + filename]"
@@ -20,5 +20,6 @@
         icon="pi pi-times"
         type="button"
         (click)="clearFile()"
+        [disabled]="isRespuestaValid"
     ></button>
 </div>

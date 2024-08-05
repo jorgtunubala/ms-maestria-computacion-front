@@ -490,10 +490,11 @@
                                                 (onSelect)="onUpload($event)"
                                                 [disabled]="
                                                     (editMode &&
-                                                    sustentacionForm.get(
-                                                        'anexos'
-                                                    ).value.length &&
-                                                    !isChanged) || !role.includes(
+                                                        sustentacionForm.get(
+                                                            'anexos'
+                                                        ).value.length &&
+                                                        !isChanged) ||
+                                                    !role.includes(
                                                         'ROLE_DOCENTE'
                                                     )
                                                 "
@@ -1328,9 +1329,10 @@
                 <div
                     class="card"
                     *ngIf="
-                        role.includes('ROLE_ESTUDIANTE') ||
+                        (role.includes('ROLE_ESTUDIANTE') &&
+                            isCoordinadorFase3) ||
                         (role.includes('ROLE_COORDINADOR') &&
-                            isCoordinadorFase3)
+                            isEstudianteCreated)
                     "
                 >
                     <div class="mb-4">
@@ -1346,7 +1348,10 @@
                     <p-fieldset legend="Estudiante" styleClass="bg-bluegray-50">
                         <div
                             class="flex flex-1 justify-content-end align-items-center"
-                            *ngIf="isCoordinadorFase3"
+                            *ngIf="
+                                role.includes('ROLE_ESTUDIANTE') &&
+                                isCoordinadorFase3
+                            "
                         >
                             <button
                                 *ngIf="editMode"
