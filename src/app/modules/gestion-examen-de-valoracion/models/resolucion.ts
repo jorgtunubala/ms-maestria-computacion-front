@@ -7,7 +7,7 @@ export interface Resolucion {
     linkSolicitudComite?: string;
     numeroActaSolicitudComite?: string;
     fechaActaSolicitudComite?: string;
-    linkSolicitudConsejoFacultad?: string;
-    numeroActaConsejoFacultad?: string;
-    fechaActaConsejoFacultad?: string;
+    linkSolicitudConsejo?: string;
+    numeroActaConsejo?: string;
+    fechaActaConsejo?: string;
 }

@@ -107,6 +107,7 @@
                                 [(ngModel)]="isReviewed"
                                 [binary]="true"
                                 inputId="isReviewed"
+                                (ngModelChange)="onCheckboxChange($event)"
                             ></p-checkbox>
                             <label for="isReviewed"
                                 >Revisé todos los documentos</label
@@ -127,7 +128,7 @@
         </p-dialog>
     </div>
     <div class="flex mt-4 justify-content-between">
-        <div class="flex align-items-center column-gap-4">
+        <div class="flex align-items-center column-gap-4 resolucion-wrap">
             <div class="flex align-items-center">
                 <button
                     pButton
@@ -203,7 +204,7 @@
                     </div>
                     <p-fieldset legend="Docente" styleClass="bg-bluegray-50">
                         <div class="field grid justify-content-center">
-                            <div class="col-5">
+                            <div class="col-12 lg:col-5">
                                 <label class="label-required"
                                     >Título del Trabajo de Investigación</label
                                 >
@@ -218,7 +219,7 @@
                             </div>
                         </div>
                         <div class="field grid justify-content-center">
-                            <div class="col-5 mt-4">
+                            <div class="col-12 lg:col-5 mt-4">
                                 <label class="label-required">Director</label>
                                 <div class="mt-2" *ngIf="directorSeleccionado">
                                     <p-card class="w-full m-0">
@@ -267,7 +268,7 @@
                             </div>
                         </div>
                         <div class="field grid justify-content-center">
-                            <div class="col-5 mt-4">
+                            <div class="col-12 lg:col-5 mt-4">
                                 <label class="label-required"
                                     >Co-Director</label
                                 >
@@ -324,7 +325,7 @@
                             </div>
                         </div>
                         <div class="field grid justify-content-center">
-                            <div class="col-5 mt-4">
+                            <div class="col-12 lg:col-5 mt-4">
                                 <label class="label-required"
                                     >Anteproyecto final (.pdf)
                                 </label>
@@ -418,9 +419,9 @@
                             </div>
                         </div>
                         <div class="field grid justify-content-center">
-                            <div class="col-5 mt-4">
+                            <div class="col-12 lg:col-5 mt-4">
                                 <label class="label-required"
-                                    >Solicitud al cómite para resolución de
+                                    >Solicitud al comité para resolución de
                                     aprobación de trabajo de grado (.pdf)
                                 </label>
                                 <div
@@ -593,7 +594,7 @@
                             "
                             class="field grid justify-content-center"
                         >
-                            <div class="col-5">
+                            <div class="col-12 lg:col-5">
                                 <div>
                                     <label class="label-required">Asunto</label>
                                     <input
@@ -669,7 +670,7 @@
                             *ngIf="resolucionForm.get('conceptoComite').value"
                             class="field grid justify-content-center"
                         >
-                            <div class="col-5">
+                            <div class="col-12 lg:col-5">
                                 <div>
                                     <label class="label-required">Asunto</label>
                                     <input
@@ -699,7 +700,7 @@
                             class="field grid justify-content-center"
                         >
                             <div
-                                class="col-5 flex flex-nowrap align-items-center justify-content-between"
+                                class="col-12 lg:col-5 flex flex-nowrap align-items-center justify-content-between"
                             >
                                 <label class="label-required">
                                     No de acta generada por el comite
@@ -717,6 +718,7 @@
                                     formControlName="fechaActa"
                                     [showIcon]="true"
                                     dateFormat="dd.mm.yy"
+                                    [maxDate]="maxDate"
                                 ></p-calendar>
                             </div>
                         </div>
@@ -727,7 +729,7 @@
                             "
                             class="field grid justify-content-center"
                         >
-                            <div class="col-5 mt-4">
+                            <div class="col-12 lg:col-5 mt-4">
                                 <label class="label-required"
                                     >Solicitud al consejo de facultad para
                                     resolución de aprobación de trabajo de grado
@@ -745,7 +747,7 @@
                                         >
                                             <p-fileUpload
                                                 #SolicitudConsejo
-                                                name="linkSolicitudConsejoFacultad"
+                                                name="linkSolicitudConsejo"
                                                 mode="basic"
                                                 [auto]="true"
                                                 accept=".pdf"
@@ -760,7 +762,7 @@
                                                 chooseLabel="Buscar documento"
                                                 [disabled]="
                                                     resolucionForm.get(
-                                                        'linkSolicitudConsejoFacultad'
+                                                        'linkSolicitudConsejo'
                                                     ).value
                                                 "
                                             >
@@ -773,10 +775,9 @@
                                                 type="button"
                                                 (click)="
                                                     onFileClear(
-                                                        'linkSolicitudConsejoFacultad'
+                                                        'linkSolicitudConsejo'
                                                     )
                                                 "
-                                                [disabled]="isResolucionCreated"
                                             ></button>
                                         </div>
                                         <div
@@ -803,7 +804,7 @@
                                         icon="pi pi-download"
                                         (click)="
                                             getFileAndSetValue(
-                                                'linkSolicitudConsejoFacultad'
+                                                'linkSolicitudConsejo'
                                             )
                                         "
                                     ></button>
@@ -855,7 +856,7 @@
                     <p-fieldset legend="Consejo" styleClass="bg-bluegray-50">
                         <div class="field grid justify-content-center">
                             <div
-                                class="col-5 flex flex-nowrap align-items-center justify-content-between"
+                                class="col-12 lg:col-5 flex flex-nowrap align-items-center justify-content-between"
                             >
                                 <label class="label-required">
                                     No de resolución generada por el consejo de
@@ -864,21 +865,22 @@
                                 <input
                                     class="max-w-10rem ml-2"
                                     pInputText
-                                    formControlName="numeroActaConsejoFacultad"
+                                    formControlName="numeroActaConsejo"
                                 />
                                 <label class="label-required ml-4"
                                     >Fecha del acta</label
                                 >
                                 <p-calendar
                                     class="ml-2"
-                                    formControlName="fechaActaConsejoFacultad"
+                                    formControlName="fechaActaConsejo"
                                     [showIcon]="true"
                                     dateFormat="dd.mm.yy"
+                                    [maxDate]="maxDate"
                                 ></p-calendar>
                             </div>
                         </div>
                         <div class="field grid justify-content-center">
-                            <div class="col-5 mt-4">
+                            <div class="col-12 lg:col-5 mt-4">
                                 <label class="label-required"
                                     >Oficio Consejo (.pdf)
                                 </label>
@@ -925,7 +927,6 @@
                                                         'linkOficioConsejo'
                                                     )
                                                 "
-                                                [disabled]="isResolucionCreated"
                                             ></button>
                                         </div>
                                         <div

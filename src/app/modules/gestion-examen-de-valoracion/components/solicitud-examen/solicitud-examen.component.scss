@@ -50,27 +50,36 @@
 }
 
 @media (max-width: 1240px) {
-    .solicitud ::ng-deep.p-dialog {
+    ::ng-deep.p-dialog.custom-docente-dialog,
+    ::ng-deep.p-dialog.custom-experto-dialog {
         width: 60% !important;
+    }
+
+    .solicitud-wrap {
+        flex-wrap: wrap;
+        row-gap: 2rem;
+        justify-content: center;
     }
 }
 
 @media (max-width: 1024px) {
-    .solicitud ::ng-deep.p-dialog {
+    ::ng-deep.p-dialog.custom-docente-dialog,
+    ::ng-deep.p-dialog.custom-experto-dialog {
         width: 70% !important;
     }
 }
 
 @media (max-width: 900px) {
-    .solicitud ::ng-deep.p-dialog {
+    ::ng-deep.p-dialog.custom-docente-dialog,
+    ::ng-deep.p-dialog.custom-experto-dialog {
         width: 80% !important;
     }
 }
 
 @media (max-width: 768px) {
-    .solicitud ::ng-deep.p-dialog {
+    ::ng-deep.p-dialog.custom-docente-dialog,
+    ::ng-deep.p-dialog.custom-experto-dialog {
         width: 90% !important;
-        top: -10% !important;
     }
 }
 

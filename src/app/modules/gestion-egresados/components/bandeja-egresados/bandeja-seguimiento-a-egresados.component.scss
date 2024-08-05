@@ -11,7 +11,29 @@
     }
 }
 
+@media (max-width: 1240px) {
+    ::ng-deep.custom-estudiante-dialog {
+        width: 60% !important;
+    }
+}
+
+@media (max-width: 1024px) {
+    ::ng-deep.custom-estudiante-dialog {
+        width: 70% !important;
+    }
+}
+
+@media (max-width: 900px) {
+    ::ng-deep.custom-estudiante-dialog {
+        width: 80% !important;
+    }
+}
+
 @media (max-width: 768px) {
+    ::ng-deep.custom-estudiante-dialog {
+        width: 90% !important;
+    }
+
     .col-label,
     .col-input {
         flex: 0 0 100%;

@@ -13,6 +13,7 @@ import {
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
+    Subject,
     Subscription,
     catchError,
     firstValueFrom,
@@ -53,6 +54,9 @@ import { TrabajoDeGradoService } from '../../services/trabajoDeGrado.service';
 export class SolicitudExamenComponent implements OnInit {
     @Output() formReady = new EventEmitter<FormGroup>();
     solicitudForm: FormGroup;
+
+    private checkboxChangeSubject = new Subject<boolean>();
+    checkboxChange$ = this.checkboxChangeSubject.asObservable();
 
     @ViewChild('FormatoA') FormatoA!: FileUpload;
     @ViewChild('FormatoD') FormatoD!: FileUpload;
@@ -98,6 +102,7 @@ export class SolicitudExamenComponent implements OnInit {
     isResolucionValid: boolean = false;
     isSustentacionValid: boolean = false;
     isReviewed: boolean = false;
+    messageShown: boolean = false;
 
     estudianteSeleccionado: Estudiante;
     evaluadorInternoSeleccionado: Docente;
@@ -127,6 +132,8 @@ export class SolicitudExamenComponent implements OnInit {
     currentFormat: string = 'formatoBEv1';
     estado: string;
 
+    maxDate: Date;
+
     constructor(
         private fb: FormBuilder,
         private router: Router,
@@ -139,7 +146,9 @@ export class SolicitudExamenComponent implements OnInit {
         private autenticacion: AutenticacionService,
         private docenteService: DocenteService,
         private expertoService: ExpertoService
-    ) {}
+    ) {
+        this.maxDate = new Date();
+    }
 
     get evaluadorExterno(): FormControl {
         return this.solicitudForm.get('idEvaluadorExterno') as FormControl;
@@ -255,6 +264,8 @@ export class SolicitudExamenComponent implements OnInit {
                 this.setupEvaluadores(data);
             }
         }
+
+        this.setupIsReviewedCheckBox();
     }
 
     async setupEvaluadores(data: any): Promise<void> {
@@ -293,6 +304,28 @@ export class SolicitudExamenComponent implements OnInit {
                 console.error('Error al obtener evaluador interno:', error);
             }
         }
+    }
+
+    async setupIsReviewedCheckBox() {
+        try {
+            const value = await firstValueFrom(this.checkboxChange$);
+            if (value && !this.messageShown) {
+                this.messageService.add({
+                    severity: 'info',
+                    summary: 'Información',
+                    detail: 'Todos los documentos han sido revisados. Ahora puede cerrar la vista actual. Recuerde guardar los cambios.',
+                    life: 8000,
+                });
+                this.messageShown = true;
+            }
+        } catch (error) {
+            console.error('Error al obtener el valor del checkbox:', error);
+        }
+    }
+
+    onCheckboxChange(value: boolean) {
+        this.isReviewed = value;
+        this.checkboxChangeSubject.next(value);
     }
 
     subscribeToEstudiante() {
@@ -419,8 +452,8 @@ export class SolicitudExamenComponent implements OnInit {
                                         .subscribe({
                                             next: (response) => {
                                                 if (
-                                                    response?.numeroActaConsejoFacultad &&
-                                                    response?.fechaActaConsejoFacultad
+                                                    response?.numeroActaConsejo &&
+                                                    response?.fechaActaConsejo
                                                 ) {
                                                     this.isResolucionValid =
                                                         true;
@@ -529,7 +562,7 @@ export class SolicitudExamenComponent implements OnInit {
                 formControls['asuntoCoordinador'].enable();
                 formControls['mensajeCoordinador'].enable();
             }
-            if (this.isCoordinadorFase1) {
+            if (this.isCoordinadorFase1 && !this.isRespuestaCreated) {
                 this.solicitudForm
                     .get('conceptoComite')
                     .valueChanges.subscribe((value) => {
@@ -641,38 +674,77 @@ export class SolicitudExamenComponent implements OnInit {
 
     //#region PDF VIEWER
     async loadPdfFiles() {
-        const filesToConvert = [
-            {
-                file: this.FileFormatoA,
-                fieldName: 'Solicitud Examen de Valoración',
-            },
-            {
-                file: this.FileFormatoD,
-                fieldName: 'Anteproyecto presentado a Examen',
-            },
-            { file: this.FileFormatoE, fieldName: 'Examen de valoración' },
-            {
-                file: this.FileOficioDirigidoEvaluadores,
-                fieldName: 'Oficio Dirigido a Evaluadores',
-            },
-            {
-                file: this.formatoBEv1Preview,
-                fieldName: 'Formato B - Evaluador Interno',
-            },
-            {
-                file: this.formatoBEv2Preview,
-                fieldName: 'Formato B - Evaluador Externo',
-            },
-            {
-                file: this.formatoCEv1Preview,
-                fieldName: 'Formato C - Evaluador Interno',
-            },
-            {
-                file: this.formatoCEv2Preview,
-                fieldName: 'Formato C - Evaluador Externo',
-            },
-            ...this.anexosFiles.map((file) => ({ file, fieldName: 'Anexo' })),
-        ];
+        const filesToConvert = [];
+
+        if (
+            this.role.includes('ROLE_DOCENTE') &&
+            (this.estado ==
+                EstadoProceso.DEVUELTO_EXAMEN_DE_VALORACION_POR_COORDINADOR ||
+                this.estado ==
+                    EstadoProceso.DEVUELTO_EXAMEN_DE_VALORACION_POR_COMITE ||
+                this.estado == EstadoProceso.PENDIENTE_REVISION_COORDINADOR ||
+                this.estado ==
+                    EstadoProceso.EXAMEN_DE_VALORACION_NO_APROBADO_EVALUADOR_1 ||
+                this.estado ==
+                    EstadoProceso.EXAMEN_DE_VALORACION_APROBADO_Y_NO_APROBADO_EVALUADOR)
+        ) {
+            filesToConvert.push(
+                {
+                    file: this.FileFormatoA,
+                    fieldName: 'Solicitud Examen de Valoración',
+                },
+                {
+                    file: this.FileFormatoD,
+                    fieldName: 'Anteproyecto presentado a Examen',
+                },
+                { file: this.FileFormatoE, fieldName: 'Examen de valoración' },
+                ...this.anexosFiles.map((file) => ({
+                    file,
+                    fieldName: 'Anexo',
+                }))
+            );
+        } else if (
+            this.role.includes('ROLE_COORDINADOR') &&
+            (this.estado == EstadoProceso.PENDIENTE_REVISION_COORDINADOR ||
+                this.estado ==
+                    EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR ||
+                this.estado ==
+                    EstadoProceso.DEVUELTO_EXAMEN_DE_VALORACION_POR_COMITE ||
+                this.estado ==
+                    EstadoProceso.PENDIENTE_RESULTADO_EXAMEN_DE_VALORACION)
+        ) {
+            filesToConvert.push(
+                {
+                    file: this.FileFormatoD,
+                    fieldName: 'Anteproyecto presentado a Examen',
+                },
+                { file: this.FileFormatoE, fieldName: 'Examen de valoración' },
+                ...this.anexosFiles.map((file) => ({
+                    file,
+                    fieldName: 'Anexo',
+                })),
+                {
+                    file: this.FileOficioDirigidoEvaluadores,
+                    fieldName: 'Oficio Dirigido a Evaluadores',
+                },
+                {
+                    file: this.formatoBEv1Preview,
+                    fieldName: 'Formato B - Evaluador Interno',
+                },
+                {
+                    file: this.formatoBEv2Preview,
+                    fieldName: 'Formato B - Evaluador Externo',
+                },
+                {
+                    file: this.formatoCEv1Preview,
+                    fieldName: 'Formato C - Evaluador Interno',
+                },
+                {
+                    file: this.formatoCEv2Preview,
+                    fieldName: 'Formato C - Evaluador Externo',
+                }
+            );
+        }
 
         const errorFiles = new Set<File>();
 
@@ -803,6 +875,7 @@ export class SolicitudExamenComponent implements OnInit {
                 this.solicitudForm
                     .get('linkFormatoA')
                     .setValue(`linkFormatoA.pdf-${base64}`);
+                this.displayFormatoA = false;
             })
             .catch((error) => {
                 console.error('Error al convertir el archivo a base64:', error);
@@ -823,6 +896,7 @@ export class SolicitudExamenComponent implements OnInit {
                 this.solicitudForm
                     .get('linkOficioDirigidoEvaluadores')
                     .setValue(`linkOficioDirigidoEvaluadores.pdf-${base64}`);
+                this.displayFormatoOficioDirigidoEvaluadores = false;
             })
             .catch((error) => {
                 console.error('Error al convertir el archivo a base64:', error);
@@ -1773,6 +1847,7 @@ export class SolicitudExamenComponent implements OnInit {
         return this.dialogService.open(BuscadorDocentesComponent, {
             header: 'Seleccionar docente',
             width: '60%',
+            styleClass: 'custom-docente-dialog',
         });
     }
 
@@ -1780,6 +1855,7 @@ export class SolicitudExamenComponent implements OnInit {
         return this.dialogService.open(BuscadorExpertosComponent, {
             header: 'Seleccionar experto',
             width: '60%',
+            styleClass: 'custom-experto-dialog',
         });
     }
 

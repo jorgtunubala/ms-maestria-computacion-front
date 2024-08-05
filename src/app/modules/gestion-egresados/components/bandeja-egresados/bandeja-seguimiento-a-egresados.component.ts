@@ -74,6 +74,7 @@ export class BandejaSeguimientoAEgresadosComponent implements OnInit {
         return this.dialogService.open(BuscadorEstudiantesComponent, {
             header: 'Seleccionar estudiante',
             width: '60%',
+            styleClass: 'custom-estudiante-dialog'
         });
     }
 

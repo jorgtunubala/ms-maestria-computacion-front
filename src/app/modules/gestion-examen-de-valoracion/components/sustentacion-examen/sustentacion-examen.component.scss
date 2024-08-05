@@ -42,3 +42,43 @@
 .text-description {
     color: gray;
 }
+
+@media (max-width: 1240px) {
+    ::ng-deep.p-dialog.custom-docente-dialog,
+    ::ng-deep.p-dialog.custom-experto-dialog {
+        width: 60% !important;
+    }
+
+    .sustentacion-wrap {
+        flex-wrap: wrap;
+        row-gap: 2rem;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 1024px) {
+    ::ng-deep.p-dialog.custom-docente-dialog,
+    ::ng-deep.p-dialog.custom-experto-dialog {
+        width: 70% !important;
+    }
+}
+
+@media (max-width: 900px) {
+    ::ng-deep.p-dialog.custom-docente-dialog,
+    ::ng-deep.p-dialog.custom-experto-dialog {
+        width: 80% !important;
+    }
+}
+
+@media (max-width: 768px) {
+    ::ng-deep.p-dialog.custom-docente-dialog,
+    ::ng-deep.p-dialog.custom-experto-dialog {
+        width: 90% !important;
+    }
+}
+
+@media (max-width: 425px) {
+    .solicitud ::ng-deep.p-card .p-card-title {
+        text-align: center;
+    }
+}

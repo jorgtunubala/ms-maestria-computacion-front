@@ -19,27 +19,26 @@
 }
 
 @media (max-width: 1240px) {
-    .bandeja-examen-de-valoracion ::ng-deep.p-dialog {
+    ::ng-deep.custom-estudiante-dialog {
         width: 60% !important;
     }
 }
 
 @media (max-width: 1024px) {
-    .bandeja-examen-de-valoracion ::ng-deep.p-dialog {
+    ::ng-deep.custom-estudiante-dialog {
         width: 70% !important;
     }
 }
 
 @media (max-width: 900px) {
-    .bandeja-examen-de-valoracion ::ng-deep.p-dialog {
+    ::ng-deep.custom-estudiante-dialog {
         width: 80% !important;
     }
 }
 
 @media (max-width: 768px) {
-    .bandeja-examen-de-valoracion ::ng-deep.p-dialog {
+    ::ng-deep.custom-estudiante-dialog {
         width: 90% !important;
-        top: -10% !important;
     }
 }
 

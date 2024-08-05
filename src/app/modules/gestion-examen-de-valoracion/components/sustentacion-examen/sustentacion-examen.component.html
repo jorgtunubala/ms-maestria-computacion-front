@@ -107,6 +107,7 @@
                                 [(ngModel)]="isReviewed"
                                 [binary]="true"
                                 inputId="isReviewed"
+                                (ngModelChange)="onCheckboxChange($event)"
                             ></p-checkbox>
                             <label for="isReviewed"
                                 >Revisé todos los documentos</label
@@ -208,7 +209,7 @@
         </p-dialog>
     </div>
     <div class="flex mt-4 justify-content-between">
-        <div class="flex align-items-center column-gap-4">
+        <div class="flex align-items-center column-gap-4 sustentacion-wrap">
             <div class="flex align-items-center">
                 <button
                     pButton
@@ -284,7 +285,7 @@
                     </div>
                     <p-fieldset legend="Docente" styleClass="bg-bluegray-50">
                         <div class="field grid justify-content-center">
-                            <div class="col-5 mt-4">
+                            <div class="col-12 lg:col-5 mt-4">
                                 <label class="label-required"
                                     >Remisión del documento final al comité
                                     (Formato F .pdf)
@@ -377,7 +378,7 @@
                             </div>
                         </div>
                         <div class="field grid justify-content-center">
-                            <div class="col-5 mt-4">
+                            <div class="col-12 lg:col-5 mt-4">
                                 <label class="label-required"
                                     >Monografía (.pdf)
                                 </label>
@@ -466,7 +467,7 @@
                             </div>
                         </div>
                         <div class="field grid justify-content-center">
-                            <div class="col-5 mt-4">
+                            <div class="col-12 lg:col-5 mt-4">
                                 <label>Anexos (.pdf) </label>
                                 <div
                                     style="max-width: 50rem"
@@ -488,11 +489,13 @@
                                                 chooseLabel="Buscar documento"
                                                 (onSelect)="onUpload($event)"
                                                 [disabled]="
-                                                    editMode &&
+                                                    (editMode &&
                                                     sustentacionForm.get(
                                                         'anexos'
                                                     ).value.length &&
-                                                    !isChanged
+                                                    !isChanged) || !role.includes(
+                                                        'ROLE_DOCENTE'
+                                                    )
                                                 "
                                             >
                                                 <ng-template
@@ -659,7 +662,7 @@
                             "
                             class="field grid justify-content-center"
                         >
-                            <div class="col-5">
+                            <div class="col-12 lg:col-5">
                                 <div>
                                     <label class="label-required">Asunto</label>
                                     <input
@@ -733,7 +736,7 @@
                             *ngIf="sustentacionForm.get('conceptoComite').value"
                             class="field grid justify-content-center"
                         >
-                            <div class="col-5">
+                            <div class="col-12 lg:col-5">
                                 <div>
                                     <label class="label-required">Asunto</label>
                                     <input
@@ -765,7 +768,7 @@
                                 'Aprobado'
                             "
                         >
-                            <div class="col-5 mt-4">
+                            <div class="col-12 lg:col-5 mt-4">
                                 <label class="label-required"
                                     >Remisión del documento final al consejo de
                                     facultad (Formato G .pdf)
@@ -862,9 +865,10 @@
                             "
                             class="field grid justify-content-center"
                         >
-                            <div class="col-5 mt-4">
+                            <div class="col-12 lg:col-5 mt-4">
                                 <label class="label-required"
-                                    >Estudio hoja de vida academica (AE-247.docx)
+                                    >Estudio hoja de vida academica
+                                    (AE-247.docx)
                                 </label>
                                 <div
                                     style="max-width: 50rem"
@@ -964,7 +968,7 @@
                             class="field grid justify-content-center"
                         >
                             <div
-                                class="col-5 flex flex-nowrap align-items-center justify-content-between"
+                                class="col-12 lg:col-5 flex flex-nowrap align-items-center justify-content-between"
                             >
                                 <label class="label-required">
                                     No acta de revisión trabajo
@@ -982,6 +986,7 @@
                                     formControlName="fechaActa"
                                     [showIcon]="true"
                                     dateFormat="dd.mm.yy"
+                                    [maxDate]="maxDate"
                                 ></p-calendar>
                             </div>
                         </div>
@@ -1023,7 +1028,7 @@
                     </div>
                     <p-fieldset legend="Consejo" styleClass="bg-bluegray-50">
                         <div class="field grid justify-content-center">
-                            <div class="col-5">
+                            <div class="col-12 lg:col-5">
                                 <label>Nombramiento de Jurados</label>
                                 <div class="flex align-items-center mt-2">
                                     <p-radioButton
@@ -1060,7 +1065,7 @@
                             </div>
                         </div>
                         <div class="field grid justify-content-center">
-                            <div class="col-5">
+                            <div class="col-12 lg:col-5">
                                 <div class="mt-4">
                                     <label>Observación</label>
                                     <textarea
@@ -1081,7 +1086,10 @@
                                     ?.value == 'Rechazado'
                             "
                         >
-                            <div class="col-5" *ngIf="juradoInterno.value">
+                            <div
+                                class="col-12 lg:col-5"
+                                *ngIf="juradoInterno.value"
+                            >
                                 <label>Jurado Interno</label>
                                 <div class="flex align-items-center">
                                     <p-card class="w-full m-0">
@@ -1104,7 +1112,10 @@
                                     </p-card>
                                 </div>
                             </div>
-                            <div class="col-5" *ngIf="!juradoInterno.value">
+                            <div
+                                class="col-12 lg:col-5"
+                                *ngIf="!juradoInterno.value"
+                            >
                                 <label>Jurado Interno</label>
                                 <button
                                     pButton
@@ -1122,7 +1133,10 @@
                                     ?.value == 'Rechazado'
                             "
                         >
-                            <div class="col-5" *ngIf="juradoExterno.value">
+                            <div
+                                class="col-12 lg:col-5"
+                                *ngIf="juradoExterno.value"
+                            >
                                 <label>Jurado Externo</label>
                                 <div class="flex align-items-center">
                                     <p-card class="w-full m-0">
@@ -1145,7 +1159,10 @@
                                     </p-card>
                                 </div>
                             </div>
-                            <div class="col-5" *ngIf="!juradoExterno.value">
+                            <div
+                                class="col-12 lg:col-5"
+                                *ngIf="!juradoExterno.value"
+                            >
                                 <label>Jurado Externo</label>
                                 <button
                                     class="mt-2 w-full"
@@ -1157,7 +1174,7 @@
                             </div>
                         </div>
                         <div class="field grid justify-content-center">
-                            <div class="col-5">
+                            <div class="col-12 lg:col-5">
                                 <label class="label-required"
                                     >Carta de aceptación nombramiento de jurados
                                     (.pdf)
@@ -1248,7 +1265,7 @@
                             </div>
                         </div>
                         <div class="field grid justify-content-center">
-                            <div class="col-5">
+                            <div class="col-12 lg:col-5">
                                 <p-divider></p-divider>
                             </div>
                         </div>
@@ -1257,7 +1274,7 @@
                             class="field grid justify-content-center"
                         >
                             <div
-                                class="col-5 flex flex-nowrap align-items-center justify-content-between"
+                                class="col-12 lg:col-5 flex flex-nowrap align-items-center justify-content-between"
                             >
                                 <label class="label-required"
                                     >Fecha Sustentacion</label
@@ -1271,7 +1288,7 @@
                         </div>
                         <div class="field grid justify-content-center">
                             <div
-                                class="col-5 flex flex-nowrap align-items-center justify-content-between"
+                                class="col-12 lg:col-5 flex flex-nowrap align-items-center justify-content-between"
                             >
                                 <label class="label-required">
                                     No acta de revisión trabajo final
@@ -1289,6 +1306,7 @@
                                     formControlName="fechaActaConsejo"
                                     [showIcon]="true"
                                     dateFormat="dd.mm.yy"
+                                    [maxDate]="maxDate"
                                 ></p-calendar>
                             </div>
                         </div>
@@ -1340,7 +1358,7 @@
                             ></button>
                         </div>
                         <div class="field grid justify-content-center">
-                            <div class="col-5">
+                            <div class="col-12 lg:col-5">
                                 <label class="label-required"
                                     >Constancia de que el documento final
                                     corresponde a la versión sustentada (Formato
@@ -1423,7 +1441,7 @@
                             </div>
                         </div>
                         <div class="field grid justify-content-center">
-                            <div class="col-5">
+                            <div class="col-12 lg:col-5">
                                 <label class="label-required"
                                     >Acta de sustentación (Formato I .pdf)
                                 </label>
@@ -1504,7 +1522,7 @@
                             </div>
                         </div>
                         <div class="field grid justify-content-center">
-                            <div class="col-5">
+                            <div class="col-12 lg:col-5">
                                 <label class="label-required"
                                     >Estudio hoja de vida academica para grado
                                     (PM-FO-4-FOR-27 .docx)
@@ -1634,7 +1652,7 @@
                             ></button>
                         </div>
                         <div class="field grid justify-content-center">
-                            <div class="col-5 mt-2">
+                            <div class="col-12 lg:col-5 mt-2">
                                 <label class="label-required"
                                     >Respuesta a la sustentación
                                 </label>
@@ -1664,7 +1682,7 @@
                             "
                             class="field grid justify-content-center"
                         >
-                            <div class="col-5">
+                            <div class="col-12 lg:col-5">
                                 <label class="label-required"
                                     >Acta para Sustentación Pública (Formato
                                     PA-GA-4.2-FOR-13 .pdf)
@@ -1761,7 +1779,7 @@
                             class="field grid justify-content-center"
                         >
                             <div
-                                class="col-5 flex flex-nowrap align-items-center justify-content-between"
+                                class="col-12 lg:col-5 flex flex-nowrap align-items-center justify-content-between"
                             >
                                 <label class="label-required">
                                     No acta de revisión trabajo final
@@ -1779,6 +1797,7 @@
                                     formControlName="fechaActaFinal"
                                     [showIcon]="true"
                                     dateFormat="dd.mm.yy"
+                                    [maxDate]="maxDate"
                                 ></p-calendar>
                             </div>
                         </div>

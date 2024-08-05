@@ -222,6 +222,7 @@
                                 [(ngModel)]="isReviewed"
                                 [binary]="true"
                                 inputId="isReviewed"
+                                (ngModelChange)="onCheckboxChange($event)"
                             ></p-checkbox>
                             <label for="isReviewed"
                                 >Revisé todos los documentos</label
@@ -242,7 +243,7 @@
         </p-dialog>
     </div>
     <div class="flex mt-4 justify-content-between">
-        <div class="flex align-items-center column-gap-4">
+        <div class="flex align-items-center column-gap-4 solicitud-wrap">
             <div class="flex align-items-center">
                 <button
                     pButton
@@ -337,7 +338,7 @@
                     </div>
                     <p-fieldset legend="Docente" styleClass="bg-bluegray-50">
                         <div class="field grid justify-content-center">
-                            <div class="col-5">
+                            <div class="col-12 lg:col-5">
                                 <label class="label-required"
                                     >Título del Trabajo de Investigación</label
                                 >
@@ -357,7 +358,7 @@
                                 role.includes('ROLE_DOCENTE')
                             "
                         >
-                            <div class="col-5 mt-4">
+                            <div class="col-12 lg:col-5 mt-4">
                                 <label class="label-required"
                                     >Evaluador Externo</label
                                 >
@@ -447,7 +448,7 @@
                                 role.includes('ROLE_DOCENTE')
                             "
                         >
-                            <div class="col-5 mt-4">
+                            <div class="col-12 lg:col-5 mt-4">
                                 <label class="label-required"
                                     >Evaluador Interno</label
                                 >
@@ -528,7 +529,7 @@
                             </div>
                         </div>
                         <div class="field grid justify-content-center">
-                            <div class="col-5 mt-4">
+                            <div class="col-12 lg:col-5 mt-4">
                                 <label class="label-required"
                                     >Solicitud Examen de Valoración (Formato A
                                     .pdf)
@@ -630,7 +631,7 @@
                             </div>
                         </div>
                         <div class="field grid justify-content-center">
-                            <div class="col-5 mt-4">
+                            <div class="col-12 lg:col-5 mt-4">
                                 <label class="label-required"
                                     >Anteproyecto presentado a Examen (Formato D
                                     .pdf)
@@ -712,9 +713,9 @@
                             </div>
                         </div>
                         <div class="field grid justify-content-center">
-                            <div class="col-5 mt-4">
+                            <div class="col-12 lg:col-5 mt-4">
                                 <label class="label-required"
-                                    >Examen de valoración (Formato E, .pdf)
+                                    >Examen de valoración (Formato E .pdf)
                                 </label>
                                 <div
                                     style="max-width: 50rem"
@@ -792,7 +793,7 @@
                             </div>
                         </div>
                         <div class="field grid justify-content-center">
-                            <div class="col-5 mt-4">
+                            <div class="col-12 lg:col-5 mt-4">
                                 <label>Anexos (.pdf) </label>
                                 <div
                                     style="max-width: 50rem"
@@ -991,7 +992,7 @@
                             "
                             class="field grid justify-content-center"
                         >
-                            <div class="col-5">
+                            <div class="col-12 lg:col-5">
                                 <div>
                                     <label class="label-required">Asunto</label>
                                     <input
@@ -1065,7 +1066,7 @@
                             *ngIf="solicitudForm.get('conceptoComite').value"
                             class="field grid justify-content-center"
                         >
-                            <div class="col-5">
+                            <div class="col-12 lg:col-5">
                                 <p-card class="w-full m-0">
                                     <div class="text-center mb-4">
                                         <span>
@@ -1093,7 +1094,7 @@
                             *ngIf="solicitudForm.get('conceptoComite').value"
                             class="field grid justify-content-center"
                         >
-                            <div class="col-5">
+                            <div class="col-12 lg:col-5">
                                 <div>
                                     <label class="label-required">Asunto</label>
                                     <input
@@ -1125,7 +1126,7 @@
                             "
                             class="field grid justify-content-center"
                         >
-                            <div class="col-5 mt-2">
+                            <div class="col-12 lg:col-5 mt-2">
                                 <label class="label-required"
                                     >Ofcio dirigido a evaluadores sobre
                                     instrucciones para el examen de valoración
@@ -1176,7 +1177,6 @@
                                                         'linkOficioDirigidoEvaluadores'
                                                     )
                                                 "
-                                                [disabled]="isRespuestaCreated"
                                             ></button>
                                         </div>
                                         <div
@@ -1238,7 +1238,7 @@
                             class="field grid justify-content-center"
                         >
                             <div
-                                class="col-5 flex flex-nowrap justify-content-between align-items-center"
+                                class="col-12 lg:col-5 flex flex-nowrap justify-content-between align-items-center"
                             >
                                 <label class="label-required"
                                     >No Acta de aprobacion del examen</label
@@ -1256,6 +1256,7 @@
                                     formControlName="fechaActa"
                                     [showIcon]="true"
                                     dateFormat="dd.mm.yy"
+                                    [maxDate]="maxDate"
                                 ></p-calendar>
                             </div>
                         </div>
@@ -1267,7 +1268,7 @@
                             "
                         >
                             <div
-                                class="col-5 flex flex-nowrap justify-content-between align-items-center"
+                                class="col-12 lg:col-5 flex flex-nowrap justify-content-between align-items-center"
                             >
                                 <label class="label-required"
                                     >Fecha maxima de la evaluación</label
@@ -1278,6 +1279,26 @@
                                     dateFormat="dd.mm.yy"
                                 ></p-calendar>
                             </div>
+                        </div>
+                        <div
+                            class="flex flex-1 justify-content-end align-items-center mb-4"
+                            *ngIf="
+                                editMode &&
+                                role.includes('ROLE_COORDINADOR') &&
+                                isCoordinadorFase1 &&
+                                solicitudForm.get('conceptoComite').value ==
+                                    'Avalado'
+                            "
+                        >
+                            <button
+                                pButton
+                                pTooltip="Adjunta los formatos B y C para el envío a cada evaluador."
+                                tooltipPosition="top"
+                                icon="pi pi-external-link"
+                                label="Adjuntar (.pdf)"
+                                (click)="showFormatoB()"
+                                [disabled]="isRespuestaCreated"
+                            ></button>
                         </div>
                         <div
                             class="flex flex-1 justify-content-end align-items-center"
@@ -1303,21 +1324,6 @@
             <div
                 class="w-full flex align-items-center justify-content-end column-gap-2"
             >
-                <button
-                    *ngIf="
-                        editMode &&
-                        role.includes('ROLE_COORDINADOR') &&
-                        isCoordinadorFase1 &&
-                        solicitudForm.get('conceptoComite').value == 'Avalado'
-                    "
-                    pButton
-                    pTooltip="Formatos B y C"
-                    tooltipPosition="top"
-                    icon="pi pi-external-link"
-                    label="Adjuntar (.pdf)"
-                    (click)="showFormatoB()"
-                    [disabled]="isRespuestaCreated"
-                ></button>
                 <button
                     *ngIf="
                         editMode &&

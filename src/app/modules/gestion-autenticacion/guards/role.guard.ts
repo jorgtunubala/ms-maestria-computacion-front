@@ -16,7 +16,7 @@ export class RoleGuard implements CanActivate {
         const userRoles = this.autenticacion.getRole();
 
         if (!expectedRoles.some((role) => userRoles.includes(role))) {
-            this.router.navigate(['/pages/access']);
+            this.router.navigate(['/autenticacion/login']);
             return false;
         }
         return true;

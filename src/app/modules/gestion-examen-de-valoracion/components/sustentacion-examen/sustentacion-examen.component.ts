@@ -13,6 +13,7 @@ import {
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
+    Subject,
     Subscription,
     catchError,
     firstValueFrom,
@@ -51,6 +52,9 @@ import { AutenticacionService } from 'src/app/modules/gestion-autenticacion/serv
 export class SustentacionExamenComponent implements OnInit {
     @Output() formReady = new EventEmitter<FormGroup>();
     sustentacionForm: FormGroup;
+
+    private checkboxChangeSubject = new Subject<boolean>();
+    checkboxChange$ = this.checkboxChangeSubject.asObservable();
 
     private estudianteSubscription: Subscription;
     private trabajoSeleccionadoSubscription: Subscription;
@@ -104,6 +108,7 @@ export class SustentacionExamenComponent implements OnInit {
     isLoading: boolean = false;
     isChanged: boolean = false;
     isReviewed: boolean = false;
+    messageShown: boolean = false;
 
     pdfUrls: { name: string; url: string }[] = [];
     role: string[];
@@ -125,6 +130,8 @@ export class SustentacionExamenComponent implements OnInit {
     estadosComite: string[] = ['Aprobado', 'No Aprobado'];
     respuestas: string[] = ['Aprobado', 'No Aprobado', 'Aplazado'];
 
+    maxDate: Date;
+
     constructor(
         private fb: FormBuilder,
         private router: Router,
@@ -135,7 +142,9 @@ export class SustentacionExamenComponent implements OnInit {
         private autenticacion: AutenticacionService,
         private docenteService: DocenteService,
         private expertoService: ExpertoService
-    ) {}
+    ) {
+        this.maxDate = new Date();
+    }
 
     get juradoInterno(): FormControl {
         return this.sustentacionForm.get('idJuradoInterno') as FormControl;
@@ -277,6 +286,30 @@ export class SustentacionExamenComponent implements OnInit {
                     this.isReviewed = true;
                 }
             });
+
+        this.setupIsReviewedCheckBox();
+    }
+
+    async setupIsReviewedCheckBox() {
+        try {
+            const value = await firstValueFrom(this.checkboxChange$);
+            if (value && !this.messageShown) {
+                this.messageService.add({
+                    severity: 'info',
+                    summary: 'Información',
+                    detail: 'Todos los documentos han sido revisados. Ahora puede cerrar la vista actual. Recuerde guardar los cambios.',
+                    life: 8000,
+                });
+                this.messageShown = true;
+            }
+        } catch (error) {
+            console.error('Error al obtener el valor del checkbox:', error);
+        }
+    }
+
+    onCheckboxChange(value: boolean) {
+        this.isReviewed = value;
+        this.checkboxChangeSubject.next(value);
     }
 
     updateFormFields(role: string[]): void {
@@ -925,6 +958,7 @@ export class SustentacionExamenComponent implements OnInit {
                 this.sustentacionForm
                     .get('linkEstudioHojaVidaAcademica')
                     .setValue(`linkEstudioHojaVidaAcademica.docx-${base64}`);
+                this.displayFormatoHVA = false;
             })
             .catch((error) => {
                 console.error('Error al convertir el archivo a base64:', error);
@@ -947,6 +981,7 @@ export class SustentacionExamenComponent implements OnInit {
                     .setValue(
                         `linkEstudioHojaVidaAcademicaGrado.docx-${base64}`
                     );
+                this.displayFormatoHVAGrado = false;
             })
             .catch((error) => {
                 console.error('Error al convertir el archivo a base64:', error);
@@ -963,6 +998,7 @@ export class SustentacionExamenComponent implements OnInit {
                 this.sustentacionForm
                     .get('linkFormatoF')
                     .setValue(`linkFormatoF.pdf-${base64}`);
+                this.displayFormatoF = false;
             })
             .catch((error) => {
                 console.error('Error al convertir el archivo a base64:', error);
@@ -979,6 +1015,7 @@ export class SustentacionExamenComponent implements OnInit {
                 this.sustentacionForm
                     .get('linkFormatoG')
                     .setValue(`linkFormatoG.pdf-${base64}`);
+                this.displayFormatoG = false;
             })
             .catch((error) => {
                 console.error('Error al convertir el archivo a base64:', error);
@@ -2227,6 +2264,7 @@ export class SustentacionExamenComponent implements OnInit {
         return this.dialogService.open(BuscadorDocentesComponent, {
             header: 'Seleccionar docente',
             width: '60%',
+            styleClass: 'custom-docente-dialog',
         });
     }
 
@@ -2234,6 +2272,7 @@ export class SustentacionExamenComponent implements OnInit {
         return this.dialogService.open(BuscadorExpertosComponent, {
             header: 'Seleccionar experto',
             width: '60%',
+            styleClass: 'custom-experto-dialog',
         });
     }
 

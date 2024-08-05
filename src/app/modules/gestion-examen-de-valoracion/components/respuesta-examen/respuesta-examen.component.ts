@@ -183,8 +183,8 @@ export class RespuestaExamenComponent implements OnInit {
                                             .subscribe({
                                                 next: (response) => {
                                                     if (
-                                                        response?.numeroActaConsejoFacultad &&
-                                                        response?.fechaActaConsejoFacultad
+                                                        response?.numeroActaConsejo &&
+                                                        response?.fechaActaConsejo
                                                     ) {
                                                         this.isResolucionValid =
                                                             true;

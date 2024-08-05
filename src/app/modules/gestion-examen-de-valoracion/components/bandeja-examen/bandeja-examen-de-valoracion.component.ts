@@ -31,7 +31,6 @@ export class BandejaExamenDeValoracionComponent implements OnInit {
     estadosPermitidos: string[] = [
         EstadoProceso.EXAMEN_DE_VALORACION_CANCELADO,
         EstadoProceso.CANCELADO_TRABAJO_GRADO,
-        EstadoProceso.SUSTENTACION_APROBADA,
         EstadoProceso.SUSTENTACION_NO_APROBADA,
     ];
     estados: any[] = Object.keys(EstadoProceso).map((value, index) => ({
@@ -319,6 +318,7 @@ export class BandejaExamenDeValoracionComponent implements OnInit {
         return this.dialogService.open(BuscadorEstudiantesComponent, {
             header: 'Seleccionar estudiante',
             width: '60%',
+            styleClass: 'custom-estudiante-dialog',
         });
     }
 
@@ -369,7 +369,9 @@ export class BandejaExamenDeValoracionComponent implements OnInit {
             this.messageService.add(
                 infoMessage(Aviso.SOLICITUD_CANCELADA_CORRECTAMENTE)
             );
-            await this.listTrabajosDeGradoPorEstados([34]);
+            const keys = Object.keys(EstadoProceso);
+            const indexes = keys.map((_, index) => index);
+            await this.listTrabajosDeGradoPorEstados(indexes);
         } catch (error) {
             console.error('Error en cancelarTrabajoDeGrado:', error);
         }

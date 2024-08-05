@@ -480,7 +480,7 @@ export class DocumentoFormatoAComponent implements OnInit {
     showBuscadorExpertos() {
         return this.dialogService.open(BuscadorExpertosComponent, {
             header: 'Seleccionar experto',
-            width: '40%',
+            width: '60%',
         });
     }
 
@@ -498,7 +498,7 @@ export class DocumentoFormatoAComponent implements OnInit {
     showBuscadorDocentes() {
         return this.dialogService.open(BuscadorDocentesComponent, {
             header: 'Seleccionar docente',
-            width: '40%',
+            width: '60%',
         });
     }
     nombreCompletoEstudiante(e: any) {
@@ -515,6 +515,14 @@ export class DocumentoFormatoAComponent implements OnInit {
             const response = await firstValueFrom(ref.onClose);
             if (response) {
                 const orientador = this.mapOrientadorLabel(response);
+                if (this.orientadores.some((o) => o.id === orientador.id)) {
+                    this.messageService.add({
+                        severity: 'warn',
+                        summary: 'Advertencia',
+                        detail: 'Este orientador ya está seleccionado.',
+                    });
+                    return;
+                }
                 this.orientador.setValue(orientador);
                 this.orientadores.push(orientador);
             }

@@ -33,7 +33,7 @@
                         class="col-2 col-label text-right mr-2 align-self-start"
                     >
                         <label
-                            class="uppercase font-bold"
+                            class="label-required uppercase font-bold"
                             style="line-height: 1.5rem"
                             >Asunto</label
                         >
@@ -89,7 +89,7 @@
                     <div
                         class="col-2 col-label text-right mr-2 align-self-start"
                     >
-                        <label class="uppercase font-bold"
+                        <label class="label-required uppercase font-bold"
                             >Tutores y Asesores</label
                         >
                     </div>
@@ -345,6 +345,8 @@
                     type="button"
                     icon="pi pi-upload"
                     label="Insertar"
+                    pTooltip="Haz clic para insertar el documento en el área de carga de archivos."
+                    tooltipPosition="top"
                     (click)="onInsertar()"
                     [loading]="loading"
                 ></button>
