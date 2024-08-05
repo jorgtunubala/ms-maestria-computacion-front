@@ -512,7 +512,9 @@ export class ResolucionExamenComponent implements OnInit {
             this.estado ==
                 EstadoProceso.DEVUELTO_GENERACION_DE_RESOLUCION_POR_COORDINADOR ||
             this.estado ==
-                EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE1_GENERACION_RESOLUCION
+                EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE1_GENERACION_RESOLUCION ||
+            this.estado ==
+                EstadoProceso.DEVUELTO_GENERACION_DE_RESOLUCION_POR_COMITE
         ) {
             filesToConvert.push(
                 {
