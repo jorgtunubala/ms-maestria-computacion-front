@@ -676,18 +676,7 @@ export class SolicitudExamenComponent implements OnInit {
     async loadPdfFiles() {
         const filesToConvert = [];
 
-        if (
-            this.role.includes('ROLE_DOCENTE') &&
-            (this.estado ==
-                EstadoProceso.DEVUELTO_EXAMEN_DE_VALORACION_POR_COORDINADOR ||
-                this.estado ==
-                    EstadoProceso.DEVUELTO_EXAMEN_DE_VALORACION_POR_COMITE ||
-                this.estado == EstadoProceso.PENDIENTE_REVISION_COORDINADOR ||
-                this.estado ==
-                    EstadoProceso.EXAMEN_DE_VALORACION_NO_APROBADO_EVALUADOR_1 ||
-                this.estado ==
-                    EstadoProceso.EXAMEN_DE_VALORACION_APROBADO_Y_NO_APROBADO_EVALUADOR)
-        ) {
+        if (this.role.includes('ROLE_DOCENTE')) {
             filesToConvert.push(
                 {
                     file: this.FileFormatoA,
