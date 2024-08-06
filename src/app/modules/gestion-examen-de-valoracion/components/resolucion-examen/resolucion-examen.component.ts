@@ -224,10 +224,10 @@ export class ResolucionExamenComponent implements OnInit {
             const value = await firstValueFrom(this.checkboxChange$);
             if (value && !this.messageShown) {
                 this.messageService.add({
-                    severity: 'info',
-                    summary: 'Información',
+                    severity: 'success',
+                    summary: 'Revisado',
                     detail: 'Todos los documentos han sido revisados. Ahora puede cerrar la vista actual. Recuerde guardar los cambios.',
-                    life: 8000,
+                    life: 6000,
                 });
                 this.messageShown = true;
             }
@@ -506,15 +506,23 @@ export class ResolucionExamenComponent implements OnInit {
     async loadPdfFiles() {
         const filesToConvert = [];
 
-        if (
-            this.estado ==
-                EstadoProceso.EXAMEN_DE_VALORACION_APROBADO_EVALUADOR_2 ||
-            this.estado ==
-                EstadoProceso.DEVUELTO_GENERACION_DE_RESOLUCION_POR_COORDINADOR ||
+        if (this.role.includes('ROLE_DOCENTE')) {
+            filesToConvert.push(
+                {
+                    file: this.FileAnteproyectoFinal,
+                    fieldName: 'Anteproyecto Final',
+                },
+                {
+                    file: this.FileSolicitudComite,
+                    fieldName:
+                        'Solicitud al comité para resolución de aprobación de trabajo de grado',
+                }
+            );
+        } else if (
             this.estado ==
                 EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE1_GENERACION_RESOLUCION ||
             this.estado ==
-                EstadoProceso.DEVUELTO_GENERACION_DE_RESOLUCION_POR_COMITE
+                EstadoProceso.DEVUELTO_GENERACION_DE_RESOLUCION_POR_COORDINADOR
         ) {
             filesToConvert.push(
                 {

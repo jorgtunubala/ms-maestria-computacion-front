@@ -12,7 +12,6 @@ import { Estudiante } from 'src/app/modules/gestion-estudiantes/models/estudiant
 import { AutenticacionService } from 'src/app/modules/gestion-autenticacion/services/autenticacion.service';
 import { Solicitud } from '../../models/solicitud';
 import { SolicitudService } from '../../services/solicitud.service';
-import { RespuestaService } from '../../services/respuesta.service';
 import { ResolucionService } from '../../services/resolucion.service';
 import { SustentacionService } from '../../services/sustentacion.service';
 import { TrabajoDeGradoService } from '../../services/trabajoDeGrado.service';
@@ -54,7 +53,6 @@ export class BandejaExamenDeValoracionComponent implements OnInit {
         private localStorageService: LocalStorageService,
         private messageService: MessageService,
         private resolucionService: ResolucionService,
-        private respuestaService: RespuestaService,
         private router: Router,
         private solicitudService: SolicitudService,
         private sustentacionService: SustentacionService,
@@ -220,23 +218,6 @@ export class BandejaExamenDeValoracionComponent implements OnInit {
         }
 
         try {
-            const respuestaResponse = await firstValueFrom(
-                this.respuestaService
-                    .getRespuestasExamen(id)
-                    .pipe(catchError(() => of(null)))
-            );
-
-            if (respuestaResponse) {
-                this.trabajoDeGradoService.setRespuestaSeleccionada(
-                    respuestaResponse
-                );
-            }
-        } catch (error) {
-            // Manejar error si es necesario
-            console.error('Error al obtener respuestas:', error);
-        }
-
-        try {
             const resolucionResponse = await firstValueFrom(
                 this.resolucionService
                     .getResolucionDocente(id)
@@ -286,7 +267,6 @@ export class BandejaExamenDeValoracionComponent implements OnInit {
 
     resetState() {
         this.trabajoDeGradoService.setSolicitudSeleccionada(null);
-        this.trabajoDeGradoService.setRespuestaSeleccionada(null);
         this.trabajoDeGradoService.setResolucionSeleccionada(null);
         this.trabajoDeGradoService.setSustentacionSeleccionada(null);
     }

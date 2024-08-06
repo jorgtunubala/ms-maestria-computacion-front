@@ -1177,8 +1177,7 @@
                         <div class="field grid justify-content-center">
                             <div class="col-12 lg:col-5">
                                 <label class="label-required"
-                                    >Carta de aceptación nombramiento de jurados
-                                    (.pdf)
+                                    >Oficio consejo (.pdf)
                                 </label>
                                 <div
                                     style="max-width: 50rem"
@@ -1346,22 +1345,6 @@
                         </p>
                     </div>
                     <p-fieldset legend="Estudiante" styleClass="bg-bluegray-50">
-                        <div
-                            class="flex flex-1 justify-content-end align-items-center"
-                            *ngIf="
-                                role.includes('ROLE_ESTUDIANTE') &&
-                                isCoordinadorFase3
-                            "
-                        >
-                            <button
-                                *ngIf="editMode"
-                                pButton
-                                icon="pi pi-eye"
-                                label="Revisar documentos"
-                                (click)="openModal()"
-                                [disabled]="displayModal"
-                            ></button>
-                        </div>
                         <div class="field grid justify-content-center">
                             <div class="col-12 lg:col-5">
                                 <label class="label-required"
@@ -1626,6 +1609,22 @@
                                 </div>
                             </div>
                         </div>
+                        <div
+                            class="flex flex-1 justify-content-end align-items-center"
+                            *ngIf="
+                                role.includes('ROLE_ESTUDIANTE') &&
+                                isCoordinadorFase3
+                            "
+                        >
+                            <button
+                                *ngIf="editMode"
+                                pButton
+                                icon="pi pi-eye"
+                                label="Revisar documentos"
+                                (click)="openModal()"
+                                [disabled]="displayModal"
+                            ></button>
+                        </div>
                     </p-fieldset>
                 </div>
                 <div
@@ -1643,22 +1642,9 @@
                         </p>
                     </div>
                     <p-fieldset legend="Consejo" styleClass="bg-bluegray-50">
-                        <div
-                            class="flex flex-1 justify-content-end align-items-center"
-                            *ngIf="isEstudiante && !isCoordinadorFase4"
-                        >
-                            <button
-                                *ngIf="editMode"
-                                pButton
-                                icon="pi pi-eye"
-                                label="Revisar documentos"
-                                (click)="openModal()"
-                                [disabled]="displayModal"
-                            ></button>
-                        </div>
                         <div class="field grid justify-content-center">
                             <div class="col-12 lg:col-5 mt-2">
-                                <label class="label-required"
+                                <label class="label-required font-bold"
                                     >Respuesta a la sustentación
                                 </label>
                                 <div class="flex mt-2 column-gap-4">
@@ -1805,6 +1791,19 @@
                                     [maxDate]="maxDate"
                                 ></p-calendar>
                             </div>
+                        </div>
+                        <div
+                            class="flex flex-1 justify-content-end align-items-center"
+                            *ngIf="isEstudiante && !isCoordinadorFase4"
+                        >
+                            <button
+                                *ngIf="editMode"
+                                pButton
+                                icon="pi pi-eye"
+                                label="Revisar documentos"
+                                (click)="openModal()"
+                                [disabled]="displayModal"
+                            ></button>
                         </div>
                     </p-fieldset>
                 </div>

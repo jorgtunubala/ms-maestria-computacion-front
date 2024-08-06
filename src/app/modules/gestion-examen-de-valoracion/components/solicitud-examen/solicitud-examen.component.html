@@ -282,7 +282,7 @@
                     role.includes('ROLE_DOCENTE') ||
                     role.includes('ROLE_ESTUDIANTE')
                 "
-                (click)="redirectToRespuesta(respuestaId)"
+                (click)="redirectToRespuesta()"
             ></button>
             <button
                 *ngIf="role.includes('ROLE_ESTUDIANTE') ? false : editMode"
@@ -1128,7 +1128,7 @@
                         >
                             <div class="col-12 lg:col-5 mt-2">
                                 <label class="label-required"
-                                    >Ofcio dirigido a evaluadores sobre
+                                    >Oficio dirigido a evaluadores sobre
                                     instrucciones para el examen de valoración
                                     (.pdf)
                                 </label>
@@ -1241,9 +1241,12 @@
                             <div
                                 class="col-12 lg:col-5 flex flex-nowrap justify-content-between align-items-center"
                             >
-                                <label class="label-required"
-                                    >No Acta de aprobacion del examen</label
-                                >
+                                <label class="label-required">{{
+                                    solicitudForm.get("conceptoComite")
+                                        .value === "Avalado"
+                                        ? "No Acta de aprobación del examen"
+                                        : "No Acta del examen"
+                                }}</label>
                                 <input
                                     class="max-w-10rem ml-2"
                                     pInputText

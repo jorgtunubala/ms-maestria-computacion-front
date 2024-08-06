@@ -295,10 +295,10 @@ export class SustentacionExamenComponent implements OnInit {
             const value = await firstValueFrom(this.checkboxChange$);
             if (value && !this.messageShown) {
                 this.messageService.add({
-                    severity: 'info',
-                    summary: 'Información',
+                    severity: 'success',
+                    summary: 'Revisado',
                     detail: 'Todos los documentos han sido revisados. Ahora puede cerrar la vista actual. Recuerde guardar los cambios.',
-                    life: 8000,
+                    life: 6000,
                 });
                 this.messageShown = true;
             }
@@ -768,14 +768,7 @@ export class SustentacionExamenComponent implements OnInit {
     async loadPdfFiles() {
         const filesToConvert = [];
 
-        if (
-            this.estado ==
-                EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_DOCENTE_SUSTENTACION ||
-            this.estado ==
-                EstadoProceso.DEVUELTO_SUSTENTACION_PARA_CORREGIR_AL_DOCENTE_COORDINADOR ||
-            this.estado ==
-                EstadoProceso.DEVUELTO_SUSTENTACION_PARA_CORREGIR_AL_DOCENTE_COMITE
-        ) {
+        if (this.role.includes('ROLE_DOCENTE')) {
             filesToConvert.push(
                 {
                     file: this.FileFormatoF,
@@ -821,14 +814,11 @@ export class SustentacionExamenComponent implements OnInit {
         ) {
             filesToConvert.push({
                 file: this.FileOficioConsejo,
-                fieldName: 'Carta de aceptación nombramiento de jurados',
+                fieldName: 'Oficio consejo',
             });
         }
 
-        if (
-            this.estado ==
-            EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_ESTUDIANTE_SUSTENTACION
-        ) {
+        if (this.role.includes('ROLE_ESTUDIANTE')) {
             filesToConvert.push(
                 {
                     file: this.FileFormatoH,

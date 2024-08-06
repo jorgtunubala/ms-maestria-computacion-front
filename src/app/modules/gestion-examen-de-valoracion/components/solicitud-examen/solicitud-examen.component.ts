@@ -67,7 +67,6 @@ export class SolicitudExamenComponent implements OnInit {
     private estudianteSubscription: Subscription;
     private trabajoSeleccionadoSubscription: Subscription;
     private resolucionSubscription: Subscription;
-    private respuestaSubscription: Subscription;
     private sustentacionSubscription: Subscription;
     private solicitudSubscription: Subscription;
     private solicitudValidSubscription: Subscription;
@@ -75,7 +74,6 @@ export class SolicitudExamenComponent implements OnInit {
     private resolucionValidSubscription: Subscription;
 
     currentPdfIndex: number = 0;
-    respuestaId: number;
     resolucionId: number;
     solicitudId: number;
     sustentacionId: number;
@@ -176,6 +174,27 @@ export class SolicitudExamenComponent implements OnInit {
     async loadEditMode() {
         this.editMode = true;
         await this.loadSolicitud();
+
+        let detailMessage = '';
+
+        if (this.isResolucionValid) {
+            detailMessage = 'Por favor, dirígete a la fase de sustentación.';
+        } else if (this.isRespuestaValid) {
+            detailMessage = 'Por favor, dirígete a la fase de resolución.';
+        } else if (this.isCoordinadorFase2Created) {
+            detailMessage = 'Por favor, dirígete a la fase de respuesta.';
+        } else {
+            detailMessage = null;
+        }
+
+        if (detailMessage) {
+            this.messageService.add({
+                severity: 'info',
+                summary: 'Información',
+                detail: detailMessage,
+                life: 4000,
+            });
+        }
     }
 
     initForm(): void {
@@ -311,10 +330,10 @@ export class SolicitudExamenComponent implements OnInit {
             const value = await firstValueFrom(this.checkboxChange$);
             if (value && !this.messageShown) {
                 this.messageService.add({
-                    severity: 'info',
-                    summary: 'Información',
+                    severity: 'success',
+                    summary: 'Revisado',
                     detail: 'Todos los documentos han sido revisados. Ahora puede cerrar la vista actual. Recuerde guardar los cambios.',
-                    life: 8000,
+                    life: 6000,
                 });
                 this.messageShown = true;
             }
@@ -351,7 +370,7 @@ export class SolicitudExamenComponent implements OnInit {
 
     subscribeToObservers(): Promise<void> {
         return new Promise<void>((resolve) => {
-            let pendingObservables = 5;
+            let pendingObservables = 4;
 
             const checkCompletion = () => {
                 pendingObservables--;
@@ -489,22 +508,6 @@ export class SolicitudExamenComponent implements OnInit {
                     }
                 );
 
-            this.respuestaSubscription =
-                this.trabajoDeGradoService.respuestaSeleccionadaSubject$.subscribe(
-                    {
-                        next: (response) => {
-                            if (response) {
-                                this.respuestaId = response.id;
-                            }
-                            checkCompletion();
-                        },
-                        error: (e) => {
-                            this.handlerResponseException(e);
-                            checkCompletion();
-                        },
-                    }
-                );
-
             this.resolucionSubscription =
                 this.trabajoDeGradoService.resolucionSeleccionadaSubject$.subscribe(
                     {
@@ -599,9 +602,6 @@ export class SolicitudExamenComponent implements OnInit {
         }
         if (this.solicitudValidSubscription) {
             this.solicitudValidSubscription.unsubscribe();
-        }
-        if (this.respuestaSubscription) {
-            this.respuestaSubscription.unsubscribe();
         }
         if (this.respuestaValidSubscription) {
             this.respuestaValidSubscription.unsubscribe();

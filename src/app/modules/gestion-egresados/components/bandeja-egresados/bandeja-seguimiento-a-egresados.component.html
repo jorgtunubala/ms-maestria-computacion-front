@@ -161,6 +161,7 @@
                 </div>
                 <div class="col-10 col-input text-right">
                     <button
+                        *ngIf="role.includes('ROLE_ESTUDIANTE')"
                         pButton
                         icon="pi pi-plus"
                         class="mr-2"
@@ -267,6 +268,7 @@
                                 </td>
                                 <td style="min-width: 200px">
                                     <button
+                                        *ngIf="role.includes('ROLE_ESTUDIANTE')"
                                         pButton
                                         pTooltip="Editar"
                                         type="button"
@@ -303,6 +305,7 @@
                 </div>
                 <div class="col-10 col-input text-right">
                     <button
+                        *ngIf="role.includes('ROLE_ESTUDIANTE')"
                         pButton
                         icon="pi pi-plus"
                         class="mr-2"
@@ -386,6 +389,7 @@
                                 </td>
                                 <td style="min-width: 200px">
                                     <button
+                                        *ngIf="role.includes('ROLE_ESTUDIANTE')"
                                         pButton
                                         pTooltip="Editar"
                                         type="button"
