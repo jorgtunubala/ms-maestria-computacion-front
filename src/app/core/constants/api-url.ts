@@ -4,7 +4,7 @@ import {
     gestion_egresados,
     gestion_expertos,
     gestion_trabajo_grado,
-} from 'src/environments/environment';
+} from 'src/environments/environment.prod';
 
 export function backendAuth(path: string): string {
     return gestion_autenticacion.api_url.concat(path);
