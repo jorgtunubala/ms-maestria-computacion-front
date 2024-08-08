@@ -77,7 +77,7 @@ export class CustomFileUploadComponent implements ControlValueAccessor {
 
     onFileChange(event: any) {
         const selectedFiles: FileList = event.files;
-        const maxFileSize = 5000000; // 5 MB
+        const maxFileSize = 20000000; // 20 MB
         if (selectedFiles && selectedFiles.length > 0) {
             const selectedFile = selectedFiles[0];
             if (selectedFile.size > maxFileSize) {

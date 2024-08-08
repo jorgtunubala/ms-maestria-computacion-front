@@ -1,0 +1,141 @@
+<p-panel>
+    <div id="formatoResolucionConsejo">
+        <div class="flex flex-column w-full mb-4">
+            <div
+                class="flex align-items-center justify-content-evenly header-logo"
+            >
+                <div>
+                    <h2>Maestría en Computación</h2>
+                    <h2>
+                        Facultad de Ingeniería Electrónica y Telecomunicaciones
+                    </h2>
+                </div>
+                <img
+                    src="assets/layout/images/logoUnicauca.png"
+                    alt="Logo Unicauca"
+                    width="120px"
+                    height="180px"
+                />
+            </div>
+        </div>
+        <div class="mt-4 px-8">
+            <form [formGroup]="formatoResolucionConsejoForm">
+                <div class="field grid justify-content-start">
+                    <label class="col-2" for="titulo">Titulo</label>
+                    <div class="col-10">
+                        <input
+                            pInputText
+                            class="p-inputtext-md w-full"
+                            type="text"
+                            id="titulo"
+                            formControlName="titulo"
+                            readonly
+                        />
+                    </div>
+                </div>
+
+                <div class="field grid justify-content-start">
+                    <label class="col-2" for="facultad">Facultad</label>
+                    <div class="col-10">
+                        <input
+                            pInputText
+                            class="p-inputtext-md w-full"
+                            type="text"
+                            id="facultad"
+                            formControlName="facultad"
+                            readonly
+                        />
+                    </div>
+                </div>
+
+                <div class="field grid justify-content-start">
+                    <label class="col-2" for="programa">Programa</label>
+                    <div class="col-10">
+                        <input
+                            pInputText
+                            class="p-inputtext-md w-full"
+                            type="text"
+                            id="programa"
+                            formControlName="programa"
+                            readonly
+                        />
+                    </div>
+                </div>
+
+                <div
+                    class="field grid justify-content-start align-items-center"
+                >
+                    <div class="col-2">
+                        <label class="label-required" for="director"
+                            >Director(a):</label
+                        >
+                    </div>
+                    <div class="col-10">
+                        <input
+                            pInputText
+                            type="text"
+                            id="director"
+                            formControlName="director"
+                            readonly
+                        />
+                        <label class="label-required mx-4" for="estudiante"
+                            >Estudiante:</label
+                        >
+                        <input
+                            pInputText
+                            type="text"
+                            id="estudiante"
+                            formControlName="estudiante"
+                            readonly
+                        />
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div
+            class="flex flex-row align-items-center justify-content-center footer-logo mt-8"
+        >
+            <img
+                src="assets/layout/images/logosIcontec.png"
+                alt="Logo Icontec"
+                width="200px"
+                height="140px"
+            />
+            <div
+                class="flex flex-column align-items-center justify-content-center"
+            >
+                <span>Por una Universidad de excelencia y solidaria</span>
+                <hr />
+                <strong>
+                    Facultad de Ingeniería Electrónica y Telecomunicaciones Cra
+                    2 No. 4N-140 Edif. de Ingenierías - Sector Tulcán Popayán -
+                    Cauca - Colombia Conmutador 8209800 Ext. 2145
+                    maestriacomputacion@unicauca.edu.co - www.unicauca.edu.co
+                    www.unicauca.edu.co/maestriacomputación
+                </strong>
+            </div>
+        </div>
+        <div
+            class="flex align-items-center justify-content-end mt-4 column-gap-2"
+        >
+            <button
+                pButton
+                type="button"
+                icon="pi pi-upload"
+                label="Insertar"
+                pTooltip="Haz clic para insertar el documento en el área de carga de archivos."
+                tooltipPosition="top"
+                (click)="onInsertar()"
+                [loading]="loading"
+            ></button>
+            <button
+                pButton
+                type="button"
+                icon="pi pi-download"
+                label="Descargar"
+                (click)="onDownload()"
+                [loading]="loading"
+            ></button>
+        </div>
+    </div>
+</p-panel>

@@ -123,10 +123,7 @@
                                         class="mt-2 card-data flex justify-content-between w-full"
                                     >
                                         <span>Nombres y Apellidos</span>
-                                        <span
-                                            >{{ orientador.nombre }}
-                                            {{ orientador.apellido }}</span
-                                        >
+                                        <span>{{ orientador.nombres }}</span>
                                     </div>
                                     <div
                                         class="mt-2 card-data flex justify-content-between w-full"
@@ -148,19 +145,6 @@
                         <div
                             class="flex align-items-center column-gap-4 btn-roles"
                         >
-                            <button
-                                pButton
-                                icon="pi pi-plus"
-                                [label]="
-                                    'Seleccionar ' +
-                                    tipoSeleccionado.toLowerCase()
-                                "
-                                [disabled]="!tipoSeleccionado"
-                                (click)="
-                                    onSeleccionarOrientador(tipoSeleccionado)
-                                "
-                                style="white-space: nowrap; width: auto"
-                            ></button>
                             <p-dropdown
                                 [options]="roles"
                                 placeholder="Seleccione"
@@ -183,6 +167,19 @@
                                         getFormControl('tipo').touched
                                 }"
                             ></p-dropdown>
+                            <button
+                                pButton
+                                icon="pi pi-plus"
+                                [label]="
+                                    'Seleccionar ' +
+                                    tipoSeleccionado.toLowerCase()
+                                "
+                                [disabled]="!tipoSeleccionado"
+                                (click)="
+                                    onSeleccionarOrientador(tipoSeleccionado)
+                                "
+                                style="white-space: nowrap; width: auto"
+                            ></button>
                         </div>
                     </div>
                 </div>

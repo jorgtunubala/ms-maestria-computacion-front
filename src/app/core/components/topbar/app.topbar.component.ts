@@ -105,26 +105,26 @@ export class AppTopBarComponent implements OnInit {
                 }
                 return false;
             }
-            if (item.label === 'TRABAJOS DE GRADO') {
+            if (item.label === 'GESTIÓN TRABAJO DE GRADO') {
                 if (!user) {
                     return false;
                 } else if (user.role.includes('ROLE_COORDINADOR')) {
                     item.items = item.items.filter(
                         (subItem) =>
                             subItem.label === 'Seguimiento a egresados' ||
-                            subItem.label === 'Examen de valoración'
+                            subItem.label === 'Trabajo de Grado'
                     );
                     return true;
                 } else if (user.role.includes('ROLE_DOCENTE')) {
                     item.items = item.items.filter(
-                        (subItem) => subItem.label === 'Examen de valoración'
+                        (subItem) => subItem.label === 'Trabajo de Grado'
                     );
                     return true;
                 } else if (user.role.includes('ROLE_ESTUDIANTE')) {
                     item.items = item.items.filter(
                         (subItem) =>
                             subItem.label === 'Seguimiento a egresados' ||
-                            subItem.label === 'Examen de valoración' ||
+                            subItem.label === 'Trabajo de Grado' ||
                             subItem.label === 'Generar Hoja de Vida'
                     );
                     return true;

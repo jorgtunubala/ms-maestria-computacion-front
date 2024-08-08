@@ -27,6 +27,90 @@
             </div>
         </p-card>
         <p-dialog
+            *ngIf="role.includes('ROLE_COORDINADOR')"
+            header="Formato Hoja de Vida Academica"
+            [(visible)]="displayFormatoHVA"
+            [style]="{ width: '70vw' }"
+            [modal]="true"
+            [maximizable]="true"
+            [baseZIndex]="10000"
+            [draggable]="false"
+            [resizable]="false"
+        >
+            <ng-container>
+                <documento-formatoHva
+                    [fileFormatoHva]="FileEstudioHVA"
+                    [trabajoDeGradoId]="trabajoDeGradoId"
+                    (formatoHvaDocxGenerated)="
+                        handleFormatoHvaDocxGenerated($event)
+                    "
+                ></documento-formatoHva>
+            </ng-container>
+        </p-dialog>
+        <p-dialog
+            *ngIf="role.includes('ROLE_ESTUDIANTE')"
+            header="Formato Hoja de Vida Academica para Grado"
+            [(visible)]="displayFormatoHVAGrado"
+            [style]="{ width: '70vw' }"
+            [modal]="true"
+            [maximizable]="true"
+            [baseZIndex]="10000"
+            [draggable]="false"
+            [resizable]="false"
+        >
+            <ng-container>
+                <documento-formatoHvaGrado></documento-formatoHvaGrado>
+            </ng-container>
+        </p-dialog>
+        <p-dialog
+            *ngIf="
+                role.includes('ROLE_DOCENTE') &&
+                juradoInternoSeleccionado &&
+                juradoExternoSeleccionado
+            "
+            header="Formato F"
+            [(visible)]="displayFormatoF"
+            [style]="{ width: '70vw' }"
+            [modal]="true"
+            [maximizable]="true"
+            [baseZIndex]="10000"
+            [draggable]="false"
+            [resizable]="false"
+        >
+            <ng-container>
+                <documento-formatoF
+                    [trabajoDeGradoId]="trabajoDeGradoId"
+                    [juradoInternoSeleccionado]="juradoInternoSeleccionado"
+                    [juradoExternoSeleccionado]="juradoExternoSeleccionado"
+                    (formatoFPdfGenerated)="handleFormatoFGenerated($event)"
+                ></documento-formatoF>
+            </ng-container>
+        </p-dialog>
+        <p-dialog
+            *ngIf="
+                role.includes('ROLE_COORDINADOR') &&
+                juradoInternoSeleccionado &&
+                juradoExternoSeleccionado
+            "
+            header="Formato G"
+            [(visible)]="displayFormatoG"
+            [style]="{ width: '70vw' }"
+            [modal]="true"
+            [maximizable]="true"
+            [baseZIndex]="10000"
+            [draggable]="false"
+            [resizable]="false"
+        >
+            <ng-container>
+                <documento-formatoG
+                    [trabajoDeGradoId]="trabajoDeGradoId"
+                    [juradoInternoSeleccionado]="juradoInternoSeleccionado"
+                    [juradoExternoSeleccionado]="juradoExternoSeleccionado"
+                    (formatoGPdfGenerated)="handleFormatoGGenerated($event)"
+                ></documento-formatoG>
+            </ng-container>
+        </p-dialog>
+        <p-dialog
             header="PDF Viewer"
             [(visible)]="displayModal"
             [style]="{
@@ -126,87 +210,6 @@
                 ></pdf-viewer>
             </div>
         </p-dialog>
-        <p-dialog
-            *ngIf="role.includes('ROLE_COORDINADOR')"
-            header="Formato Hoja de Vida Academica"
-            [(visible)]="displayFormatoHVA"
-            [style]="{ width: '70vw' }"
-            [modal]="true"
-            [maximizable]="true"
-            [baseZIndex]="10000"
-            [draggable]="false"
-            [resizable]="false"
-        >
-            <ng-container>
-                <documento-formatoHva
-                    [fileFormatoHva]="FileEstudioHVA"
-                    [trabajoDeGradoId]="trabajoDeGradoId"
-                    (formatoHvaDocxGenerated)="
-                        handleFormatoHvaDocxGenerated($event)
-                    "
-                ></documento-formatoHva>
-            </ng-container>
-        </p-dialog>
-        <p-dialog
-            *ngIf="role.includes('ROLE_ESTUDIANTE')"
-            header="Formato Hoja de Vida Academica para Grado"
-            [(visible)]="displayFormatoHVAGrado"
-            [style]="{ width: '70vw' }"
-            [modal]="true"
-            [maximizable]="true"
-            [baseZIndex]="10000"
-            [draggable]="false"
-            [resizable]="false"
-        >
-            <ng-container>
-                <documento-formatoHvaGrado
-                    [fileFormatoHvaGrado]="FileEstudioHVAGrado"
-                    (formatoHvaGradoDocxGenerated)="
-                        handleFormatoHvaGradoDocxGenerated($event)
-                    "
-                ></documento-formatoHvaGrado>
-            </ng-container>
-        </p-dialog>
-        <p-dialog
-            *ngIf="role.includes('ROLE_DOCENTE')"
-            header="Formato F"
-            [(visible)]="displayFormatoF"
-            [style]="{ width: '70vw' }"
-            [modal]="true"
-            [maximizable]="true"
-            [baseZIndex]="10000"
-            [draggable]="false"
-            [resizable]="false"
-        >
-            <ng-container>
-                <documento-formatoF
-                    [trabajoDeGradoId]="trabajoDeGradoId"
-                    [juradoExternoId]="juradoExterno.value"
-                    [juradoInternoId]="juradoInterno.value"
-                    (formatoFPdfGenerated)="handleFormatoFGenerated($event)"
-                ></documento-formatoF>
-            </ng-container>
-        </p-dialog>
-        <p-dialog
-            *ngIf="role.includes('ROLE_COORDINADOR')"
-            header="Formato G"
-            [(visible)]="displayFormatoG"
-            [style]="{ width: '70vw' }"
-            [modal]="true"
-            [maximizable]="true"
-            [baseZIndex]="10000"
-            [draggable]="false"
-            [resizable]="false"
-        >
-            <ng-container>
-                <documento-formatoG
-                    [trabajoDeGradoId]="trabajoDeGradoId"
-                    [juradoInterno]="juradoInternoSeleccionado"
-                    [juradoExterno]="juradoExternoSeleccionado"
-                    (formatoGPdfGenerated)="handleFormatoGGenerated($event)"
-                ></documento-formatoG>
-            </ng-container>
-        </p-dialog>
     </div>
     <div class="flex mt-4 justify-content-between">
         <div class="flex align-items-center column-gap-4 sustentacion-wrap">
@@ -283,7 +286,108 @@
                             solicitud
                         </p>
                     </div>
-                    <p-fieldset legend="Docente" styleClass="bg-bluegray-50">
+                    <p-fieldset
+                        legend="Docente"
+                        styleClass="bg-bluegray-50"
+                        [toggleable]="
+                            role.includes('ROLE_COORDINADOR') ? true : false
+                        "
+                        [collapsed]="
+                            role.includes('ROLE_COORDINADOR') ? true : false
+                        "
+                    >
+                        <div class="field grid justify-content-center">
+                            <div
+                                class="col-12 lg:col-5"
+                                *ngIf="juradoInterno.value"
+                            >
+                                <label>Jurado Interno</label>
+                                <div class="flex align-items-center">
+                                    <p-card class="w-full m-0">
+                                        <div
+                                            class="flex justify-content-between align-items-center"
+                                        >
+                                            <span>{{
+                                                juradoInternoSeleccionado.nombres ??
+                                                    juradoInternoSeleccionado.nombre +
+                                                        " " +
+                                                        juradoInternoSeleccionado.apellido
+                                            }}</span>
+                                            <button
+                                                pButton
+                                                class="p-button-secondary"
+                                                icon="pi pi-times"
+                                                (click)="limpiarJuradoInterno()"
+                                                [disabled]="
+                                                    !role.includes(
+                                                        'ROLE_DOCENTE'
+                                                    )
+                                                "
+                                            ></button>
+                                        </div>
+                                    </p-card>
+                                </div>
+                            </div>
+                            <div
+                                class="col-12 lg:col-5"
+                                *ngIf="!juradoInterno.value"
+                            >
+                                <label>Jurado Interno</label>
+                                <button
+                                    pButton
+                                    class="mt-2 w-full"
+                                    icon="pi pi-plus"
+                                    label="Seleccionar Jurado"
+                                    (click)="onSeleccionarJuradoInterno()"
+                                ></button>
+                            </div>
+                        </div>
+                        <div class="field grid justify-content-center">
+                            <div
+                                class="col-12 lg:col-5"
+                                *ngIf="juradoExterno.value"
+                            >
+                                <label>Jurado Externo</label>
+                                <div class="flex align-items-center">
+                                    <p-card class="w-full m-0">
+                                        <div
+                                            class="flex justify-content-between align-items-center"
+                                        >
+                                            <span>{{
+                                                juradoExternoSeleccionado.nombres ??
+                                                    juradoExternoSeleccionado.nombre +
+                                                        " " +
+                                                        juradoExternoSeleccionado.apellido
+                                            }}</span>
+                                            <button
+                                                pButton
+                                                class="p-button-secondary"
+                                                icon="pi pi-times"
+                                                (click)="limpiarJuradoExterno()"
+                                                [disabled]="
+                                                    !role.includes(
+                                                        'ROLE_DOCENTE'
+                                                    )
+                                                "
+                                            ></button>
+                                        </div>
+                                    </p-card>
+                                </div>
+                            </div>
+                            <div
+                                class="col-12 lg:col-5"
+                                *ngIf="!juradoExterno.value"
+                            >
+                                <label>Jurado Externo</label>
+                                <button
+                                    pButton
+                                    class="mt-2 w-full"
+                                    icon="pi pi-plus"
+                                    label="Seleccionar Jurado"
+                                    (click)="onSeleccionarJuradoExterno()"
+                                ></button>
+                            </div>
+                        </div>
                         <div class="field grid justify-content-center">
                             <div class="col-12 lg:col-5 mt-4">
                                 <label class="label-required"
@@ -367,6 +471,10 @@
                                         label="Crear Documento"
                                         (click)="showFormatoF()"
                                         [loading]="loading"
+                                        [disabled]="
+                                            !juradoInternoSeleccionado ||
+                                            !juradoExternoSeleccionado
+                                        "
                                     ></button>
                                 </div>
                                 <div
@@ -614,6 +722,18 @@
                     <p-fieldset
                         legend="Coordinador"
                         styleClass="bg-bluegray-50"
+                        [toggleable]="
+                            role.includes('ROLE_COORDINADOR') &&
+                            isCoordinadorFase1
+                                ? true
+                                : false
+                        "
+                        [collapsed]="
+                            role.includes('ROLE_COORDINADOR') &&
+                            isCoordinadorFase1
+                                ? true
+                                : false
+                        "
                     >
                         <div class="field grid">
                             <div
@@ -688,6 +808,111 @@
                                 </div>
                             </div>
                         </div>
+                        <div
+                            *ngIf="
+                                sustentacionForm.get('conceptoCoordinador')
+                                    .value == 'Aceptado'
+                            "
+                            class="field grid justify-content-center"
+                        >
+                            <div class="col-12 lg:col-5 mt-4">
+                                <label class="label-required"
+                                    >Estudio hoja de vida academica
+                                    (AE-247.docx)
+                                </label>
+                                <div
+                                    style="max-width: 50rem"
+                                    class="flex flex-wrap gap-2 mt-2 align-items-start"
+                                >
+                                    <div
+                                        class="flex flex-column row-gap-2 align-items-start justify-content-start flex-1"
+                                    >
+                                        <div
+                                            class="flex flex-row w-full justify-content-between"
+                                        >
+                                            <p-fileUpload
+                                                #EstudioHVA
+                                                name="linkEstudioHojaVidaAcademica"
+                                                mode="basic"
+                                                [auto]="true"
+                                                accept=".docx"
+                                                chooseIcon="pi pi-file"
+                                                class="w-full"
+                                                maxFileSize="5000000"
+                                                (onSelect)="
+                                                    onFileSelectEstudioHVA(
+                                                        $event
+                                                    )
+                                                "
+                                                chooseLabel="Buscar documento"
+                                                [disabled]="
+                                                    sustentacionForm.get(
+                                                        'linkEstudioHojaVidaAcademica'
+                                                    ).value
+                                                "
+                                            >
+                                            </p-fileUpload>
+                                            <button
+                                                *ngIf="FileEstudioHVA"
+                                                pButton
+                                                class="p-button-secondary"
+                                                icon="pi pi-times"
+                                                type="button"
+                                                (click)="
+                                                    onFileClear(
+                                                        'linkEstudioHojaVidaAcademica'
+                                                    )
+                                                "
+                                                [disabled]="
+                                                    isSustentacionCreated
+                                                "
+                                            ></button>
+                                        </div>
+                                        <div
+                                            class="text-description mt-2"
+                                            style="
+                                                width: '200px';
+                                                word-break: break-word;
+                                            "
+                                            *ngIf="FileEstudioHVA"
+                                        >
+                                            {{ FileEstudioHVA.name }} -
+                                            {{
+                                                FileEstudioHVA.size | bytesToKb
+                                            }}
+                                            KB
+                                        </div>
+                                    </div>
+                                    <button
+                                        *ngIf="editMode && FileEstudioHVA"
+                                        pButton
+                                        class="p-button-secondary"
+                                        type="button"
+                                        icon="pi pi-download"
+                                        (click)="
+                                            getFileAndSetValue(
+                                                'linkEstudioHojaVidaAcademica'
+                                            )
+                                        "
+                                    ></button>
+                                    <button
+                                        *ngIf="!FileEstudioHVA"
+                                        pButton
+                                        icon="pi pi-plus"
+                                        class="align-self-center"
+                                        label="Crear Documento"
+                                        (click)="showFormatoHVA()"
+                                        [loading]="loading"
+                                    ></button>
+                                </div>
+                                <div
+                                    class="text-description mt-2"
+                                    *ngIf="!FileEstudioHVA"
+                                >
+                                    <p>No has seleccionado ningún documento.</p>
+                                </div>
+                            </div>
+                        </div>
                     </p-fieldset>
                 </div>
                 <div
@@ -706,7 +931,22 @@
                             solicitud
                         </p>
                     </div>
-                    <p-fieldset legend="Comite" styleClass="bg-bluegray-50">
+                    <p-fieldset
+                        legend="Comite"
+                        styleClass="bg-bluegray-50"
+                        [toggleable]="
+                            role.includes('ROLE_COORDINADOR') &&
+                            isCoordinadorFase2
+                                ? true
+                                : false
+                        "
+                        [collapsed]="
+                            role.includes('ROLE_COORDINADOR') &&
+                            isCoordinadorFase2
+                                ? true
+                                : false
+                        "
+                    >
                         <div class="field grid">
                             <div
                                 class="flex flex-column w-full justify-content-center align-items-center row-gap-4"
@@ -814,7 +1054,9 @@
                                                     onFileClear('linkFormatoG')
                                                 "
                                                 [disabled]="
-                                                    isSustentacionCreated
+                                                    isSustentacionCreated ||
+                                                    !juradoInternoSeleccionado ||
+                                                    !juradoExternoSeleccionado
                                                 "
                                             ></button>
                                         </div>
@@ -859,111 +1101,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div
-                            *ngIf="
-                                sustentacionForm.get('conceptoComite').value ==
-                                'Aprobado'
-                            "
-                            class="field grid justify-content-center"
-                        >
-                            <div class="col-12 lg:col-5 mt-4">
-                                <label class="label-required"
-                                    >Estudio hoja de vida academica
-                                    (AE-247.docx)
-                                </label>
-                                <div
-                                    style="max-width: 50rem"
-                                    class="flex flex-wrap gap-2 mt-2 align-items-start"
-                                >
-                                    <div
-                                        class="flex flex-column row-gap-2 align-items-start justify-content-start flex-1"
-                                    >
-                                        <div
-                                            class="flex flex-row w-full justify-content-between"
-                                        >
-                                            <p-fileUpload
-                                                #EstudioHVA
-                                                name="linkEstudioHojaVidaAcademica"
-                                                mode="basic"
-                                                [auto]="true"
-                                                accept=".docx"
-                                                chooseIcon="pi pi-file"
-                                                class="w-full"
-                                                maxFileSize="5000000"
-                                                (onSelect)="
-                                                    onFileSelectEstudioHVA(
-                                                        $event
-                                                    )
-                                                "
-                                                chooseLabel="Buscar documento"
-                                                [disabled]="
-                                                    sustentacionForm.get(
-                                                        'linkEstudioHojaVidaAcademica'
-                                                    ).value
-                                                "
-                                            >
-                                            </p-fileUpload>
-                                            <button
-                                                *ngIf="FileEstudioHVA"
-                                                pButton
-                                                class="p-button-secondary"
-                                                icon="pi pi-times"
-                                                type="button"
-                                                (click)="
-                                                    onFileClear(
-                                                        'linkEstudioHojaVidaAcademica'
-                                                    )
-                                                "
-                                                [disabled]="
-                                                    isSustentacionCreated
-                                                "
-                                            ></button>
-                                        </div>
-                                        <div
-                                            class="text-description mt-2"
-                                            style="
-                                                width: '200px';
-                                                word-break: break-word;
-                                            "
-                                            *ngIf="FileEstudioHVA"
-                                        >
-                                            {{ FileEstudioHVA.name }} -
-                                            {{
-                                                FileEstudioHVA.size | bytesToKb
-                                            }}
-                                            KB
-                                        </div>
-                                    </div>
-                                    <button
-                                        *ngIf="editMode && FileEstudioHVA"
-                                        pButton
-                                        class="p-button-secondary"
-                                        type="button"
-                                        icon="pi pi-download"
-                                        (click)="
-                                            getFileAndSetValue(
-                                                'linkEstudioHojaVidaAcademica'
-                                            )
-                                        "
-                                    ></button>
-                                    <button
-                                        *ngIf="!FileEstudioHVA"
-                                        pButton
-                                        icon="pi pi-plus"
-                                        class="align-self-center"
-                                        label="Crear Documento"
-                                        (click)="showFormatoHVA()"
-                                        [loading]="loading"
-                                    ></button>
-                                </div>
-                                <div
-                                    class="text-description mt-2"
-                                    *ngIf="!FileEstudioHVA"
-                                >
-                                    <p>No has seleccionado ningún documento.</p>
-                                </div>
-                            </div>
-                        </div>
+
                         <div
                             *ngIf="sustentacionForm.get('conceptoComite').value"
                             class="field grid justify-content-center"
@@ -1027,7 +1165,22 @@
                             solicitud
                         </p>
                     </div>
-                    <p-fieldset legend="Consejo" styleClass="bg-bluegray-50">
+                    <p-fieldset
+                        legend="Consejo"
+                        styleClass="bg-bluegray-50"
+                        [toggleable]="
+                            role.includes('ROLE_COORDINADOR') &&
+                            isCoordinadorFase3
+                                ? true
+                                : false
+                        "
+                        [collapsed]="
+                            role.includes('ROLE_COORDINADOR') &&
+                            isCoordinadorFase3
+                                ? true
+                                : false
+                        "
+                    >
                         <div class="field grid justify-content-center">
                             <div class="col-12 lg:col-5">
                                 <label>Nombramiento de Jurados</label>
@@ -1177,7 +1330,7 @@
                         <div class="field grid justify-content-center">
                             <div class="col-12 lg:col-5">
                                 <label class="label-required"
-                                    >Oficio consejo (.pdf)
+                                    >Oficio del Consejo (.pdf)
                                 </label>
                                 <div
                                     style="max-width: 50rem"
@@ -1264,34 +1417,13 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="field grid justify-content-center">
-                            <div class="col-12 lg:col-5">
-                                <p-divider></p-divider>
-                            </div>
-                        </div>
-                        <div
-                            *ngIf="isCoordinadorFase3Created"
-                            class="field grid justify-content-center"
-                        >
-                            <div
-                                class="col-12 lg:col-5 flex flex-nowrap align-items-center justify-content-between"
-                            >
-                                <label class="label-required"
-                                    >Fecha Sustentacion</label
-                                >
-                                <p-calendar
-                                    formControlName="fechaSustentacion"
-                                    [showIcon]="true"
-                                    dateFormat="dd.mm.yy"
-                                ></p-calendar>
-                            </div>
-                        </div>
+
                         <div class="field grid justify-content-center">
                             <div
                                 class="col-12 lg:col-5 flex flex-nowrap align-items-center justify-content-between"
                             >
                                 <label class="label-required">
-                                    No acta de revisión trabajo final
+                                    No Oficio
                                 </label>
                                 <input
                                     class="max-w-10rem ml-2"
@@ -1299,7 +1431,7 @@
                                     formControlName="numeroActaConsejo"
                                 />
                                 <label class="label-required ml-4"
-                                    >Fecha del Acta</label
+                                    >Fecha Oficio</label
                                 >
                                 <p-calendar
                                     class="ml-2"
@@ -1344,7 +1476,20 @@
                             solicitud
                         </p>
                     </div>
-                    <p-fieldset legend="Estudiante" styleClass="bg-bluegray-50">
+                    <p-fieldset
+                        legend="Estudiante"
+                        styleClass="bg-bluegray-50"
+                        [toggleable]="
+                            role.includes('ROLE_COORDINADOR') && isEstudiante
+                                ? true
+                                : false
+                        "
+                        [collapsed]="
+                            role.includes('ROLE_COORDINADOR') && isEstudiante
+                                ? true
+                                : false
+                        "
+                    >
                         <div class="field grid justify-content-center">
                             <div class="col-12 lg:col-5">
                                 <label class="label-required"
@@ -1609,6 +1754,25 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="field grid justify-content-center">
+                            <div class="col-12 lg:col-5">
+                                <p-divider></p-divider>
+                            </div>
+                        </div>
+                        <div class="field grid justify-content-center">
+                            <div
+                                class="col-12 lg:col-5 flex flex-nowrap align-items-center justify-content-between"
+                            >
+                                <label class="label-required"
+                                    >Fecha Sustentacion</label
+                                >
+                                <p-calendar
+                                    formControlName="fechaSustentacion"
+                                    [showIcon]="true"
+                                    dateFormat="dd.mm.yy"
+                                ></p-calendar>
+                            </div>
+                        </div>
                         <div
                             class="flex flex-1 justify-content-end align-items-center"
                             *ngIf="
@@ -1667,132 +1831,6 @@
                             </div>
                         </div>
                         <div
-                            *ngIf="
-                                sustentacionForm.get('respuestaSustentacion')
-                                    .value == 'Aprobado'
-                            "
-                            class="field grid justify-content-center"
-                        >
-                            <div class="col-12 lg:col-5">
-                                <label class="label-required"
-                                    >Acta para Sustentación Pública (Formato
-                                    PA-GA-4.2-FOR-13 .pdf)
-                                </label>
-                                <div
-                                    style="max-width: 50rem"
-                                    class="flex flex-wrap gap-2 mt-2 align-items-start"
-                                >
-                                    <div
-                                        class="flex flex-column row-gap-2 align-items-start justify-content-start flex-1"
-                                    >
-                                        <div
-                                            class="flex flex-row w-full justify-content-between"
-                                        >
-                                            <p-fileUpload
-                                                #ActaSustentacionP
-                                                name="linkActaSustentacionPublica"
-                                                mode="basic"
-                                                [auto]="true"
-                                                accept=".pdf"
-                                                chooseIcon="pi pi-file"
-                                                class="w-full"
-                                                maxFileSize="5000000"
-                                                (onSelect)="
-                                                    onFileSelectActaSustentacionPublica(
-                                                        $event
-                                                    )
-                                                "
-                                                chooseLabel="Buscar documento"
-                                                [disabled]="
-                                                    sustentacionForm.get(
-                                                        'linkActaSustentacionPublica'
-                                                    ).value
-                                                "
-                                            >
-                                            </p-fileUpload>
-                                            <button
-                                                *ngIf="FileActaSustentacionP"
-                                                pButton
-                                                class="p-button-secondary"
-                                                icon="pi pi-times"
-                                                type="button"
-                                                (click)="
-                                                    onFileClear(
-                                                        'linkActaSustentacionPublica'
-                                                    )
-                                                "
-                                            ></button>
-                                        </div>
-                                        <div
-                                            class="text-description mt-2"
-                                            style="
-                                                width: '200px';
-                                                word-break: break-word;
-                                            "
-                                            *ngIf="FileActaSustentacionP"
-                                        >
-                                            {{ FileActaSustentacionP.name }} -
-                                            {{
-                                                FileActaSustentacionP.size
-                                                    | bytesToKb
-                                            }}
-                                            KB
-                                        </div>
-                                    </div>
-                                    <button
-                                        *ngIf="
-                                            editMode && FileActaSustentacionP
-                                        "
-                                        pButton
-                                        class="p-button-secondary"
-                                        type="button"
-                                        icon="pi pi-download"
-                                        (click)="
-                                            getFileAndSetValue(
-                                                'linkActaSustentacionPublica'
-                                            )
-                                        "
-                                    ></button>
-                                </div>
-                                <div
-                                    class="text-description mt-2"
-                                    *ngIf="!FileActaSustentacionP"
-                                >
-                                    <p>No has seleccionado ningún documento.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div
-                            *ngIf="
-                                sustentacionForm.get('respuestaSustentacion')
-                                    .value == 'Aprobado'
-                            "
-                            class="field grid justify-content-center"
-                        >
-                            <div
-                                class="col-12 lg:col-5 flex flex-nowrap align-items-center justify-content-between"
-                            >
-                                <label class="label-required">
-                                    No acta de revisión trabajo final
-                                </label>
-                                <input
-                                    class="max-w-10rem ml-2"
-                                    pInputText
-                                    formControlName="numeroActaFinal"
-                                />
-                                <label class="label-required ml-4"
-                                    >Fecha del Acta</label
-                                >
-                                <p-calendar
-                                    class="ml-2"
-                                    formControlName="fechaActaFinal"
-                                    [showIcon]="true"
-                                    dateFormat="dd.mm.yy"
-                                    [maxDate]="maxDate"
-                                ></p-calendar>
-                            </div>
-                        </div>
-                        <div
                             class="flex flex-1 justify-content-end align-items-center"
                             *ngIf="isEstudiante && !isCoordinadorFase4"
                         >
@@ -1846,5 +1884,15 @@
     </ng-template>
 </p-panel>
 <ng-template #spinner>
-    <p-progressSpinner ariaLabel="loading" class="spinner"></p-progressSpinner>
+    <p-progressSpinner
+        *ngIf="!isSending"
+        ariaLabel="loading"
+        class="spinner"
+    ></p-progressSpinner>
+    <div class="card" *ngIf="isSending">
+        <p-progressBar
+            mode="indeterminate"
+            [style]="{ height: '6px' }"
+        ></p-progressBar>
+    </div>
 </ng-template>

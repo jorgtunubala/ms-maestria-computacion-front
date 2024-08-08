@@ -1,5 +1,5 @@
 <p-panel>
-    <div id="formatoG">
+    <div id="formatoResolucionComite">
         <div class="flex flex-column w-full mb-4">
             <div
                 class="flex align-items-center justify-content-evenly header-logo"
@@ -19,11 +19,9 @@
             </div>
         </div>
         <div class="mt-4 px-8">
-            <form [formGroup]="formatoGForm">
+            <form [formGroup]="formatoResolucionComiteForm">
                 <div class="field grid justify-content-start">
-                    <label class="col-2 label-required" for="consecutivo"
-                        >Consecutivo</label
-                    >
+                    <label class="col-2" for="consecutivo">Consecutivo</label>
                     <div class="col-10">
                         <input
                             pInputText
@@ -31,6 +29,20 @@
                             type="text"
                             id="consecutivo"
                             formControlName="consecutivo"
+                        />
+                    </div>
+                </div>
+
+                <div class="field grid justify-content-start">
+                    <label class="col-2" for="titulo">Titulo</label>
+                    <div class="col-10">
+                        <input
+                            pInputText
+                            class="p-inputtext-md w-full"
+                            type="text"
+                            id="titulo"
+                            formControlName="titulo"
+                            readonly
                         />
                     </div>
                 </div>
@@ -63,14 +75,27 @@
                     </div>
                 </div>
 
-                <div class="field grid justify-content-start">
-                    <label class="col-2" for="estudiante"
-                        >Nombre del estudiante</label
-                    >
+                <div
+                    class="field grid justify-content-start align-items-center"
+                >
+                    <div class="col-2">
+                        <label class="label-required" for="director"
+                            >Director(a):</label
+                        >
+                    </div>
                     <div class="col-10">
                         <input
                             pInputText
-                            class="p-inputtext-md w-full"
+                            type="text"
+                            id="director"
+                            formControlName="director"
+                            readonly
+                        />
+                        <label class="label-required mx-4" for="estudiante"
+                            >Estudiante:</label
+                        >
+                        <input
+                            pInputText
                             type="text"
                             id="estudiante"
                             formControlName="estudiante"
@@ -80,64 +105,24 @@
                 </div>
 
                 <div class="field grid justify-content-start">
-                    <label class="col-2" for="director"
-                        >Nombre del director</label
-                    >
-                    <div class="col-10">
-                        <input
-                            pInputText
-                            class="p-inputtext-md w-full"
-                            type="text"
-                            id="director"
-                            formControlName="director"
-                            readonly
-                        />
+                    <div class="col-2">
+                        <label class="label-required mr-2" for="fechaSesion"
+                            >Fecha de Reunión Ordinaria:
+                        </label>
+                        <i
+                            class="pi pi-info-circle"
+                            pTooltip="Fecha en la que se celebró la sesión ordinaria del comité, que es importante para el seguimiento del proceso."
+                            tooltipPosition="top"
+                        ></i>
                     </div>
-                </div>
-
-                <div class="field grid justify-content-start">
-                    <label class="col-2 label-required" for="observaciones"
-                        >Observaciones</label
-                    >
                     <div class="col-10">
-                        <textarea
-                            pInputTextarea
-                            [maxLength]="250"
-                            id="observaciones"
-                            class="p-inputtextarea-md w-full"
-                            formControlName="observaciones"
-                        ></textarea>
-                    </div>
-                </div>
-
-                <div class="field grid justify-content-start">
-                    <label class="col-2">Jurado Interno</label>
-                    <div class="col-10">
-                        <p-card class="w-full m-0">
-                            <div class="flex">
-                                <span>{{
-                                    juradoInternoSeleccionado?.nombres ??
-                                        juradoInternoSeleccionado?.nombre +
-                                            " " +
-                                            juradoInternoSeleccionado?.apellido
-                                }}</span>
-                            </div>
-                        </p-card>
-                    </div>
-                </div>
-                <div class="field grid justify-content-start">
-                    <label class="col-2">Jurado Externo</label>
-                    <div class="col-10">
-                        <p-card class="w-full m-0">
-                            <div class="flex">
-                                <span>{{
-                                    juradoExternoSeleccionado?.nombres ??
-                                        juradoExternoSeleccionado?.nombre +
-                                            " " +
-                                            juradoExternoSeleccionado?.apellido
-                                }}</span>
-                            </div>
-                        </p-card>
+                        <p-calendar
+                            id="fechaSesion"
+                            class="max-w-20rem"
+                            formControlName="fechaSesion"
+                            [showIcon]="true"
+                            dateFormat="dd.mm.yy"
+                        ></p-calendar>
                     </div>
                 </div>
 

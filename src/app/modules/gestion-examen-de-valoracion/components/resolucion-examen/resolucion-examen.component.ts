@@ -76,6 +76,8 @@ export class ResolucionExamenComponent implements OnInit {
     formatoBEv2: any;
 
     displayModal: boolean = false;
+    displayFormatoResolucionComite: boolean = false;
+    displayFormatoResolucionConsejo: boolean = false;
     errorMessageShown: boolean = false;
     editMode: boolean = false;
     isPdfLoaded: boolean = false;
@@ -224,10 +226,10 @@ export class ResolucionExamenComponent implements OnInit {
             const value = await firstValueFrom(this.checkboxChange$);
             if (value && !this.messageShown) {
                 this.messageService.add({
-                    severity: 'success',
-                    summary: 'Revisado',
+                    severity: 'info',
+                    summary: 'Información',
                     detail: 'Todos los documentos han sido revisados. Ahora puede cerrar la vista actual. Recuerde guardar los cambios.',
-                    life: 6000,
+                    life: 5000,
                 });
                 this.messageShown = true;
             }
@@ -411,12 +413,6 @@ export class ResolucionExamenComponent implements OnInit {
     checkEstados() {
         switch (this.estado) {
             case EstadoProceso.EXAMEN_DE_VALORACION_APROBADO_EVALUADOR_2:
-                this.messageService.add({
-                    severity: 'info',
-                    summary: 'Informacion',
-                    detail: EstadoProceso.EXAMEN_DE_VALORACION_APROBADO_EVALUADOR_2,
-                    life: 2000,
-                });
                 this.isDocente = false;
                 this.isCoordinadorFase1 = false;
                 this.isCoordinadorFase2 = false;
@@ -445,7 +441,7 @@ export class ResolucionExamenComponent implements OnInit {
                     severity: 'info',
                     summary: 'Informacion',
                     detail: 'Se han anexado los formatos de Anteproyecto Final - Formato B de cada evaluador.',
-                    life: 6000,
+                    life: 5000,
                 });
                 this.isDocente = true;
                 this.isCoordinadorFase1 = true;
@@ -519,10 +515,11 @@ export class ResolucionExamenComponent implements OnInit {
                 }
             );
         } else if (
-            this.estado ==
+            this.role.includes('ROLE_COORDINADOR') &&
+            (this.estado ==
                 EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE1_GENERACION_RESOLUCION ||
-            this.estado ==
-                EstadoProceso.DEVUELTO_GENERACION_DE_RESOLUCION_POR_COORDINADOR
+                this.estado ==
+                    EstadoProceso.DEVUELTO_GENERACION_DE_RESOLUCION_POR_COORDINADOR)
         ) {
             filesToConvert.push(
                 {
@@ -536,10 +533,11 @@ export class ResolucionExamenComponent implements OnInit {
                 }
             );
         } else if (
-            this.estado ==
+            this.role.includes('ROLE_COORDINADOR') &&
+            (this.estado ==
                 EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE2_GENERACION_RESOLUCION ||
-            this.estado ==
-                EstadoProceso.DEVUELTO_GENERACION_DE_RESOLUCION_POR_COMITE
+                this.estado ==
+                    EstadoProceso.DEVUELTO_GENERACION_DE_RESOLUCION_POR_COMITE)
         ) {
             if (this.formatoBEv1 && this.formatoBEv2) {
                 const FileFormatoBEv1 = this.convertBase64ToFile(
@@ -580,10 +578,11 @@ export class ResolucionExamenComponent implements OnInit {
                 );
             }
         } else if (
-            this.estado ==
+            this.role.includes('ROLE_COORDINADOR') &&
+            (this.estado ==
                 EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE3_GENERACION_RESOLUCION ||
-            this.estado ==
-                EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_DOCENTE_SUSTENTACION
+                this.estado ==
+                    EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_DOCENTE_SUSTENTACION)
         ) {
             filesToConvert.push({
                 file: this.FileOficioConsejo,
@@ -659,6 +658,48 @@ export class ResolucionExamenComponent implements OnInit {
         this.pdfUrls = [];
     }
     //#endregion
+
+    showFormatoResolucionComite() {
+        this.displayFormatoResolucionComite = true;
+    }
+
+    handleFormatoResolucionComitePdfGenerated(file: File) {
+        const pdfFile = new File([file], 'SolicitudComite.pdf', {
+            type: 'application/pdf',
+        });
+        this.FileSolicitudComite = pdfFile;
+        this.convertFileToBase64(pdfFile)
+            .then((base64) => {
+                this.resolucionForm
+                    .get('linkSolicitudComite')
+                    .setValue(`linkSolicitudComite.pdf-${base64}`);
+                this.displayFormatoResolucionComite = false;
+            })
+            .catch((error) => {
+                console.error('Error al convertir el archivo a base64:', error);
+            });
+    }
+
+    showFormatoResolucionConsejo() {
+        this.displayFormatoResolucionConsejo = true;
+    }
+
+    handleFormatoResolucionConsejoPdfGenerated(file: File) {
+        const pdfFile = new File([file], 'SolicitudConsejo.pdf', {
+            type: 'application/pdf',
+        });
+        this.FileSolicitudConsejo = pdfFile;
+        this.convertFileToBase64(pdfFile)
+            .then((base64) => {
+                this.resolucionForm
+                    .get('linkSolicitudConsejo')
+                    .setValue(`linkSolicitudConsejo.pdf-${base64}`);
+                this.displayFormatoResolucionConsejo = false;
+            })
+            .catch((error) => {
+                console.error('Error al convertir el archivo a base64:', error);
+            });
+    }
 
     async setup(fieldName: string) {
         try {
@@ -1323,7 +1364,7 @@ export class ResolucionExamenComponent implements OnInit {
 
     uploadFileAndSetValue(fileControlName: string, event: any) {
         const selectedFiles: FileList = event.files;
-        const maxFileSize = 5000000; // 5 MB
+        const maxFileSize = 20000000; // 20 MB
         if (selectedFiles && selectedFiles.length > 0) {
             const selectedFile = selectedFiles[0];
             if (selectedFile.size > maxFileSize) {
@@ -1437,6 +1478,17 @@ export class ResolucionExamenComponent implements OnInit {
             const response = await firstValueFrom(ref.onClose);
             if (response) {
                 const director = this.mapDirectorLabel(response);
+                if (
+                    this.codirectorSeleccionado &&
+                    director.id === this.codirectorSeleccionado.id
+                ) {
+                    this.messageService.add(
+                        warnMessage(
+                            'El director seleccionado no puede ser el mismo que el codirector.'
+                        )
+                    );
+                    return;
+                }
                 this.directorSeleccionado = director;
                 this.director.setValue(director.id);
             }
@@ -1451,6 +1503,17 @@ export class ResolucionExamenComponent implements OnInit {
             const response = await firstValueFrom(ref.onClose);
             if (response) {
                 const codirector = this.mapCodirectorLabel(response);
+                if (
+                    this.directorSeleccionado &&
+                    codirector.id === this.directorSeleccionado.id
+                ) {
+                    this.messageService.add(
+                        warnMessage(
+                            'El codirector seleccionado no puede ser el mismo que el director.'
+                        )
+                    );
+                    return;
+                }
                 this.codirectorSeleccionado = codirector;
                 this.codirector.setValue(codirector.id);
             }

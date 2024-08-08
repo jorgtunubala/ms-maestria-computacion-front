@@ -487,8 +487,9 @@ export class DocumentoFormatoAComponent implements OnInit {
     mapOrientadorLabel(orientador: any) {
         return {
             id: orientador.id,
-            nombre: orientador.nombre,
-            apellido: orientador.apellido,
+            nombres:
+                orientador.nombres ??
+                orientador.nombre + ' ' + orientador.apellido,
             correo: orientador.correo ?? orientador.correoElectronico,
             rol: this.rolSeleccionado,
             tipo: this.tipoSeleccionado,
@@ -515,7 +516,11 @@ export class DocumentoFormatoAComponent implements OnInit {
             const response = await firstValueFrom(ref.onClose);
             if (response) {
                 const orientador = this.mapOrientadorLabel(response);
-                if (this.orientadores.some((o) => o.id === orientador.id)) {
+                if (
+                    this.orientadores.some((o) => o.id === orientador.id) ||
+                    this.docente.value?.nombres == orientador.nombres ||
+                    this.experto.value?.nombres == orientador.nombres
+                ) {
                     this.messageService.add({
                         severity: 'warn',
                         summary: 'Advertencia',

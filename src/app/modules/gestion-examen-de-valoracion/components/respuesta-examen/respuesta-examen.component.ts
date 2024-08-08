@@ -542,10 +542,6 @@ export class RespuestaExamenComponent implements OnInit {
                         respuesta.linkFormatoC,
                         Validators.required,
                     ],
-                    ['linkObservaciones' + indexExperto]: [
-                        respuesta.linkObservaciones,
-                        Validators.required,
-                    ],
                     ['anexos' + indexExperto]: [respuesta.anexos],
                     ['idEvaluador' + indexExperto]: [respuesta.idEvaluador],
                     ['tipoEvaluador' + indexExperto]: [respuesta.tipoEvaluador],
@@ -565,7 +561,6 @@ export class RespuestaExamenComponent implements OnInit {
                 this.expertoEvaluaciones.push(evaluacionFormGroup);
                 this.setup('linkFormatoB', 'expertoEvaluaciones');
                 this.setup('linkFormatoC', 'expertoEvaluaciones');
-                this.setup('linkObservaciones', 'expertoEvaluaciones');
                 this.setup('anexos', 'expertoEvaluaciones');
                 indexExperto++;
             }
@@ -588,10 +583,6 @@ export class RespuestaExamenComponent implements OnInit {
                         respuesta.linkFormatoC,
                         Validators.required,
                     ],
-                    ['linkObservaciones' + indexDocente]: [
-                        respuesta.linkObservaciones,
-                        Validators.required,
-                    ],
                     ['anexos' + indexDocente]: [respuesta.anexos],
                     ['idEvaluador' + indexDocente]: [respuesta.idEvaluador],
                     ['tipoEvaluador' + indexDocente]: [respuesta.tipoEvaluador],
@@ -611,7 +602,6 @@ export class RespuestaExamenComponent implements OnInit {
                 this.docenteEvaluaciones.push(evaluacionFormGroup);
                 this.setup('linkFormatoB', 'docenteEvaluaciones');
                 this.setup('linkFormatoC', 'docenteEvaluaciones');
-                this.setup('linkObservaciones', 'docenteEvaluaciones');
                 this.setup('anexos', 'docenteEvaluaciones');
                 indexDocente++;
             }
@@ -743,7 +733,6 @@ export class RespuestaExamenComponent implements OnInit {
         return {
             linkFormatoB: evaluacion['linkFormatoB' + i],
             linkFormatoC: evaluacion['linkFormatoC' + i],
-            linkObservaciones: evaluacion['linkObservaciones' + i],
             anexos: evaluacion['anexos' + i],
             tipoEvaluador: evaluacion['tipoEvaluador' + i],
             idEvaluador: evaluacion['idEvaluador' + i],
@@ -819,17 +808,10 @@ export class RespuestaExamenComponent implements OnInit {
             'linkFormatoC'
         );
 
-        const observaciones = await this.formatFileString(
-            this.selectedFiles[`${formArrayName}.linkObservaciones${index}`],
-            'linkObservaciones'
-        );
-
         respuestaData.anexos = anexos;
         respuestaData.linkFormatoB = formatoB;
         respuestaData.linkFormatoC = formatoC;
         respuestaData.linkFormatoC = formatoC;
-        respuestaData.linkObservaciones = observaciones;
-
         try {
             const response = await firstValueFrom(
                 this.respuestaService
@@ -966,17 +948,10 @@ export class RespuestaExamenComponent implements OnInit {
             'linkFormatoC'
         );
 
-        const observaciones = await this.formatFileString(
-            this.selectedFiles[`${formArrayName}.linkObservaciones${index}`],
-            'linkObservaciones'
-        );
-
         respuestaData.anexos = anexos;
         respuestaData.linkFormatoB = formatoB;
         respuestaData.linkFormatoC = formatoC;
         respuestaData.linkFormatoC = formatoC;
-        respuestaData.linkObservaciones = observaciones;
-
         try {
             const response = await firstValueFrom(
                 this.respuestaService
@@ -1022,10 +997,6 @@ export class RespuestaExamenComponent implements OnInit {
                     Validators.required,
                 ],
                 ['linkFormatoC' + this[formArrayName].length]: [
-                    null,
-                    Validators.required,
-                ],
-                ['linkObservaciones' + this[formArrayName].length]: [
                     null,
                     Validators.required,
                 ],

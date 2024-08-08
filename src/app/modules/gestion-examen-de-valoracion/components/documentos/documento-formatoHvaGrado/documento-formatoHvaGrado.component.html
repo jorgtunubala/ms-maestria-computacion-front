@@ -34,10 +34,7 @@
         <div class="mt-4 px-8">
             <form [formGroup]="formatoHvaGradoForm">
                 <div class="flex align-items-center justify-content-start mt-2">
-                    <label
-                        class="label-required"
-                        style="text-wrap: nowrap"
-                        for="facultad"
+                    <label style="text-wrap: nowrap" for="facultad"
                         >Facultad:</label
                     >
                     <input
@@ -51,10 +48,7 @@
                 </div>
 
                 <div class="flex align-items-center justify-content-start mt-2">
-                    <label
-                        class="label-required"
-                        style="text-wrap: nowrap"
-                        for="programa"
+                    <label style="text-wrap: nowrap" for="programa"
                         >Programa:</label
                     >
                     <input
@@ -68,10 +62,7 @@
                 </div>
 
                 <div class="flex align-items-center justify-content-start mt-2">
-                    <label
-                        class="label-required"
-                        style="text-wrap: nowrap"
-                        for="estudiante"
+                    <label style="text-wrap: nowrap" for="estudiante"
                         >Nombre del Estudiante:</label
                     >
                     <input
@@ -268,20 +259,12 @@
             <button
                 pButton
                 type="button"
-                icon="pi pi-upload"
-                label="Insertar"
-                pTooltip="Haz clic para insertar el documento en el área de carga de archivos."
-                tooltipPosition="top"
-                (click)="onInsertar()"
-                [loading]="loading"
-            ></button>
-            <button
-                pButton
-                type="button"
                 icon="pi pi-download"
                 label="Descargar"
                 (click)="onDownload()"
                 [loading]="loading"
+                pTooltip="El estudiante debe descargar el documento y adjuntar su firma en el espacio correspondiente."
+                tooltipPosition="top"
             ></button>
         </div>
     </div>

@@ -34,9 +34,7 @@ import { TrabajoDeGradoService } from '../../../services/trabajoDeGrado.service'
     styleUrls: ['documento-formatoHvaGrado.component.scss'],
 })
 export class DocumentoFormatoHvaGradoComponent implements OnInit {
-    @Input() fileFormatoHvaGrado: File;
     @Output() formReady = new EventEmitter<FormGroup>();
-    @Output() formatoHvaGradoDocxGenerated = new EventEmitter<Blob>();
 
     @ViewChild('formatoHvaGrado') formatoHvaGrado!: ElementRef;
 
@@ -75,6 +73,9 @@ export class DocumentoFormatoHvaGradoComponent implements OnInit {
                                     this.estudianteSeleccionado
                                 )
                             );
+                        this.formatoHvaGradoForm
+                            .get('codigo')
+                            .setValue(this.estudianteSeleccionado.codigo);
                     }
                 },
                 error: (e) => this.handlerResponseException(e),
@@ -126,7 +127,6 @@ export class DocumentoFormatoHvaGradoComponent implements OnInit {
         } else {
             this.loading = true;
             const formValues = this.formatoHvaGradoForm.value;
-
             const docData: any = {
                 dia: formValues.dia,
                 mes: formValues.mes,
@@ -184,70 +184,6 @@ export class DocumentoFormatoHvaGradoComponent implements OnInit {
 
     loadFile(url: string, callback: (error: any, content: any) => void) {
         JSZipUtils.default.getBinaryContent(url, callback);
-    }
-
-    onInsertar() {
-        if (this.formatoHvaGradoForm.invalid) {
-            this.handleWarningMessage(Mensaje.REGISTRE_CAMPOS_OBLIGATORIOS);
-            return;
-        } else {
-            this.loading = true;
-            const formValues = this.formatoHvaGradoForm.value;
-
-            const docData: any = {
-                dia: formValues.dia,
-                mes: formValues.mes,
-                anio: formValues.anio,
-                facultad: formValues.facultad,
-                programa: formValues.programa,
-                estudiante: formValues.estudiante,
-                cedula: formValues.cedula,
-                lugarExpedicion: formValues.lugarExpedicion,
-                codigo: formValues.codigo,
-                telefonoFijo: formValues.telefonoFijo,
-                telefonoCelular: formValues.telefonoCelular,
-                codigoSaberPro: formValues.codigoSaberPro,
-                residenciaActual: formValues.residenciaActual,
-                departamento: formValues.departamento,
-                municipio: formValues.municipio,
-                email: formValues.email,
-                coordinador: formValues.coordinador,
-            };
-
-            let fileDoc: Blob;
-
-            this.loadFile(
-                'assets/plantillas/formatoHvaGrado.docx',
-                (error: any, content: any) => {
-                    if (error) {
-                        throw error;
-                    }
-                    const zip = new PizZip(content);
-                    const doc = new Docxtemplater(zip, {
-                        paragraphLoop: true,
-                        linebreaks: true,
-                    });
-
-                    doc.setData(docData);
-
-                    try {
-                        doc.render();
-                    } catch (error) {
-                        console.error(error);
-                        throw error;
-                    }
-
-                    fileDoc = doc.getZip().generate({
-                        type: 'blob',
-                        mimeType:
-                            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                    });
-                    this.formatoHvaGradoDocxGenerated.emit(fileDoc);
-                    this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
-                }
-            );
-            this.loading = false;
-        }
     }
 
     getFormControl(formControlName: string): FormControl {

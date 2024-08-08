@@ -35,8 +35,8 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 })
 export class DocumentoFormatoGComponent implements OnInit {
     @Input() trabajoDeGradoId: any;
-    @Input() juradoInterno: any;
-    @Input() juradoExterno: any;
+    @Input() juradoInternoSeleccionado: any;
+    @Input() juradoExternoSeleccionado: any;
     @Output() formReady = new EventEmitter<FormGroup>();
     @Output() formatoGPdfGenerated = new EventEmitter<File>();
 
@@ -143,8 +143,6 @@ export class DocumentoFormatoGComponent implements OnInit {
             titulo: [null, Validators.required],
             director: [null, Validators.required],
             observaciones: [null],
-            juradoInterno: [this.juradoInterno.nombres, Validators.required],
-            juradoExterno: [this.juradoExterno.nombres, Validators.required],
             firmaCoordinador: [null, Validators.required],
         });
 
@@ -289,7 +287,7 @@ export class DocumentoFormatoGComponent implements OnInit {
                     style: 'label',
                 },
                 {
-                    text: `Jurado Interno: ${this.juradoInterno?.nombres}, ${this.juradoInterno?.correo}, ${this.juradoInterno?.universidad}\nJurado Externo: ${this.juradoExterno?.nombres}, ${this.juradoExterno?.correo}, ${this.juradoExterno?.universidad}`,
+                    text: `Jurado Interno: ${this.juradoInternoSeleccionado?.nombres}, ${this.juradoInternoSeleccionado?.correo}, ${this.juradoInternoSeleccionado?.universidad}\nJurado Externo: ${this.juradoExternoSeleccionado?.nombres}, ${this.juradoExternoSeleccionado?.correo}, ${this.juradoExternoSeleccionado?.universidad}`,
                     style: 'value',
                 },
                 { text: 'OBSERVACIONES:', style: 'label' },

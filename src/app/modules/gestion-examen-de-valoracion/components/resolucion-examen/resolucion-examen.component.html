@@ -27,6 +27,46 @@
             </div>
         </p-card>
         <p-dialog
+            *ngIf="role.includes('ROLE_DOCENTE') && this.directorSeleccionado"
+            header="Solicitud al comité para resolución de aprobación de trabajo de grado"
+            [(visible)]="displayFormatoResolucionComite"
+            [style]="{ width: '70vw' }"
+            [modal]="true"
+            [maximizable]="true"
+            [baseZIndex]="10000"
+            [draggable]="false"
+            [resizable]="false"
+        >
+            <ng-container>
+                <documento-formatoResolucionComite
+                    [directorSeleccionado]="directorSeleccionado"
+                    (formatoResolucionComitePdfGenerated)="
+                        handleFormatoResolucionComitePdfGenerated($event)
+                    "
+                ></documento-formatoResolucionComite>
+            </ng-container>
+        </p-dialog>
+        <p-dialog
+            *ngIf="role.includes('ROLE_COORDINADOR')"
+            header="Solicitud al consejo de facultad para resolución de aprobación de trabajo de grado"
+            [(visible)]="displayFormatoResolucionConsejo"
+            [style]="{ width: '70vw' }"
+            [modal]="true"
+            [maximizable]="true"
+            [baseZIndex]="10000"
+            [draggable]="false"
+            [resizable]="false"
+        >
+            <ng-container>
+                <documento-formatoResolucionConsejo
+                    [trabajoDeGradoId]="trabajoDeGradoId"
+                    (formatoResolucionConsejoPdfGenerated)="
+                        handleFormatoResolucionConsejoPdfGenerated($event)
+                    "
+                ></documento-formatoResolucionConsejo>
+            </ng-container>
+        </p-dialog>
+        <p-dialog
             header="PDF Viewer"
             [(visible)]="displayModal"
             [style]="{
@@ -202,7 +242,16 @@
                             solicitud
                         </p>
                     </div>
-                    <p-fieldset legend="Docente" styleClass="bg-bluegray-50">
+                    <p-fieldset
+                        legend="Docente"
+                        styleClass="bg-bluegray-50"
+                        [toggleable]="
+                            role.includes('ROLE_COORDINADOR') ? true : false
+                        "
+                        [collapsed]="
+                            role.includes('ROLE_COORDINADOR') ? true : false
+                        "
+                    >
                         <div class="field grid justify-content-center">
                             <div class="col-12 lg:col-5">
                                 <label class="label-required"
@@ -502,6 +551,16 @@
                                             )
                                         "
                                     ></button>
+                                    <button
+                                        *ngIf="!FileSolicitudComite"
+                                        pButton
+                                        icon="pi pi-plus"
+                                        class="align-self-center"
+                                        label="Crear Documento"
+                                        (click)="showFormatoResolucionComite()"
+                                        [loading]="loading"
+                                        [disabled]="!directorSeleccionado"
+                                    ></button>
                                 </div>
                                 <div
                                     class="text-description mt-2"
@@ -542,6 +601,18 @@
                     <p-fieldset
                         legend="Coordinador"
                         styleClass="bg-bluegray-50"
+                        [toggleable]="
+                            role.includes('ROLE_COORDINADOR') &&
+                            isCoordinadorFase1
+                                ? true
+                                : false
+                        "
+                        [collapsed]="
+                            role.includes('ROLE_COORDINADOR') &&
+                            isCoordinadorFase1
+                                ? true
+                                : false
+                        "
                     >
                         <div class="field grid">
                             <div
@@ -637,7 +708,22 @@
                             solicitud
                         </p>
                     </div>
-                    <p-fieldset legend="Comite" styleClass="bg-bluegray-50">
+                    <p-fieldset
+                        legend="Comite"
+                        styleClass="bg-bluegray-50"
+                        [toggleable]="
+                            role.includes('ROLE_COORDINADOR') &&
+                            isCoordinadorFase2
+                                ? true
+                                : false
+                        "
+                        [collapsed]="
+                            role.includes('ROLE_COORDINADOR') &&
+                            isCoordinadorFase2
+                                ? true
+                                : false
+                        "
+                    >
                         <div class="field grid">
                             <div
                                 class="flex flex-column w-full justify-content-center align-items-center row-gap-4"
@@ -703,7 +789,7 @@
                                 class="col-12 lg:col-5 flex flex-nowrap align-items-center justify-content-between"
                             >
                                 <label class="label-required">
-                                    No de acta generada por el comite
+                                    No de resolución
                                 </label>
                                 <input
                                     class="max-w-10rem ml-2"
@@ -711,7 +797,7 @@
                                     formControlName="numeroActa"
                                 />
                                 <label class="label-required ml-4"
-                                    >Fecha del acta</label
+                                    >Fecha resolución</label
                                 >
                                 <p-calendar
                                     class="ml-2"
@@ -808,6 +894,15 @@
                                             )
                                         "
                                     ></button>
+                                    <button
+                                        *ngIf="!FileSolicitudConsejo"
+                                        pButton
+                                        icon="pi pi-plus"
+                                        class="align-self-center"
+                                        label="Crear Documento"
+                                        (click)="showFormatoResolucionConsejo()"
+                                        [loading]="loading"
+                                    ></button>
                                 </div>
                                 <div
                                     class="text-description mt-2"
@@ -868,7 +963,7 @@
                                     formControlName="numeroActaConsejo"
                                 />
                                 <label class="label-required ml-4"
-                                    >Fecha del acta</label
+                                    >Fecha resolución</label
                                 >
                                 <p-calendar
                                     class="ml-2"
@@ -926,6 +1021,9 @@
                                                     onFileClear(
                                                         'linkOficioConsejo'
                                                     )
+                                                "
+                                                [disabled]="
+                                                    isSustentacionCreated
                                                 "
                                             ></button>
                                         </div>

@@ -51,6 +51,7 @@ export class DocumentoformatoEvaluadoresComponent implements OnInit {
     docenteSeleccionado: any;
     estudianteSeleccionado: any;
     fechaActual: Date;
+    firmaCoordinador: string;
     footerImage: string;
     logoImage: string;
 
@@ -88,65 +89,74 @@ export class DocumentoformatoEvaluadoresComponent implements OnInit {
     ngOnInit() {
         this.initForm();
         this.fechaActual = new Date();
-        this.tituloSubscription =
-            this.trabajoDeGradoService.tituloSeleccionadoSubject$.subscribe({
-                next: (response) => {
-                    if (response) {
-                        this.titulo.setValue(response);
-                    }
-                },
-                error: (e) => this.handlerResponseException(e),
-            });
 
-        this.estudianteSubscription =
-            this.trabajoDeGradoService.estudianteSeleccionado$.subscribe({
-                next: (response) => {
-                    if (response) {
-                        this.estudianteSeleccionado = response;
+        const tituloPromise = firstValueFrom(
+            this.trabajoDeGradoService.tituloSeleccionadoSubject$
+        );
+        const estudiantePromise = firstValueFrom(
+            this.trabajoDeGradoService.estudianteSeleccionado$
+        );
+        const evaluadorExternoPromise = firstValueFrom(
+            this.trabajoDeGradoService.evaluadorExternoSeleccionadoSubject$
+        );
+        const evaluadorInternoPromise = firstValueFrom(
+            this.trabajoDeGradoService.evaluadorInternoSeleccionadoSubject$
+        );
+
+        Promise.all([
+            tituloPromise,
+            estudiantePromise,
+            evaluadorExternoPromise,
+            evaluadorInternoPromise,
+        ])
+            .then(
+                ([
+                    tituloResponse,
+                    estudianteResponse,
+                    evaluadorExternoResponse,
+                    evaluadorInternoResponse,
+                ]) => {
+                    if (tituloResponse) {
+                        this.titulo.setValue(tituloResponse);
+                    }
+                    if (estudianteResponse) {
+                        this.estudianteSeleccionado = estudianteResponse;
                         this.estudiante.setValue(
-                            this.nombreCompletoEstudiante(response)
+                            this.nombreCompletoEstudiante(estudianteResponse)
                         );
                     }
-                },
-                error: (e) => this.handlerResponseException(e),
-            });
-
-        this.evaluadorExternoSubscription =
-            this.trabajoDeGradoService.evaluadorExternoSeleccionadoSubject$.subscribe(
-                {
-                    next: (response) => {
-                        if (response) {
-                            this.evaluadorExterno.setValue(response);
-                        }
-                    },
-                    error: (e) => this.handlerResponseException(e),
+                    if (evaluadorExternoResponse) {
+                        this.evaluadorExterno.setValue(
+                            evaluadorExternoResponse
+                        );
+                    }
+                    if (evaluadorInternoResponse) {
+                        this.evaluadorInterno.setValue(
+                            evaluadorInternoResponse
+                        );
+                    }
                 }
-            );
-        this.evaluadorInternoSubscription =
-            this.trabajoDeGradoService.evaluadorInternoSeleccionadoSubject$.subscribe(
-                {
-                    next: (response) => {
-                        if (response) {
-                            this.evaluadorInterno.setValue(response);
-                        }
-                    },
-                    error: (e) => this.handlerResponseException(e),
-                }
-            );
+            )
+            .catch((e) => this.handlerResponseException(e));
     }
 
     initForm(): void {
         this.formatoEvaluadoresForm = this.fb.group({
             consecutivo: ['MC/051', Validators.required],
-            asunto: [null, Validators.required],
+            asunto: [
+                'Designación como Evaluador del Anteproyecto y Examen de Valoración de Maestría en Computación',
+                Validators.required,
+            ],
+            coordinador: ['Luz Marina Sierra Martínez', Validators.required],
             estudiante: [null, Validators.required],
             docente: [null, Validators.required],
             propuesta: [null, Validators.required],
+            contenido: [null, Validators.required],
             evaluadorExterno: [null, Validators.required],
             evaluadorInterno: [null, Validators.required],
             fechaSesion: [null, Validators.required],
             fechaRespuesta: [null, Validators.required],
-            coordinadora: [null, Validators.required],
+            firmaCoordinador: [null, Validators.required],
         });
 
         this.formReady.emit(this.formatoEvaluadoresForm);
@@ -176,6 +186,82 @@ export class DocumentoformatoEvaluadoresComponent implements OnInit {
         }
         if (this.evaluadorInternoSubscription) {
             this.evaluadorInternoSubscription.unsubscribe();
+        }
+    }
+
+    generateContent() {
+        if (this.isFormValid()) {
+            if (this.evaluadorInterno && this.evaluadorExterno) {
+                this.updateLetterContent();
+            } else {
+                console.error(
+                    'Evaluador interno o externo no están definidos.'
+                );
+            }
+        } else {
+            console.error('El formulario contiene errores.');
+        }
+    }
+
+    isFormValid(): boolean {
+        const { firmaCoordinador, contenido, ...requiredFields } =
+            this.formatoEvaluadoresForm.controls;
+        return Object.values(requiredFields).every((control) => control.valid);
+    }
+
+    generateLetterContent(formValues: any, docenteSeleccionado: any): string {
+        const fechaSesion = new Date(
+            formValues.fechaSesion
+        ).toLocaleDateString();
+        const fechaRespuesta = new Date(
+            formValues.fechaRespuesta
+        ).toLocaleDateString();
+
+        return `
+    El comité del programa de Maestría en Computación reunido en su sesión ordinaria del día ${fechaSesion} revisó la solicitud de presentación del examen de valoración de la propuesta denominada “${formValues.propuesta}” del estudiante ${formValues.estudiante}, bajo la dirección del PhD. ${docenteSeleccionado?.nombres}.
+    
+    En la reunión mencionada, el Comité aceptó la sugerencia de evaluadores realizada por el profesor ${docenteSeleccionado?.nombres}, y en este sentido, nos permitimos por medio del presente oficio, notificarle su designación como evaluador del examen de valoración. Adjunto a este documento encontrará los documentos que entrega el estudiante para soportar la solicitud.
+    
+    La Evaluación del Examen de Valoración implica la revisión del documento de anteproyecto, junto con el examen de valoración y los avances reportados en función de lo propuesto en el anteproyecto. Agradecemos la retroalimentación, aportes, observaciones y correcciones que pueda brindar al estudiante ${formValues.estudiante} sobre la documentación presentada en el examen de valoración.
+    
+    La evaluación se realizará por escrito, no habrá sustentación presencial o virtual y debe contener dos ítems importantes:
+    
+    1. La decisión: APROBADO, APLAZADO, NO APROBADO. Si se aplaza (normalmente por cambios de fondo en la propuesta) el estudiante tiene un máximo de 15 días para hacer llegar las correcciones. Si hay cambios de forma, el documento se aprueba y el estudiante entrega el documento final con las correcciones a la coordinación, no se hace necesario ningún trámite adicional de parte del evaluador. Esta decisión debe consignarse en el Formato B (ver adjunto).
+    
+    2. Las observaciones o comentarios pueden ser incluidos en los documentos de word/pdf que se entregan al evaluador (anteproyecto, examen de valoración y anexos según el caso) o en el Formato C (ver adjunto).
+    
+    Para facilidad de los evaluadores, cada uno puede entregar los formatos B y C en forma independiente a la coordinación. Agradecemos que su respuesta sea enviada antes del ${fechaRespuesta}.
+    
+    Cualquier inquietud con relación a la evaluación favor comunicarse con el director del trabajo de grado, PhD. ${docenteSeleccionado?.nombres} (email: ${docenteSeleccionado?.correo}).
+    
+    Si considera procedente interactuar con el estudiante para aclarar algún aspecto de la propuesta, siéntase en libertad de hacerlo al email: ${formValues.estudiante}.
+        `;
+    }
+
+    updateLetterContent() {
+        const formValues = this.formatoEvaluadoresForm.value;
+        this.formatoEvaluadoresForm.patchValue({
+            contenido: this.generateLetterContent(
+                formValues,
+                this.docenteSeleccionado
+            ),
+        });
+    }
+
+    onFirmaChange(event: any, fieldName: string) {
+        const input = event && event.files ? event : { files: [] };
+        const file = input.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                if (fieldName === 'firmaCoordinador') {
+                    this.firmaCoordinador = reader.result as string;
+                }
+            };
+            reader.readAsDataURL(file);
+            const patchObject = {};
+            patchObject[fieldName] = file;
+            this.formatoEvaluadoresForm.patchValue(patchObject);
         }
     }
 
@@ -300,82 +386,7 @@ export class DocumentoformatoEvaluadoresComponent implements OnInit {
                     style: 'value',
                 },
                 {
-                    text:
-                        'El comité del programa de Maestría en Computación reunido en su sesión ordinaria del día ' +
-                        new Date(formValues.fechaSesion).toLocaleDateString() +
-                        ' revisó la solicitud de presentación del examen de valoración de la propuesta denominada “' +
-                        formValues.propuesta +
-                        '” del estudiante ' +
-                        formValues.estudiante +
-                        ', bajo la dirección del PhD. ' +
-                        this.docenteSeleccionado.nombres +
-                        '.',
-                    style: 'value',
-                    margin: [0, 0, 0, 5],
-                    alignment: 'justify',
-                },
-                {
-                    text:
-                        'En la reunión mencionada, el Comité aceptó la sugerencia de evaluadores realizada por el profesor ' +
-                        this.docenteSeleccionado.nombres +
-                        ', y en este sentido, nos permitimos por medio del presente oficio, notificarle su designación como evaluador del examen de valoración. Adjunto a este documento encontrará los documentos que entrega el estudiante para soportar la solicitud.',
-                    style: 'value',
-
-                    margin: [0, 0, 0, 5],
-                    alignment: 'justify',
-                },
-                {
-                    text:
-                        'La Evaluación del Examen de Valoración implica la revisión del documento de anteproyecto, junto con el examen de valoración y los avances reportados en función de lo propuesto en el anteproyecto. Agradecemos la retroalimentación, aportes, observaciones y correcciones que pueda brindar al estudiante ' +
-                        formValues.estudiante +
-                        ' sobre la documentación presentada en el examen de valoración.',
-                    style: 'value',
-                    margin: [0, 0, 0, 5],
-                    alignment: 'justify',
-                },
-                {
-                    text: 'La evaluación se realizará por escrito, no habrá sustentación presencial o virtual y debe contener dos ítems importantes:',
-                    style: 'value',
-                    margin: [0, 0, 0, 5],
-                    alignment: 'justify',
-                },
-
-                {
-                    text: '1. La decisión: APROBADO, APLAZADO, NO APROBADO. Si se aplaza (normalmente por cambios de fondo en la propuesta) el estudiante tiene un máximo de 15 días para hacer llegar las correcciones. Si hay cambios de forma, el documento se aprueba y el estudiante entrega el documento final con las correcciones a la coordinación, no se hace necesario ningún trámite adicional de parte del evaluador. Esta decisión debe consignarse en el Formato B (ver adjunto).',
-                    style: 'value',
-                    alignment: 'justify',
-                    margin: [0, 0, 0, 5],
-                },
-                {
-                    text: '2. Las observaciones o comentarios pueden ser incluidos en los documentos de word/pdf que se entregan al evaluador (anteproyecto, examen de valoración y anexos según el caso) o en el Formato C (ver adjunto).',
-                    style: 'value',
-                    alignment: 'justify',
-                    margin: [0, 0, 0, 5],
-                },
-                {
-                    text: `Para facilidad de los evaluadores, cada uno puede entregar los formatos B y C en forma independiente a la coordinación. Agradecemos que su respuesta sea enviada antes del ${new Date(
-                        formValues.fechaRespuesta
-                    ).toLocaleDateString()}`,
-                    style: 'value',
-                    margin: [0, 0, 0, 5],
-                    alignment: 'justify',
-                },
-                {
-                    text:
-                        'Cualquier inquietud con relación a la evaluación favor comunicarse con el director del trabajo de grado, PhD. ' +
-                        this.docenteSeleccionado.nombres +
-                        ' (email: ' +
-                        this.docenteSeleccionado.correo +
-                        ').',
-                    style: 'value',
-                    margin: [0, 0, 0, 5],
-                    alignment: 'justify',
-                },
-                {
-                    text:
-                        'Si considera procedente interactuar con el estudiante para aclarar algún aspecto de la propuesta, siéntase en libertad de hacerlo al email: ' +
-                        formValues.estudiante +
-                        '.',
+                    text: formValues.contenido,
                     style: 'value',
                     margin: [0, 0, 0, 5],
                     alignment: 'justify',
@@ -399,7 +410,15 @@ export class DocumentoformatoEvaluadoresComponent implements OnInit {
                     alignment: 'justify',
                 },
                 {
-                    text: 'Luz Marina Sierra Martínez, PhD.',
+                    image: this.firmaCoordinador,
+                    width: 80,
+                    height: 60,
+                    margin: [0, 10, 0, 0],
+                    alignment: 'left',
+                    style: 'value',
+                },
+                {
+                    text: `${formValues.coordinador}, PhD.`,
                     style: 'value',
                     alignment: 'justify',
                 },
@@ -412,6 +431,23 @@ export class DocumentoformatoEvaluadoresComponent implements OnInit {
                     text: 'E-mail: maestriacomputacion@unicauca.edu.co',
                     style: 'value',
                     alignment: 'justify',
+                },
+                {
+                    text:
+                        'Copia a: ' +
+                        formValues.estudiante +
+                        ' (Estudiante Maestria en Computación) ' +
+                        this.docenteSeleccionado.nombres +
+                        ' (Director Trabajo de Grado)',
+                    style: 'value',
+                    alignment: 'justify',
+                    margin: [0, 10, 0, 5],
+                },
+                {
+                    text: 'Anexo: Anteproyecto, Examen de Valoración, Soportes de Avance, Formatos B y C.',
+                    style: 'small',
+                    alignment: 'justify',
+                    margin: [0, 0, 0, 5],
                 },
             ],
             footer: (currentPage, pageCount) => {
@@ -475,6 +511,9 @@ export class DocumentoformatoEvaluadoresComponent implements OnInit {
                 },
                 value: {
                     fontSize: 11,
+                },
+                small: {
+                    fontSize: 10,
                 },
             },
             pageMargins: [40, 40, 40, 160],

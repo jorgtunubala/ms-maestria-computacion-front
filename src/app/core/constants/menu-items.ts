@@ -56,11 +56,11 @@ export const menuItems: MenuItem[] = [
         icon: 'pi pi-fw pi-chart-line',
     },
     {
-        label: 'TRABAJOS DE GRADO',
+        label: 'GESTIÓN TRABAJO DE GRADO',
         icon: 'pi pi-fw pi-book',
         items: [
             {
-                label: 'Examen de valoración',
+                label: 'Trabajo de Grado',
                 icon: 'pi pi-user',
                 routerLink: '/examen-de-valoracion',
             },

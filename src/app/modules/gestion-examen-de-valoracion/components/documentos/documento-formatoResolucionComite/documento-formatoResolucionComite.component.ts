@@ -16,7 +16,7 @@ import {
     Validators,
 } from '@angular/forms';
 import { MessageService } from 'primeng/api';
-import { Subscription, firstValueFrom } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { Mensaje } from 'src/app/core/enums/enums';
 import { mapResponseException } from 'src/app/core/utils/exception-util';
 import {
@@ -25,73 +25,55 @@ import {
     warnMessage,
 } from 'src/app/core/utils/message-util';
 import { TrabajoDeGradoService } from '../../../services/trabajoDeGrado.service';
-import { ResolucionService } from '../../../services/resolucion.service';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 @Component({
-    selector: 'documento-formatoF',
-    templateUrl: 'documento-formatoF.component.html',
-    styleUrls: ['documento-formatoF.component.scss'],
+    selector: 'documento-formatoResolucionComite',
+    templateUrl: 'documento-formatoResolucionComite.component.html',
+    styleUrls: ['documento-formatoResolucionComite.component.scss'],
 })
-export class DocumentoFormatoFComponent implements OnInit {
-    @Input() trabajoDeGradoId: number;
-    @Input() juradoExternoSeleccionado: any;
-    @Input() juradoInternoSeleccionado: any;
+export class DocumentoFormatoResolucionComiteComponent implements OnInit {
+    @Input() directorSeleccionado: any;
     @Output() formReady = new EventEmitter<FormGroup>();
-    @Output() formatoFPdfGenerated = new EventEmitter<File>();
+    @Output() formatoResolucionComitePdfGenerated = new EventEmitter<File>();
 
-    @ViewChild('formatoF') formatoF!: ElementRef;
+    @ViewChild('formatoResolucionComite')
+    formatoResolucionComite!: ElementRef;
 
-    private estudianteSubscription: Subscription;
-    private tituloSubscription: Subscription;
+    estudianteSubscription: Subscription;
+    tituloSubscription: Subscription;
 
-    formatoFForm: FormGroup;
+    formatoResolucionComiteForm: FormGroup;
 
     loading = false;
 
     estudianteSeleccionado: any;
-    fechaActual: Date;
-    firmaDirector: string;
+    firmaCoordinador: string;
     footerImage: string;
     logoImage: string;
 
     constructor(
         private fb: FormBuilder,
         private messageService: MessageService,
-        private trabajoDeGradoService: TrabajoDeGradoService,
-        private resolucionService: ResolucionService
+        private trabajoDeGradoService: TrabajoDeGradoService
     ) {}
 
-    get titulo(): FormControl {
-        return this.formatoFForm.get('titulo') as FormControl;
+    get estudiante(): FormControl {
+        return this.formatoResolucionComiteForm.get(
+            'estudiante'
+        ) as FormControl;
     }
 
-    get estudiante(): FormControl {
-        return this.formatoFForm.get('estudiante') as FormControl;
+    get titulo(): FormControl {
+        return this.formatoResolucionComiteForm.get('titulo') as FormControl;
     }
 
     get director(): FormControl {
-        return this.formatoFForm.get('director') as FormControl;
-    }
-
-    async loadDirector() {
-        try {
-            const response = await firstValueFrom(
-                this.resolucionService.getResolucionDocente(
-                    this.trabajoDeGradoId
-                )
-            );
-            if (response) {
-                this.director.setValue(response.director.nombres);
-            }
-        } catch (error) {
-            console.error('Error al obtener el director:', error);
-        }
+        return this.formatoResolucionComiteForm.get('director') as FormControl;
     }
 
     ngOnInit() {
         this.initForm();
-        this.fechaActual = new Date();
 
         this.tituloSubscription =
             this.trabajoDeGradoService.tituloSeleccionadoSubject$.subscribe({
@@ -108,33 +90,44 @@ export class DocumentoFormatoFComponent implements OnInit {
                 next: (response) => {
                     if (response) {
                         this.estudianteSeleccionado = response;
-                        this.estudiante.setValue(
-                            this.nombreCompletoEstudiante(response)
-                        );
+                        this.formatoResolucionComiteForm
+                            .get('estudiante')
+                            .setValue(
+                                this.nombreCompletoEstudiante(
+                                    this.estudianteSeleccionado
+                                )
+                            );
                     }
                 },
                 error: (e) => this.handlerResponseException(e),
             });
 
-        if (this.trabajoDeGradoId) {
-            this.loadDirector();
+        if (this.directorSeleccionado) {
+            this.director.setValue(
+                this.directorSeleccionado?.nombres ??
+                    this.directorSeleccionado?.nombre +
+                        ' ' +
+                        this.directorSeleccionado?.apellido
+            );
         }
     }
 
     initForm(): void {
-        this.formatoFForm = this.fb.group({
-            titulo: [null, Validators.required],
+        this.formatoResolucionComiteForm = this.fb.group({
+            consecutivo: ['MC/001', Validators.required],
+            facultad: [
+                'Ingeniería Electrónica y Telecomunicaciones',
+                Validators.required,
+            ],
+            programa: ['Maestría en Computación', Validators.required],
             estudiante: [null, Validators.required],
+            titulo: [null, Validators.required],
             director: [null, Validators.required],
-            trabajoCumpleSi: [false, Validators.required],
-            trabajoCumpleNo: [false, Validators.required],
-            documentoTerminadoNo: [false, Validators.required],
-            documentoTerminadoSi: [false, Validators.required],
-            observaciones: [null],
-            firmaDirector: [null, Validators.required],
+            fechaSesion: [null, Validators.required],
+            firmaCoordinador: [null, Validators.required],
         });
 
-        this.formReady.emit(this.formatoFForm);
+        this.formReady.emit(this.formatoResolucionComiteForm);
 
         var logoImg = new Image();
         logoImg.src = 'assets/layout/images/logoUnicauca.png';
@@ -147,30 +140,6 @@ export class DocumentoFormatoFComponent implements OnInit {
         footerImg.onload = () => {
             this.footerImage = this.getBase64Image(footerImg);
         };
-        this.initValueChangeHandlers();
-    }
-
-    initValueChangeHandlers(): void {
-        this.addToggleHandler('trabajoCumpleSi', 'trabajoCumpleNo');
-        this.addToggleHandler('trabajoCumpleNo', 'trabajoCumpleSi');
-        this.addToggleHandler('documentoTerminadoSi', 'documentoTerminadoNo');
-        this.addToggleHandler('documentoTerminadoNo', 'documentoTerminadoSi');
-    }
-
-    addToggleHandler(controlName: string, oppositeControlName: string): void {
-        this.formatoFForm.get(controlName).valueChanges.subscribe({
-            next: (response) => {
-                if (typeof response === 'boolean') {
-                    const oppositeControl =
-                        this.formatoFForm.get(oppositeControlName);
-                    if (response) {
-                        oppositeControl.disable({ emitEvent: false });
-                    } else {
-                        oppositeControl.enable({ emitEvent: false });
-                    }
-                }
-            },
-        });
     }
 
     getBase64Image(img: HTMLImageElement) {
@@ -183,11 +152,11 @@ export class DocumentoFormatoFComponent implements OnInit {
     }
 
     ngOnDestroy() {
-        if (this.tituloSubscription) {
-            this.tituloSubscription.unsubscribe();
-        }
         if (this.estudianteSubscription) {
             this.estudianteSubscription.unsubscribe();
+        }
+        if (this.tituloSubscription) {
+            this.tituloSubscription.unsubscribe();
         }
     }
 
@@ -197,20 +166,29 @@ export class DocumentoFormatoFComponent implements OnInit {
         if (file) {
             const reader = new FileReader();
             reader.onload = () => {
-                if (fieldName === 'firmaDirector') {
-                    this.firmaDirector = reader.result as string;
+                if (fieldName === 'firmaCoordinador') {
+                    this.firmaCoordinador = reader.result as string;
                 }
             };
             reader.readAsDataURL(file);
             const patchObject = {};
             patchObject[fieldName] = file;
-            this.formatoFForm.patchValue(patchObject);
+            this.formatoResolucionComiteForm.patchValue(patchObject);
         }
     }
 
     generateDocDefinition() {
-        const formValues = this.formatoFForm.value;
-        const fechaActual = new Date().toLocaleDateString();
+        const formValues = this.formatoResolucionComiteForm.value;
+
+        const today = new Date();
+        const dia = today.getDate();
+        const mes = today.getMonth() + 1;
+        const anio = today.getFullYear();
+        const fechaActual = `${dia} de ${mes} de ${anio}`;
+
+        const fechaSesion = new Date(
+            formValues.fechaSesion
+        ).toLocaleDateString();
 
         return {
             content: [
@@ -234,130 +212,133 @@ export class DocumentoFormatoFComponent implements OnInit {
                     ],
                 },
                 {
-                    text: 'TESIS DE POSGRADO',
-                    style: 'subheader',
-                    alignment: 'center',
+                    text: formValues.consecutivo,
+                    alignment: 'justify',
+                    margin: [0, 0, 0, 5],
+                },
+                {
+                    text: 'Popayán, ' + fechaActual,
+                    alignment: 'justify',
+                    margin: [0, 0, 0, 10],
+                },
+                {
+                    text: 'Magister',
+                    alignment: 'justify',
+                },
+                {
+                    text: 'Alejandro Toledo Tovar',
+                    alignment: 'justify',
+                },
+                {
+                    text: 'Presidente Comite de Facultad',
+                    alignment: 'justify',
+                },
+                {
+                    text: formValues.facultad,
+                    alignment: 'justify',
+                },
+                {
+                    text: 'Universidad del Cauca',
+                    alignment: 'justify',
+                    margin: [0, 0, 0, 5],
                 },
                 {
                     columns: [
-                        { text: 'FORMATO F:', style: 'label', width: '25%' },
+                        { text: 'Asunto:', style: 'label', width: '10%' },
                         {
-                            text: 'REMISION DEL DOCUMENTO FINAL AL COMITÉ DE PROGRAMA POR EL DIRECTOR RESPECTIVO',
+                            text: [
+                                'Remisión Evaluación de Anteproyecto de ',
+                                { text: formValues.estudiante, bold: true },
+                                ' y solicitud de elaborar Resolución de aprobación del mismo.',
+                            ],
                             style: 'value',
-                            width: '75%',
+                            width: '90%',
                         },
                     ],
                 },
                 {
                     columns: [
-                        { text: 'TITULO:', style: 'label', width: '25%' },
                         {
-                            text: formValues.titulo,
+                            text: 'Cordial Saludo,',
                             style: 'value',
-                            width: '75%',
+                            margin: [0, 10, 0, 10],
                         },
                     ],
                 },
                 {
                     columns: [
-                        { text: 'ESTUDIANTE:', style: 'label', width: '25%' },
                         {
-                            text: formValues.estudiante,
+                            text: [
+                                'Para su conocimiento y fines pertinentes (elaborar resolución de aprobación por parte del Comite de Facultad de la FIET) me permito remitir los documentos de evaluación del Anteproyecto de Maestría denominado: ',
+                                { text: formValues.titulo, bold: true },
+                                ` presentado por el estudiante del Programa de ${formValues.programa}, `,
+                                { text: formValues.estudiante, bold: true },
+                                'dirigido por ',
+                                { text: formValues.director, bold: true },
+                                `de la Universidad del Cauca, los cuales han sido revisados y avalados por el Comité de Programa en reunión ordinaria del ${fechaSesion}.`,
+                            ],
                             style: 'value',
-                            width: '75%',
+                            alignment: 'justify',
                         },
                     ],
                 },
                 {
                     columns: [
-                        { text: 'DIRECTOR:', style: 'label', width: '25%' },
                         {
-                            text: formValues.director,
+                            text: [
+                                'El concepto emitido por los jurados evaluadores es de ',
+                                { text: 'Aprobado.', bold: true },
+                                'Se adjunta copia de los Formatos de aprobación diligenciados por los respectivos evaluadores, copia digital del documento de anteproyecto enviado al correo Comite.fiet@unicauca.edu.co.',
+                            ],
                             style: 'value',
-                            width: '75%',
+                            alignment: 'justify',
                         },
                     ],
-                    margin: [0, 0, 0, 20],
-                },
-                {
-                    text: 'A) EL TRABAJO CUMPLE CON LAS CONDICIONES DE ENTREGA? SI (  ) NO (  )',
-                    style: 'label',
                 },
                 {
                     columns: [
-                        { text: 'SI', style: 'value', width: '10%' },
                         {
-                            text: formValues.trabajoCumpleSi ? '( X )' : '(  )',
+                            text: 'Universitariamente,',
                             style: 'value',
-                            width: '10%',
-                        },
-                        { text: 'NO', style: 'value', width: '10%' },
-                        {
-                            text: formValues.trabajoCumpleNo ? '( X )' : '(  )',
-                            style: 'value',
-                            width: '10%',
+                            margin: [0, 10, 0, 10],
                         },
                     ],
                 },
                 {
-                    text: 'B) DOCUMENTO Y ANEXOS COMPLETAMENTE TERMINADOS? SI (  ) NO (  )',
-                    style: 'label',
-                },
-                {
-                    columns: [
-                        { text: 'SI', style: 'value', width: '10%' },
-                        {
-                            text: formValues.documentoTerminadoSi
-                                ? '( X )'
-                                : '(  )',
-                            style: 'value',
-                            width: '10%',
-                        },
-                        { text: 'NO', style: 'value', width: '10%' },
-                        {
-                            text: formValues.documentoTerminadoNo
-                                ? '( X )'
-                                : '(  )',
-                            style: 'value',
-                            width: '10%',
-                        },
-                    ],
-                    margin: [0, 0, 0, 20],
-                },
-                { text: 'OBSERVACIONES:', style: 'label' },
-                {
-                    text: formValues?.observaciones || '',
+                    image: this.firmaCoordinador,
+                    width: 80,
+                    height: 60,
+                    margin: [0, 10, 0, 0],
+                    alignment: 'left',
                     style: 'value',
                 },
                 {
-                    text: 'JURADOS SUGERIDOS Y DATOS DE CONTACTO:',
-                    style: 'label',
-                },
-                {
-                    text: `${this.juradoInternoSeleccionado?.nombres}, ${this.juradoInternoSeleccionado?.correo}, ${this.juradoInternoSeleccionado?.universidad}\n${this.juradoExternoSeleccionado?.nombres}, ${this.juradoExternoSeleccionado?.correo}, ${this.juradoExternoSeleccionado?.universidad}`,
-                    style: 'value',
-                },
-                {
                     columns: [
-                        { text: 'FECHA:', style: 'label', width: '25%' },
                         {
-                            text: fechaActual,
-                            style: 'value',
-                            width: '75%',
+                            text: 'Luz Marina Sierra Martínez M, PhD',
+                            bold: true,
                         },
                     ],
-                    margin: [0, 0, 0, 20],
                 },
                 {
                     columns: [
-                        { text: 'FIRMA:', style: 'label', width: '25%' },
                         {
-                            image: this.firmaDirector,
-                            width: 80,
-                            height: 60,
-                            margin: [0, 5, 0, 0],
-                            alignment: 'left',
-                            style: 'value',
+                            text: 'Coordinadora Maestría Computación',
+                        },
+                    ],
+                },
+                {
+                    columns: [
+                        {
+                            text: 'e-mail: maestriacomputacion@unicauca.edu.co',
+                        },
+                    ],
+                },
+                {
+                    columns: [
+                        {
+                            text: 'Anexos: Anteproyecto digital de anteproyecto y evaluación positiva de los evaluadores en el examen de valoración.',
+                            style: 'small',
                         },
                     ],
                 },
@@ -436,12 +417,16 @@ export class DocumentoFormatoFComponent implements OnInit {
                     fontSize: 12,
                     margin: [0, 10, 0, 0],
                 },
+                small: {
+                    fontSize: 10,
+                    margin: [0, 10, 0, 0],
+                },
             },
         };
     }
 
     onDownload() {
-        if (this.formatoFForm.invalid) {
+        if (this.formatoResolucionComiteForm.invalid) {
             this.handleWarningMessage(Mensaje.REGISTRE_CAMPOS_OBLIGATORIOS);
             return;
         } else {
@@ -449,7 +434,7 @@ export class DocumentoFormatoFComponent implements OnInit {
             pdfMake.createPdf(docDefinition).getBlob((pdfBlob: Blob) => {
                 const file = new File(
                     [pdfBlob],
-                    `${this.estudianteSeleccionado.codigo} - formatoF.pdf`,
+                    `${this.estudianteSeleccionado.codigo} - Solicitud Ante el Concejo.pdf`,
                     {
                         type: 'application/pdf',
                     }
@@ -466,7 +451,7 @@ export class DocumentoFormatoFComponent implements OnInit {
     }
 
     onInsertar() {
-        if (this.formatoFForm.invalid) {
+        if (this.formatoResolucionComiteForm.invalid) {
             this.handleWarningMessage(Mensaje.REGISTRE_CAMPOS_OBLIGATORIOS);
             return;
         } else {
@@ -474,15 +459,21 @@ export class DocumentoFormatoFComponent implements OnInit {
             pdfMake.createPdf(docDefinition).getBlob((pdfBlob: Blob) => {
                 const file = new File(
                     [pdfBlob],
-                    `${this.estudianteSeleccionado.codigo} - formatoF.pdf`,
+                    `${this.estudianteSeleccionado.codigo} - Solicitud Ante el Concejo.pdf`,
                     {
                         type: 'application/pdf',
                     }
                 );
-                this.formatoFPdfGenerated.emit(file);
+                this.formatoResolucionComitePdfGenerated.emit(file);
                 this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
             });
         }
+    }
+
+    getFormControl(formControlName: string): FormControl {
+        return this.formatoResolucionComiteForm.get(
+            formControlName
+        ) as FormControl;
     }
 
     nombreCompletoEstudiante(e: any) {

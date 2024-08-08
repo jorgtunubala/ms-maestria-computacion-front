@@ -118,12 +118,12 @@
                     </p>
                 </div>
                 <div class="field grid">
-                    <div class="col-2 col-label text-right align-self-center">
+                    <div class="col-3 col-label text-right align-self-center">
                         <label class="label-required"
                             >Título del Trabajo de Investigación</label
                         >
                     </div>
-                    <div class="col-10 col-input">
+                    <div class="col-9 col-input">
                         <span class="p-inputtext-md w-full">{{
                             tituloSeleccionado
                         }}</span>
@@ -131,7 +131,7 @@
                 </div>
                 <div class="field grid">
                     <div
-                        class="col-2 col-label flex flex-column row-gap-4 text-right align-self-center"
+                        class="col-3 col-label flex flex-column row-gap-4 text-right align-self-center"
                     >
                         <strong style="font-size: 16px"
                             >Evaluador Externo</strong
@@ -413,120 +413,6 @@
                                                 *ngIf="
                                                     !selectedFiles[
                                                         'expertoEvaluaciones.linkFormatoC' +
-                                                            i
-                                                    ]
-                                                "
-                                            >
-                                                <p>
-                                                    No has seleccionado ningún
-                                                    documento.
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="grid column-gap-4 mb-6">
-                                        <label
-                                            class="label-required col-2 text-right"
-                                            >Observaciones (.pdf)
-                                        </label>
-                                        <div class="col-7 col-input">
-                                            <div
-                                                class="flex flex-wrap gap-2 max-w-30rem align-items-start"
-                                            >
-                                                <div
-                                                    class="flex flex-column row-gap-2 align-items-start justify-content-start"
-                                                >
-                                                    <app-custom-file-upload
-                                                        [formControlName]="
-                                                            'linkObservaciones' +
-                                                            i
-                                                        "
-                                                        [arrayName]="
-                                                            'expertoEvaluaciones'
-                                                        "
-                                                        [filename]="
-                                                            'linkObservaciones' +
-                                                            i
-                                                        "
-                                                        [selected]="
-                                                            selectedFiles
-                                                        "
-                                                        [isRespuestaValid]="
-                                                            isRespuestaValid
-                                                        "
-                                                        [evaluacionId]="
-                                                            this
-                                                                .evaluacionExpertoIds[
-                                                                i
-                                                            ]
-                                                        "
-                                                        (archivoDeseleccionado)="
-                                                            onRemove($event)
-                                                        "
-                                                        (archivoSeleccionado)="
-                                                            onArchivoSeleccionado(
-                                                                $event
-                                                            )
-                                                        "
-                                                    ></app-custom-file-upload>
-                                                    <div
-                                                        class="text-description mt-2"
-                                                        style="
-                                                            width: '200px';
-                                                            word-break: break-word;
-                                                        "
-                                                        *ngIf="
-                                                            selectedFiles[
-                                                                'expertoEvaluaciones.linkObservaciones' +
-                                                                    i
-                                                            ]
-                                                        "
-                                                    >
-                                                        {{
-                                                            selectedFiles[
-                                                                "expertoEvaluaciones.linkObservaciones" +
-                                                                    i
-                                                            ].name
-                                                        }}
-                                                        -
-                                                        {{
-                                                            selectedFiles[
-                                                                "expertoEvaluaciones.linkObservaciones" +
-                                                                    i
-                                                            ].size | bytesToKb
-                                                        }}
-                                                        KB
-                                                    </div>
-                                                </div>
-                                                <button
-                                                    *ngIf="
-                                                        selectedFiles[
-                                                            'expertoEvaluaciones.linkObservaciones' +
-                                                                i
-                                                        ] &&
-                                                        isExamenCreado(
-                                                            'expertoEvaluaciones',
-                                                            i
-                                                        )
-                                                    "
-                                                    pButton
-                                                    class="p-button-secondary"
-                                                    type="button"
-                                                    icon="pi pi-download"
-                                                    (click)="
-                                                        getFileAndSetValue(
-                                                            'expertoEvaluaciones',
-                                                            'linkObservaciones',
-                                                            i
-                                                        )
-                                                    "
-                                                ></button>
-                                            </div>
-                                            <div
-                                                class="mt-2"
-                                                *ngIf="
-                                                    !selectedFiles[
-                                                        'expertoEvaluaciones.linkObservaciones' +
                                                             i
                                                     ]
                                                 "
@@ -822,7 +708,7 @@
                 >
                 <div class="field grid">
                     <div
-                        class="col-2 col-label flex flex-column row-gap-4 text-right align-self-center"
+                        class="col-3 col-label flex flex-column row-gap-4 text-right align-self-center"
                     >
                         <strong style="font-size: 16px"
                             >Evaluador Interno</strong
@@ -1104,120 +990,6 @@
                                                 *ngIf="
                                                     !selectedFiles[
                                                         'docenteEvaluaciones.linkFormatoC' +
-                                                            i
-                                                    ]
-                                                "
-                                            >
-                                                <p>
-                                                    No has seleccionado ningún
-                                                    documento.
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="grid column-gap-4 mb-6">
-                                        <label
-                                            class="label-required col-2 text-right"
-                                            >Observaciones (.pdf)
-                                        </label>
-                                        <div class="col-7 col-input">
-                                            <div
-                                                class="flex flex-wrap gap-2 max-w-30rem align-items-start"
-                                            >
-                                                <div
-                                                    class="flex flex-column row-gap-2 align-items-start justify-content-start"
-                                                >
-                                                    <app-custom-file-upload
-                                                        [formControlName]="
-                                                            'linkObservaciones' +
-                                                            i
-                                                        "
-                                                        [arrayName]="
-                                                            'docenteEvaluaciones'
-                                                        "
-                                                        [filename]="
-                                                            'linkObservaciones' +
-                                                            i
-                                                        "
-                                                        [selected]="
-                                                            selectedFiles
-                                                        "
-                                                        [isRespuestaValid]="
-                                                            isRespuestaValid
-                                                        "
-                                                        [evaluacionId]="
-                                                            this
-                                                                .evaluacionDocenteIds[
-                                                                i
-                                                            ]
-                                                        "
-                                                        (archivoDeseleccionado)="
-                                                            onRemove($event)
-                                                        "
-                                                        (archivoSeleccionado)="
-                                                            onArchivoSeleccionado(
-                                                                $event
-                                                            )
-                                                        "
-                                                    ></app-custom-file-upload>
-                                                    <div
-                                                        class="text-description mt-2"
-                                                        style="
-                                                            width: '200px';
-                                                            word-break: break-word;
-                                                        "
-                                                        *ngIf="
-                                                            selectedFiles[
-                                                                'docenteEvaluaciones.linkObservaciones' +
-                                                                    i
-                                                            ]
-                                                        "
-                                                    >
-                                                        {{
-                                                            selectedFiles[
-                                                                "docenteEvaluaciones.linkObservaciones" +
-                                                                    i
-                                                            ].name
-                                                        }}
-                                                        -
-                                                        {{
-                                                            selectedFiles[
-                                                                "docenteEvaluaciones.linkObservaciones" +
-                                                                    i
-                                                            ].size | bytesToKb
-                                                        }}
-                                                        KB
-                                                    </div>
-                                                </div>
-                                                <button
-                                                    *ngIf="
-                                                        selectedFiles[
-                                                            'docenteEvaluaciones.linkObservaciones' +
-                                                                i
-                                                        ] &&
-                                                        isExamenCreado(
-                                                            'docenteEvaluaciones',
-                                                            i
-                                                        )
-                                                    "
-                                                    pButton
-                                                    class="p-button-secondary"
-                                                    type="button"
-                                                    icon="pi pi-download"
-                                                    (click)="
-                                                        getFileAndSetValue(
-                                                            'docenteEvaluaciones',
-                                                            'linkObservaciones',
-                                                            i
-                                                        )
-                                                    "
-                                                ></button>
-                                            </div>
-                                            <div
-                                                class="mt-2"
-                                                *ngIf="
-                                                    !selectedFiles[
-                                                        'docenteEvaluaciones.linkObservaciones' +
                                                             i
                                                     ]
                                                 "

@@ -45,6 +45,8 @@ import { RespuestaService } from '../../services/respuesta.service';
 import { ResolucionService } from '../../services/resolucion.service';
 import { SolicitudService } from '../../services/solicitud.service';
 import { TrabajoDeGradoService } from '../../services/trabajoDeGrado.service';
+import { DocumentoFormatoBService } from '../../services/docs/documentoFormatoB.service';
+import { DocumentoFormatoCService } from '../../services/docs/documentoFormatoC.service';
 
 @Component({
     selector: 'app-solicitud-examen',
@@ -111,13 +113,11 @@ export class SolicitudExamenComponent implements OnInit {
     FileFormatoE: File | null;
     FileOficioDirigidoEvaluadores: File | null;
     formatoA: File | null;
-    formatoBEv1Preview: File | null;
+    formatoBPreview: File | null;
     formatoCEv1Preview: File | null;
-    formatoBEv2Preview: File | null;
     formatoCEv2Preview: File | null;
-    formatoBEv1: File | null;
+    formatoB: File | null;
     formatoCEv1: File | null;
-    formatoBEv2: File | null;
     formatoCEv2: File | null;
 
     anexosFiles: File[] = [];
@@ -143,7 +143,9 @@ export class SolicitudExamenComponent implements OnInit {
         private resolucionService: ResolucionService,
         private autenticacion: AutenticacionService,
         private docenteService: DocenteService,
-        private expertoService: ExpertoService
+        private expertoService: ExpertoService,
+        private documentoFormatoBService: DocumentoFormatoBService,
+        private documentoFormatoCService: DocumentoFormatoCService
     ) {
         this.maxDate = new Date();
     }
@@ -192,7 +194,7 @@ export class SolicitudExamenComponent implements OnInit {
                 severity: 'info',
                 summary: 'Información',
                 detail: detailMessage,
-                life: 4000,
+                life: 6000,
             });
         }
     }
@@ -330,10 +332,10 @@ export class SolicitudExamenComponent implements OnInit {
             const value = await firstValueFrom(this.checkboxChange$);
             if (value && !this.messageShown) {
                 this.messageService.add({
-                    severity: 'success',
-                    summary: 'Revisado',
+                    severity: 'info',
+                    summary: 'Información',
                     detail: 'Todos los documentos han sido revisados. Ahora puede cerrar la vista actual. Recuerde guardar los cambios.',
-                    life: 6000,
+                    life: 5000,
                 });
                 this.messageShown = true;
             }
@@ -706,6 +708,14 @@ export class SolicitudExamenComponent implements OnInit {
         ) {
             filesToConvert.push(
                 {
+                    file: this.FileOficioDirigidoEvaluadores,
+                    fieldName: 'Oficio Dirigido a Evaluadores',
+                },
+                {
+                    file: this.FileFormatoA,
+                    fieldName: 'Solicitud Examen de Valoración',
+                },
+                {
                     file: this.FileFormatoD,
                     fieldName: 'Anteproyecto presentado a Examen',
                 },
@@ -715,16 +725,8 @@ export class SolicitudExamenComponent implements OnInit {
                     fieldName: 'Anexo',
                 })),
                 {
-                    file: this.FileOficioDirigidoEvaluadores,
-                    fieldName: 'Oficio Dirigido a Evaluadores',
-                },
-                {
-                    file: this.formatoBEv1Preview,
-                    fieldName: 'Formato B - Evaluador Interno',
-                },
-                {
-                    file: this.formatoBEv2Preview,
-                    fieldName: 'Formato B - Evaluador Externo',
+                    file: this.formatoBPreview,
+                    fieldName: 'Formato B - Evaluador Interno y Externo',
                 },
                 {
                     file: this.formatoCEv1Preview,
@@ -794,6 +796,68 @@ export class SolicitudExamenComponent implements OnInit {
         }
     }
 
+    async openModalAndFormatos() {
+        this.displayModal = true;
+        this.isLoading = true;
+        try {
+            const objFormatoB = await firstValueFrom(
+                this.documentoFormatoBService.generateDocuments(
+                    {
+                        titulo: this.solicitudForm.get('titulo').value,
+                        programa: 'Maestría en Computación',
+                    },
+                    this.estudianteSeleccionado,
+                    this.evaluadorInternoSeleccionado,
+                    this.evaluadorExternoSeleccionado
+                )
+            );
+
+            const objFormatoCEv1 = await firstValueFrom(
+                this.documentoFormatoCService.generateDocuments(
+                    {
+                        titulo: this.solicitudForm.get('titulo').value,
+                        coordinador: 'Luz Marina Sierra Martínez',
+                        asunto: 'Maestría en Computación',
+                    },
+                    this.estudianteSeleccionado,
+                    this.evaluadorInternoSeleccionado
+                )
+            );
+
+            const objFormatoCEv2 = await firstValueFrom(
+                this.documentoFormatoCService.generateDocuments(
+                    {
+                        titulo: this.solicitudForm.get('titulo').value,
+                        coordinador: 'Luz Marina Sierra Martínez',
+                        asunto: 'Maestría en Computación',
+                    },
+                    this.estudianteSeleccionado,
+                    this.evaluadorExternoSeleccionado
+                )
+            );
+
+            if (objFormatoB && objFormatoCEv1 && objFormatoCEv2) {
+                this.handleFormatoBDocxGenerated({
+                    doc: objFormatoB.docFormatoB,
+                    pdf: objFormatoB.pdfFormatoB,
+                });
+                this.handleFormatoCEv1DocxGenerated({
+                    doc: objFormatoCEv1.docFormatoC,
+                    pdf: objFormatoCEv1.pdfFormatoC,
+                });
+                this.handleFormatoCEv2DocxGenerated({
+                    doc: objFormatoCEv2.docFormatoC,
+                    pdf: objFormatoCEv2.pdfFormatoC,
+                });
+                this.loadPdfFiles();
+            }
+        } catch (error) {
+            console.error('Hubo un problema al generar los documentos.');
+        } finally {
+            this.isLoading = false;
+        }
+    }
+
     openModal() {
         if (!this.isLoading) {
             this.displayModal = true;
@@ -815,45 +879,6 @@ export class SolicitudExamenComponent implements OnInit {
 
     showFormatoOficioDirigidoEvaluadores() {
         this.displayFormatoOficioDirigidoEvaluadores = true;
-    }
-
-    showFormatoB() {
-        this.displayFormatos = true;
-        this.currentFormat = 'formatoBEv1';
-    }
-
-    previousFormat() {
-        if (this.currentFormat == 'formatoCEv2') {
-            this.currentFormat = 'formatoCEv1';
-        } else if (this.currentFormat === 'formatoCEv1') {
-            this.currentFormat = 'formatoBEv2';
-        } else if (this.currentFormat === 'formatoBEv2') {
-            this.currentFormat = 'formatoBEv1';
-        }
-    }
-
-    nextFormat() {
-        if (this.currentFormat == 'formatoBEv1') {
-            this.currentFormat = 'formatoBEv2';
-        } else if (this.currentFormat == 'formatoBEv2') {
-            this.currentFormat = 'formatoCEv1';
-        } else if (this.currentFormat == 'formatoCEv1') {
-            this.currentFormat = 'formatoCEv2';
-        }
-    }
-
-    getCurrentFormatName(): string {
-        if (this.currentFormat === 'formatoBEv1') {
-            return 'Formato B - Evaluador Interno';
-        } else if (this.currentFormat === 'formatoBEv2') {
-            return 'Formato B - Evaluador Externo';
-        } else if (this.currentFormat === 'formatoCEv1') {
-            return 'Formato C - Evaluador Interno';
-        } else if (this.currentFormat === 'formatoCEv2') {
-            return 'Formato C - Evaluador Externo';
-        } else {
-            return 'Formato Desconocido';
-        }
     }
 
     handleFormatoAPdfGenerated(file: File) {
@@ -894,26 +919,15 @@ export class SolicitudExamenComponent implements OnInit {
             });
     }
 
-    handleFormatoBEv1DocxGenerated(obj: any) {
-        const docxFile = new File([obj.doc], 'formatoBEv1.docx', {
+    handleFormatoBDocxGenerated(obj: any) {
+        const docxFile = new File([obj.doc], 'formatoB.docx', {
             type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         });
-        const pdfFile = new File([obj.pdf], 'formatoBEv1.pdf', {
+        const pdfFile = new File([obj.pdf], 'formatoB.pdf', {
             type: 'application/pdf',
         });
-        this.formatoBEv1 = docxFile;
-        this.formatoBEv1Preview = pdfFile;
-    }
-
-    handleFormatoBEv2DocxGenerated(obj: any) {
-        const docxFile = new File([obj.doc], 'formatoBEv2.docx', {
-            type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        });
-        const pdfFile = new File([obj.pdf], 'formatoBEv2.pdf', {
-            type: 'application/pdf',
-        });
-        this.formatoBEv2 = docxFile;
-        this.formatoBEv2Preview = pdfFile;
+        this.formatoB = docxFile;
+        this.formatoBPreview = pdfFile;
     }
 
     handleFormatoCEv1DocxGenerated(obj: any) {
@@ -1106,16 +1120,14 @@ export class SolicitudExamenComponent implements OnInit {
                         ...restOfFormValues
                     } = this.solicitudForm.value;
 
-                    let b64FormatoBEv1 = null;
+                    let b64FormatoB = null;
                     let b64FormatoCEv1 = null;
-                    let b64FormatoBEv2 = null;
                     let b64FormatoCEv2 = null;
                     let b64Oficio = null;
 
                     if (conceptoComite == 'Avalado') {
                         if (
-                            !this.formatoBEv1 ||
-                            !this.formatoBEv2 ||
+                            !this.formatoB ||
                             !this.formatoCEv1 ||
                             !this.formatoCEv2
                         ) {
@@ -1126,18 +1138,15 @@ export class SolicitudExamenComponent implements OnInit {
                                 )
                             );
                         }
-                        b64FormatoBEv1 = await this.formatFileString(
-                            this.formatoBEv1,
-                            'formatoBEv1'
+                        b64FormatoB = await this.formatFileString(
+                            this.formatoB,
+                            'formatoB'
                         );
                         b64FormatoCEv1 = await this.formatFileString(
                             this.formatoCEv1,
                             'formatoCEv1'
                         );
-                        b64FormatoBEv2 = await this.formatFileString(
-                            this.formatoBEv2,
-                            'formatoBEv2'
-                        );
+
                         b64FormatoCEv2 = await this.formatFileString(
                             this.formatoCEv2,
                             'formatoCEv2'
@@ -1168,9 +1177,8 @@ export class SolicitudExamenComponent implements OnInit {
                                       b64FormatoE,
                                       b64Anexos,
                                       b64Oficio,
-                                      b64FormatoBEv1,
+                                      b64FormatoB,
                                       b64FormatoCEv1,
-                                      b64FormatoBEv2,
                                       b64FormatoCEv2,
                                   },
                               }
@@ -1254,16 +1262,14 @@ export class SolicitudExamenComponent implements OnInit {
                         ...restOfFormValues
                     } = this.solicitudForm.value;
 
-                    let b64FormatoBEv1 = null;
+                    let b64FormatoB = null;
                     let b64FormatoCEv1 = null;
-                    let b64FormatoBEv2 = null;
                     let b64FormatoCEv2 = null;
                     let b64Oficio = null;
 
                     if (conceptoComite == 'Avalado') {
                         if (
-                            !this.formatoBEv1 ||
-                            !this.formatoBEv2 ||
+                            !this.formatoB ||
                             !this.formatoCEv1 ||
                             !this.formatoCEv2
                         ) {
@@ -1274,17 +1280,13 @@ export class SolicitudExamenComponent implements OnInit {
                                 )
                             );
                         }
-                        b64FormatoBEv1 = await this.formatFileString(
-                            this.formatoBEv1,
-                            'formatoBEv1'
+                        b64FormatoB = await this.formatFileString(
+                            this.formatoB,
+                            'formatoB'
                         );
                         b64FormatoCEv1 = await this.formatFileString(
                             this.formatoCEv1,
                             'formatoCEv1'
-                        );
-                        b64FormatoBEv2 = await this.formatFileString(
-                            this.formatoBEv2,
-                            'formatoBEv2'
                         );
                         b64FormatoCEv2 = await this.formatFileString(
                             this.formatoCEv2,
@@ -1316,9 +1318,8 @@ export class SolicitudExamenComponent implements OnInit {
                                       b64FormatoE,
                                       b64Anexos,
                                       b64Oficio,
-                                      b64FormatoBEv1,
+                                      b64FormatoB,
                                       b64FormatoCEv1,
-                                      b64FormatoBEv2,
                                       b64FormatoCEv2,
                                   },
                               }
@@ -1728,7 +1729,7 @@ export class SolicitudExamenComponent implements OnInit {
 
     uploadFileAndSetValue(fileControlName: string, event: any) {
         const selectedFiles: FileList = event.files;
-        const maxFileSize = 5000000; // 5 MB
+        const maxFileSize = 20000000; // 20 MB
         if (selectedFiles && selectedFiles.length > 0) {
             const selectedFile = selectedFiles[0];
             if (selectedFile.size > maxFileSize) {

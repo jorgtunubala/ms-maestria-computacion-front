@@ -27,6 +27,17 @@
                         type="text"
                         id="consecutivo"
                         formControlName="consecutivo"
+                    />
+                </div>
+                <div class="flex flex-column mt-4">
+                    <label class="label-required mb-2" for="propuesta"
+                        >Propuesta:</label
+                    >
+                    <input
+                        pInputText
+                        type="text"
+                        id="propuesta"
+                        formControlName="propuesta"
                         readonly
                     />
                 </div>
@@ -38,21 +49,22 @@
                         pInputTextarea
                         id="asunto"
                         formControlName="asunto"
-                        rows="4"
+                        rows="5"
                     ></textarea>
                 </div>
                 <div
                     class="flex justify-content-between align-items-center mt-4"
                 >
                     <div class="flex align-items-center mr-2">
-                        <label class="label-required mr-2" for="coordinadora"
+                        <label class="label-required mr-2" for="coordinador"
                             >Coordinador(a):</label
                         >
                         <input
                             pInputText
                             type="text"
-                            id="coordinadora"
-                            formControlName="coordinadora"
+                            id="coordinador"
+                            formControlName="coordinador"
+                            readonly
                         />
                     </div>
                     <div class="flex align-items-center mr-2">
@@ -85,18 +97,6 @@
                             readonly
                         />
                     </div>
-                </div>
-                <div class="flex flex-column mt-4">
-                    <label class="label-required mb-2" for="propuesta"
-                        >Propuesta:</label
-                    >
-                    <input
-                        pInputText
-                        type="text"
-                        id="propuesta"
-                        formControlName="propuesta"
-                        readonly
-                    />
                 </div>
                 <div class="mt-4">
                     <label>Evaluador Externo:</label>
@@ -167,6 +167,67 @@
                         [showIcon]="true"
                         dateFormat="dd.mm.yy"
                     ></p-calendar>
+                </div>
+                <div class="flex flex-column mt-4">
+                    <button
+                        pButton
+                        icon="pi pi-plus"
+                        label="Generar"
+                        (click)="generateContent()"
+                        [disabled]="!isFormValid()"
+                        pTooltip="Este botón generará automáticamente el contenido del oficio basado en los datos proporcionados en el formulario."
+                        tooltipPosition="top"
+                    ></button>
+                    <label class="label-required my-2" for="contenido"
+                        >Contenido:</label
+                    >
+                    <textarea
+                        pInputTextarea
+                        id="contenido"
+                        style="text-align: justify"
+                        rows="20"
+                        cols="30"
+                        formControlName="contenido"
+                        [readonly]="!isFormValid()"
+                    ></textarea>
+                </div>
+                <div class="field grid mt-4">
+                    <span class="col-9 text-right">
+                        <b>Firma Coordinador(a)</b>
+                    </span>
+                    <div class="col-3 text-center">
+                        <p-fileUpload
+                            name="firmaCoordinador"
+                            chooseIcon="pi pi-file"
+                            accept=".png"
+                            chooseLabel="Seleccionar"
+                            class="w-full max-w-30rem"
+                            previewWidth="100"
+                            [auto]="true"
+                            (onSelect)="
+                                onFirmaChange($event, 'firmaCoordinador')
+                            "
+                        >
+                            <ng-template
+                                let-file
+                                pTemplate="file"
+                                data-file="firma"
+                            >
+                                <div *ngIf="firmaCoordinador">
+                                    <img
+                                        [src]="firmaCoordinador"
+                                        alt="Vista Previa de la Firma"
+                                        style="
+                                            min-height: 120px;
+                                            min-width: 150px;
+                                            width: 100%;
+                                            height: 100%;
+                                        "
+                                    />
+                                </div>
+                            </ng-template>
+                        </p-fileUpload>
+                    </div>
                 </div>
             </form>
         </div>

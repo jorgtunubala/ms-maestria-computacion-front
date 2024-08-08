@@ -27,85 +27,6 @@
             </div>
         </p-card>
         <p-dialog
-            *ngIf="evaluadorInternoSeleccionado && evaluadorExternoSeleccionado"
-            [header]="getCurrentFormatName()"
-            [(visible)]="displayFormatos"
-            [style]="{ width: '70vw' }"
-            [modal]="true"
-            [maximizable]="true"
-            [baseZIndex]="10000"
-            [draggable]="false"
-            [resizable]="false"
-        >
-            <!-- Docente -->
-            <ng-container *ngIf="currentFormat == 'formatoBEv1'">
-                <documento-formatoB
-                    [formatoBEv1]="formatoBEv1"
-                    [evaluador]="evaluadorInternoSeleccionado"
-                    (formatoBDocxGenerated)="
-                        handleFormatoBEv1DocxGenerated($event)
-                    "
-                ></documento-formatoB>
-            </ng-container>
-            <ng-container *ngIf="currentFormat == 'formatoCEv1'">
-                <documento-formatoC
-                    [formatoCEv1]="formatoCEv1"
-                    [evaluador]="evaluadorInternoSeleccionado"
-                    (formatoCDocxGenerated)="
-                        handleFormatoCEv1DocxGenerated($event)
-                    "
-                ></documento-formatoC>
-            </ng-container>
-            <!-- Experto -->
-            <ng-container *ngIf="currentFormat == 'formatoBEv2'">
-                <documento-formatoB
-                    [formatoBEv2]="formatoBEv2"
-                    [evaluador]="evaluadorExternoSeleccionado"
-                    (formatoBDocxGenerated)="
-                        handleFormatoBEv2DocxGenerated($event)
-                    "
-                ></documento-formatoB>
-            </ng-container>
-            <ng-container *ngIf="currentFormat == 'formatoCEv2'">
-                <documento-formatoC
-                    [formatoCEv2]="formatoCEv2"
-                    [evaluador]="evaluadorExternoSeleccionado"
-                    (formatoCDocxGenerated)="
-                        handleFormatoCEv2DocxGenerated($event)
-                    "
-                ></documento-formatoC>
-            </ng-container>
-            <ng-template pTemplate="footer">
-                <div class="flex justify-content-between align-items-center">
-                    <div>
-                        <button
-                            pButton
-                            class="p-button-secondary"
-                            label="Salir"
-                            (click)="closeModal()"
-                        ></button>
-                    </div>
-                    <div>
-                        <p-button
-                            *ngIf="currentFormat != 'formatoBEv1'"
-                            icon="pi pi-chevron-left"
-                            label="Anterior"
-                            styleClass="p-button-text"
-                            (click)="previousFormat()"
-                        ></p-button>
-                        <p-button
-                            *ngIf="currentFormat != 'formatoCEv2'"
-                            icon="pi pi-chevron-right"
-                            iconPos="right"
-                            label="Siguiente"
-                            styleClass="p-button-text"
-                            (click)="nextFormat()"
-                        ></p-button>
-                    </div>
-                </div>
-            </ng-template>
-        </p-dialog>
-        <p-dialog
             header="Formato A"
             [(visible)]="displayFormatoA"
             [style]="{ width: '70vw' }"
@@ -336,7 +257,16 @@
                             solicitud
                         </p>
                     </div>
-                    <p-fieldset legend="Docente" styleClass="bg-bluegray-50">
+                    <p-fieldset
+                        legend="Docente"
+                        styleClass="bg-bluegray-50"
+                        [toggleable]="
+                            role.includes('ROLE_COORDINADOR') ? true : false
+                        "
+                        [collapsed]="
+                            role.includes('ROLE_COORDINADOR') ? true : false
+                        "
+                    >
                         <div class="field grid justify-content-center">
                             <div class="col-12 lg:col-5">
                                 <label class="label-required"
@@ -940,6 +870,18 @@
                     <p-fieldset
                         legend="Coordinador"
                         styleClass="bg-bluegray-50"
+                        [toggleable]="
+                            role.includes('ROLE_COORDINADOR') &&
+                            isCoordinadorFase1
+                                ? true
+                                : false
+                        "
+                        [collapsed]="
+                            role.includes('ROLE_COORDINADOR') &&
+                            isCoordinadorFase1
+                                ? true
+                                : false
+                        "
                     >
                         <div
                             class="flex flex-1 justify-content-end align-items-center"
@@ -1285,26 +1227,6 @@
                             </div>
                         </div>
                         <div
-                            class="flex flex-1 justify-content-end align-items-center mb-4"
-                            *ngIf="
-                                editMode &&
-                                role.includes('ROLE_COORDINADOR') &&
-                                isCoordinadorFase1 &&
-                                solicitudForm.get('conceptoComite').value ==
-                                    'Avalado'
-                            "
-                        >
-                            <button
-                                pButton
-                                pTooltip="Adjunta los formatos B y C para el envío a cada evaluador."
-                                tooltipPosition="top"
-                                icon="pi pi-external-link"
-                                label="Adjuntar (.pdf)"
-                                (click)="showFormatoB()"
-                                [disabled]="isRespuestaCreated"
-                            ></button>
-                        </div>
-                        <div
                             class="flex flex-1 justify-content-end align-items-center"
                             *ngIf="
                                 isCoordinadorFase1 &&
@@ -1318,7 +1240,7 @@
                                 pButton
                                 icon="pi pi-eye"
                                 label="Revisar documentos"
-                                (click)="openModal()"
+                                (click)="openModalAndFormatos()"
                                 [disabled]="displayModal"
                             ></button>
                         </div>
@@ -1337,7 +1259,7 @@
                     pButton
                     icon="pi pi-eye"
                     label="Revisar documentos"
-                    (click)="openModal()"
+                    (click)="openModalAndFormatos()"
                     [disabled]="!displayModal && isRespuestaCreated"
                 ></button>
                 <button

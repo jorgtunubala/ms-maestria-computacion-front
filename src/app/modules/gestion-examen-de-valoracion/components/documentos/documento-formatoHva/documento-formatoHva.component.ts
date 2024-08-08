@@ -41,28 +41,32 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 export class DocumentoFormatoHvaComponent implements OnInit {
     @Input() trabajoDeGradoId: number;
     @Input() fileFormatoHva: File;
+
     @Output() formReady = new EventEmitter<FormGroup>();
     @Output() formatoHvaDocxGenerated = new EventEmitter<Blob>();
 
     @ViewChild('formatoHva') formatoHva!: ElementRef;
 
+    formatoHvaForm: FormGroup;
+
     estudianteSubscription: Subscription;
     tituloSubscription: Subscription;
-
-    formatoHvaForm: FormGroup;
 
     loading = false;
 
     fechaActual: string;
 
     title: string = 'docx-generator';
+
     estudianteSeleccionado: any;
+    selectedSemestre: any;
+    selectedArea: any;
 
     tiposAreaFormacion = [
-        { nombre: 'Fundamentación' },
-        { nombre: 'Electiva' },
-        { nombre: 'Investigación' },
-        { nombre: 'Complementación' },
+        { label: 'Fundamentación', value: 'F' },
+        { label: 'Electiva', value: 'E' },
+        { label: 'Investigación', value: 'I' },
+        { label: 'Complementación', value: 'C' },
     ];
 
     asignaturas = [
@@ -73,6 +77,13 @@ export class DocumentoFormatoHvaComponent implements OnInit {
         { nombre: 'Asignatura E', creditos: 5 },
         { nombre: 'Asignatura F', creditos: 4 },
         { nombre: 'Asignatura G', creditos: 5 },
+    ];
+
+    semestres = [
+        { label: 'Semestre I', value: 'I' },
+        { label: 'Semestre II', value: 'II' },
+        { label: 'Semestre III', value: 'III' },
+        { label: 'Semestre IV', value: 'IV' },
     ];
 
     pruebaSuperadaOptions = [
@@ -131,8 +142,6 @@ export class DocumentoFormatoHvaComponent implements OnInit {
 
     ngOnInit() {
         this.initForm();
-        this.fechaActual = new Date().toLocaleString();
-
         this.tituloSubscription =
             this.trabajoDeGradoService.tituloSeleccionadoSubject$.subscribe({
                 next: (response) => {
@@ -155,6 +164,9 @@ export class DocumentoFormatoHvaComponent implements OnInit {
                                     this.estudianteSeleccionado
                                 )
                             );
+                        this.formatoHvaForm
+                            .get('codigo')
+                            .setValue(this.estudianteSeleccionado.codigo);
                     }
                 },
                 error: (e) => this.handlerResponseException(e),
@@ -169,7 +181,7 @@ export class DocumentoFormatoHvaComponent implements OnInit {
     initForm(): void {
         this.formatoHvaForm = this.fb.group({
             estudiante: [null, Validators.required],
-            codigo: ['123', Validators.required],
+            codigo: [null, Validators.required],
             planEstudios: ['2024-2', Validators.required],
             fechaRevision: [null, Validators.required],
             areasFormacion: this.fb.array([], Validators.required),
@@ -193,38 +205,49 @@ export class DocumentoFormatoHvaComponent implements OnInit {
         }
     }
 
-    addAreaFormacion(event: any): void {
-        const areaSeleccionada = event.value;
+    onSemestreChange(event: any): void {
+        this.selectedSemestre = event.value;
+    }
+
+    onAreaFormacionChange(event: any): void {
+        this.selectedArea = event.value;
         const areasFormacionArray = this.formatoHvaForm.get(
             'areasFormacion'
         ) as FormArray;
         const areaExistente = areasFormacionArray.controls.find(
-            (control) => control.get('tipo').value === areaSeleccionada.nombre
+            (control) =>
+                control.get('tipo').value.label === this.selectedArea.label &&
+                control.get('semestre').value.label ===
+                    this.selectedSemestre.label
         );
-
         if (!areaExistente) {
             const areaFormGroup = this.fb.group({
-                tipo: areaSeleccionada.nombre,
+                tipo: this.selectedArea,
+                semestre: this.selectedSemestre,
                 asignaturas: this.fb.array([]),
             });
-
             areasFormacionArray.push(areaFormGroup);
         }
     }
 
-    addAsignatura(areaIndex: number, asignaturaSeleccionada: any): void {
+    onAsignaturaChange(areaIndex: number, asignaturaSeleccionada: any): void {
         const asignaturaFormGroup = this.fb.group({
             nombre: asignaturaSeleccionada.nombre,
             creditos: asignaturaSeleccionada.creditos,
         });
-
         const asignaturasFormArray = (
             this.formatoHvaForm.get('areasFormacion') as FormArray
         )
             .at(areaIndex)
             .get('asignaturas') as FormArray;
-
         asignaturasFormArray.push(asignaturaFormGroup);
+    }
+
+    removeAreaFormacion(areaIndex: number): void {
+        const areasFormacionArray = this.formatoHvaForm.get(
+            'areasFormacion'
+        ) as FormArray;
+        areasFormacionArray.removeAt(areaIndex);
     }
 
     removeAsignatura(areaIndex: number, asignaturaIndex: number): void {
@@ -233,7 +256,6 @@ export class DocumentoFormatoHvaComponent implements OnInit {
         )
             .at(areaIndex)
             .get('asignaturas') as FormArray;
-
         asignaturasFormArray.removeAt(asignaturaIndex);
     }
 
@@ -245,18 +267,16 @@ export class DocumentoFormatoHvaComponent implements OnInit {
     transformFormValues(formValues: any): any {
         const transformed = { ...formValues };
         delete transformed.areasFormacion;
-
-        formValues.areasFormacion.forEach((area: any, areaIndex: number) => {
+        formValues.areasFormacion.forEach((area: any, _: number) => {
             area.asignaturas.forEach(
                 (asignatura: any, asignaturaIndex: number) => {
-                    const keyNombre = `asignatura${area.tipo}${asignaturaIndex}.nombre`;
-                    const keyCreditos = `asignatura${area.tipo}${asignaturaIndex}.creditos`;
-                    transformed[keyNombre] = asignatura.nombre || 'NA';
-                    transformed[keyCreditos] = asignatura.creditos || 'NA';
+                    const keyNombre = `asignatura${area.tipo.value}${area.semestre.value}${asignaturaIndex}.nombre`;
+                    const keyCreditos = `asignatura${area.tipo.value}${area.semestre.value}${asignaturaIndex}.creditos`;
+                    transformed[keyNombre] = asignatura.nombre;
+                    transformed[keyCreditos] = asignatura.creditos;
                 }
             );
         });
-
         return transformed;
     }
 
@@ -265,14 +285,17 @@ export class DocumentoFormatoHvaComponent implements OnInit {
             this.handleWarningMessage(Mensaje.REGISTRE_CAMPOS_OBLIGATORIOS);
             return;
         } else {
+            this.loading = true;
             const formValues = this.formatoHvaForm.value;
             const transformedData = this.transformFormValues(formValues);
-
+            const fechaRevision = new Date(
+                transformedData.fechaRevision
+            ).toLocaleDateString();
             const docData: any = {
                 estudiante: transformedData.estudiante,
                 codigo: transformedData.codigo,
                 planEstudios: transformedData.planEstudios,
-                fechaRevision: this.fechaActual,
+                fechaRevision: fechaRevision,
                 pruebaSuperada: transformedData.pruebaSuperada.value,
                 minimoArticulo: transformedData.minimoArticulo,
                 creditosCumplidos: transformedData.creditosCumplidos,
@@ -282,9 +305,87 @@ export class DocumentoFormatoHvaComponent implements OnInit {
                 coordinador: transformedData.coordinador,
             };
 
+            const expectedKeys = [
+                'asignaturaFI0.nombre',
+                'asignaturaFI0.creditos',
+                'asignaturaFII0.nombre',
+                'asignaturaFII0.creditos',
+                'asignaturaFIII0.nombre',
+                'asignaturaFIII0.creditos',
+                'asignaturaFIV0.nombre',
+                'asignaturaFIV0.creditos',
+
+                'asignaturaFI1.nombre',
+                'asignaturaFI1.creditos',
+                'asignaturaFII1.nombre',
+                'asignaturaFII1.creditos',
+                'asignaturaFIII1.nombre',
+                'asignaturaFIII1.creditos',
+                'asignaturaFIV1.nombre',
+                'asignaturaFIV1.creditos',
+
+                'asignaturaEI0.nombre',
+                'asignaturaEI0.creditos',
+                'asignaturaEII0.nombre',
+                'asignaturaEII0.creditos',
+                'asignaturaEIII0.nombre',
+                'asignaturaEIII0.creditos',
+                'asignaturaEIV0.nombre',
+                'asignaturaEIV0.creditos',
+
+                'asignaturaEI1.nombre',
+                'asignaturaEI1.creditos',
+                'asignaturaEII1.nombre',
+                'asignaturaEII1.creditos',
+                'asignaturaEIII1.nombre',
+                'asignaturaEIII1.creditos',
+                'asignaturaEIV1.nombre',
+                'asignaturaEIV1.creditos',
+
+                'asignaturaII0.nombre',
+                'asignaturaII0.creditos',
+                'asignaturaIII0.nombre',
+                'asignaturaIII0.creditos',
+                'asignaturaIIII0.nombre',
+                'asignaturaIIII0.creditos',
+                'asignaturaIIV0.nombre',
+                'asignaturaIIV0.creditos',
+
+                'asignaturaII1.nombre',
+                'asignaturaII1.creditos',
+                'asignaturaIII1.nombre',
+                'asignaturaIII1.creditos',
+                'asignaturaIIII1.nombre',
+                'asignaturaIIII1.creditos',
+                'asignaturaIIV1.nombre',
+                'asignaturaIIV1.creditos',
+
+                'asignaturaCI0.nombre',
+                'asignaturaCI0.creditos',
+                'asignaturaCII0.nombre',
+                'asignaturaCII0.creditos',
+                'asignaturaCIII0.nombre',
+                'asignaturaCIII0.creditos',
+                'asignaturaCIV0.nombre',
+                'asignaturaCIV0.creditos',
+
+                'asignaturaCI1.nombre',
+                'asignaturaCI1.creditos',
+                'asignaturaCII1.nombre',
+                'asignaturaCII1.creditos',
+                'asignaturaCIII1.nombre',
+                'asignaturaCIII1.creditos',
+                'asignaturaCIV1.nombre',
+                'asignaturaCIV1.creditos',
+            ];
+
+            expectedKeys.forEach((key) => {
+                docData[key] = 'NA';
+            });
+
             Object.keys(transformedData).forEach((key) => {
-                if (key.startsWith('asignatura')) {
-                    docData[key] = transformedData[key] || 'NA';
+                if (expectedKeys.includes(key)) {
+                    docData[key] = transformedData[key];
                 }
             });
 
@@ -319,6 +420,7 @@ export class DocumentoFormatoHvaComponent implements OnInit {
                     this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
                 }
             );
+            this.loading = false;
         }
     }
 
@@ -330,12 +432,14 @@ export class DocumentoFormatoHvaComponent implements OnInit {
             this.loading = true;
             const formValues = this.formatoHvaForm.value;
             const transformedData = this.transformFormValues(formValues);
-
+            const fechaRevision = new Date(
+                transformedData.fechaRevision
+            ).toLocaleDateString();
             const docData: any = {
                 estudiante: transformedData.estudiante,
                 codigo: transformedData.codigo,
                 planEstudios: transformedData.planEstudios,
-                fechaRevision: this.fechaActual,
+                fechaRevision: fechaRevision,
                 pruebaSuperada: transformedData.pruebaSuperada.value,
                 minimoArticulo: transformedData.minimoArticulo,
                 creditosCumplidos: transformedData.creditosCumplidos,
@@ -345,9 +449,87 @@ export class DocumentoFormatoHvaComponent implements OnInit {
                 coordinador: transformedData.coordinador,
             };
 
+            const expectedKeys = [
+                'asignaturaFI0.nombre',
+                'asignaturaFI0.creditos',
+                'asignaturaFII0.nombre',
+                'asignaturaFII0.creditos',
+                'asignaturaFIII0.nombre',
+                'asignaturaFIII0.creditos',
+                'asignaturaFIV0.nombre',
+                'asignaturaFIV0.creditos',
+
+                'asignaturaFI1.nombre',
+                'asignaturaFI1.creditos',
+                'asignaturaFII1.nombre',
+                'asignaturaFII1.creditos',
+                'asignaturaFIII1.nombre',
+                'asignaturaFIII1.creditos',
+                'asignaturaFIV1.nombre',
+                'asignaturaFIV1.creditos',
+
+                'asignaturaEI0.nombre',
+                'asignaturaEI0.creditos',
+                'asignaturaEII0.nombre',
+                'asignaturaEII0.creditos',
+                'asignaturaEIII0.nombre',
+                'asignaturaEIII0.creditos',
+                'asignaturaEIV0.nombre',
+                'asignaturaEIV0.creditos',
+
+                'asignaturaEI1.nombre',
+                'asignaturaEI1.creditos',
+                'asignaturaEII1.nombre',
+                'asignaturaEII1.creditos',
+                'asignaturaEIII1.nombre',
+                'asignaturaEIII1.creditos',
+                'asignaturaEIV1.nombre',
+                'asignaturaEIV1.creditos',
+
+                'asignaturaII0.nombre',
+                'asignaturaII0.creditos',
+                'asignaturaIII0.nombre',
+                'asignaturaIII0.creditos',
+                'asignaturaIIII0.nombre',
+                'asignaturaIIII0.creditos',
+                'asignaturaIIV0.nombre',
+                'asignaturaIIV0.creditos',
+
+                'asignaturaII1.nombre',
+                'asignaturaII1.creditos',
+                'asignaturaIII1.nombre',
+                'asignaturaIII1.creditos',
+                'asignaturaIIII1.nombre',
+                'asignaturaIIII1.creditos',
+                'asignaturaIIV1.nombre',
+                'asignaturaIIV1.creditos',
+
+                'asignaturaCI0.nombre',
+                'asignaturaCI0.creditos',
+                'asignaturaCII0.nombre',
+                'asignaturaCII0.creditos',
+                'asignaturaCIII0.nombre',
+                'asignaturaCIII0.creditos',
+                'asignaturaCIV0.nombre',
+                'asignaturaCIV0.creditos',
+
+                'asignaturaCI1.nombre',
+                'asignaturaCI1.creditos',
+                'asignaturaCII1.nombre',
+                'asignaturaCII1.creditos',
+                'asignaturaCIII1.nombre',
+                'asignaturaCIII1.creditos',
+                'asignaturaCIV1.nombre',
+                'asignaturaCIV1.creditos',
+            ];
+
+            expectedKeys.forEach((key) => {
+                docData[key] = 'NA';
+            });
+
             Object.keys(transformedData).forEach((key) => {
-                if (key.startsWith('asignatura')) {
-                    docData[key] = transformedData[key] || 'NA';
+                if (expectedKeys.includes(key)) {
+                    docData[key] = transformedData[key];
                 }
             });
 
