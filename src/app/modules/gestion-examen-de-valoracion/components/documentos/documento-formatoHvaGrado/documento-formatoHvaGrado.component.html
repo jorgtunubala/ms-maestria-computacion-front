@@ -228,44 +228,45 @@
                         formControlName="email"
                     />
                 </div>
+                <div class="footer-logo mt-8">
+                    <img
+                        src="assets/layout/images/asset-calidad.png"
+                        alt="Asset Calidad"
+                        width="140px"
+                        height="100px"
+                    />
+                    <div
+                        class="flex flex-column align-items-center justify-content-center"
+                    >
+                        <span>
+                            Carrera 2 No. 15N esquina-Sector Tulcán
+                            Popayán-Cauca-Colombia Teléfono: 6028209800 ext.
+                            2100 ó 2101. decafiet@unicauca.edu.co |
+                            <strong>www.unicauca.edu.co</strong>
+                        </span>
+                    </div>
+                    <img
+                        src="assets/layout/images/logosIcontec.png"
+                        alt="Logo Icontec"
+                        width="120px"
+                        height="80px"
+                    />
+                </div>
+                <div
+                    class="flex align-items-center justify-content-end mt-4 column-gap-2"
+                >
+                    <button
+                        pButton
+                        type="button"
+                        icon="pi pi-download"
+                        label="Descargar"
+                        (click)="onDownload()"
+                        [loading]="loading"
+                        pTooltip="El estudiante debe descargar el documento y adjuntar su firma en el espacio correspondiente."
+                        tooltipPosition="top"
+                    ></button>
+                </div>
             </form>
-        </div>
-        <div
-            class="flex flex-row align-items-center justify-content-center footer-logo mt-8"
-        >
-            <img
-                src="assets/layout/images/logosIcontec.png"
-                alt="Logo Icontec"
-                width="200px"
-                height="140px"
-            />
-            <div
-                class="flex flex-column align-items-center justify-content-center"
-            >
-                <span>Por una Universidad de excelencia y solidaria</span>
-                <hr />
-                <strong>
-                    Facultad de Ingeniería Electrónica y Telecomunicaciones Cra
-                    2 No. 4N-140 Edif. de Ingenierías - Sector Tulcán Popayán -
-                    Cauca - Colombia Conmutador 8209800 Ext. 2145
-                    maestriacomputacion@unicauca.edu.co - www.unicauca.edu.co
-                    www.unicauca.edu.co/maestriacomputación
-                </strong>
-            </div>
-        </div>
-        <div
-            class="flex align-items-center justify-content-end mt-4 column-gap-2"
-        >
-            <button
-                pButton
-                type="button"
-                icon="pi pi-download"
-                label="Descargar"
-                (click)="onDownload()"
-                [loading]="loading"
-                pTooltip="El estudiante debe descargar el documento y adjuntar su firma en el espacio correspondiente."
-                tooltipPosition="top"
-            ></button>
         </div>
     </div>
 </p-panel>

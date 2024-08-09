@@ -1,4 +1,4 @@
-<p-panel *ngIf="!isLoading; else spinner">
+<p-panel *ngIf="!isLoading && !isSending; else spinner">
     <ng-template pTemplate="header">
         <span class="font-bold w-full text-center" style="font-size: 20px"
             >Trabajo de Grado</span
@@ -247,7 +247,7 @@
                 type="button"
                 icon="pi pi-paperclip"
                 class="w-15rem p-button-secondary"
-                label="Generacion de resolucion"
+                label="Generación de resolución"
                 [disabled]="role == 'ROLE_ESTUDIANTE'"
                 (click)="redirectToResolucion(resolucionId)"
             ></button>
@@ -1770,6 +1770,7 @@
                                     formControlName="fechaSustentacion"
                                     [showIcon]="true"
                                     dateFormat="dd.mm.yy"
+                                    [maxDate]="maxDate"
                                 ></p-calendar>
                             </div>
                         </div>
@@ -1862,8 +1863,10 @@
                         editMode &&
                         role.includes('ROLE_COORDINADOR') &&
                         isCoordinadorFase4 &&
-                        sustentacionForm.get('respuestaSustentacion').value ==
-                            'Aprobado'
+                        (sustentacionForm.get('respuestaSustentacion').value ==
+                            'Aprobado' ||
+                            sustentacionForm.get('respuestaSustentacion')
+                                .value == 'Aprobado Con Observaciones')
                     "
                     pButton
                     icon="pi pi-eye"
@@ -1884,15 +1887,17 @@
     </ng-template>
 </p-panel>
 <ng-template #spinner>
-    <p-progressSpinner
-        *ngIf="!isSending"
-        ariaLabel="loading"
-        class="spinner"
-    ></p-progressSpinner>
-    <div class="card" *ngIf="isSending">
-        <p-progressBar
-            mode="indeterminate"
-            [style]="{ height: '6px' }"
-        ></p-progressBar>
+    <div *ngIf="isLoading" class="spinner-container">
+        <p-progressSpinner
+            ariaLabel="loading"
+            styleClass="custom-spinner"
+        ></p-progressSpinner>
+    </div>
+    <div *ngIf="isSending" class="spinner-container">
+        <p-progressSpinner
+            ariaLabel="loading"
+            styleClass="custom-spinner"
+        ></p-progressSpinner>
+        <p class="spinner-text">Guardando información...</p>
     </div>
 </ng-template>

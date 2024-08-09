@@ -1,4 +1,4 @@
-<p-panel *ngIf="!isLoading; else spinner">
+<p-panel *ngIf="!isLoading && !isSending; else spinner">
     <ng-template pTemplate="header">
         <span class="font-bold w-full text-center" style="font-size: 20px"
             >Generación de resolución</span
@@ -200,7 +200,7 @@
                 type="button"
                 icon="pi pi-paperclip"
                 class="w-15rem p-button-info"
-                label="Generacion de resolucion"
+                label="Generación de resolución"
                 [disabled]="role == 'ROLE_ESTUDIANTE' || isActiveIndex()"
             ></button>
             <button
@@ -1116,5 +1116,17 @@
     </ng-template>
 </p-panel>
 <ng-template #spinner>
-    <p-progressSpinner ariaLabel="loading" class="spinner"></p-progressSpinner>
+    <div *ngIf="isLoading" class="spinner-container">
+        <p-progressSpinner
+            ariaLabel="loading"
+            styleClass="custom-spinner"
+        ></p-progressSpinner>
+    </div>
+    <div *ngIf="isSending" class="spinner-container">
+        <p-progressSpinner
+            ariaLabel="loading"
+            styleClass="custom-spinner"
+        ></p-progressSpinner>
+        <p class="spinner-text">Guardando información...</p>
+    </div>
 </ng-template>

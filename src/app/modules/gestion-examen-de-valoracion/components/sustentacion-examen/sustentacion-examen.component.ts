@@ -101,8 +101,8 @@ export class SustentacionExamenComponent implements OnInit {
     isCoordinadorFase3Created: boolean = false;
     isCoordinadorFase4Created: boolean = false;
     isSustentacionCreated: boolean = false;
-    isSending: boolean = false;
     isLoading: boolean = false;
+    isSending: boolean = false;
     isChanged: boolean = false;
     isReviewed: boolean = false;
     messageShown: boolean = false;
@@ -125,7 +125,12 @@ export class SustentacionExamenComponent implements OnInit {
 
     estados: string[] = ['Aceptado', 'Rechazado'];
     estadosComite: string[] = ['Aprobado', 'No Aprobado'];
-    respuestas: string[] = ['Aprobado', 'No Aprobado', 'Aplazado'];
+    respuestas: string[] = [
+        'Aprobado',
+        'Aprobado Con Observaciones',
+        'No Aprobado',
+        'Aplazado',
+    ];
 
     maxDate: Date;
 
@@ -761,8 +766,10 @@ export class SustentacionExamenComponent implements OnInit {
 
         if (
             this.role.includes('ROLE_COORDINADOR') &&
-            this.estado ==
-                EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE2_SUSTENTACION
+            (this.estado ==
+                EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE2_SUSTENTACION ||
+                this.estado ==
+                    EstadoProceso.DEVUELTO_SUSTENTACION_PARA_CORREGIR_AL_DOCENTE_COMITE)
         ) {
             filesToConvert.push({
                 file: this.FileFormatoG,
@@ -1225,6 +1232,12 @@ export class SustentacionExamenComponent implements OnInit {
                         if (data.respuestaSustentacion == 'APROBADO') {
                             respuesta = 'Aprobado';
                         }
+                        if (
+                            data.respuestaSustentacion ==
+                            'APROBADO_CON_OBSERVACIONES'
+                        ) {
+                            respuesta = 'Aprobado Con Observaciones';
+                        }
                         if (data.respuestaSustentacion == 'NO_APROBADO') {
                             respuesta = 'No Aprobado';
                         }
@@ -1307,7 +1320,7 @@ export class SustentacionExamenComponent implements OnInit {
     }
 
     async updateSustentacion() {
-        this.isLoading = true;
+        this.isSending = true;
         try {
             if (this.role.includes('ROLE_DOCENTE')) {
                 if (
@@ -1354,7 +1367,7 @@ export class SustentacionExamenComponent implements OnInit {
                         )
                     );
                 } else {
-                    this.isLoading = false;
+                    this.isSending = false;
                     this.messageService.clear();
                     return this.messageService.add(
                         errorMessage('No puedes modificar los datos.')
@@ -1547,6 +1560,8 @@ export class SustentacionExamenComponent implements OnInit {
                 ) {
                     const respuestaMap = {
                         Aprobado: 'APROBADO',
+                        'Aprobado Con Observaciones':
+                            'APROBADO_CON_OBSERVACIONES',
                         Aplazado: 'APLAZADO',
                         'No Aprobado': 'NO_APROBADO',
                     };
@@ -1756,6 +1771,8 @@ export class SustentacionExamenComponent implements OnInit {
                 ) {
                     const respuestaMap = {
                         Aprobado: 'APROBADO',
+                        'Aprobado Con Observaciones':
+                            'APROBADO_CON_OBSERVACIONES',
                         Aplazado: 'APLAZADO',
                         'No Aprobado': 'NO_APROBADO',
                     };
@@ -1780,7 +1797,7 @@ export class SustentacionExamenComponent implements OnInit {
                     (this.estado == EstadoProceso.CANCELADO_TRABAJO_GRADO ||
                         this.estado == EstadoProceso.SUSTENTACION_APROBADA)
                 ) {
-                    this.isLoading = false;
+                    this.isSending = false;
                     this.messageService.clear();
                     return this.messageService.add(
                         errorMessage('No puedes modificar los datos.')
@@ -1813,7 +1830,7 @@ export class SustentacionExamenComponent implements OnInit {
                                     'La fecha de sustentación debe ser mayor que la fecha actual.'
                                 )
                             );
-                            this.isLoading = false;
+                            this.isSending = false;
                             return;
                         }
 
@@ -1825,7 +1842,7 @@ export class SustentacionExamenComponent implements OnInit {
                                 )
                             );
                         } else {
-                            this.isLoading = false;
+                            this.isSending = false;
                             this.messageService.clear();
                             return this.messageService.add(
                                 warnMessage(
@@ -1883,7 +1900,7 @@ export class SustentacionExamenComponent implements OnInit {
                         )
                     );
                 } else {
-                    this.isLoading = false;
+                    this.isSending = false;
                     this.messageService.clear();
                     return this.messageService.add(
                         errorMessage('No puedes modificar los datos.')
@@ -1897,18 +1914,18 @@ export class SustentacionExamenComponent implements OnInit {
                 this.estado ==
                     EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_ESTUDIANTE_SUSTENTACION
             ) {
-                this.isLoading = false;
+                this.isSending = false;
                 this.messageService.clear();
                 return this.messageService.add(
                     errorMessage('No puedes modificar los datos.')
                 );
             }
-            this.isLoading = false;
+            this.isSending = false;
             this.messageService.clear();
             this.messageService.add(infoMessage(Mensaje.ACTUALIZACION_EXITOSA));
             this.router.navigate(['examen-de-valoracion']);
         } catch (error) {
-            this.isLoading = false;
+            this.isSending = false;
             this.messageService.clear();
             this.messageService.add(
                 errorMessage('Error al actualizar los datos en el backend')
@@ -1917,7 +1934,7 @@ export class SustentacionExamenComponent implements OnInit {
     }
 
     async createSustentacion(): Promise<void> {
-        this.isLoading = true;
+        this.isSending = true;
         try {
             if (this.role.includes('ROLE_DOCENTE') && !this.isDocenteCreated) {
                 const response = await firstValueFrom(
@@ -1938,7 +1955,7 @@ export class SustentacionExamenComponent implements OnInit {
 
                     await firstValueFrom(timer(2000));
 
-                    this.isLoading = false;
+                    this.isSending = false;
                     this.router.navigate([`examen-de-valoracion`]);
                 }
             }

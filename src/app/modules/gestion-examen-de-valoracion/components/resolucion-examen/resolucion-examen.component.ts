@@ -82,6 +82,7 @@ export class ResolucionExamenComponent implements OnInit {
     editMode: boolean = false;
     isPdfLoaded: boolean = false;
     isLoading: boolean;
+    isSending: boolean;
     isDocente: boolean = false;
     isCoordinadorFase1: boolean = false;
     isCoordinadorFase2: boolean = false;
@@ -918,7 +919,7 @@ export class ResolucionExamenComponent implements OnInit {
     }
 
     async updateResolucion() {
-        this.isLoading = true;
+        this.isSending = true;
         try {
             if (this.role.includes('ROLE_DOCENTE')) {
                 if (
@@ -952,7 +953,7 @@ export class ResolucionExamenComponent implements OnInit {
                         )
                     );
                 } else {
-                    this.isLoading = false;
+                    this.isSending = false;
                     this.messageService.clear();
                     return this.messageService.add(
                         errorMessage('No puedes modificar los datos.')
@@ -1212,25 +1213,25 @@ export class ResolucionExamenComponent implements OnInit {
                         )
                     );
                 } else {
-                    this.isLoading = false;
+                    this.isSending = false;
                     this.messageService.clear();
                     return this.messageService.add(
                         errorMessage('No puedes modificar los datos.')
                     );
                 }
             }
-            this.isLoading = false;
+            this.isSending = false;
             this.messageService.clear();
             this.messageService.add(infoMessage(Mensaje.ACTUALIZACION_EXITOSA));
             this.router.navigate(['examen-de-valoracion']);
         } catch (error) {
-            this.isLoading = false;
+            this.isSending = false;
             this.handlerResponseException(error);
         }
     }
 
     async createResolucion(): Promise<void> {
-        this.isLoading = true;
+        this.isSending = true;
         try {
             if (this.role.includes('ROLE_DOCENTE') && !this.isDocenteCreated) {
                 const response = await firstValueFrom(
@@ -1256,7 +1257,7 @@ export class ResolucionExamenComponent implements OnInit {
         } catch (e) {
             this.handlerResponseException(e);
         } finally {
-            this.isLoading = false;
+            this.isSending = false;
         }
     }
 

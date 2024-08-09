@@ -57,7 +57,7 @@ export enum EstadoProceso {
     PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE1_GENERACION_RESOLUCION = 'Pendiente revisión de archivos para la GENERACION RESOLUCIÓN por parte del COORDINADOR.',
     DEVUELTO_GENERACION_DE_RESOLUCION_POR_COORDINADOR = 'Se ha devuelto la GENERACION RESOLUCIÓN para realizar correcciones solicitadas del COORDINADOR.',
     PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE2_GENERACION_RESOLUCION = 'Pendiente cargue de información por parte del COORDINADOR con respuesta del COMITE sobre la GENERACION RESOLUCIÓN.',
-    DEVUELTO_GENERACION_DE_RESOLUCION_POR_COMITE = 'Se ha devuelto la GENERACION RESOLUCIÓN para realizar correcciones solicitadas por el COMITE.',
+    DEVUELTO_GENERACION_DE_RESOLUCION_POR_COMITE = 'Se ha devuelto la GENERACION RESOLUCIÓN. para realizar correcciones solicitadas por el COMITE.',
     PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE3_GENERACION_RESOLUCION = 'Pendiente cargue de información por parte del COORDINADOR con respuesta del CONSEJO sobre la GENERACION RESOLUCIÓN.',
     PENDIENTE_SUBIDA_ARCHIVOS_DOCENTE_SUSTENTACION = 'Pendiente registro de información por parte del DOCENTE para la SUSTENTACIÓN.',
     PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE1_SUSTENTACION = 'Pendiente revisión de archivos para la SUSTENTACIÓN por parte del COORDINADOR.',
@@ -67,11 +67,12 @@ export enum EstadoProceso {
     PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE3_SUSTENTACION = 'Pendiente cargue de información por parte del COORDINADOR con respuesta del CONSEJO sobre la SUSTENTACIÓN.',
     PENDIENTE_SUBIDA_ARCHIVOS_ESTUDIANTE_SUSTENTACION = 'Pendiente registro de información por parte del ESTUDIANTE para la SUSTENTACIÓN.',
     PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE4_SUSTENTACION = 'Pendiente cargue de información por parte del COORDINADOR para finalización SUSTENTACIÓN',
-    SUSTENTACION_APROBADA = 'Sustentación APROBADA. Trabajo de grado finalizado con éxito.',
+    SUSTENTACION_APROBADA = 'Sustentación APROBADA. Trabajo de grado finalizado con éxito',
     SUSTENTACION_NO_APROBADA = 'Sustentación no APROBADA. Trabajo de grado finalizado.',
     SUSTENTACION_APLAZADA = 'Sustentación APLAZADA. Trabajo de grado en espera.',
     CANCELADO_TRABAJO_GRADO = 'El trabajo de grado ha sido cancelado de forma DEFINITIVA por el COORDINADOR.',
     EVALUADOR_NO_RESPONDIO = 'Uno o ambos evaluadores no dieron respuesta al EXAMEN DE VALORACIÓN',
+    SUSTENTACION_APROBADA_CON_OBSERVACIONES = 'Sustentación APROBADA con OBSERVACIONES. Trabajo de grado en espera.',
 }
 
 export enum EstadoEmpresa {

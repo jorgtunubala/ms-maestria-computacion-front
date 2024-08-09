@@ -88,6 +88,7 @@ export class SolicitudExamenComponent implements OnInit {
     errorMessageShown: boolean = false;
     editMode: boolean = false;
     isLoading: boolean;
+    isSending: boolean;
     isChanged: boolean = false;
     isDocente: boolean = false;
     isCoordinadorFase1: boolean = false;
@@ -132,6 +133,7 @@ export class SolicitudExamenComponent implements OnInit {
     estado: string;
 
     maxDate: Date;
+    maxDateEvaluacion: Date;
 
     constructor(
         private fb: FormBuilder,
@@ -149,6 +151,10 @@ export class SolicitudExamenComponent implements OnInit {
         private documentoFormatoCService: DocumentoFormatoCService
     ) {
         this.maxDate = new Date();
+    }
+
+    get fechaMaximaEvaluacion(): FormControl {
+        return this.solicitudForm.get('fechaMaximaEvaluacion') as FormControl;
     }
 
     get evaluadorExterno(): FormControl {
@@ -181,14 +187,17 @@ export class SolicitudExamenComponent implements OnInit {
         let detailMessage = '';
 
         if (this.isResolucionValid) {
-            detailMessage = 'Por favor, dirígete a la fase de sustentación.';
+            detailMessage =
+                'Por favor, dirígete a la fase de Sustentación del Proyecto de Investigación.';
         } else if (this.isRespuestaValid) {
-            detailMessage = 'Por favor, dirígete a la fase de resolución.';
+            detailMessage =
+                'Por favor, dirígete a la fase de Generación de Resolución.';
         } else if (
             this.isCoordinadorFase2Created &&
             this.solicitudForm.get('conceptoComite').value == 'Avalado'
         ) {
-            detailMessage = 'Por favor, dirígete a la fase de respuesta.';
+            detailMessage =
+                'Por favor, dirígete a la fase de Respuesta al Examen de Valoración.';
         } else {
             detailMessage = null;
         }
@@ -291,9 +300,9 @@ export class SolicitudExamenComponent implements OnInit {
             }
         }
 
-        this.maxDate = new Date();
-        this.maxDate.setDate(this.maxDate.getDate() + 15);
-        this.messageInterval = `Plazo normal hasta: ${this.maxDate.toLocaleDateString()}`;
+        this.maxDateEvaluacion = new Date();
+        this.maxDateEvaluacion.setDate(this.maxDateEvaluacion.getDate() + 15);
+        this.messageInterval = `Plazo normal hasta: ${this.maxDateEvaluacion.toLocaleDateString()}`;
 
         this.setupIsReviewedCheckBox();
     }
@@ -1016,7 +1025,7 @@ export class SolicitudExamenComponent implements OnInit {
             );
             return;
         }
-        this.isLoading = true;
+        this.isSending = true;
         try {
             if (this.role.includes('ROLE_DOCENTE')) {
                 if (
@@ -1073,7 +1082,7 @@ export class SolicitudExamenComponent implements OnInit {
                         )
                     );
                 } else {
-                    this.isLoading = false;
+                    this.isSending = false;
                     this.messageService.clear();
                     return this.messageService.add(
                         errorMessage('No puedes modificar los datos.')
@@ -1147,7 +1156,7 @@ export class SolicitudExamenComponent implements OnInit {
                             !this.formatoCEv1 ||
                             !this.formatoCEv2
                         ) {
-                            this.isLoading = false;
+                            this.isSending = false;
                             this.messageService.clear();
                             return this.messageService.add(
                                 warnMessage(
@@ -1290,7 +1299,7 @@ export class SolicitudExamenComponent implements OnInit {
                             !this.formatoCEv1 ||
                             !this.formatoCEv2
                         ) {
-                            this.isLoading = false;
+                            this.isSending = false;
                             this.messageService.clear();
                             return this.messageService.add(
                                 warnMessage(
@@ -1361,7 +1370,7 @@ export class SolicitudExamenComponent implements OnInit {
                         )
                     );
                 } else {
-                    this.isLoading = false;
+                    this.isSending = false;
                     this.messageService.clear();
                     return this.messageService.add(
                         errorMessage('No puedes modificar los datos.')
@@ -1369,12 +1378,12 @@ export class SolicitudExamenComponent implements OnInit {
                 }
             }
 
-            this.isLoading = false;
+            this.isSending = false;
             this.messageService.clear();
             this.messageService.add(infoMessage(Mensaje.ACTUALIZACION_EXITOSA));
             this.router.navigate(['examen-de-valoracion']);
         } catch (e) {
-            this.isLoading = false;
+            this.isSending = false;
             this.handlerResponseException(e);
         }
     }
@@ -1388,7 +1397,7 @@ export class SolicitudExamenComponent implements OnInit {
             return;
         }
 
-        this.isLoading = true;
+        this.isSending = true;
         try {
             const response = await firstValueFrom(
                 this.trabajoDeGradoService.createTrabajoDeGrado(
@@ -1412,12 +1421,12 @@ export class SolicitudExamenComponent implements OnInit {
                 this.messageService.add(infoMessage(Mensaje.GUARDADO_EXITOSO));
 
                 await firstValueFrom(timer(2000));
-                this.isLoading = false;
+                this.isSending = false;
                 this.router.navigate(['examen-de-valoracion']);
             }
         } catch (e) {
             this.handlerResponseException(e);
-            this.isLoading = false;
+            this.isSending = false;
         }
     }
 

@@ -167,8 +167,9 @@
                 <div class="flex flex-column mt-4">
                     <button
                         pButton
+                        class="max-w-20rem align-self-end"
                         icon="pi pi-plus"
-                        label="Generar"
+                        label="Rellenar Información"
                         (click)="generateContent()"
                         [disabled]="!isFormValid()"
                         pTooltip="Este botón generará automáticamente el contenido del oficio basado en los datos proporcionados en el formulario."
@@ -261,7 +262,6 @@
             pTooltip="Haz clic para insertar el documento en el área de carga de archivos."
             tooltipPosition="top"
             (click)="onInsertar()"
-            [loading]="loading"
         ></button>
         <button
             pButton

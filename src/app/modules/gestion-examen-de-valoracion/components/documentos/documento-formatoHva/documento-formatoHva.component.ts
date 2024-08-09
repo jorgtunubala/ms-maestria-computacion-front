@@ -52,7 +52,7 @@ export class DocumentoFormatoHvaComponent implements OnInit {
     estudianteSubscription: Subscription;
     tituloSubscription: Subscription;
 
-    loading = false;
+    loading: boolean = false;
 
     fechaActual: string;
 
@@ -418,9 +418,9 @@ export class DocumentoFormatoHvaComponent implements OnInit {
 
                     saveAs(out, 'formatoHva.docx');
                     this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
+                    this.loading = false;
                 }
             );
-            this.loading = false;
         }
     }
 
@@ -429,7 +429,6 @@ export class DocumentoFormatoHvaComponent implements OnInit {
             this.handleWarningMessage(Mensaje.REGISTRE_CAMPOS_OBLIGATORIOS);
             return;
         } else {
-            this.loading = true;
             const formValues = this.formatoHvaForm.value;
             const transformedData = this.transformFormValues(formValues);
             const fechaRevision = new Date(
@@ -565,7 +564,6 @@ export class DocumentoFormatoHvaComponent implements OnInit {
                     this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
                 }
             );
-            this.loading = false;
         }
     }
 

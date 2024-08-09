@@ -40,6 +40,7 @@ export class RespuestaExamenComponent implements OnInit {
     editMode: boolean = false;
     displayMessage: boolean = false;
     isLoading: boolean;
+    isSending: boolean;
     isRespuestaValid: boolean = false;
     isResolucionValid: boolean = false;
     isResolucionCreated: boolean = false;
@@ -772,7 +773,7 @@ export class RespuestaExamenComponent implements OnInit {
             );
             return;
         }
-        this.isLoading = true;
+        this.isSending = true;
         const respuestaId =
             formArrayName === 'expertoEvaluaciones'
                 ? this.evaluacionExpertoIds[index]
@@ -828,7 +829,7 @@ export class RespuestaExamenComponent implements OnInit {
                     .pipe(
                         catchError((error) => {
                             this.handlerResponseException(error);
-                            this.isLoading = false;
+                            this.isSending = false;
                             return of(null);
                         })
                     )
@@ -849,7 +850,7 @@ export class RespuestaExamenComponent implements OnInit {
             this.router.navigate(['examen-de-valoracion']);
         } catch (error) {
         } finally {
-            this.isLoading = false;
+            this.isSending = false;
         }
     }
 
@@ -916,7 +917,7 @@ export class RespuestaExamenComponent implements OnInit {
             return;
         }
 
-        this.isLoading = true;
+        this.isSending = true;
 
         const evaluacionData = this.mapEvaluacion(formArrayName, index);
 
@@ -988,7 +989,7 @@ export class RespuestaExamenComponent implements OnInit {
             }
         } catch (error) {
         } finally {
-            this.isLoading = false;
+            this.isSending = false;
         }
     }
 
