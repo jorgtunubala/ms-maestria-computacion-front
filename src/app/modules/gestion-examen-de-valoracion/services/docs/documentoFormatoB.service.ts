@@ -56,7 +56,7 @@ export class DocumentoFormatoBService {
 
         return new Observable((observer) => {
             this.loadFile(
-                'assets/plantillas/formatoB.docx',
+                'assets/docs/formatoB.docx',
                 (error: any, content: any) => {
                     if (error) {
                         observer.error(error);

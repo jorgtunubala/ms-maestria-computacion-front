@@ -80,10 +80,7 @@ export enum EstadoEmpresa {
 }
 
 export enum Rol {
-    TUTOR = 'Tutor',
     ASESOR = 'Asesor',
-    DIRECTOR = 'Director',
-    CODIRECTOR = 'Codirector',
 }
 
 export enum TipoRol {

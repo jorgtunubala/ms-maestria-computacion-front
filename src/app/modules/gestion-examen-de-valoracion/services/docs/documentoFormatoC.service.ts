@@ -52,7 +52,7 @@ export class DocumentoFormatoCService {
 
         return new Observable((observer) => {
             this.loadFile(
-                'assets/plantillas/formatoC.docx',
+                'assets/docs/formatoC.docx',
                 (error: any, content: any) => {
                     if (error) {
                         observer.error(error);
