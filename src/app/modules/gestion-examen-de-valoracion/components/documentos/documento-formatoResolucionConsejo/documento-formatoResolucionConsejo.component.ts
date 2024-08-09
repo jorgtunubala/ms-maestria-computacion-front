@@ -81,7 +81,7 @@ export class DocumentoFormatoResolucionConsejoComponent implements OnInit {
                 )
             );
             if (response) {
-                this.director.setValue(response.director.nombres);
+                this.director.setValue(response?.director?.nombres);
             }
         } catch (error) {
             console.error('Error al obtener el director:', error);

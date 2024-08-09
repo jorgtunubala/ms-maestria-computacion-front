@@ -1223,6 +1223,9 @@
                                     formControlName="fechaMaximaEvaluacion"
                                     [showIcon]="true"
                                     dateFormat="dd.mm.yy"
+                                    [maxDate]="maxDate"
+                                    [pTooltip]="messageInterval"
+                                    tooltipPosition="top"
                                 ></p-calendar>
                             </div>
                         </div>
@@ -1283,7 +1286,7 @@
     </ng-template>
 </p-panel>
 <ng-template #noEvaluadorSelected>
-    <p-fieldset legend="Cargar Evaluador"></p-fieldset>
+    <p-fieldset legend="Información Evaluador"></p-fieldset>
 </ng-template>
 <ng-template #spinner>
     <p-progressSpinner ariaLabel="loading" class="spinner"></p-progressSpinner>

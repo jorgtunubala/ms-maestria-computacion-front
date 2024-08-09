@@ -279,8 +279,8 @@ export class DocumentoFormatoAComponent implements OnInit {
                         {
                             stack: [
                                 ...this.orientadores.map((orientador) => ({
-                                    text: `${orientador.nombre} ${
-                                        orientador.apellido
+                                    text: `${
+                                        orientador.nombres
                                     } (${this.formatText(orientador.rol)})`,
                                     margin: [25, 10, 0, 0],
                                 })),

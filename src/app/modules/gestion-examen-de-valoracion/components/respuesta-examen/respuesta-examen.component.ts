@@ -753,6 +753,15 @@ export class RespuestaExamenComponent implements OnInit {
             );
             return;
         }
+
+        if (!this[formArrayName].at(index).dirty) {
+            this.messageService.clear();
+            this.messageService.add(
+                warnMessage('No se han realizado cambios.')
+            );
+            return;
+        }
+
         if (
             this.estado ==
                 EstadoProceso.EXAMEN_DE_VALORACION_APROBADO_EVALUADOR_2 ||

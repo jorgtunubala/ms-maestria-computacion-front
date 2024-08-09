@@ -291,6 +291,7 @@ export class SustentacionExamenComponent implements OnInit {
         try {
             const value = await firstValueFrom(this.checkboxChange$);
             if (value && !this.messageShown) {
+                this.messageService.clear();
                 this.messageService.add({
                     severity: 'info',
                     summary: 'Información',
@@ -467,6 +468,7 @@ export class SustentacionExamenComponent implements OnInit {
                     }
                 } catch {
                     if (!this.errorMessageShown) {
+                        this.messageService.clear();
                         this.messageService.add(
                             warnMessage('Pendiente subir archivos.')
                         );
@@ -522,6 +524,7 @@ export class SustentacionExamenComponent implements OnInit {
                 }
             } catch {
                 if (!this.errorMessageShown) {
+                    this.messageService.clear();
                     this.messageService.add(
                         warnMessage('Pendiente subir archivos.')
                     );
@@ -549,6 +552,7 @@ export class SustentacionExamenComponent implements OnInit {
     checkEstados() {
         switch (this.estado) {
             case EstadoProceso.DEVUELTO_SUSTENTACION_PARA_CORREGIR_AL_DOCENTE_COORDINADOR:
+                this.messageService.clear();
                 this.messageService.add({
                     severity: 'warn',
                     summary: 'Advertencia',
@@ -564,6 +568,7 @@ export class SustentacionExamenComponent implements OnInit {
                 break;
 
             case EstadoProceso.DEVUELTO_SUSTENTACION_PARA_CORREGIR_AL_DOCENTE_COMITE:
+                this.messageService.clear();
                 this.messageService.add({
                     severity: 'warn',
                     summary: 'Advertencia',
@@ -579,6 +584,7 @@ export class SustentacionExamenComponent implements OnInit {
                 break;
 
             case EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_DOCENTE_SUSTENTACION:
+                this.messageService.clear();
                 this.messageService.add({
                     severity: 'info',
                     summary: 'Informacion',
@@ -604,6 +610,7 @@ export class SustentacionExamenComponent implements OnInit {
 
             case EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE2_SUSTENTACION:
                 if (this.role.includes('ROLE_COORDINADOR')) {
+                    this.messageService.clear();
                     this.messageService.add({
                         severity: 'info',
                         summary: 'Informacion',
@@ -629,6 +636,7 @@ export class SustentacionExamenComponent implements OnInit {
                 break;
 
             case EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_ESTUDIANTE_SUSTENTACION:
+                this.messageService.clear();
                 this.messageService.add({
                     severity: 'info',
                     summary: 'Informacion',
@@ -652,6 +660,7 @@ export class SustentacionExamenComponent implements OnInit {
                 this.isCoordinadorFase4 = false;
                 break;
             case EstadoProceso.SUSTENTACION_APROBADA:
+                this.messageService.clear();
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Informacion',
@@ -668,8 +677,9 @@ export class SustentacionExamenComponent implements OnInit {
                 break;
 
             case EstadoProceso.SUSTENTACION_NO_APROBADA:
+                this.messageService.clear();
                 this.messageService.add({
-                    severity: 'error',
+                    severity: 'warn',
                     summary: 'Informacion',
                     detail: EstadoProceso.SUSTENTACION_NO_APROBADA,
                     life: 2000,
@@ -684,8 +694,9 @@ export class SustentacionExamenComponent implements OnInit {
                 break;
 
             case EstadoProceso.SUSTENTACION_APLAZADA:
+                this.messageService.clear();
                 this.messageService.add({
-                    severity: 'error',
+                    severity: 'warn',
                     summary: 'Informacion',
                     detail: EstadoProceso.SUSTENTACION_APLAZADA,
                     life: 2000,
@@ -819,12 +830,14 @@ export class SustentacionExamenComponent implements OnInit {
             }
 
             if (errorFiles.size > 0) {
+                this.messageService.clear();
                 this.messageService.add(
                     errorMessage('Error al convertir uno o más archivos PDF.')
                 );
                 this.closeModal();
             }
         } catch (generalError) {
+            this.messageService.clear();
             this.messageService.add(
                 errorMessage(
                     'Se produjo un error general al cargar los archivos PDF.'
@@ -945,6 +958,7 @@ export class SustentacionExamenComponent implements OnInit {
             let uniqueId = uuidv4().replace(/-/g, '').slice(0, 4);
             const selectedFile = file;
             if (selectedFile.size > maxFileSize) {
+                this.messageService.clear();
                 this.messageService.add(
                     errorMessage(Aviso.ARCHIVO_DEMASIADO_GRANDE)
                 );
@@ -1341,6 +1355,7 @@ export class SustentacionExamenComponent implements OnInit {
                     );
                 } else {
                     this.isLoading = false;
+                    this.messageService.clear();
                     return this.messageService.add(
                         errorMessage('No puedes modificar los datos.')
                     );
@@ -1766,6 +1781,7 @@ export class SustentacionExamenComponent implements OnInit {
                         this.estado == EstadoProceso.SUSTENTACION_APROBADA)
                 ) {
                     this.isLoading = false;
+                    this.messageService.clear();
                     return this.messageService.add(
                         errorMessage('No puedes modificar los datos.')
                     );
@@ -1791,6 +1807,7 @@ export class SustentacionExamenComponent implements OnInit {
                             sustentacionData.fechaSustentacion
                         );
                         if (fechaSustentacionDate <= today) {
+                            this.messageService.clear();
                             this.messageService.add(
                                 warnMessage(
                                     'La fecha de sustentación debe ser mayor que la fecha actual.'
@@ -1809,6 +1826,7 @@ export class SustentacionExamenComponent implements OnInit {
                             );
                         } else {
                             this.isLoading = false;
+                            this.messageService.clear();
                             return this.messageService.add(
                                 warnMessage(
                                     'No es permitido registrar la información debido a que el estudiante no ha completado los datos de egresado.'
@@ -1833,6 +1851,7 @@ export class SustentacionExamenComponent implements OnInit {
                     );
 
                     if (fechaSustentacionDate <= today) {
+                        this.messageService.clear();
                         this.messageService.add(
                             warnMessage(
                                 'La fecha de sustentación debe ser mayor que la fecha actual.'
@@ -1865,6 +1884,7 @@ export class SustentacionExamenComponent implements OnInit {
                     );
                 } else {
                     this.isLoading = false;
+                    this.messageService.clear();
                     return this.messageService.add(
                         errorMessage('No puedes modificar los datos.')
                     );
@@ -1878,15 +1898,18 @@ export class SustentacionExamenComponent implements OnInit {
                     EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_ESTUDIANTE_SUSTENTACION
             ) {
                 this.isLoading = false;
+                this.messageService.clear();
                 return this.messageService.add(
                     errorMessage('No puedes modificar los datos.')
                 );
             }
             this.isLoading = false;
+            this.messageService.clear();
             this.messageService.add(infoMessage(Mensaje.ACTUALIZACION_EXITOSA));
             this.router.navigate(['examen-de-valoracion']);
         } catch (error) {
             this.isLoading = false;
+            this.messageService.clear();
             this.messageService.add(
                 errorMessage('Error al actualizar los datos en el backend')
             );
@@ -1908,6 +1931,7 @@ export class SustentacionExamenComponent implements OnInit {
                     this.trabajoDeGradoService.setSustentacionSeleccionada(
                         response
                     );
+                    this.messageService.clear();
                     this.messageService.add(
                         infoMessage(Mensaje.GUARDADO_EXITOSO)
                     );
@@ -2101,6 +2125,7 @@ export class SustentacionExamenComponent implements OnInit {
         if (selectedFiles && selectedFiles.length > 0) {
             const selectedFile = selectedFiles[0];
             if (selectedFile.size > maxFileSize) {
+                this.messageService.clear();
                 this.messageService.add(
                     errorMessage(Aviso.ARCHIVO_DEMASIADO_GRANDE)
                 );
@@ -2163,6 +2188,7 @@ export class SustentacionExamenComponent implements OnInit {
         let errorShown = false;
         const handleError = () => {
             if (!errorShown) {
+                this.messageService.clear();
                 this.messageService.add(
                     warnMessage('Modifica la información para ver los cambios.')
                 );
@@ -2315,6 +2341,7 @@ export class SustentacionExamenComponent implements OnInit {
                 response?.error?.mensaje ||
                 response?.error ||
                 'Error al actualizar los datos en el backend';
+            this.messageService.clear();
             this.messageService.add(errorMessage(errorMsg));
         }
     }

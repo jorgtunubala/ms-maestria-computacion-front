@@ -103,6 +103,7 @@ export class SolicitudExamenComponent implements OnInit {
     isSustentacionValid: boolean = false;
     isReviewed: boolean = false;
     messageShown: boolean = false;
+    messageInterval: string = '';
 
     estudianteSeleccionado: Estudiante;
     evaluadorInternoSeleccionado: Docente;
@@ -183,13 +184,17 @@ export class SolicitudExamenComponent implements OnInit {
             detailMessage = 'Por favor, dirígete a la fase de sustentación.';
         } else if (this.isRespuestaValid) {
             detailMessage = 'Por favor, dirígete a la fase de resolución.';
-        } else if (this.isCoordinadorFase2Created) {
+        } else if (
+            this.isCoordinadorFase2Created &&
+            this.solicitudForm.get('conceptoComite').value == 'Avalado'
+        ) {
             detailMessage = 'Por favor, dirígete a la fase de respuesta.';
         } else {
             detailMessage = null;
         }
 
         if (detailMessage) {
+            this.messageService.clear();
             this.messageService.add({
                 severity: 'info',
                 summary: 'Información',
@@ -286,6 +291,10 @@ export class SolicitudExamenComponent implements OnInit {
             }
         }
 
+        this.maxDate = new Date();
+        this.maxDate.setDate(this.maxDate.getDate() + 15);
+        this.messageInterval = `Plazo normal hasta: ${this.maxDate.toLocaleDateString()}`;
+
         this.setupIsReviewedCheckBox();
     }
 
@@ -331,6 +340,7 @@ export class SolicitudExamenComponent implements OnInit {
         try {
             const value = await firstValueFrom(this.checkboxChange$);
             if (value && !this.messageShown) {
+                this.messageService.clear();
                 this.messageService.add({
                     severity: 'info',
                     summary: 'Información',
@@ -632,6 +642,7 @@ export class SolicitudExamenComponent implements OnInit {
                 this.isCoordinadorFase2 = false;
                 break;
             case EstadoProceso.DEVUELTO_EXAMEN_DE_VALORACION_POR_COORDINADOR:
+                this.messageService.clear();
                 this.messageService.add({
                     severity: 'warn',
                     summary: 'Advertencia',
@@ -648,6 +659,7 @@ export class SolicitudExamenComponent implements OnInit {
                 this.isCoordinadorFase2 = false;
                 break;
             case EstadoProceso.DEVUELTO_EXAMEN_DE_VALORACION_POR_COMITE:
+                this.messageService.clear();
                 this.messageService.add({
                     severity: 'warn',
                     summary: 'Advertencia',
@@ -757,12 +769,14 @@ export class SolicitudExamenComponent implements OnInit {
             }
 
             if (errorFiles.size > 0) {
+                this.messageService.clear();
                 this.messageService.add(
                     errorMessage('Error al convertir uno o más archivos PDF.')
                 );
                 this.closeModal();
             }
         } catch (generalError) {
+            this.messageService.clear();
             this.messageService.add(
                 errorMessage(
                     'Se produjo un error general al cargar los archivos PDF.'
@@ -960,6 +974,7 @@ export class SolicitudExamenComponent implements OnInit {
             let uniqueId = uuidv4().replace(/-/g, '').slice(0, 4);
             const selectedFile = file;
             if (selectedFile.size > maxFileSize) {
+                this.messageService.clear();
                 this.messageService.add(
                     errorMessage(Aviso.ARCHIVO_DEMASIADO_GRANDE)
                 );
@@ -1059,6 +1074,7 @@ export class SolicitudExamenComponent implements OnInit {
                     );
                 } else {
                     this.isLoading = false;
+                    this.messageService.clear();
                     return this.messageService.add(
                         errorMessage('No puedes modificar los datos.')
                     );
@@ -1132,6 +1148,7 @@ export class SolicitudExamenComponent implements OnInit {
                             !this.formatoCEv2
                         ) {
                             this.isLoading = false;
+                            this.messageService.clear();
                             return this.messageService.add(
                                 warnMessage(
                                     'Error: formatos B y C son requeridos.'
@@ -1274,6 +1291,7 @@ export class SolicitudExamenComponent implements OnInit {
                             !this.formatoCEv2
                         ) {
                             this.isLoading = false;
+                            this.messageService.clear();
                             return this.messageService.add(
                                 warnMessage(
                                     'Error: formatos B y C son requeridos.'
@@ -1344,6 +1362,7 @@ export class SolicitudExamenComponent implements OnInit {
                     );
                 } else {
                     this.isLoading = false;
+                    this.messageService.clear();
                     return this.messageService.add(
                         errorMessage('No puedes modificar los datos.')
                     );
@@ -1351,6 +1370,7 @@ export class SolicitudExamenComponent implements OnInit {
             }
 
             this.isLoading = false;
+            this.messageService.clear();
             this.messageService.add(infoMessage(Mensaje.ACTUALIZACION_EXITOSA));
             this.router.navigate(['examen-de-valoracion']);
         } catch (e) {
@@ -1388,6 +1408,7 @@ export class SolicitudExamenComponent implements OnInit {
                     )
                 );
                 localStorage.removeItem('solicitudFormState');
+                this.messageService.clear();
                 this.messageService.add(infoMessage(Mensaje.GUARDADO_EXITOSO));
 
                 await firstValueFrom(timer(2000));
@@ -1421,6 +1442,7 @@ export class SolicitudExamenComponent implements OnInit {
                     }
                 } catch (e) {
                     if (!this.errorMessageShown) {
+                        this.messageService.clear();
                         this.messageService.add(
                             warnMessage('Pendiente subir archivos.')
                         );
@@ -1467,6 +1489,7 @@ export class SolicitudExamenComponent implements OnInit {
             }
         } catch (e) {
             if (!this.errorMessageShown) {
+                this.messageService.clear();
                 this.messageService.add(
                     warnMessage('Pendiente subir archivos.')
                 );
@@ -1733,6 +1756,7 @@ export class SolicitudExamenComponent implements OnInit {
         if (selectedFiles && selectedFiles.length > 0) {
             const selectedFile = selectedFiles[0];
             if (selectedFile.size > maxFileSize) {
+                this.messageService.clear();
                 this.messageService.add(
                     errorMessage(Aviso.ARCHIVO_DEMASIADO_GRANDE)
                 );
@@ -1788,6 +1812,7 @@ export class SolicitudExamenComponent implements OnInit {
         let errorShown = false;
         const handleError = () => {
             if (!errorShown) {
+                this.messageService.clear();
                 this.messageService.add(
                     warnMessage('Modifica la información para ver los cambios.')
                 );
@@ -1945,6 +1970,7 @@ export class SolicitudExamenComponent implements OnInit {
                 response?.error?.mensaje ||
                 response?.error ||
                 'Error al actualizar los datos en el backend';
+            this.messageService.clear();
             this.messageService.add(errorMessage(errorMsg));
         }
     }

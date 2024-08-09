@@ -380,7 +380,7 @@ export class DocumentoFormatoHvaComponent implements OnInit {
             ];
 
             expectedKeys.forEach((key) => {
-                docData[key] = 'NA';
+                docData[key] = '';
             });
 
             Object.keys(transformedData).forEach((key) => {
@@ -524,7 +524,7 @@ export class DocumentoFormatoHvaComponent implements OnInit {
             ];
 
             expectedKeys.forEach((key) => {
-                docData[key] = 'NA';
+                docData[key] = '';
             });
 
             Object.keys(transformedData).forEach((key) => {

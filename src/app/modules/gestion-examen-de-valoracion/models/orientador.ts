@@ -1,7 +1,6 @@
 export interface Orientador {
     id?: number;
-    nombre?: string;
-    apellido?: string;
+    nombres?: string;
     rol?: string;
     tipo?: string;
 }
