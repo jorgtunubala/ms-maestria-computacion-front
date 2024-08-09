@@ -47,7 +47,7 @@
             </ng-container>
         </p-dialog>
         <p-dialog
-            *ngIf="role.includes('ROLE_COORDINADOR')"
+            *ngIf="role.includes('ROLE_COORDINADOR') && this.isDocenteCreated"
             header="Solicitud al consejo de facultad para resolución de aprobación de trabajo de grado"
             [(visible)]="displayFormatoResolucionConsejo"
             [style]="{ width: '70vw' }"

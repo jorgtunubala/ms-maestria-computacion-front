@@ -148,7 +148,7 @@ export class DocumentoFormatoHvaGradoComponent implements OnInit {
             };
 
             this.loadFile(
-                'assets/plantillas/formatoHvaGrado.docx',
+                'assets/docs/formatoHvaGrado.docx',
                 (error: any, content: any) => {
                     if (error) {
                         throw error;

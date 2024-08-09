@@ -425,6 +425,7 @@ export class ResolucionExamenComponent implements OnInit {
                 this.isCoordinadorFase3 = false;
                 break;
             case EstadoProceso.DEVUELTO_GENERACION_DE_RESOLUCION_POR_COORDINADOR:
+                this.messageService.clear();
                 this.messageService.add({
                     severity: 'warn',
                     summary: 'Advertencia',
@@ -437,6 +438,7 @@ export class ResolucionExamenComponent implements OnInit {
                 this.isCoordinadorFase3 = false;
                 break;
             case EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE2_GENERACION_RESOLUCION:
+                this.messageService.clear();
                 this.messageService.add({
                     severity: 'info',
                     summary: 'Informacion',
@@ -449,6 +451,7 @@ export class ResolucionExamenComponent implements OnInit {
                 this.isCoordinadorFase3 = false;
                 break;
             case EstadoProceso.DEVUELTO_GENERACION_DE_RESOLUCION_POR_COMITE:
+                this.messageService.clear();
                 this.messageService.add({
                     severity: 'warn',
                     summary: 'Advertencia',
@@ -607,12 +610,14 @@ export class ResolucionExamenComponent implements OnInit {
             }
 
             if (errorFiles.size > 0) {
+                this.messageService.clear();
                 this.messageService.add(
                     errorMessage('Error al convertir uno o más archivos PDF.')
                 );
                 this.closeModal();
             }
         } catch (generalError) {
+            this.messageService.clear();
             this.messageService.add(
                 errorMessage(
                     'Se produjo un error general al cargar los archivos PDF.'
@@ -739,6 +744,7 @@ export class ResolucionExamenComponent implements OnInit {
             }
         } catch (e) {
             if (!this.errorMessageShown) {
+                this.messageService.clear();
                 this.messageService.add(
                     warnMessage('Pendiente subir archivos.')
                 );
@@ -947,6 +953,7 @@ export class ResolucionExamenComponent implements OnInit {
                     );
                 } else {
                     this.isLoading = false;
+                    this.messageService.clear();
                     return this.messageService.add(
                         errorMessage('No puedes modificar los datos.')
                     );
@@ -1206,12 +1213,14 @@ export class ResolucionExamenComponent implements OnInit {
                     );
                 } else {
                     this.isLoading = false;
+                    this.messageService.clear();
                     return this.messageService.add(
                         errorMessage('No puedes modificar los datos.')
                     );
                 }
             }
             this.isLoading = false;
+            this.messageService.clear();
             this.messageService.add(infoMessage(Mensaje.ACTUALIZACION_EXITOSA));
             this.router.navigate(['examen-de-valoracion']);
         } catch (error) {
@@ -1235,6 +1244,7 @@ export class ResolucionExamenComponent implements OnInit {
                     this.trabajoDeGradoService.setResolucionSeleccionada(
                         response
                     );
+                    this.messageService.clear();
                     this.messageService.add(
                         infoMessage(Mensaje.GUARDADO_EXITOSO)
                     );
@@ -1368,6 +1378,7 @@ export class ResolucionExamenComponent implements OnInit {
         if (selectedFiles && selectedFiles.length > 0) {
             const selectedFile = selectedFiles[0];
             if (selectedFile.size > maxFileSize) {
+                this.messageService.clear();
                 this.messageService.add(
                     errorMessage(Aviso.ARCHIVO_DEMASIADO_GRANDE)
                 );
@@ -1397,6 +1408,7 @@ export class ResolucionExamenComponent implements OnInit {
 
     async getFileAndSetValue(fieldName: string): Promise<void> {
         const handleError = () => {
+            this.messageService.clear();
             this.messageService.add(
                 warnMessage('Modifica la información para ver los cambios.')
             );
@@ -1482,6 +1494,7 @@ export class ResolucionExamenComponent implements OnInit {
                     this.codirectorSeleccionado &&
                     director.id === this.codirectorSeleccionado.id
                 ) {
+                    this.messageService.clear();
                     this.messageService.add(
                         warnMessage(
                             'El director seleccionado no puede ser el mismo que el codirector.'
@@ -1507,6 +1520,7 @@ export class ResolucionExamenComponent implements OnInit {
                     this.directorSeleccionado &&
                     codirector.id === this.directorSeleccionado.id
                 ) {
+                    this.messageService.clear();
                     this.messageService.add(
                         warnMessage(
                             'El codirector seleccionado no puede ser el mismo que el director.'
@@ -1561,6 +1575,7 @@ export class ResolucionExamenComponent implements OnInit {
                 response?.error?.mensaje ||
                 response?.error ||
                 'Error al actualizar los datos en el backend';
+            this.messageService.clear();
             this.messageService.add(errorMessage(errorMsg));
         }
     }

@@ -380,7 +380,7 @@ export class DocumentoFormatoHvaComponent implements OnInit {
             ];
 
             expectedKeys.forEach((key) => {
-                docData[key] = 'NA';
+                docData[key] = '';
             });
 
             Object.keys(transformedData).forEach((key) => {
@@ -390,7 +390,7 @@ export class DocumentoFormatoHvaComponent implements OnInit {
             });
 
             this.loadFile(
-                'assets/plantillas/formatoHva.docx',
+                'assets/docs/formatoHva.docx',
                 (error: any, content: any) => {
                     if (error) {
                         throw error;
@@ -524,7 +524,7 @@ export class DocumentoFormatoHvaComponent implements OnInit {
             ];
 
             expectedKeys.forEach((key) => {
-                docData[key] = 'NA';
+                docData[key] = '';
             });
 
             Object.keys(transformedData).forEach((key) => {
@@ -536,7 +536,7 @@ export class DocumentoFormatoHvaComponent implements OnInit {
             let fileDoc: Blob;
 
             this.loadFile(
-                'assets/plantillas/formatoHva.docx',
+                'assets/docs/formatoHva.docx',
                 (error: any, content: any) => {
                     if (error) {
                         throw error;
