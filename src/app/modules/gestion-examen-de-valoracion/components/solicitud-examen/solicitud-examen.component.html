@@ -741,11 +741,6 @@
                                                 chooseLabel="Buscar documento"
                                                 (onSelect)="onUpload($event)"
                                                 [disabled]="
-                                                    (editMode &&
-                                                        solicitudForm.get(
-                                                            'anexos'
-                                                        ).value.length &&
-                                                        !isChanged) ||
                                                     !role.includes(
                                                         'ROLE_DOCENTE'
                                                     )
@@ -973,7 +968,24 @@
                             solicitud
                         </p>
                     </div>
-                    <p-fieldset legend="Comite" styleClass="bg-bluegray-50">
+                    <p-fieldset
+                        legend="Comite"
+                        styleClass="bg-bluegray-50"
+                        [toggleable]="
+                            role.includes('ROLE_COORDINADOR') &&
+                            isCoordinadorFase2 &&
+                            isRespuestaCreated
+                                ? true
+                                : false
+                        "
+                        [collapsed]="
+                            role.includes('ROLE_COORDINADOR') &&
+                            isCoordinadorFase2 &&
+                            isRespuestaCreated
+                                ? true
+                                : false
+                        "
+                    >
                         <div class="field grid">
                             <div
                                 class="flex flex-column w-full justify-content-center align-items-center row-gap-4"
@@ -1299,6 +1311,6 @@
             ariaLabel="loading"
             styleClass="custom-spinner"
         ></p-progressSpinner>
-        <p class="spinner-text">Guardando información...</p>
+        <p class="spinner-text">Enviando información...</p>
     </div>
 </ng-template>

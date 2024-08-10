@@ -191,7 +191,7 @@ export class DocumentoFormatoHvaComponent implements OnInit {
             titulo: [null, Validators.required],
             director: [null, Validators.required],
             codirector: [null, Validators.required],
-            coordinador: ['Luz Marina Sierra Martínez', Validators.required],
+            coordinador: [null, Validators.required],
         });
         this.formReady.emit(this.formatoHvaForm);
     }

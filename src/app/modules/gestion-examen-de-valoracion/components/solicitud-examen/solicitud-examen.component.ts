@@ -89,7 +89,6 @@ export class SolicitudExamenComponent implements OnInit {
     editMode: boolean = false;
     isLoading: boolean;
     isSending: boolean;
-    isChanged: boolean = false;
     isDocente: boolean = false;
     isCoordinadorFase1: boolean = false;
     isCoordinadorFase2: boolean = false;
@@ -1010,7 +1009,6 @@ export class SolicitudExamenComponent implements OnInit {
     }
 
     removeFile(index: number) {
-        this.isChanged = true;
         this.anexosFiles.splice(index, 1);
         this.anexosBase64.splice(index, 1);
         this.solicitudForm.get('anexos').setValue(this.anexosFiles);

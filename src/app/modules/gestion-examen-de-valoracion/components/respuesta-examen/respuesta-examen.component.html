@@ -199,6 +199,8 @@
                                 <p-fieldset
                                     legend="Evaluacion {{ i + 1 }}"
                                     [formGroupName]="i"
+                                    [toggleable]="true"
+                                    [collapsed]="true"
                                 >
                                     <div class="grid column-gap-4 mb-6">
                                         <label
@@ -776,6 +778,8 @@
                                 <p-fieldset
                                     legend="Evaluacion {{ i + 1 }}"
                                     formGroupName="{{ i }}"
+                                    [toggleable]="true"
+                                    [collapsed]="true"
                                 >
                                     <div class="grid column-gap-4 mb-6">
                                         <label
@@ -1296,6 +1300,6 @@
             ariaLabel="loading"
             styleClass="custom-spinner"
         ></p-progressSpinner>
-        <p class="spinner-text">Guardando información...</p>
+        <p class="spinner-text">Enviando información...</p>
     </div>
 </ng-template>

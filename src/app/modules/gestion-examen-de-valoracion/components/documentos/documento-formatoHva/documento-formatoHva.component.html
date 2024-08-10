@@ -89,9 +89,8 @@
                             pInputText
                             type="text"
                             id="coordinador"
-                            formControlName="coordinador"
-                            readonly
                             class="w-full p-inputtext"
+                            formControlName="coordinador"
                         />
                     </div>
                 </div>
@@ -282,28 +281,28 @@
                         height="80px"
                     />
                 </div>
-                <div
-                    class="flex align-items-center justify-content-end mt-4 column-gap-2"
-                >
-                    <button
-                        pButton
-                        type="button"
-                        icon="pi pi-upload"
-                        label="Insertar"
-                        pTooltip="Haz clic para insertar el documento en el área de carga de archivos."
-                        tooltipPosition="top"
-                        (click)="onInsertar()"
-                    ></button>
-                    <button
-                        pButton
-                        type="button"
-                        icon="pi pi-download"
-                        label="Descargar"
-                        (click)="onDownload()"
-                        [loading]="loading"
-                    ></button>
-                </div>
             </form>
+            <div
+                class="flex align-items-center justify-content-end mt-4 column-gap-2"
+            >
+                <button
+                    pButton
+                    type="button"
+                    icon="pi pi-upload"
+                    label="Insertar"
+                    pTooltip="Haz clic para insertar el documento en el área de carga de archivos."
+                    tooltipPosition="top"
+                    (click)="onInsertar()"
+                ></button>
+                <button
+                    pButton
+                    type="button"
+                    icon="pi pi-download"
+                    label="Descargar"
+                    (click)="onDownload()"
+                    [loading]="loading"
+                ></button>
+            </div>
         </div>
     </div>
 </p-panel>

@@ -133,6 +133,7 @@ export class DocumentoFormatoResolucionComiteComponent implements OnInit {
                 Validators.required,
             ],
             programa: ['Maestría en Computación', Validators.required],
+            coordinador: [null, Validators.required],
             estudiante: [null, Validators.required],
             titulo: [null, Validators.required],
             director: [null, Validators.required],
@@ -337,7 +338,7 @@ export class DocumentoFormatoResolucionComiteComponent implements OnInit {
                 {
                     columns: [
                         {
-                            text: 'Luz Marina Sierra Martínez M, PhD',
+                            text: `${formValues.coordinador} M, PhD`,
                             bold: true,
                         },
                     ],

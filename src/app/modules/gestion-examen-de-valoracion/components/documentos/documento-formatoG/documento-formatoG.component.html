@@ -60,6 +60,21 @@
                 </div>
 
                 <div class="field grid justify-content-start">
+                    <label class="col-2 label-required" for="coordinador"
+                        >Coordinador(a)</label
+                    >
+                    <div class="col-10">
+                        <input
+                            pInputText
+                            class="p-inputtext-md w-full"
+                            type="text"
+                            id="coordinador"
+                            formControlName="coordinador"
+                        />
+                    </div>
+                </div>
+
+                <div class="field grid justify-content-start">
                     <label class="col-2" for="estudiante"
                         >Nombre del estudiante</label
                     >
@@ -145,7 +160,7 @@
                         <p-fileUpload
                             name="firmaCoordinador"
                             chooseIcon="pi pi-file"
-                            accept=".png"
+                            accept=".png, .jpg, .jpeg"
                             chooseLabel="Seleccionar"
                             class="w-full max-w-30rem"
                             previewWidth="100"

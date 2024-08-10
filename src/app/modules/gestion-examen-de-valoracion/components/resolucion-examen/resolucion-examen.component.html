@@ -948,7 +948,24 @@
                             solicitud
                         </p>
                     </div>
-                    <p-fieldset legend="Consejo" styleClass="bg-bluegray-50">
+                    <p-fieldset
+                        legend="Consejo"
+                        styleClass="bg-bluegray-50"
+                        [toggleable]="
+                            role.includes('ROLE_COORDINADOR') &&
+                            isCoordinadorFase3 &&
+                            isSustentacionCreated
+                                ? true
+                                : false
+                        "
+                        [collapsed]="
+                            role.includes('ROLE_COORDINADOR') &&
+                            isCoordinadorFase3 &&
+                            isSustentacionCreated
+                                ? true
+                                : false
+                        "
+                    >
                         <div class="field grid justify-content-center">
                             <div
                                 class="col-12 lg:col-5 flex flex-nowrap align-items-center justify-content-between"
@@ -1127,6 +1144,6 @@
             ariaLabel="loading"
             styleClass="custom-spinner"
         ></p-progressSpinner>
-        <p class="spinner-text">Guardando información...</p>
+        <p class="spinner-text">Enviando información...</p>
     </div>
 </ng-template>

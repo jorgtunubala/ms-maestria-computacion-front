@@ -108,7 +108,7 @@ export class DocumentoFormatoHvaGradoComponent implements OnInit {
             departamento: [null, Validators.required],
             municipio: [null, Validators.required],
             email: [null, Validators.required],
-            coordinador: ['Luz Marina Sierra Martínez', Validators.required],
+            coordinador: ['[NOMBRE]', Validators.required],
         });
         this.formReady.emit(this.formatoHvaGradoForm);
     }

@@ -597,11 +597,6 @@
                                                 chooseLabel="Buscar documento"
                                                 (onSelect)="onUpload($event)"
                                                 [disabled]="
-                                                    (editMode &&
-                                                        sustentacionForm.get(
-                                                            'anexos'
-                                                        ).value.length &&
-                                                        !isChanged) ||
                                                     !role.includes(
                                                         'ROLE_DOCENTE'
                                                     )
@@ -736,19 +731,6 @@
                         "
                     >
                         <div class="field grid">
-                            <div
-                                class="flex flex-1 justify-content-end align-items-center"
-                                *ngIf="isDocente && !isCoordinadorFase1"
-                            >
-                                <button
-                                    *ngIf="editMode"
-                                    pButton
-                                    icon="pi pi-eye"
-                                    label="Revisar documentos"
-                                    (click)="openModal()"
-                                    [disabled]="displayModal"
-                                ></button>
-                            </div>
                             <div
                                 class="flex flex-column w-full justify-content-center align-items-center row-gap-4"
                             >
@@ -912,6 +894,19 @@
                                     <p>No has seleccionado ningún documento.</p>
                                 </div>
                             </div>
+                        </div>
+                        <div
+                            class="flex flex-1 justify-content-end align-items-center"
+                            *ngIf="isDocente && !isCoordinadorFase1"
+                        >
+                            <button
+                                *ngIf="editMode"
+                                pButton
+                                icon="pi pi-eye"
+                                label="Revisar documentos"
+                                (click)="openModal()"
+                                [disabled]="displayModal"
+                            ></button>
                         </div>
                     </p-fieldset>
                 </div>
@@ -1898,6 +1893,6 @@
             ariaLabel="loading"
             styleClass="custom-spinner"
         ></p-progressSpinner>
-        <p class="spinner-text">Guardando información...</p>
+        <p class="spinner-text">Enviando información...</p>
     </div>
 </ng-template>

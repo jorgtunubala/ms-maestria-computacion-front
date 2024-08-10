@@ -152,6 +152,7 @@ export class DocumentoFormatoGComponent implements OnInit {
                 Validators.required,
             ],
             programa: ['Maestría en Computación', Validators.required],
+            coordinador: [null, Validators.required],
             estudiante: [null, Validators.required],
             titulo: [null, Validators.required],
             director: [null, Validators.required],
@@ -345,7 +346,7 @@ export class DocumentoFormatoGComponent implements OnInit {
                     columns: [
                         { text: '', width: '25%' },
                         {
-                            text: 'Dra. Luz Marina Sierra Martínez (Coordinadora Comité de Programa)',
+                            text: `Dra. ${formValues.coordinador} (Coordinadora Comité de Programa)`,
                             width: '75%',
                         },
                     ],

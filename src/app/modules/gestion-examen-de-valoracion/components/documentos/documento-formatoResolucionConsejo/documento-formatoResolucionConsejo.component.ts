@@ -144,7 +144,7 @@ export class DocumentoFormatoResolucionConsejoComponent implements OnInit {
                 Validators.required,
             ],
             programa: ['Maestría en Computación', Validators.required],
-            coordinador: ['Luz Marina Sierra Martínez', Validators.required],
+            coordinador: [null, Validators.required],
             estudiante: [null, Validators.required],
             director: [null, Validators.required],
         });

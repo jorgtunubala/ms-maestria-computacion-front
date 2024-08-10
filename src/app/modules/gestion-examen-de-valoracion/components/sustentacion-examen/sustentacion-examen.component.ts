@@ -103,7 +103,6 @@ export class SustentacionExamenComponent implements OnInit {
     isSustentacionCreated: boolean = false;
     isLoading: boolean = false;
     isSending: boolean = false;
-    isChanged: boolean = false;
     isReviewed: boolean = false;
     messageShown: boolean = false;
 
@@ -807,7 +806,9 @@ export class SustentacionExamenComponent implements OnInit {
                 EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE4_SUSTENTACION ||
                 this.estado == EstadoProceso.SUSTENTACION_APROBADA ||
                 this.estado == EstadoProceso.SUSTENTACION_APLAZADA ||
-                this.estado == EstadoProceso.SUSTENTACION_NO_APROBADA)
+                this.estado == EstadoProceso.SUSTENTACION_NO_APROBADA ||
+                this.estado ==
+                    EstadoProceso.SUSTENTACION_APROBADA_CON_OBSERVACIONES)
         ) {
             filesToConvert.push(
                 {
@@ -992,7 +993,6 @@ export class SustentacionExamenComponent implements OnInit {
     }
 
     removeFile(index: number) {
-        this.isChanged = true;
         this.anexosFiles.splice(index, 1);
         this.anexosBase64.splice(index, 1);
         this.sustentacionForm.get('anexos').setValue(this.anexosFiles);
@@ -1766,6 +1766,9 @@ export class SustentacionExamenComponent implements OnInit {
                     this.isCoordinadorFase4Created == true &&
                     (this.estado ==
                         EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE4_SUSTENTACION ||
+                        this.estado == EstadoProceso.SUSTENTACION_APROBADA ||
+                        this.estado ==
+                            EstadoProceso.SUSTENTACION_APROBADA_CON_OBSERVACIONES ||
                         this.estado == EstadoProceso.SUSTENTACION_NO_APROBADA ||
                         this.estado == EstadoProceso.SUSTENTACION_APLAZADA)
                 ) {
@@ -1794,8 +1797,7 @@ export class SustentacionExamenComponent implements OnInit {
                     );
                 } else if (
                     this.isCoordinadorFase4Created == true &&
-                    (this.estado == EstadoProceso.CANCELADO_TRABAJO_GRADO ||
-                        this.estado == EstadoProceso.SUSTENTACION_APROBADA)
+                    this.estado == EstadoProceso.CANCELADO_TRABAJO_GRADO
                 ) {
                     this.isSending = false;
                     this.messageService.clear();
@@ -1823,11 +1825,11 @@ export class SustentacionExamenComponent implements OnInit {
                         const fechaSustentacionDate = new Date(
                             sustentacionData.fechaSustentacion
                         );
-                        if (fechaSustentacionDate <= today) {
+                        if (fechaSustentacionDate >= today) {
                             this.messageService.clear();
                             this.messageService.add(
                                 warnMessage(
-                                    'La fecha de sustentación debe ser mayor que la fecha actual.'
+                                    'La fecha de sustentación debe ser menor que la fecha actual.'
                                 )
                             );
                             this.isSending = false;
@@ -1867,11 +1869,11 @@ export class SustentacionExamenComponent implements OnInit {
                         sustentacionData.fechaSustentacion
                     );
 
-                    if (fechaSustentacionDate <= today) {
+                    if (fechaSustentacionDate >= today) {
                         this.messageService.clear();
                         this.messageService.add(
                             warnMessage(
-                                'La fecha de sustentación debe ser mayor que la fecha actual.'
+                                'La fecha de sustentación debe ser menor que la fecha actual.'
                             )
                         );
                         return;

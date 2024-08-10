@@ -159,7 +159,6 @@ export class DocumentoformatoEvaluadoresComponent implements OnInit {
             this.formatoEvaluadoresForm
                 .get('fechaRespuesta')
                 .setValue(this.fechaMaximaEvaluacion);
-            this.formatoEvaluadoresForm.get('fechaRespuesta').disable();
         }
     }
 
@@ -170,7 +169,7 @@ export class DocumentoformatoEvaluadoresComponent implements OnInit {
                 'Designación como Evaluador del Anteproyecto y Examen de Valoración de Maestría en Computación',
                 Validators.required,
             ],
-            coordinador: ['Luz Marina Sierra Martínez', Validators.required],
+            coordinador: [null, Validators.required],
             estudiante: [null, Validators.required],
             docente: [null, Validators.required],
             propuesta: [null, Validators.required],
@@ -526,7 +525,7 @@ export class DocumentoformatoEvaluadoresComponent implements OnInit {
                             width: 'auto',
                         },
                     ],
-                    margin: [40, -60, 0, 0],
+                    margin: [40, 60, 0, 0],
                 };
             },
             defaultStyle: {

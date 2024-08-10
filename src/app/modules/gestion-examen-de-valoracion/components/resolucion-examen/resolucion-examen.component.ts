@@ -414,6 +414,13 @@ export class ResolucionExamenComponent implements OnInit {
     checkEstados() {
         switch (this.estado) {
             case EstadoProceso.EXAMEN_DE_VALORACION_APROBADO_EVALUADOR_2:
+                this.messageService.clear();
+                this.messageService.add({
+                    severity: 'info',
+                    summary: 'Informacion',
+                    detail: EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_DOCENTE_SUSTENTACION,
+                    life: 2000,
+                });
                 this.isDocente = false;
                 this.isCoordinadorFase1 = false;
                 this.isCoordinadorFase2 = false;
