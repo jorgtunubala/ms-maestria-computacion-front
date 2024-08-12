@@ -1,5 +1,4 @@
 import * as pdfMake from 'pdfmake/build/pdfmake';
-import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 import {
     Component,
     ElementRef,
@@ -26,7 +25,18 @@ import {
 } from 'src/app/core/utils/message-util';
 import { TrabajoDeGradoService } from '../../../services/trabajoDeGrado.service';
 import { ResolucionService } from '../../../services/resolucion.service';
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
+
+pdfMake.fonts = {
+    Roboto: {
+        normal: `${window.location.origin}/assets/docs/fonts/Roboto-Regular.ttf`,
+        bold: `${window.location.origin}/assets/docs/fonts/Roboto-Bold.ttf`,
+        italics: `${window.location.origin}/assets/docs/fonts/Roboto-Italic.ttf`,
+        bolditalics: `${window.location.origin}/assets/docs/fonts/Roboto-BoldItalic.ttf`,
+    },
+    OpenSans: {
+        normal: `${window.location.origin}/assets/docs/fonts/OpenSans-Regular.ttf`,
+    },
+};
 
 @Component({
     selector: 'documento-formatoG',
@@ -47,12 +57,15 @@ export class DocumentoFormatoGComponent implements OnInit {
 
     formatoGForm: FormGroup;
 
-    loading = false;
+    loading: boolean = false;
 
     estudianteSeleccionado: any;
+
     firmaCoordinador: string;
-    footerImage: string;
-    logoImage: string;
+    logoFacultad: string;
+    logoIcontec: string;
+    assetHeader: string;
+    assetCalidad: string;
 
     constructor(
         private fb: FormBuilder,
@@ -139,6 +152,7 @@ export class DocumentoFormatoGComponent implements OnInit {
                 Validators.required,
             ],
             programa: ['Maestría en Computación', Validators.required],
+            coordinador: [null, Validators.required],
             estudiante: [null, Validators.required],
             titulo: [null, Validators.required],
             director: [null, Validators.required],
@@ -148,16 +162,28 @@ export class DocumentoFormatoGComponent implements OnInit {
 
         this.formReady.emit(this.formatoGForm);
 
-        var logoImg = new Image();
-        logoImg.src = 'assets/layout/images/logoUnicauca.png';
-        logoImg.onload = () => {
-            this.logoImage = this.getBase64Image(logoImg);
+        var assetHeader = new Image();
+        assetHeader.src = 'assets/layout/images/asset-header.jpg';
+        assetHeader.onload = () => {
+            this.assetHeader = this.getBase64Image(assetHeader);
         };
 
-        var footerImg = new Image();
-        footerImg.src = 'assets/layout/images/logosIcontec.png';
-        footerImg.onload = () => {
-            this.footerImage = this.getBase64Image(footerImg);
+        var logoFacultad = new Image();
+        logoFacultad.src = 'assets/layout/images/logoFacultad.png';
+        logoFacultad.onload = () => {
+            this.logoFacultad = this.getBase64Image(logoFacultad);
+        };
+
+        var assetCalidad = new Image();
+        assetCalidad.src = 'assets/layout/images/asset-calidad.png';
+        assetCalidad.onload = () => {
+            this.assetCalidad = this.getBase64Image(assetCalidad);
+        };
+
+        var logoIcontec = new Image();
+        logoIcontec.src = 'assets/layout/images/logosIcontec.png';
+        logoIcontec.onload = () => {
+            this.logoIcontec = this.getBase64Image(logoIcontec);
         };
     }
 
@@ -203,23 +229,20 @@ export class DocumentoFormatoGComponent implements OnInit {
         return {
             content: [
                 {
-                    columns: [
-                        {
-                            text: 'Maestría en Computación\nFacultad de Ingeniería Electrónica y Telecomunicaciones',
-                            fontSize: 14,
-                            alignment: 'left',
-                            margin: [0, 5, 0, 5],
-                            opacity: 0.6,
-                        },
-                        {
-                            image: this.logoImage,
-                            width: 50,
-                            height: 70,
-                            margin: [0, -10, 0, 5],
-                            alignment: 'right',
-                            opacity: 0.6,
-                        },
-                    ],
+                    image: this.assetHeader,
+                    width: 600,
+                    height: 20,
+                    margin: [0, -40, 0, 0],
+                    alignment: 'center',
+                    opacity: 0.6,
+                },
+                {
+                    image: this.logoFacultad,
+                    width: 180,
+                    height: 90,
+                    margin: [0, 10, 0, 20],
+                    alignment: 'left',
+                    opacity: 0.6,
                 },
                 {
                     text: formValues.consecutivo,
@@ -323,10 +346,16 @@ export class DocumentoFormatoGComponent implements OnInit {
                     columns: [
                         { text: '', width: '25%' },
                         {
-                            text: 'Dra. Luz Marina Sierra Martínez (Coordinadora Comité de Programa)',
+                            text: `Dra. ${formValues.coordinador} (Coordinadora Comité de Programa)`,
                             width: '75%',
                         },
                     ],
+                },
+                {
+                    text: 'Anexo: Revisión de Historia académica del estudiante e historia académica de SIMCA (2 folios).',
+                    style: 'small',
+                    alignment: 'justify',
+                    margin: [0, 20, 0, 0],
                 },
             ],
             footer: (currentPage, pageCount) => {
@@ -335,11 +364,10 @@ export class DocumentoFormatoGComponent implements OnInit {
                         {
                             stack: [
                                 {
-                                    image: this.footerImage,
+                                    image: this.assetCalidad,
                                     width: 100,
-                                    height: 60,
+                                    height: 80,
                                     alignment: 'left',
-                                    margin: [0, 5, 0, 5],
                                     opacity: 0.6,
                                 },
                             ],
@@ -348,40 +376,37 @@ export class DocumentoFormatoGComponent implements OnInit {
                         {
                             stack: [
                                 {
-                                    text: 'Hacia una Universidad comprometida con la paz territorial',
+                                    text: 'Carrera 2 No. 15N esquina-Sector Tulcán\nPopayán-Cauca-Colombia\nTeléfono: 6028209800 ext. 2100 ó 2101\ndecafiet@unicauca.edu.co | www.unicauca.edu.co',
                                     alignment: 'center',
-                                    margin: [0, 2, 0, 2],
+                                    fontSize: 8,
+                                    color: '#1f497d',
                                     opacity: 0.6,
-                                },
-                                {
-                                    canvas: [
-                                        {
-                                            type: 'line',
-                                            x1: 0,
-                                            y1: 0,
-                                            x2: 320,
-                                            y2: 0,
-                                            lineWidth: 1,
-                                            color: '#ff0000',
-                                        },
-                                    ],
-                                    margin: [0, 2, 0, 2],
-                                    alignment: 'center',
-                                    opacity: 0.6,
-                                },
-                                {
-                                    text: 'Facultad de Ingeniería Electrónica y Telecomunicaciones\nCra 2 No. 4N-140 Edif. de Ingenierías - Sector Tulcán Popayán - Cauca - Colombia\nConmutador 8209800 Ext. 2145 maestriacomputacion@unicauca.edu.co\nwww.unicauca.edu.cowww.unicauca.edu.co/maestriacomputacion',
-                                    alignment: 'center',
-                                    fontSize: 10,
-                                    margin: [0, 5, 0, 5],
-                                    opacity: 0.6,
+                                    margin: [-40, 20, 0, 0],
+                                    font: 'OpenSans',
                                 },
                             ],
                             width: '*',
+                            alignment: 'center',
+                        },
+                        {
+                            stack: [
+                                {
+                                    image: this.logoIcontec,
+                                    width: 70,
+                                    height: 40,
+                                    alignment: 'right',
+                                    opacity: 0.6,
+                                    margin: [0, 20, 40, 0],
+                                },
+                            ],
+                            width: 'auto',
                         },
                     ],
                     margin: [40, -60, 0, 0],
                 };
+            },
+            defaultStyle: {
+                font: 'Roboto',
             },
             styles: {
                 header: {
@@ -403,53 +428,57 @@ export class DocumentoFormatoGComponent implements OnInit {
                     fontSize: 12,
                     margin: [0, 10, 0, 0],
                 },
+                small: {
+                    fontSize: 10,
+                },
             },
         };
     }
 
     onDownload() {
+        this.loading = true;
         if (this.formatoGForm.invalid) {
+            this.loading = false;
             this.handleWarningMessage(Mensaje.REGISTRE_CAMPOS_OBLIGATORIOS);
             return;
-        } else {
-            const docDefinition = this.generateDocDefinition();
-            pdfMake.createPdf(docDefinition).getBlob((pdfBlob: Blob) => {
-                const file = new File(
-                    [pdfBlob],
-                    `${this.estudianteSeleccionado.codigo} - formatoG.pdf`,
-                    {
-                        type: 'application/pdf',
-                    }
-                );
-                const link = document.createElement('a');
-                link.download = file.name;
-                link.href = URL.createObjectURL(file);
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
-            });
         }
+        const docDefinition = this.generateDocDefinition();
+        pdfMake.createPdf(docDefinition).getBlob((pdfBlob: Blob) => {
+            const file = new File(
+                [pdfBlob],
+                `${this.estudianteSeleccionado.codigo} - formatoG.pdf`,
+                {
+                    type: 'application/pdf',
+                }
+            );
+            const link = document.createElement('a');
+            link.download = file.name;
+            link.href = URL.createObjectURL(file);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
+            this.loading = false;
+        });
     }
 
     onInsertar() {
         if (this.formatoGForm.invalid) {
             this.handleWarningMessage(Mensaje.REGISTRE_CAMPOS_OBLIGATORIOS);
             return;
-        } else {
-            const docDefinition = this.generateDocDefinition();
-            pdfMake.createPdf(docDefinition).getBlob((pdfBlob: Blob) => {
-                const file = new File(
-                    [pdfBlob],
-                    `${this.estudianteSeleccionado.codigo} - formatoG.pdf`,
-                    {
-                        type: 'application/pdf',
-                    }
-                );
-                this.formatoGPdfGenerated.emit(file);
-                this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
-            });
         }
+        const docDefinition = this.generateDocDefinition();
+        pdfMake.createPdf(docDefinition).getBlob((pdfBlob: Blob) => {
+            const file = new File(
+                [pdfBlob],
+                `${this.estudianteSeleccionado.codigo} - formatoG.pdf`,
+                {
+                    type: 'application/pdf',
+                }
+            );
+            this.formatoGPdfGenerated.emit(file);
+            this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
+        });
     }
 
     getFormControl(formControlName: string): FormControl {

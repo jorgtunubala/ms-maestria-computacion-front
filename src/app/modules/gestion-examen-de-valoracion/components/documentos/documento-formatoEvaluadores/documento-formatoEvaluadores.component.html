@@ -17,7 +17,9 @@
         <div class="mt-4 form-container px-8">
             <form class="p-fluid" [formGroup]="formatoEvaluadoresForm">
                 <div class="flex flex-column mt-4">
-                    <label class="mb-2" for="consecutivo">Consecutivo:</label>
+                    <label class="font-semibold mb-2" for="consecutivo"
+                        >Consecutivo:</label
+                    >
                     <input
                         pInputText
                         type="text"
@@ -26,7 +28,9 @@
                     />
                 </div>
                 <div class="flex flex-column mt-4">
-                    <label class="label-required mb-2" for="propuesta"
+                    <label
+                        class="label-required font-semibold mb-2"
+                        for="propuesta"
                         >Propuesta:</label
                     >
                     <input
@@ -38,7 +42,9 @@
                     />
                 </div>
                 <div class="flex flex-column mt-4">
-                    <label class="label-required mb-2" for="asunto"
+                    <label
+                        class="label-required font-semibold mb-2"
+                        for="asunto"
                         >Asunto:</label
                     >
                     <textarea
@@ -52,7 +58,9 @@
                     class="flex justify-content-between align-items-center mt-4"
                 >
                     <div class="flex align-items-center mr-2">
-                        <label class="label-required mr-2" for="coordinador"
+                        <label
+                            class="label-required font-semibold mr-2"
+                            for="coordinador"
                             >Coordinador(a):</label
                         >
                         <input
@@ -60,11 +68,12 @@
                             type="text"
                             id="coordinador"
                             formControlName="coordinador"
-                            readonly
                         />
                     </div>
                     <div class="flex align-items-center mr-2">
-                        <label class="label-required mr-2" for="docente"
+                        <label
+                            class="label-required font-semibold mr-2"
+                            for="docente"
                             >Docente:</label
                         >
                         <input
@@ -82,7 +91,9 @@
                         ></button>
                     </div>
                     <div class="flex align-items-center">
-                        <label class="label-required mr-2" for="estudiante"
+                        <label
+                            class="label-required font-semibold mr-2"
+                            for="estudiante"
                             >Estudiante:</label
                         >
                         <input
@@ -95,7 +106,7 @@
                     </div>
                 </div>
                 <div class="mt-4">
-                    <label>Evaluador Externo:</label>
+                    <label class="font-semibold">Evaluador Externo:</label>
                     <div class="flex align-items-center">
                         <p-card class="w-full m-0">
                             <div
@@ -112,7 +123,7 @@
                     </div>
                 </div>
                 <div class="mt-4">
-                    <label>Evaluador Interno:</label>
+                    <label class="font-semibold">Evaluador Interno:</label>
                     <div class="flex align-items-center">
                         <p-card class="w-full m-0">
                             <div
@@ -130,11 +141,14 @@
                 </div>
                 <div class="flex flex-column mt-4 max-w-20rem">
                     <div class="flex align-items-center column-gap-2 mb-2">
-                        <label class="label-required" for="fechaSesion"
+                        <label
+                            class="label-required font-semibold"
+                            for="fechaSesion"
                             >Fecha de Sesión:
                         </label>
                         <i
                             class="pi pi-info-circle"
+                            style="color: orangered; font-size: 16px"
                             pTooltip="Fecha en la que se celebró la sesión ordinaria del comité, que es importante para el seguimiento del proceso."
                             tooltipPosition="top"
                         ></i>
@@ -148,11 +162,14 @@
                 </div>
                 <div class="flex flex-column mt-4 max-w-20rem">
                     <div class="flex align-items-center column-gap-2 mb-2">
-                        <label class="label-required" for="fechaRespuesta"
+                        <label
+                            class="label-required font-semibold"
+                            for="fechaRespuesta"
                             >Fecha de Respuestas:
                         </label>
                         <i
                             class="pi pi-info-circle"
+                            style="color: orangered; font-size: 16px"
                             pTooltip="Fecha límite para enviar los formatos B y C a la coordinación. Asegúrate de enviar la información antes de esta fecha para cumplir con el plazo."
                             tooltipPosition="top"
                         ></i>
@@ -167,14 +184,17 @@
                 <div class="flex flex-column mt-4">
                     <button
                         pButton
+                        class="max-w-20rem align-self-end"
                         icon="pi pi-plus"
-                        label="Generar"
+                        label="Rellenar Información"
                         (click)="generateContent()"
                         [disabled]="!isFormValid()"
                         pTooltip="Este botón generará automáticamente el contenido del oficio basado en los datos proporcionados en el formulario."
                         tooltipPosition="top"
                     ></button>
-                    <label class="label-required my-2" for="contenido"
+                    <label
+                        class="label-required font-semibold my-2"
+                        for="contenido"
                         >Contenido:</label
                     >
                     <textarea
@@ -195,7 +215,7 @@
                         <p-fileUpload
                             name="firmaCoordinador"
                             chooseIcon="pi pi-file"
-                            accept=".png"
+                            accept=".png, .jpg, .jpeg"
                             chooseLabel="Seleccionar"
                             class="w-full max-w-30rem"
                             previewWidth="100"
@@ -261,7 +281,6 @@
             pTooltip="Haz clic para insertar el documento en el área de carga de archivos."
             tooltipPosition="top"
             (click)="onInsertar()"
-            [loading]="loading"
         ></button>
         <button
             pButton

@@ -15,6 +15,7 @@ import {
 } from '@angular/forms';
 import { MessageService, SelectItem } from 'primeng/api';
 import { DialogService } from 'primeng/dynamicdialog';
+import { Subscription, firstValueFrom } from 'rxjs';
 import { Mensaje, Rol, TipoRol } from 'src/app/core/enums/enums';
 import { mapResponseException } from 'src/app/core/utils/exception-util';
 import {
@@ -28,7 +29,6 @@ import { BuscadorExpertosComponent } from 'src/app/shared/components/buscador-ex
 import { Estudiante } from 'src/app/modules/gestion-estudiantes/models/estudiante';
 import { Orientador } from '../../../models/orientador';
 import { TrabajoDeGradoService } from '../../../services/trabajoDeGrado.service';
-import { Subscription, firstValueFrom } from 'rxjs';
 
 pdfMake.fonts = {
     Roboto: {
@@ -59,10 +59,10 @@ export class DocumentoFormatoAComponent implements OnInit {
     private evaluadorInternoSubscription: Subscription;
     private evaluadorExternoSubscription: Subscription;
 
-    loading = false;
+    loading: boolean = false;
 
-    tipoSeleccionado = '';
-    rolSeleccionado = '';
+    tipoSeleccionado: string = '';
+    rolSeleccionado: string = '';
 
     firmaTutor: string | ArrayBuffer;
     logoFacultad: string;
@@ -428,45 +428,46 @@ export class DocumentoFormatoAComponent implements OnInit {
         if (this.formatoAForm.invalid) {
             this.handleWarningMessage(Mensaje.REGISTRE_CAMPOS_OBLIGATORIOS);
             return;
-        } else {
-            const docDefinition = this.generateDocDefinition();
-            pdfMake.createPdf(docDefinition).getBlob((pdfBlob: Blob) => {
-                const file = new File(
-                    [pdfBlob],
-                    `${this.estudianteSeleccionado.codigo} - formatoA.pdf`,
-                    {
-                        type: 'application/pdf',
-                    }
-                );
-                this.formatoAPdfGenerated.emit(file);
-                this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
-            });
         }
+        const docDefinition = this.generateDocDefinition();
+        pdfMake.createPdf(docDefinition).getBlob((pdfBlob: Blob) => {
+            const file = new File(
+                [pdfBlob],
+                `${this.estudianteSeleccionado.codigo} - formatoA.pdf`,
+                {
+                    type: 'application/pdf',
+                }
+            );
+            this.formatoAPdfGenerated.emit(file);
+            this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
+        });
     }
 
     onDownload() {
+        this.loading = true;
         if (this.formatoAForm.invalid) {
+            this.loading = false;
             this.handleWarningMessage(Mensaje.REGISTRE_CAMPOS_OBLIGATORIOS);
             return;
-        } else {
-            const docDefinition = this.generateDocDefinition();
-            pdfMake.createPdf(docDefinition).getBlob((pdfBlob: Blob) => {
-                const file = new File(
-                    [pdfBlob],
-                    `${this.estudianteSeleccionado.codigo} - formatoA.pdf`,
-                    {
-                        type: 'application/pdf',
-                    }
-                );
-                const link = document.createElement('a');
-                link.download = file.name;
-                link.href = URL.createObjectURL(file);
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
-            });
         }
+        const docDefinition = this.generateDocDefinition();
+        pdfMake.createPdf(docDefinition).getBlob((pdfBlob: Blob) => {
+            const file = new File(
+                [pdfBlob],
+                `${this.estudianteSeleccionado.codigo} - formatoA.pdf`,
+                {
+                    type: 'application/pdf',
+                }
+            );
+            const link = document.createElement('a');
+            link.download = file.name;
+            link.href = URL.createObjectURL(file);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
+            this.loading = false;
+        });
     }
 
     getFormControl(formControlName: string): FormControl {

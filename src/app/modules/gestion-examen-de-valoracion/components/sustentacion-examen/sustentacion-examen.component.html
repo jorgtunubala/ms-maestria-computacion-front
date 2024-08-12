@@ -1,4 +1,4 @@
-<p-panel *ngIf="!isLoading; else spinner">
+<p-panel *ngIf="!isLoading && !isSending; else spinner">
     <ng-template pTemplate="header">
         <span class="font-bold w-full text-center" style="font-size: 20px"
             >Trabajo de Grado</span
@@ -247,7 +247,7 @@
                 type="button"
                 icon="pi pi-paperclip"
                 class="w-15rem p-button-secondary"
-                label="Generacion de resolucion"
+                label="Generación de resolución"
                 [disabled]="role == 'ROLE_ESTUDIANTE'"
                 (click)="redirectToResolucion(resolucionId)"
             ></button>
@@ -469,6 +469,8 @@
                                         icon="pi pi-plus"
                                         class="align-self-center"
                                         label="Crear Documento"
+                                        pTooltip="Para remitir el documento final al comité. Completa el documento para proceder."
+                                        tooltipPosition="top"
                                         (click)="showFormatoF()"
                                         [loading]="loading"
                                         [disabled]="
@@ -597,11 +599,6 @@
                                                 chooseLabel="Buscar documento"
                                                 (onSelect)="onUpload($event)"
                                                 [disabled]="
-                                                    (editMode &&
-                                                        sustentacionForm.get(
-                                                            'anexos'
-                                                        ).value.length &&
-                                                        !isChanged) ||
                                                     !role.includes(
                                                         'ROLE_DOCENTE'
                                                     )
@@ -738,16 +735,24 @@
                         <div class="field grid">
                             <div
                                 class="flex flex-1 justify-content-end align-items-center"
-                                *ngIf="isDocente && !isCoordinadorFase1"
+                                *ngIf="isCoordinadorFase1"
                             >
                                 <button
-                                    *ngIf="editMode"
+                                    *ngIf="
+                                        editMode &&
+                                        sustentacionForm.get('conceptoComite')
+                                            .value != 'Aprobado'
+                                    "
                                     pButton
-                                    icon="pi pi-eye"
-                                    label="Revisar documentos"
-                                    (click)="openModal()"
-                                    [disabled]="displayModal"
+                                    class="p-button p-button-warning"
+                                    icon="pi pi-pencil"
+                                    pTooltip="Modificar"
+                                    tooltipPosition="top"
+                                    (click)="
+                                        editFase($event, 'coordinadorFase1')
+                                    "
                                 ></button>
+                                <p-confirmPopup></p-confirmPopup>
                             </div>
                             <div
                                 class="flex flex-column w-full justify-content-center align-items-center row-gap-4"
@@ -901,6 +906,8 @@
                                         icon="pi pi-plus"
                                         class="align-self-center"
                                         label="Crear Documento"
+                                        pTooltip="Para proceder con la evaluación de la hoja de vida académica, completa el documento requerido."
+                                        tooltipPosition="top"
                                         (click)="showFormatoHVA()"
                                         [loading]="loading"
                                     ></button>
@@ -912,6 +919,19 @@
                                     <p>No has seleccionado ningún documento.</p>
                                 </div>
                             </div>
+                        </div>
+                        <div
+                            class="flex flex-1 justify-content-end align-items-center"
+                            *ngIf="isDocente && !isCoordinadorFase1"
+                        >
+                            <button
+                                *ngIf="editMode"
+                                pButton
+                                icon="pi pi-eye"
+                                label="Revisar documentos"
+                                (click)="openModal()"
+                                [disabled]="displayModal"
+                            ></button>
                         </div>
                     </p-fieldset>
                 </div>
@@ -948,6 +968,29 @@
                         "
                     >
                         <div class="field grid">
+                            <div
+                                class="flex flex-1 justify-content-end align-items-center"
+                                *ngIf="
+                                    isCoordinadorFase2 && !isEstudianteCreated
+                                "
+                            >
+                                <button
+                                    *ngIf="
+                                        editMode &&
+                                        sustentacionForm.get('juradosAceptados')
+                                            .value != 'Aceptado'
+                                    "
+                                    pButton
+                                    class="p-button p-button-warning"
+                                    icon="pi pi-pencil"
+                                    pTooltip="Modificar"
+                                    tooltipPosition="top"
+                                    (click)="
+                                        editFase($event, 'coordinadorFase2')
+                                    "
+                                ></button>
+                                <p-confirmPopup></p-confirmPopup>
+                            </div>
                             <div
                                 class="flex flex-column w-full justify-content-center align-items-center row-gap-4"
                             >
@@ -1089,6 +1132,8 @@
                                         icon="pi pi-plus"
                                         class="align-self-center"
                                         label="Crear Documento"
+                                        pTooltip="Para remitir el documento final al consejo de facultad, completa el formato requerido."
+                                        tooltipPosition="top"
                                         (click)="showFormatoG()"
                                         [loading]="loading"
                                     ></button>
@@ -1181,6 +1226,21 @@
                                 : false
                         "
                     >
+                        <div
+                            class="flex flex-1 justify-content-end align-items-center"
+                            *ngIf="isCoordinadorFase3 && !isEstudianteCreated"
+                        >
+                            <button
+                                *ngIf="editMode"
+                                pButton
+                                class="p-button p-button-warning"
+                                icon="pi pi-pencil"
+                                pTooltip="Modificar"
+                                tooltipPosition="top"
+                                (click)="editFase($event, 'coordinadorFase3')"
+                            ></button>
+                            <p-confirmPopup></p-confirmPopup>
+                        </div>
                         <div class="field grid justify-content-center">
                             <div class="col-12 lg:col-5">
                                 <label>Nombramiento de Jurados</label>
@@ -1261,6 +1321,9 @@
                                                 class="p-button-secondary"
                                                 icon="pi pi-times"
                                                 (click)="limpiarJuradoInterno()"
+                                                [disabled]="
+                                                    isSustentacionCreated
+                                                "
                                             ></button>
                                         </div>
                                     </p-card>
@@ -1308,6 +1371,9 @@
                                                 class="p-button-secondary"
                                                 icon="pi pi-times"
                                                 (click)="limpiarJuradoExterno()"
+                                                [disabled]="
+                                                    isSustentacionCreated
+                                                "
                                             ></button>
                                         </div>
                                     </p-card>
@@ -1742,6 +1808,8 @@
                                         icon="pi pi-plus"
                                         class="align-self-center"
                                         label="Crear Documento"
+                                        pTooltip="Para remitir la hoja de vida académica para grado, completa el formato requerido."
+                                        tooltipPosition="top"
                                         (click)="showFormatoHVAGrado()"
                                         [loading]="loading"
                                     ></button>
@@ -1770,6 +1838,7 @@
                                     formControlName="fechaSustentacion"
                                     [showIcon]="true"
                                     dateFormat="dd.mm.yy"
+                                    [maxDate]="maxDate"
                                 ></p-calendar>
                             </div>
                         </div>
@@ -1862,8 +1931,10 @@
                         editMode &&
                         role.includes('ROLE_COORDINADOR') &&
                         isCoordinadorFase4 &&
-                        sustentacionForm.get('respuestaSustentacion').value ==
-                            'Aprobado'
+                        (sustentacionForm.get('respuestaSustentacion').value ==
+                            'Aprobado' ||
+                            sustentacionForm.get('respuestaSustentacion')
+                                .value == 'Aprobado Con Observaciones')
                     "
                     pButton
                     icon="pi pi-eye"
@@ -1874,7 +1945,11 @@
                 <button
                     *ngIf="editMode"
                     pButton
-                    icon="pi pi-pencil"
+                    [icon]="
+                        getButtonLabel() == 'Guardar'
+                            ? 'pi pi-save'
+                            : 'pi pi-pencil'
+                    "
                     [label]="getButtonLabel()"
                     (click)="createOrUpdateSustentacion()"
                     [disabled]="!isReviewed"
@@ -1884,15 +1959,17 @@
     </ng-template>
 </p-panel>
 <ng-template #spinner>
-    <p-progressSpinner
-        *ngIf="!isSending"
-        ariaLabel="loading"
-        class="spinner"
-    ></p-progressSpinner>
-    <div class="card" *ngIf="isSending">
-        <p-progressBar
-            mode="indeterminate"
-            [style]="{ height: '6px' }"
-        ></p-progressBar>
+    <div *ngIf="isLoading" class="spinner-container">
+        <p-progressSpinner
+            ariaLabel="loading"
+            styleClass="custom-spinner"
+        ></p-progressSpinner>
+    </div>
+    <div *ngIf="isSending" class="spinner-container">
+        <p-progressSpinner
+            ariaLabel="loading"
+            styleClass="custom-spinner"
+        ></p-progressSpinner>
+        <p class="spinner-text">Enviando información...</p>
     </div>
 </ng-template>

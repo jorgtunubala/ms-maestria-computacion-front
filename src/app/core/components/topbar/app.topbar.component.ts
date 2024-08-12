@@ -64,7 +64,7 @@ export class AppTopBarComponent implements OnInit {
         if (user) {
             // Actualizar el menú para mostrar el nombre del usuario y opción de cerrar sesión
             this.items = this.items.map((item) => {
-                if (item.label === 'LOGIN') {
+                if (item.label === 'INICIAR SESIÓN') {
                     return {
                         label: user.username.toUpperCase(),
                         icon: 'pi pi-fw pi-user',

@@ -12,6 +12,8 @@ import { CursoService } from '../../services/cursos.service';
 import { EmpresaEgresadoComponent } from '../empresa-egresados/empresa-egresados.component';
 import { CursoEgresadoComponent } from '../curso-egresados/curso-egresados.component';
 import { AutenticacionService } from 'src/app/modules/gestion-autenticacion/services/autenticacion.service';
+import { MessageService } from 'primeng/api';
+import { errorMessage } from 'src/app/core/utils/message-util';
 
 @Component({
     selector: 'app-bandeja-seguimiento-a-egresados',
@@ -30,6 +32,7 @@ export class BandejaSeguimientoAEgresadosComponent implements OnInit {
     constructor(
         private cursoService: CursoService,
         private dialogService: DialogService,
+        private messageService: MessageService,
         private empresaService: EmpresaService,
         private estudianteService: EstudianteService,
         private localStorageService: LocalStorageService,
@@ -91,7 +94,7 @@ export class BandejaSeguimientoAEgresadosComponent implements OnInit {
                         .getEstudianteEgresado(estudiante.id)
                         .pipe(
                             catchError((error) => {
-                                console.error(error);
+                                this.handlerResponseException(error);
                                 return of(null);
                             })
                         )
@@ -109,7 +112,7 @@ export class BandejaSeguimientoAEgresadosComponent implements OnInit {
                 }
             }
         } catch (error) {
-            console.error(error);
+            this.handlerResponseException(error);
         }
     }
 
@@ -121,7 +124,7 @@ export class BandejaSeguimientoAEgresadosComponent implements OnInit {
                     .listEmpresas(this.estudianteSeleccionado.id)
                     .pipe(
                         catchError((error) => {
-                            console.error(error);
+                            this.handlerResponseException(error);
                             return of([]);
                         })
                     )
@@ -131,7 +134,7 @@ export class BandejaSeguimientoAEgresadosComponent implements OnInit {
                 this.empresas = response.filter((d) => d.id !== null);
             }
         } catch (error) {
-            console.error(error);
+            this.handlerResponseException(error);
         } finally {
             this.loading = false;
         }
@@ -145,7 +148,7 @@ export class BandejaSeguimientoAEgresadosComponent implements OnInit {
                     .listCursos(this.estudianteSeleccionado.id)
                     .pipe(
                         catchError((error) => {
-                            console.error(error);
+                            this.handlerResponseException(error);
                             return of([]);
                         })
                     )
@@ -154,7 +157,7 @@ export class BandejaSeguimientoAEgresadosComponent implements OnInit {
                 this.cursos = response.filter((d) => d.nombre !== null);
             }
         } catch (error) {
-            console.error(error);
+            this.handlerResponseException(error);
         } finally {
             this.loading = false;
         }
@@ -175,7 +178,7 @@ export class BandejaSeguimientoAEgresadosComponent implements OnInit {
             await this.waitForDialogClose(ref);
             await this.listEmpresas();
         } catch (error) {
-            console.error(error);
+            this.handlerResponseException(error);
         }
     }
 
@@ -193,7 +196,7 @@ export class BandejaSeguimientoAEgresadosComponent implements OnInit {
             await this.waitForDialogClose(ref);
             await this.listEmpresas();
         } catch (error) {
-            console.error(error);
+            this.handlerResponseException(error);
         }
     }
 
@@ -208,7 +211,7 @@ export class BandejaSeguimientoAEgresadosComponent implements OnInit {
             await this.waitForDialogClose(ref);
             await this.listCursos();
         } catch (error) {
-            console.error(error);
+            this.handlerResponseException(error);
         }
     }
 
@@ -223,7 +226,22 @@ export class BandejaSeguimientoAEgresadosComponent implements OnInit {
             await this.waitForDialogClose(ref);
             await this.listCursos();
         } catch (error) {
-            console.error(error);
+            this.handlerResponseException(error);
+        }
+    }
+
+    handlerResponseException(response: any): void {
+        if (
+            response.status === 503 ||
+            response.status === 500 ||
+            response.status === 409
+        ) {
+            const errorMsg =
+                response?.error?.mensaje ||
+                response?.error ||
+                'Error al cargar los datos en el backend';
+            this.messageService.clear();
+            this.messageService.add(errorMessage(errorMsg));
         }
     }
 }

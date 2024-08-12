@@ -2,7 +2,6 @@ import {
     Component,
     ElementRef,
     EventEmitter,
-    Input,
     OnInit,
     Output,
     ViewChild,
@@ -43,7 +42,6 @@ export class DocumentoFormatoHvaGradoComponent implements OnInit {
 
     formatoHvaGradoForm: FormGroup;
 
-    isPending = true;
     loading = false;
 
     estudianteSeleccionado: any;
@@ -108,7 +106,7 @@ export class DocumentoFormatoHvaGradoComponent implements OnInit {
             departamento: [null, Validators.required],
             municipio: [null, Validators.required],
             email: [null, Validators.required],
-            coordinador: ['Luz Marina Sierra Martínez', Validators.required],
+            coordinador: ['[NOMBRE]', Validators.required],
         });
         this.formReady.emit(this.formatoHvaGradoForm);
     }
@@ -120,7 +118,6 @@ export class DocumentoFormatoHvaGradoComponent implements OnInit {
     }
 
     onDownload() {
-        this.isPending = false;
         if (this.formatoHvaGradoForm.invalid) {
             this.handleWarningMessage(Mensaje.REGISTRE_CAMPOS_OBLIGATORIOS);
             return;
@@ -176,9 +173,9 @@ export class DocumentoFormatoHvaGradoComponent implements OnInit {
 
                     saveAs(out, 'formatoHvaGrado.docx');
                     this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
+                    this.loading = false;
                 }
             );
-            this.loading = false;
         }
     }
 

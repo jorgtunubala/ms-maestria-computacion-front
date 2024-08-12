@@ -7,6 +7,7 @@ import {
 } from '@angular/forms';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { MessageService } from 'primeng/api';
+import { firstValueFrom } from 'rxjs';
 import { Mensaje } from 'src/app/core/enums/enums';
 import {
     errorMessage,
@@ -61,18 +62,20 @@ export class CursoEgresadoComponent implements OnInit {
         this.formReady.emit(this.cursoForm);
     }
 
-    loadAsignaturas(): void {
-        this.cursoService.listarAsignaturas().subscribe({
-            next: (response) => {
-                if (response) {
-                    this.asignaturas = response.map((asignatura: any) => ({
-                        label: asignatura.nombreAsignatura,
-                        value: asignatura.idAsignatura,
-                    }));
-                }
-            },
-            error: (e) => this.handleErrorResponse(e),
-        });
+    async loadAsignaturas() {
+        try {
+            const response = await firstValueFrom(
+                this.cursoService.listarAsignaturas()
+            );
+            if (response) {
+                this.asignaturas = response.map((asignatura: any) => ({
+                    label: asignatura.nombreAsignatura,
+                    value: asignatura.idAsignatura,
+                }));
+            }
+        } catch (e) {
+            this.handleErrorResponse(e);
+        }
     }
 
     extractIdsFromConfig(): void {
@@ -87,25 +90,25 @@ export class CursoEgresadoComponent implements OnInit {
         }
     }
 
-    loadDataForEdit(id: number): void {
-        this.cursoService.getCurso(id).subscribe({
-            next: (response) => {
-                this.setValuesForm(response);
-                this.cursoForm
-                    .get('fechaInicio')
-                    .setValue(
-                        response.fechaInicio
-                            ? new Date(response.fechaInicio)
-                            : null
-                    );
-                this.cursoForm
-                    .get('fechaFin')
-                    .setValue(
-                        response.fechaFin ? new Date(response.fechaFin) : null
-                    );
-            },
-            error: (e) => this.handleErrorResponse(e),
-        });
+    async loadDataForEdit(id: number): Promise<void> {
+        try {
+            const response = await firstValueFrom(
+                this.cursoService.getCurso(id)
+            );
+            this.setValuesForm(response);
+            this.cursoForm
+                .get('fechaInicio')
+                ?.setValue(
+                    response.fechaInicio ? new Date(response.fechaInicio) : null
+                );
+            this.cursoForm
+                .get('fechaFin')
+                ?.setValue(
+                    response.fechaFin ? new Date(response.fechaFin) : null
+                );
+        } catch (e) {
+            this.handleErrorResponse(e);
+        }
     }
 
     setValuesForm(curso: CursoRequest): void {
@@ -116,29 +119,37 @@ export class CursoEgresadoComponent implements OnInit {
         return this.cursoForm.get(formControlName) as FormControl;
     }
 
-    addCurso(): void {
+    async addCurso(): Promise<void> {
         this.loading = true;
-        this.cursoService
-            .addCurso(this.cursoForm.value)
-            .subscribe({
-                next: () => this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO),
-                error: (e) => this.handleErrorResponse(e),
-                complete: () => this.closeDialog(),
-            })
-            .add(() => (this.loading = false));
+        try {
+            await firstValueFrom(
+                this.cursoService.addCurso(this.cursoForm.value)
+            );
+            this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
+        } catch (e) {
+            this.handleErrorResponse(e);
+        } finally {
+            this.loading = false;
+            this.closeDialog();
+        }
     }
 
-    updateCurso(): void {
+    async updateCurso(): Promise<void> {
         this.loading = true;
-        this.cursoService
-            .updateCurso(this.cursoId, this.cursoForm.value)
-            .subscribe({
-                next: () =>
-                    this.handleSuccessMessage(Mensaje.ACTUALIZACION_EXITOSA),
-                error: (e) => this.handleErrorResponse(e),
-                complete: () => this.closeDialog(),
-            })
-            .add(() => (this.loading = false));
+        try {
+            await firstValueFrom(
+                this.cursoService.updateCurso(
+                    this.cursoId,
+                    this.cursoForm.value
+                )
+            );
+            this.handleSuccessMessage(Mensaje.ACTUALIZACION_EXITOSA);
+        } catch (e) {
+            this.handleErrorResponse(e);
+        } finally {
+            this.loading = false;
+            this.closeDialog();
+        }
     }
 
     onCancel(): void {

@@ -1,27 +1,25 @@
 <p-panel>
     <div id="formatoHva">
-        <div class="flex flex-column w-full mb-4">
-            <div
-                class="flex align-items-center justify-content-evenly header-logo"
-            >
-                <div>
-                    <h2>Maestría en Computación</h2>
-                    <h2>
-                        Facultad de Ingeniería Electrónica y Telecomunicaciones
-                    </h2>
-                </div>
+        <div class="flex flex-column w-full mb-4 header-logo">
+            <img
+                src="assets/layout/images/asset-header.jpg"
+                alt="Asset Header"
+                class="header-image"
+            />
+            <div class="flex justify-content-start logo-container">
                 <img
-                    src="assets/layout/images/logoUnicauca.png"
-                    alt="Logo Unicauca"
-                    width="120px"
-                    height="180px"
+                    src="assets/layout/images/logoFacultad.png"
+                    alt="Logo Facultad"
+                    class="logo-image"
                 />
             </div>
         </div>
         <div class="px-8">
             <form class="p-fluid" [formGroup]="formatoHvaForm">
                 <div class="flex flex-column mt-4">
-                    <label class="mb-2" for="titulo">Título:</label>
+                    <label class="font-semibold mb-2" for="titulo"
+                        >Título:</label
+                    >
                     <input
                         pInputText
                         type="text"
@@ -31,7 +29,9 @@
                     />
                 </div>
                 <div class="flex flex-column mt-4">
-                    <label class="mb-2" for="estudiante">Estudiante:</label>
+                    <label class="font-semibold mb-2" for="estudiante"
+                        >Estudiante:</label
+                    >
                     <input
                         pInputText
                         type="text"
@@ -41,7 +41,9 @@
                     />
                 </div>
                 <div class="flex flex-column mt-4">
-                    <label class="label-required mb-2" for="codigo"
+                    <label
+                        class="label-required font-semibold mb-2"
+                        for="codigo"
                         >Código:</label
                     >
                     <input
@@ -52,7 +54,9 @@
                     />
                 </div>
                 <div class="flex flex-column mt-4">
-                    <label class="label-required mb-2" for="planEstudios"
+                    <label
+                        class="label-required font-semibold mb-2"
+                        for="planEstudios"
                         >Plan de Estudios:</label
                     >
                     <input
@@ -64,7 +68,9 @@
                 </div>
                 <div class="flex flex-wrap mt-4 gap-4">
                     <div class="flex-1">
-                        <label class="mb-2" for="director">Director:</label>
+                        <label class="font-semibold mb-2" for="director"
+                            >Director:</label
+                        >
                         <input
                             pInputText
                             type="text"
@@ -75,7 +81,9 @@
                         />
                     </div>
                     <div class="flex-1">
-                        <label class="mb-2" for="codirector">Codirector:</label>
+                        <label class="font-semibold mb-2" for="codirector"
+                            >Codirector:</label
+                        >
                         <input
                             pInputText
                             type="text"
@@ -86,22 +94,23 @@
                         />
                     </div>
                     <div class="flex-1">
-                        <label class="mb-2" for="coordinador"
+                        <label class="font-semibold mb-2" for="coordinador"
                             >Coordinador:</label
                         >
                         <input
                             pInputText
                             type="text"
                             id="coordinador"
-                            formControlName="coordinador"
-                            readonly
                             class="w-full p-inputtext"
+                            formControlName="coordinador"
                         />
                     </div>
                 </div>
 
                 <div class="flex flex-column mt-4 max-w-20rem">
-                    <label class="label-required mb-2" for="fechaRevision"
+                    <label
+                        class="label-required font-semibold mb-2"
+                        for="fechaRevision"
                         >Fecha de Revisión:</label
                     >
                     <p-calendar
@@ -156,7 +165,7 @@
                                 <div
                                     class="flex justify-content-between align-items-center"
                                 >
-                                    <span class="font-bold text-lg">
+                                    <span class="font-semibold text-lg">
                                         {{ area.get("tipo").value?.label }} -
                                         {{
                                             area.get("semestre").value?.label
@@ -229,7 +238,9 @@
                     </div>
                 </div>
                 <div class="flex flex-column mt-4">
-                    <label class="label-required mb-2" for="pruebaSuperada"
+                    <label
+                        class="label-required font-semibold mb-2"
+                        for="pruebaSuperada"
                         >Prueba de Suficiencia en Idioma Extranjero:</label
                     >
                     <p-dropdown
@@ -241,7 +252,9 @@
                     ></p-dropdown>
                 </div>
                 <div class="flex flex-column mt-4">
-                    <label class="label-required mb-2" for="minimoArticulo"
+                    <label
+                        class="label-required font-semibold mb-2"
+                        for="minimoArticulo"
                         >Mínimo Artículo:</label
                     >
                     <input
@@ -252,7 +265,9 @@
                     />
                 </div>
                 <div class="flex flex-column mt-4">
-                    <label class="label-required mb-2" for="creditosCumplidos"
+                    <label
+                        class="label-required font-semibold mb-2"
+                        for="creditosCumplidos"
                         >Créditos Cumplidos:</label
                     >
                     <input
@@ -262,52 +277,52 @@
                         formControlName="creditosCumplidos"
                     />
                 </div>
+                <div class="footer-logo mt-8">
+                    <img
+                        src="assets/layout/images/asset-calidad.png"
+                        alt="Asset Calidad"
+                        width="140px"
+                        height="100px"
+                    />
+                    <div
+                        class="flex flex-column align-items-center justify-content-center"
+                    >
+                        <span>
+                            Carrera 2 No. 15N esquina-Sector Tulcán
+                            Popayán-Cauca-Colombia Teléfono: 6028209800 ext.
+                            2100 ó 2101. decafiet@unicauca.edu.co |
+                            <strong>www.unicauca.edu.co</strong>
+                        </span>
+                    </div>
+                    <img
+                        src="assets/layout/images/logosIcontec.png"
+                        alt="Logo Icontec"
+                        width="120px"
+                        height="80px"
+                    />
+                </div>
             </form>
-        </div>
-        <div
-            class="flex flex-row align-items-center justify-content-center footer-logo mt-8"
-        >
-            <img
-                src="assets/layout/images/logosIcontec.png"
-                alt="Logo Icontec"
-                width="200px"
-                height="140px"
-            />
             <div
-                class="flex flex-column align-items-center justify-content-center"
+                class="flex align-items-center justify-content-end mt-4 column-gap-2"
             >
-                <span>Por una Universidad de excelencia y solidaria</span>
-                <hr />
-                <strong>
-                    Facultad de Ingeniería Electrónica y Telecomunicaciones Cra
-                    2 No. 4N-140 Edif. de Ingenierías - Sector Tulcán Popayán -
-                    Cauca - Colombia Conmutador 8209800 Ext. 2145
-                    maestriacomputacion@unicauca.edu.co - www.unicauca.edu.co
-                    www.unicauca.edu.co/maestriacomputación
-                </strong>
+                <button
+                    pButton
+                    type="button"
+                    icon="pi pi-upload"
+                    label="Insertar"
+                    pTooltip="Haz clic para insertar el documento en el área de carga de archivos."
+                    tooltipPosition="top"
+                    (click)="onInsertar()"
+                ></button>
+                <button
+                    pButton
+                    type="button"
+                    icon="pi pi-download"
+                    label="Descargar"
+                    (click)="onDownload()"
+                    [loading]="loading"
+                ></button>
             </div>
-        </div>
-        <div
-            class="flex align-items-center justify-content-end mt-4 column-gap-2"
-        >
-            <button
-                pButton
-                type="button"
-                icon="pi pi-upload"
-                label="Insertar"
-                pTooltip="Haz clic para insertar el documento en el área de carga de archivos."
-                tooltipPosition="top"
-                (click)="onInsertar()"
-                [loading]="loading"
-            ></button>
-            <button
-                pButton
-                type="button"
-                icon="pi pi-download"
-                label="Descargar"
-                (click)="onDownload()"
-                [loading]="loading"
-            ></button>
         </div>
     </div>
 </p-panel>

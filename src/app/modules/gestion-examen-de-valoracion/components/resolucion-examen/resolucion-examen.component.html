@@ -1,4 +1,4 @@
-<p-panel *ngIf="!isLoading; else spinner">
+<p-panel *ngIf="!isLoading && !isSending; else spinner">
     <ng-template pTemplate="header">
         <span class="font-bold w-full text-center" style="font-size: 20px"
             >Generación de resolución</span
@@ -200,7 +200,7 @@
                 type="button"
                 icon="pi pi-paperclip"
                 class="w-15rem p-button-info"
-                label="Generacion de resolucion"
+                label="Generación de resolución"
                 [disabled]="role == 'ROLE_ESTUDIANTE' || isActiveIndex()"
             ></button>
             <button
@@ -557,6 +557,8 @@
                                         icon="pi pi-plus"
                                         class="align-self-center"
                                         label="Crear Documento"
+                                        pTooltip="Para solicitar la presentación del examen de valoración al Comité de Maestría en Computación. Completa el documento para continuar."
+                                        tooltipPosition="top"
                                         (click)="showFormatoResolucionComite()"
                                         [loading]="loading"
                                         [disabled]="!directorSeleccionado"
@@ -615,6 +617,27 @@
                         "
                     >
                         <div class="field grid">
+                            <div
+                                class="flex flex-1 justify-content-end align-items-center"
+                                *ngIf="isCoordinadorFase1"
+                            >
+                                <button
+                                    *ngIf="
+                                        editMode &&
+                                        resolucionForm.get('conceptoComite')
+                                            .value != 'Aprobado'
+                                    "
+                                    pButton
+                                    class="p-button p-button-warning"
+                                    icon="pi pi-pencil"
+                                    pTooltip="Modificar"
+                                    tooltipPosition="top"
+                                    (click)="
+                                        editFase($event, 'coordinadorFase1')
+                                    "
+                                ></button>
+                                <p-confirmPopup></p-confirmPopup>
+                            </div>
                             <div
                                 class="flex flex-1 justify-content-end align-items-center"
                                 *ngIf="isDocente && !isCoordinadorFase1"
@@ -725,6 +748,23 @@
                         "
                     >
                         <div class="field grid">
+                            <div
+                                class="flex flex-1 justify-content-end align-items-center"
+                                *ngIf="isCoordinadorFase2"
+                            >
+                                <button
+                                    *ngIf="editMode && !isResolucionValid"
+                                    pButton
+                                    class="p-button p-button-warning"
+                                    icon="pi pi-pencil"
+                                    pTooltip="Modificar"
+                                    tooltipPosition="top"
+                                    (click)="
+                                        editFase($event, 'coordinadorFase2')
+                                    "
+                                ></button>
+                                <p-confirmPopup></p-confirmPopup>
+                            </div>
                             <div
                                 class="flex flex-column w-full justify-content-center align-items-center row-gap-4"
                             >
@@ -864,6 +904,9 @@
                                                         'linkSolicitudConsejo'
                                                     )
                                                 "
+                                                [disabled]="
+                                                    isSustentacionCreated
+                                                "
                                             ></button>
                                         </div>
                                         <div
@@ -900,6 +943,8 @@
                                         icon="pi pi-plus"
                                         class="align-self-center"
                                         label="Crear Documento"
+                                        pTooltip="Para solicitar la resolución de aprobación del trabajo de grado al Consejo de Facultad. Completa el documento para proceder."
+                                        tooltipPosition="top"
                                         (click)="showFormatoResolucionConsejo()"
                                         [loading]="loading"
                                     ></button>
@@ -948,7 +993,24 @@
                             solicitud
                         </p>
                     </div>
-                    <p-fieldset legend="Consejo" styleClass="bg-bluegray-50">
+                    <p-fieldset
+                        legend="Consejo"
+                        styleClass="bg-bluegray-50"
+                        [toggleable]="
+                            role.includes('ROLE_COORDINADOR') &&
+                            isCoordinadorFase3 &&
+                            isSustentacionCreated
+                                ? true
+                                : false
+                        "
+                        [collapsed]="
+                            role.includes('ROLE_COORDINADOR') &&
+                            isCoordinadorFase3 &&
+                            isSustentacionCreated
+                                ? true
+                                : false
+                        "
+                    >
                         <div class="field grid justify-content-center">
                             <div
                                 class="col-12 lg:col-5 flex flex-nowrap align-items-center justify-content-between"
@@ -1106,7 +1168,11 @@
                 <button
                     *ngIf="editMode"
                     pButton
-                    icon="pi pi-pencil"
+                    [icon]="
+                        getButtonLabel() == 'Guardar'
+                            ? 'pi pi-save'
+                            : 'pi pi-pencil'
+                    "
                     [label]="getButtonLabel()"
                     (click)="createOrUpdateResolucion()"
                     [disabled]="!isReviewed"
@@ -1116,5 +1182,17 @@
     </ng-template>
 </p-panel>
 <ng-template #spinner>
-    <p-progressSpinner ariaLabel="loading" class="spinner"></p-progressSpinner>
+    <div *ngIf="isLoading" class="spinner-container">
+        <p-progressSpinner
+            ariaLabel="loading"
+            styleClass="custom-spinner"
+        ></p-progressSpinner>
+    </div>
+    <div *ngIf="isSending" class="spinner-container">
+        <p-progressSpinner
+            ariaLabel="loading"
+            styleClass="custom-spinner"
+        ></p-progressSpinner>
+        <p class="spinner-text">Enviando información...</p>
+    </div>
 </ng-template>

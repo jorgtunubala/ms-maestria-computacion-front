@@ -1,4 +1,4 @@
-<p-panel *ngIf="!isLoading; else spinner">
+<p-panel *ngIf="!isLoading && !isSending; else spinner">
     <ng-template pTemplate="header">
         <span class="font-bold w-full text-center" style="font-size: 20px"
             >Examen de Valoración</span
@@ -94,7 +94,7 @@
                 type="button"
                 icon="pi pi-paperclip"
                 class="w-15rem p-button-secondary"
-                label="Generacion de resolucion"
+                label="Generación de resolución"
                 [disabled]="!isRespuestaValid || role == 'ROLE_ESTUDIANTE'"
                 (click)="redirectToResolucion(resolucionId)"
             ></button>
@@ -199,6 +199,16 @@
                                 <p-fieldset
                                     legend="Evaluacion {{ i + 1 }}"
                                     [formGroupName]="i"
+                                    [toggleable]="
+                                        isExamenCreado('expertoEvaluaciones', i)
+                                            ? true
+                                            : false
+                                    "
+                                    [collapsed]="
+                                        isExamenCreado('expertoEvaluaciones', i)
+                                            ? true
+                                            : false
+                                    "
                                 >
                                     <div class="grid column-gap-4 mb-6">
                                         <label
@@ -776,6 +786,16 @@
                                 <p-fieldset
                                     legend="Evaluacion {{ i + 1 }}"
                                     formGroupName="{{ i }}"
+                                    [toggleable]="
+                                        isExamenCreado('docenteEvaluaciones', i)
+                                            ? true
+                                            : false
+                                    "
+                                    [collapsed]="
+                                        isExamenCreado('docenteEvaluaciones', i)
+                                            ? true
+                                            : false
+                                    "
                                 >
                                     <div class="grid column-gap-4 mb-6">
                                         <label
@@ -1285,5 +1305,17 @@
     </ng-template>
 </p-panel>
 <ng-template #spinner>
-    <p-progressSpinner ariaLabel="loading" class="spinner"></p-progressSpinner>
+    <div *ngIf="isLoading" class="spinner-container">
+        <p-progressSpinner
+            ariaLabel="loading"
+            styleClass="custom-spinner"
+        ></p-progressSpinner>
+    </div>
+    <div *ngIf="isSending" class="spinner-container">
+        <p-progressSpinner
+            ariaLabel="loading"
+            styleClass="custom-spinner"
+        ></p-progressSpinner>
+        <p class="spinner-text">Enviando información...</p>
+    </div>
 </ng-template>

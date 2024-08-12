@@ -1,27 +1,25 @@
 <p-panel>
     <div id="formatoG">
-        <div class="flex flex-column w-full mb-4">
-            <div
-                class="flex align-items-center justify-content-evenly header-logo"
-            >
-                <div>
-                    <h2>Maestría en Computación</h2>
-                    <h2>
-                        Facultad de Ingeniería Electrónica y Telecomunicaciones
-                    </h2>
-                </div>
+        <div class="flex flex-column w-full mb-4 header-logo">
+            <img
+                src="assets/layout/images/asset-header.jpg"
+                alt="Asset Header"
+                class="header-image"
+            />
+            <div class="flex justify-content-start logo-container">
                 <img
-                    src="assets/layout/images/logoUnicauca.png"
-                    alt="Logo Unicauca"
-                    width="120px"
-                    height="180px"
+                    src="assets/layout/images/logoFacultad.png"
+                    alt="Logo Facultad"
+                    class="logo-image"
                 />
             </div>
         </div>
         <div class="mt-4 px-8">
             <form [formGroup]="formatoGForm">
                 <div class="field grid justify-content-start">
-                    <label class="col-2 label-required" for="consecutivo"
+                    <label
+                        class="col-2 label-required font-semibold"
+                        for="consecutivo"
                         >Consecutivo</label
                     >
                     <div class="col-10">
@@ -36,7 +34,9 @@
                 </div>
 
                 <div class="field grid justify-content-start">
-                    <label class="col-2" for="facultad">Facultad</label>
+                    <label class="col-2 font-semibold" for="facultad"
+                        >Facultad</label
+                    >
                     <div class="col-10">
                         <input
                             pInputText
@@ -50,7 +50,9 @@
                 </div>
 
                 <div class="field grid justify-content-start">
-                    <label class="col-2" for="programa">Programa</label>
+                    <label class="col-2 font-semibold" for="programa"
+                        >Programa</label
+                    >
                     <div class="col-10">
                         <input
                             pInputText
@@ -64,7 +66,24 @@
                 </div>
 
                 <div class="field grid justify-content-start">
-                    <label class="col-2" for="estudiante"
+                    <label
+                        class="col-2 label-required font-semibold"
+                        for="coordinador"
+                        >Coordinador(a)</label
+                    >
+                    <div class="col-10">
+                        <input
+                            pInputText
+                            class="p-inputtext-md w-full"
+                            type="text"
+                            id="coordinador"
+                            formControlName="coordinador"
+                        />
+                    </div>
+                </div>
+
+                <div class="field grid justify-content-start">
+                    <label class="col-2 font-semibold" for="estudiante"
                         >Nombre del estudiante</label
                     >
                     <div class="col-10">
@@ -80,7 +99,7 @@
                 </div>
 
                 <div class="field grid justify-content-start">
-                    <label class="col-2" for="director"
+                    <label class="col-2 font-semibold" for="director"
                         >Nombre del director</label
                     >
                     <div class="col-10">
@@ -96,7 +115,9 @@
                 </div>
 
                 <div class="field grid justify-content-start">
-                    <label class="col-2 label-required" for="observaciones"
+                    <label
+                        class="col-2 label-required font-semibold"
+                        for="observaciones"
                         >Observaciones</label
                     >
                     <div class="col-10">
@@ -111,7 +132,7 @@
                 </div>
 
                 <div class="field grid justify-content-start">
-                    <label class="col-2">Jurado Interno</label>
+                    <label class="col-2 font-semibold">Jurado Interno</label>
                     <div class="col-10">
                         <p-card class="w-full m-0">
                             <div class="flex">
@@ -126,7 +147,7 @@
                     </div>
                 </div>
                 <div class="field grid justify-content-start">
-                    <label class="col-2">Jurado Externo</label>
+                    <label class="col-2 font-semibold">Jurado Externo</label>
                     <div class="col-10">
                         <p-card class="w-full m-0">
                             <div class="flex">
@@ -149,7 +170,7 @@
                         <p-fileUpload
                             name="firmaCoordinador"
                             chooseIcon="pi pi-file"
-                            accept=".png"
+                            accept=".png, .jpg, .jpeg"
                             chooseLabel="Seleccionar"
                             class="w-full max-w-30rem"
                             previewWidth="100"
@@ -179,52 +200,52 @@
                         </p-fileUpload>
                     </div>
                 </div>
+                <div class="footer-logo mt-8">
+                    <img
+                        src="assets/layout/images/asset-calidad.png"
+                        alt="Asset Calidad"
+                        width="140px"
+                        height="100px"
+                    />
+                    <div
+                        class="flex flex-column align-items-center justify-content-center"
+                    >
+                        <span>
+                            Carrera 2 No. 15N esquina-Sector Tulcán
+                            Popayán-Cauca-Colombia Teléfono: 6028209800 ext.
+                            2100 ó 2101. decafiet@unicauca.edu.co |
+                            <strong>www.unicauca.edu.co</strong>
+                        </span>
+                    </div>
+                    <img
+                        src="assets/layout/images/logosIcontec.png"
+                        alt="Logo Icontec"
+                        width="120px"
+                        height="80px"
+                    />
+                </div>
+                <div
+                    class="flex align-items-center justify-content-end mt-4 column-gap-2"
+                >
+                    <button
+                        pButton
+                        type="button"
+                        icon="pi pi-upload"
+                        label="Insertar"
+                        pTooltip="Haz clic para insertar el documento en el área de carga de archivos."
+                        tooltipPosition="top"
+                        (click)="onInsertar()"
+                    ></button>
+                    <button
+                        pButton
+                        type="button"
+                        icon="pi pi-download"
+                        label="Descargar"
+                        (click)="onDownload()"
+                        [loading]="loading"
+                    ></button>
+                </div>
             </form>
-        </div>
-        <div
-            class="flex flex-row align-items-center justify-content-center footer-logo mt-8"
-        >
-            <img
-                src="assets/layout/images/logosIcontec.png"
-                alt="Logo Icontec"
-                width="200px"
-                height="140px"
-            />
-            <div
-                class="flex flex-column align-items-center justify-content-center"
-            >
-                <span>Por una Universidad de excelencia y solidaria</span>
-                <hr />
-                <strong>
-                    Facultad de Ingeniería Electrónica y Telecomunicaciones Cra
-                    2 No. 4N-140 Edif. de Ingenierías - Sector Tulcán Popayán -
-                    Cauca - Colombia Conmutador 8209800 Ext. 2145
-                    maestriacomputacion@unicauca.edu.co - www.unicauca.edu.co
-                    www.unicauca.edu.co/maestriacomputación
-                </strong>
-            </div>
-        </div>
-        <div
-            class="flex align-items-center justify-content-end mt-4 column-gap-2"
-        >
-            <button
-                pButton
-                type="button"
-                icon="pi pi-upload"
-                label="Insertar"
-                pTooltip="Haz clic para insertar el documento en el área de carga de archivos."
-                tooltipPosition="top"
-                (click)="onInsertar()"
-                [loading]="loading"
-            ></button>
-            <button
-                pButton
-                type="button"
-                icon="pi pi-download"
-                label="Descargar"
-                (click)="onDownload()"
-                [loading]="loading"
-            ></button>
         </div>
     </div>
 </p-panel>
