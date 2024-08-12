@@ -1099,12 +1099,13 @@
                                 class="col-12 lg:col-5 flex flex-nowrap justify-content-between align-items-center"
                             >
                                 <label class="label-required"
-                                    >Fecha maxima de la evaluación</label
+                                    >Fecha máxima de la evaluación</label
                                 >
                                 <p-calendar
                                     formControlName="fechaMaximaEvaluacion"
                                     [showIcon]="true"
                                     dateFormat="dd.mm.yy"
+                                    [minDate]="minDateEvaluacion"
                                     [maxDate]="maxDateEvaluacion"
                                     [pTooltip]="messageInterval"
                                     tooltipPosition="top"
@@ -1212,7 +1213,11 @@
                                         icon="pi pi-plus"
                                         class="align-self-center"
                                         label="Crear Documento"
-                                        pTooltip="Para confirmar la designación de evaluadores para el examen de valoración del anteproyecto de maestría. Revisa los detalles del proceso y los evaluadores asignados."
+                                        [pTooltip]="
+                                            !fechaMaximaEvaluacion.value
+                                                ? 'Debes seleccionar una fecha máxima de evaluación'
+                                                : 'Para confirmar la designación de evaluadores para el examen de valoración del anteproyecto de maestría. Revisa los detalles del proceso y los evaluadores asignados.'
+                                        "
                                         tooltipPosition="top"
                                         (click)="
                                             showFormatoOficioDirigidoEvaluadores()

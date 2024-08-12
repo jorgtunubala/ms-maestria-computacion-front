@@ -134,6 +134,7 @@ export class SolicitudExamenComponent implements OnInit {
 
     maxDate: Date;
     maxDateEvaluacion: Date;
+    minDateEvaluacion: Date;
 
     constructor(
         private fb: FormBuilder,
@@ -302,6 +303,7 @@ export class SolicitudExamenComponent implements OnInit {
         }
 
         this.maxDateEvaluacion = new Date();
+        this.minDateEvaluacion = new Date();
         this.maxDateEvaluacion.setDate(this.maxDateEvaluacion.getDate() + 15);
         this.messageInterval = `Plazo normal hasta: ${this.maxDateEvaluacion.toLocaleDateString()}`;
 
