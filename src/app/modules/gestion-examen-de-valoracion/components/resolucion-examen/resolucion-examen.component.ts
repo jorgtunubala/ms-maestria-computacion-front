@@ -53,6 +53,10 @@ export class ResolucionExamenComponent implements OnInit {
 
     resolucionForm: FormGroup;
 
+    private subscriptions: Subscription = new Subscription();
+    private checkboxCoordinadorSubscription: Subscription;
+    private checkboxComiteSubscription: Subscription;
+    private checkboxFormSubscription: Subscription;
     private estudianteSubscription: Subscription;
     private trabajoSeleccionadoSubscription: Subscription;
     private tituloSubscription: Subscription;
@@ -180,44 +184,42 @@ export class ResolucionExamenComponent implements OnInit {
 
         this.formReady.emit(this.resolucionForm);
 
-        this.resolucionForm
+        this.checkboxCoordinadorSubscription = this.resolucionForm
             .get('conceptoDocumentosCoordinador')
             .valueChanges.subscribe((value) => {
                 if (value == 'Rechazado') {
                     this.resolucionForm
                         .get('asuntoCoordinador')
-                        .setValue(
-                            'Correcion solicitud resolucion de valoracion'
-                        );
+                        .setValue('Corrección en la generación de resolución');
                     this.resolucionForm
                         .get('mensajeCoordinador')
                         .setValue(
-                            'Solicito comedidamente revisar el anteproyecto en el apartado de Introduccion.'
+                            'Por favor, revise y ajuste la solicitud de acuerdo con las observaciones proporcionadas.'
                         );
                 }
             });
 
-        this.resolucionForm
+        this.checkboxComiteSubscription = this.resolucionForm
             .get('conceptoComite')
             .valueChanges.subscribe((value) => {
                 if (value == 'Aprobado') {
                     this.resolucionForm
                         .get('asuntoComite')
-                        .setValue('Envio evaluadores');
+                        .setValue('Documentos aprobados para revisión');
                     this.resolucionForm
                         .get('mensajeComite')
                         .setValue(
-                            'Envio documentos para que por favor los revisen y den respuesta oportuna.'
+                            'Los documentos han sido aprobados. Por favor, revísenlos y proporcionen una respuesta a la brevedad.'
                         );
                 }
                 if (value == 'No Aprobado') {
                     this.resolucionForm
                         .get('asuntoComite')
-                        .setValue('Envio correcion por parte del comite');
+                        .setValue('Corrección requerida por parte del comité');
                     this.resolucionForm
                         .get('mensajeComite')
                         .setValue(
-                            'Por favor corregir el apartado de metolodogia y dar respuesta oportuna a las correciones.'
+                            'Se requiere realizar correcciones. Por favor, ajuste los documentos según las observaciones y responda a la brevedad.'
                         );
                 }
             });
@@ -233,7 +235,7 @@ export class ResolucionExamenComponent implements OnInit {
                     severity: 'info',
                     summary: 'Información',
                     detail: 'Todos los documentos han sido revisados. Ahora puede cerrar la vista actual. Recuerde guardar los cambios.',
-                    life: 5000,
+                    life: 4000,
                 });
                 this.messageShown = true;
             }
@@ -268,7 +270,7 @@ export class ResolucionExamenComponent implements OnInit {
                 formControls['mensajeCoordinador'].enable();
             }
             if (this.isCoordinadorFase1 && !this.isCoordinadorFase2) {
-                this.resolucionForm
+                this.checkboxFormSubscription = this.resolucionForm
                     .get('conceptoComite')
                     .valueChanges.subscribe((value) => {
                         if (value == 'Aprobado') {
@@ -411,6 +413,18 @@ export class ResolucionExamenComponent implements OnInit {
         }
         if (this.sustentacionSubscription) {
             this.sustentacionSubscription.unsubscribe();
+        }
+        if (this.checkboxCoordinadorSubscription) {
+            this.checkboxCoordinadorSubscription.unsubscribe();
+        }
+        if (this.checkboxComiteSubscription) {
+            this.checkboxComiteSubscription.unsubscribe();
+        }
+        if (this.checkboxFormSubscription) {
+            this.checkboxFormSubscription.unsubscribe();
+        }
+        if (this.subscriptions) {
+            this.subscriptions.unsubscribe();
         }
     }
 
@@ -851,7 +865,7 @@ export class ResolucionExamenComponent implements OnInit {
                       )
                 : of(null);
 
-            forkJoin({
+            const combinedSubscription = forkJoin({
                 docente: docenteObs,
                 coordinadorFase1: coordinadorFase1Obs,
                 coordinadorFase2: coordinadorFase2Obs,
@@ -956,6 +970,7 @@ export class ResolucionExamenComponent implements OnInit {
                     resolve();
                 },
             });
+            this.subscriptions.add(combinedSubscription);
         });
     }
 

@@ -57,6 +57,11 @@ export class SustentacionExamenComponent implements OnInit {
     private checkboxChangeSubject = new Subject<boolean>();
     checkboxChange$ = this.checkboxChangeSubject.asObservable();
 
+    private subscriptions: Subscription = new Subscription();
+    private checkboxCoordinadorSubscription: Subscription;
+    private checkboxComiteSubscription: Subscription;
+    private checkboxJuradosSubscription: Subscription;
+    private checkboxRespuestasSubscription: Subscription;
     private estudianteSubscription: Subscription;
     private trabajoSeleccionadoSubscription: Subscription;
     private resolucionSubscription: Subscription;
@@ -212,51 +217,49 @@ export class SustentacionExamenComponent implements OnInit {
 
         this.formReady.emit(this.sustentacionForm);
 
-        this.sustentacionForm
+        this.checkboxCoordinadorSubscription = this.sustentacionForm
             .get('conceptoCoordinador')
             .valueChanges.subscribe((value) => {
                 if (value == 'Rechazado') {
                     this.sustentacionForm
                         .get('asuntoCoordinador')
-                        .setValue('Solicitud envio a comite');
+                        .setValue('Revisión requerida');
                     this.sustentacionForm
                         .get('mensajeCoordinador')
                         .setValue(
-                            'Comedidamente solicito revisar los documentos.'
+                            'Se requiere realizar una revisión adicional de los documentos. Por favor, ajuste según las observaciones.'
                         );
                 }
             });
 
-        this.sustentacionForm
+        this.checkboxComiteSubscription = this.sustentacionForm
             .get('conceptoComite')
             .valueChanges.subscribe((value) => {
                 if (value == 'Aprobado') {
                     this.sustentacionForm
                         .get('asuntoComite')
-                        .setValue(
-                            'Solicitud de revision sustentacion de valoracion'
-                        );
+                        .setValue('Revisión aprobada de la sustentación');
 
                     this.sustentacionForm
                         .get('mensajeComite')
                         .setValue(
-                            'Solicito comedidamente revisar el sustentacion de valoracion del estudiante para aprobacion.'
+                            'La sustentación ha sido aprobada. Por favor, continúe con los siguientes pasos.'
                         );
                 }
                 if (value == 'No Aprobado') {
                     this.sustentacionForm
                         .get('asuntoComite')
-                        .setValue('Informacion revision comite');
+                        .setValue('Corrección requerida por parte del comité');
                     this.sustentacionForm
                         .get('mensajeComite')
                         .setValue(
-                            'La respuesta del comite ha sido rechazada, por favor corregir.'
+                            'La sustentación ha sido rechazada. Se requiere realizar correcciones y volver a enviar para revisión.'
                         );
                     this.isReviewed = true;
                 }
             });
 
-        this.sustentacionForm
+        this.checkboxJuradosSubscription = this.sustentacionForm
             .get('juradosAceptados')
             .valueChanges.subscribe((value) => {
                 if (value == 'Aceptado') {
@@ -269,19 +272,19 @@ export class SustentacionExamenComponent implements OnInit {
                     this.sustentacionForm
                         .get('nota')
                         .setValue(
-                            'Los jurados fueron aceptados mediante oficio xxx del consejo de facultad.'
+                            'Los jurados han sido aceptados y confirmados según la documentación correspondiente.'
                         );
                 }
                 if (value == 'Rechazado') {
                     this.sustentacionForm
                         .get('nota')
                         .setValue(
-                            'Se cambia el jurado x por x por tal situación.'
+                            'El jurado ha sido rechazado. Se recomienda revisar la asignación de jurados.'
                         );
                 }
             });
 
-        this.sustentacionForm
+        this.checkboxRespuestasSubscription = this.sustentacionForm
             .get('respuestaSustentacion')
             .valueChanges.subscribe((value) => {
                 if (value == 'Aplazado') {
@@ -304,7 +307,7 @@ export class SustentacionExamenComponent implements OnInit {
                     severity: 'info',
                     summary: 'Información',
                     detail: 'Todos los documentos han sido revisados. Ahora puede cerrar la vista actual. Recuerde guardar los cambios.',
-                    life: 5000,
+                    life: 4000,
                 });
                 this.messageShown = true;
             }
@@ -555,6 +558,21 @@ export class SustentacionExamenComponent implements OnInit {
         if (this.resolucionSubscription) {
             this.resolucionSubscription.unsubscribe();
         }
+        if (this.checkboxCoordinadorSubscription) {
+            this.checkboxCoordinadorSubscription.unsubscribe();
+        }
+        if (this.checkboxComiteSubscription) {
+            this.checkboxComiteSubscription.unsubscribe();
+        }
+        if (this.checkboxJuradosSubscription) {
+            this.checkboxJuradosSubscription.unsubscribe();
+        }
+        if (this.checkboxRespuestasSubscription) {
+            this.checkboxJuradosSubscription.unsubscribe();
+        }
+        if (this.subscriptions) {
+            this.subscriptions.unsubscribe();
+        }
     }
 
     checkEstados() {
@@ -667,12 +685,30 @@ export class SustentacionExamenComponent implements OnInit {
                 this.isEstudiante = true;
                 this.isCoordinadorFase4 = false;
                 break;
+
             case EstadoProceso.SUSTENTACION_APROBADA:
                 this.messageService.clear();
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Informacion',
                     detail: EstadoProceso.SUSTENTACION_APROBADA,
+                    life: 2000,
+                });
+                this.isDocente = true;
+                this.isCoordinadorFase1 = true;
+                this.isEstudiante = true;
+                this.isCoordinadorFase2 = true;
+                this.isCoordinadorFase3 = true;
+                this.isCoordinadorFase4 = true;
+                this.isSustentacionCreated = true;
+                break;
+
+            case EstadoProceso.SUSTENTACION_APROBADA_CON_OBSERVACIONES:
+                this.messageService.clear();
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Informacion',
+                    detail: EstadoProceso.SUSTENTACION_APROBADA_CON_OBSERVACIONES,
                     life: 2000,
                 });
                 this.isDocente = true;
@@ -1160,7 +1196,7 @@ export class SustentacionExamenComponent implements OnInit {
                       )
                 : of(null);
 
-            forkJoin({
+            const combinedSubscription = forkJoin({
                 docente: docenteObs,
                 coordinadorFase1: coordinadorFase1Obs,
                 coordinadorFase2: coordinadorFase2Obs,
@@ -1369,6 +1405,7 @@ export class SustentacionExamenComponent implements OnInit {
                     resolve();
                 },
             });
+            this.subscriptions.add(combinedSubscription);
         });
     }
 
@@ -2378,12 +2415,10 @@ export class SustentacionExamenComponent implements OnInit {
 
     limpiarJuradoExterno() {
         this.juradoExterno.setValue(null);
-        this.juradoExternoSeleccionado = null;
     }
 
     limpiarJuradoInterno() {
         this.juradoInterno.setValue(null);
-        this.juradoInternoSeleccionado = null;
     }
     //#endregion
 

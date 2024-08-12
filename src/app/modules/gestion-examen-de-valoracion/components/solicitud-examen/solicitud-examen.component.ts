@@ -66,6 +66,10 @@ export class SolicitudExamenComponent implements OnInit {
     @ViewChild('OficioDirigidoEvaluadores')
     OficioDirigidoEvaluadores!: FileUpload;
 
+    private subscriptions: Subscription = new Subscription();
+    private checkboxCoordinadorSubscription: Subscription;
+    private checkboxComiteSubscription: Subscription;
+    private checkboxFormSubscription: Subscription;
     private estudianteSubscription: Subscription;
     private trabajoSeleccionadoSubscription: Subscription;
     private resolucionSubscription: Subscription;
@@ -238,58 +242,61 @@ export class SolicitudExamenComponent implements OnInit {
 
         this.formReady.emit(this.solicitudForm);
 
-        this.solicitudForm
+        this.checkboxCoordinadorSubscription = this.solicitudForm
             .get('conceptoCoordinadorDocumentos')
             .valueChanges.subscribe((value) => {
                 if (value == 'Rechazado') {
                     this.solicitudForm
                         .get('asuntoCoordinador')
-                        .setValue('Correcion solicitud examen de valoracion');
+                        .setValue(
+                            'Correcion de solicitud examen de valoracion'
+                        );
                     this.solicitudForm
                         .get('mensajeCoordinador')
                         .setValue(
-                            'Solicito comedidamente revisar el anteproyecto en el apartado de Introduccion.'
+                            'Por favor, revise y ajuste la solicitud según las indicaciones proporcionadas.'
                         );
                 }
             });
 
-        this.solicitudForm
+        this.checkboxComiteSubscription = this.solicitudForm
             .get('conceptoComite')
             .valueChanges.subscribe((value) => {
                 if (value == 'Avalado') {
                     this.solicitudForm
                         .get('asuntoComite')
-                        .setValue('Envio evaluadores');
+                        .setValue('Documentos enviados para revisión');
                     this.solicitudForm
                         .get('mensajeComite')
                         .setValue(
-                            'Envio documentos para que por favor los revisen y den respuesta oportuna.'
+                            'Se han enviado los documentos para su revisión. Agradecemos su pronta respuesta.'
                         );
                     this.isReviewed = false;
                 }
                 if (value == 'No Avalado') {
                     this.solicitudForm
                         .get('asuntoComite')
-                        .setValue('Envio correcion por parte del comite');
+                        .setValue('Envío de corrección por parte del comité');
                     this.solicitudForm
                         .get('mensajeComite')
                         .setValue(
-                            'Por favor corregir el apartado de x y dar respuesta oportuna a las correciones.'
+                            'Por favor, revise y ajuste la solicitud según las indicaciones del comité y proporcione una respuesta a la brevedad.'
                         );
                     this.isReviewed = true;
                 }
             });
 
         if (!this.router.url.includes('editar')) {
-            this.solicitudForm.valueChanges.subscribe((value) => {
-                localStorage.setItem(
-                    'solicitudFormState',
-                    JSON.stringify(value)
-                );
-                this.trabajoDeGradoService.setTituloSeleccionadoSubject(
-                    value.titulo
-                );
-            });
+            this.checkboxFormSubscription =
+                this.solicitudForm.valueChanges.subscribe((value) => {
+                    localStorage.setItem(
+                        'solicitudFormState',
+                        JSON.stringify(value)
+                    );
+                    this.trabajoDeGradoService.setTituloSeleccionadoSubject(
+                        value.titulo
+                    );
+                });
 
             const savedState = localStorage.getItem('solicitudFormState');
             if (savedState) {
@@ -357,7 +364,7 @@ export class SolicitudExamenComponent implements OnInit {
                     severity: 'info',
                     summary: 'Información',
                     detail: 'Todos los documentos han sido revisados. Ahora puede cerrar la vista actual. Recuerde guardar los cambios.',
-                    life: 5000,
+                    life: 4000,
                 });
                 this.messageShown = true;
             }
@@ -638,6 +645,18 @@ export class SolicitudExamenComponent implements OnInit {
         }
         if (this.sustentacionSubscription) {
             this.sustentacionSubscription.unsubscribe();
+        }
+        if (this.checkboxCoordinadorSubscription) {
+            this.checkboxCoordinadorSubscription.unsubscribe();
+        }
+        if (this.checkboxComiteSubscription) {
+            this.checkboxComiteSubscription.unsubscribe();
+        }
+        if (this.checkboxFormSubscription) {
+            this.checkboxFormSubscription.unsubscribe();
+        }
+        if (this.subscriptions) {
+            this.subscriptions.unsubscribe();
         }
     }
 
@@ -1574,7 +1593,7 @@ export class SolicitudExamenComponent implements OnInit {
                       )
                 : of(null);
 
-            forkJoin({
+            const combinedSubscription = forkJoin({
                 docente: docenteObs,
                 coordinadorFase1: coordinadorObsFase1,
                 coordinadorFase2: coordinadorObsFase2,
@@ -1698,6 +1717,7 @@ export class SolicitudExamenComponent implements OnInit {
                     resolve();
                 },
             });
+            this.subscriptions.add(combinedSubscription);
         });
     }
 

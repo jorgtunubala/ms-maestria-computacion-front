@@ -1321,6 +1321,9 @@
                                                 class="p-button-secondary"
                                                 icon="pi pi-times"
                                                 (click)="limpiarJuradoInterno()"
+                                                [disabled]="
+                                                    isSustentacionCreated
+                                                "
                                             ></button>
                                         </div>
                                     </p-card>
@@ -1368,6 +1371,9 @@
                                                 class="p-button-secondary"
                                                 icon="pi pi-times"
                                                 (click)="limpiarJuradoExterno()"
+                                                [disabled]="
+                                                    isSustentacionCreated
+                                                "
                                             ></button>
                                         </div>
                                     </p-card>

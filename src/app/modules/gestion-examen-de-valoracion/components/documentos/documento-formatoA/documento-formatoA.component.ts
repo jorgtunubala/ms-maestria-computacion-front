@@ -15,6 +15,7 @@ import {
 } from '@angular/forms';
 import { MessageService, SelectItem } from 'primeng/api';
 import { DialogService } from 'primeng/dynamicdialog';
+import { Subscription, firstValueFrom } from 'rxjs';
 import { Mensaje, Rol, TipoRol } from 'src/app/core/enums/enums';
 import { mapResponseException } from 'src/app/core/utils/exception-util';
 import {
@@ -28,7 +29,6 @@ import { BuscadorExpertosComponent } from 'src/app/shared/components/buscador-ex
 import { Estudiante } from 'src/app/modules/gestion-estudiantes/models/estudiante';
 import { Orientador } from '../../../models/orientador';
 import { TrabajoDeGradoService } from '../../../services/trabajoDeGrado.service';
-import { Subscription, firstValueFrom } from 'rxjs';
 
 pdfMake.fonts = {
     Roboto: {
