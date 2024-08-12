@@ -17,7 +17,9 @@
         <div class="px-8">
             <form class="p-fluid" [formGroup]="formatoHvaForm">
                 <div class="flex flex-column mt-4">
-                    <label class="mb-2" for="titulo">Título:</label>
+                    <label class="font-semibold mb-2" for="titulo"
+                        >Título:</label
+                    >
                     <input
                         pInputText
                         type="text"
@@ -27,7 +29,9 @@
                     />
                 </div>
                 <div class="flex flex-column mt-4">
-                    <label class="mb-2" for="estudiante">Estudiante:</label>
+                    <label class="font-semibold mb-2" for="estudiante"
+                        >Estudiante:</label
+                    >
                     <input
                         pInputText
                         type="text"
@@ -37,7 +41,9 @@
                     />
                 </div>
                 <div class="flex flex-column mt-4">
-                    <label class="label-required mb-2" for="codigo"
+                    <label
+                        class="label-required font-semibold mb-2"
+                        for="codigo"
                         >Código:</label
                     >
                     <input
@@ -48,7 +54,9 @@
                     />
                 </div>
                 <div class="flex flex-column mt-4">
-                    <label class="label-required mb-2" for="planEstudios"
+                    <label
+                        class="label-required font-semibold mb-2"
+                        for="planEstudios"
                         >Plan de Estudios:</label
                     >
                     <input
@@ -60,7 +68,9 @@
                 </div>
                 <div class="flex flex-wrap mt-4 gap-4">
                     <div class="flex-1">
-                        <label class="mb-2" for="director">Director:</label>
+                        <label class="font-semibold mb-2" for="director"
+                            >Director:</label
+                        >
                         <input
                             pInputText
                             type="text"
@@ -71,7 +81,9 @@
                         />
                     </div>
                     <div class="flex-1">
-                        <label class="mb-2" for="codirector">Codirector:</label>
+                        <label class="font-semibold mb-2" for="codirector"
+                            >Codirector:</label
+                        >
                         <input
                             pInputText
                             type="text"
@@ -82,7 +94,7 @@
                         />
                     </div>
                     <div class="flex-1">
-                        <label class="mb-2" for="coordinador"
+                        <label class="font-semibold mb-2" for="coordinador"
                             >Coordinador:</label
                         >
                         <input
@@ -96,7 +108,9 @@
                 </div>
 
                 <div class="flex flex-column mt-4 max-w-20rem">
-                    <label class="label-required mb-2" for="fechaRevision"
+                    <label
+                        class="label-required font-semibold mb-2"
+                        for="fechaRevision"
                         >Fecha de Revisión:</label
                     >
                     <p-calendar
@@ -151,7 +165,7 @@
                                 <div
                                     class="flex justify-content-between align-items-center"
                                 >
-                                    <span class="font-bold text-lg">
+                                    <span class="font-semibold text-lg">
                                         {{ area.get("tipo").value?.label }} -
                                         {{
                                             area.get("semestre").value?.label
@@ -224,7 +238,9 @@
                     </div>
                 </div>
                 <div class="flex flex-column mt-4">
-                    <label class="label-required mb-2" for="pruebaSuperada"
+                    <label
+                        class="label-required font-semibold mb-2"
+                        for="pruebaSuperada"
                         >Prueba de Suficiencia en Idioma Extranjero:</label
                     >
                     <p-dropdown
@@ -236,7 +252,9 @@
                     ></p-dropdown>
                 </div>
                 <div class="flex flex-column mt-4">
-                    <label class="label-required mb-2" for="minimoArticulo"
+                    <label
+                        class="label-required font-semibold mb-2"
+                        for="minimoArticulo"
                         >Mínimo Artículo:</label
                     >
                     <input
@@ -247,7 +265,9 @@
                     />
                 </div>
                 <div class="flex flex-column mt-4">
-                    <label class="label-required mb-2" for="creditosCumplidos"
+                    <label
+                        class="label-required font-semibold mb-2"
+                        for="creditosCumplidos"
                         >Créditos Cumplidos:</label
                     >
                     <input

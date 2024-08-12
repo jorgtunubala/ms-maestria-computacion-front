@@ -351,6 +351,12 @@ export class DocumentoFormatoGComponent implements OnInit {
                         },
                     ],
                 },
+                {
+                    text: 'Anexo: Revisión de Historia académica del estudiante e historia académica de SIMCA (2 folios).',
+                    style: 'small',
+                    alignment: 'justify',
+                    margin: [0, 20, 0, 0],
+                },
             ],
             footer: (currentPage, pageCount) => {
                 return {
@@ -422,6 +428,9 @@ export class DocumentoFormatoGComponent implements OnInit {
                     fontSize: 12,
                     margin: [0, 10, 0, 0],
                 },
+                small: {
+                    fontSize: 10,
+                },
             },
         };
     }
@@ -449,8 +458,8 @@ export class DocumentoFormatoGComponent implements OnInit {
             link.click();
             document.body.removeChild(link);
             this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
+            this.loading = false;
         });
-        this.loading = false;
     }
 
     onInsertar() {

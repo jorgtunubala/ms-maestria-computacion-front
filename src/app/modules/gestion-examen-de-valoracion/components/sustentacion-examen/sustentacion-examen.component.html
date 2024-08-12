@@ -469,6 +469,8 @@
                                         icon="pi pi-plus"
                                         class="align-self-center"
                                         label="Crear Documento"
+                                        pTooltip="Para remitir el documento final al comité. Completa el documento para proceder."
+                                        tooltipPosition="top"
                                         (click)="showFormatoF()"
                                         [loading]="loading"
                                         [disabled]="
@@ -732,6 +734,27 @@
                     >
                         <div class="field grid">
                             <div
+                                class="flex flex-1 justify-content-end align-items-center"
+                                *ngIf="isCoordinadorFase1"
+                            >
+                                <button
+                                    *ngIf="
+                                        editMode &&
+                                        sustentacionForm.get('conceptoComite')
+                                            .value != 'Aprobado'
+                                    "
+                                    pButton
+                                    class="p-button p-button-warning"
+                                    icon="pi pi-pencil"
+                                    pTooltip="Modificar"
+                                    tooltipPosition="top"
+                                    (click)="
+                                        editFase($event, 'coordinadorFase1')
+                                    "
+                                ></button>
+                                <p-confirmPopup></p-confirmPopup>
+                            </div>
+                            <div
                                 class="flex flex-column w-full justify-content-center align-items-center row-gap-4"
                             >
                                 <strong
@@ -883,6 +906,8 @@
                                         icon="pi pi-plus"
                                         class="align-self-center"
                                         label="Crear Documento"
+                                        pTooltip="Para proceder con la evaluación de la hoja de vida académica, completa el documento requerido."
+                                        tooltipPosition="top"
                                         (click)="showFormatoHVA()"
                                         [loading]="loading"
                                     ></button>
@@ -943,6 +968,29 @@
                         "
                     >
                         <div class="field grid">
+                            <div
+                                class="flex flex-1 justify-content-end align-items-center"
+                                *ngIf="
+                                    isCoordinadorFase2 && !isEstudianteCreated
+                                "
+                            >
+                                <button
+                                    *ngIf="
+                                        editMode &&
+                                        sustentacionForm.get('juradosAceptados')
+                                            .value != 'Aceptado'
+                                    "
+                                    pButton
+                                    class="p-button p-button-warning"
+                                    icon="pi pi-pencil"
+                                    pTooltip="Modificar"
+                                    tooltipPosition="top"
+                                    (click)="
+                                        editFase($event, 'coordinadorFase2')
+                                    "
+                                ></button>
+                                <p-confirmPopup></p-confirmPopup>
+                            </div>
                             <div
                                 class="flex flex-column w-full justify-content-center align-items-center row-gap-4"
                             >
@@ -1084,6 +1132,8 @@
                                         icon="pi pi-plus"
                                         class="align-self-center"
                                         label="Crear Documento"
+                                        pTooltip="Para remitir el documento final al consejo de facultad, completa el formato requerido."
+                                        tooltipPosition="top"
                                         (click)="showFormatoG()"
                                         [loading]="loading"
                                     ></button>
@@ -1176,6 +1226,21 @@
                                 : false
                         "
                     >
+                        <div
+                            class="flex flex-1 justify-content-end align-items-center"
+                            *ngIf="isCoordinadorFase3 && !isEstudianteCreated"
+                        >
+                            <button
+                                *ngIf="editMode"
+                                pButton
+                                class="p-button p-button-warning"
+                                icon="pi pi-pencil"
+                                pTooltip="Modificar"
+                                tooltipPosition="top"
+                                (click)="editFase($event, 'coordinadorFase3')"
+                            ></button>
+                            <p-confirmPopup></p-confirmPopup>
+                        </div>
                         <div class="field grid justify-content-center">
                             <div class="col-12 lg:col-5">
                                 <label>Nombramiento de Jurados</label>
@@ -1737,6 +1802,8 @@
                                         icon="pi pi-plus"
                                         class="align-self-center"
                                         label="Crear Documento"
+                                        pTooltip="Para remitir la hoja de vida académica para grado, completa el formato requerido."
+                                        tooltipPosition="top"
                                         (click)="showFormatoHVAGrado()"
                                         [loading]="loading"
                                     ></button>
@@ -1872,7 +1939,11 @@
                 <button
                     *ngIf="editMode"
                     pButton
-                    icon="pi pi-pencil"
+                    [icon]="
+                        getButtonLabel() == 'Guardar'
+                            ? 'pi pi-save'
+                            : 'pi pi-pencil'
+                    "
                     [label]="getButtonLabel()"
                     (click)="createOrUpdateSustentacion()"
                     [disabled]="!isReviewed"

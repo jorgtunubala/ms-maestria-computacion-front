@@ -43,7 +43,6 @@ export class DocumentoFormatoHvaGradoComponent implements OnInit {
 
     formatoHvaGradoForm: FormGroup;
 
-    isPending = true;
     loading = false;
 
     estudianteSeleccionado: any;
@@ -120,7 +119,6 @@ export class DocumentoFormatoHvaGradoComponent implements OnInit {
     }
 
     onDownload() {
-        this.isPending = false;
         if (this.formatoHvaGradoForm.invalid) {
             this.handleWarningMessage(Mensaje.REGISTRE_CAMPOS_OBLIGATORIOS);
             return;
@@ -176,9 +174,9 @@ export class DocumentoFormatoHvaGradoComponent implements OnInit {
 
                     saveAs(out, 'formatoHvaGrado.docx');
                     this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
+                    this.loading = false;
                 }
             );
-            this.loading = false;
         }
     }
 

@@ -23,7 +23,7 @@ import {
     timer,
 } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService, PrimeIcons } from 'primeng/api';
 import { DialogService } from 'primeng/dynamicdialog';
 import { FileUpload } from 'primeng/fileupload';
 import { Aviso, EstadoProceso, Mensaje } from 'src/app/core/enums/enums';
@@ -102,6 +102,7 @@ export class SolicitudExamenComponent implements OnInit {
     isResolucionValid: boolean = false;
     isSustentacionValid: boolean = false;
     isReviewed: boolean = false;
+    updateCoordinadorFase1: boolean = false;
     messageShown: boolean = false;
     messageInterval: string = '';
 
@@ -138,6 +139,7 @@ export class SolicitudExamenComponent implements OnInit {
         private fb: FormBuilder,
         private router: Router,
         private messageService: MessageService,
+        private confirmationService: ConfirmationService,
         private dialogService: DialogService,
         private trabajoDeGradoService: TrabajoDeGradoService,
         private solicitudService: SolicitudService,
@@ -694,6 +696,23 @@ export class SolicitudExamenComponent implements OnInit {
         this.updateFormFields(this.role);
     }
 
+    editFase(event: any) {
+        this.confirmationService.confirm({
+            target: event.target,
+            message: '¿Estás seguro de que deseas realizar esta acción?',
+            icon: PrimeIcons.STEP_BACKWARD,
+            acceptLabel: 'Si, Modificar',
+            rejectLabel: 'No',
+            accept: () => {
+                this.isDocente = true;
+                this.isCoordinadorFase1 = false;
+                this.isCoordinadorFase2 = false;
+                this.updateCoordinadorFase1 = true;
+                this.updateFormFields(this.role);
+            },
+        });
+    }
+
     //#region PDF VIEWER
     async loadPdfFiles() {
         const filesToConvert = [];
@@ -1118,6 +1137,7 @@ export class SolicitudExamenComponent implements OnInit {
                     );
                 } else if (
                     this.isCoordinadorFase2Created == false &&
+                    this.updateCoordinadorFase1 == false &&
                     this.estado ==
                         EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR
                 ) {
@@ -1227,10 +1247,13 @@ export class SolicitudExamenComponent implements OnInit {
                     );
                 } else if (
                     this.isCoordinadorFase1Created == true &&
+                    this.updateCoordinadorFase1 == true &&
                     (this.estado ==
                         EstadoProceso.PENDIENTE_REVISION_COORDINADOR ||
                         this.estado ==
-                            EstadoProceso.DEVUELTO_EXAMEN_DE_VALORACION_POR_COORDINADOR)
+                            EstadoProceso.DEVUELTO_EXAMEN_DE_VALORACION_POR_COORDINADOR ||
+                        this.estado ==
+                            EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR)
                 ) {
                     const { asuntoCoordinador, mensajeCoordinador } =
                         this.solicitudForm.value;

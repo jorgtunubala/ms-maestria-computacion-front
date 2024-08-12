@@ -482,8 +482,8 @@ export class DocumentoFormatoFComponent implements OnInit {
             link.click();
             document.body.removeChild(link);
             this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
+            this.loading = false;
         });
-        this.loading = false;
     }
 
     onInsertar() {

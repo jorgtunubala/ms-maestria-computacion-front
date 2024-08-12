@@ -23,7 +23,7 @@ import {
     timer,
 } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService, PrimeIcons } from 'primeng/api';
 import { DialogService } from 'primeng/dynamicdialog';
 import { FileUpload } from 'primeng/fileupload';
 import { Aviso, EstadoProceso, Mensaje } from 'src/app/core/enums/enums';
@@ -104,6 +104,9 @@ export class SustentacionExamenComponent implements OnInit {
     isLoading: boolean = false;
     isSending: boolean = false;
     isReviewed: boolean = false;
+    updateCoordinadorFase1: boolean = false;
+    updateCoordinadorFase2: boolean = false;
+    updateCoordinadorFase3: boolean = false;
     messageShown: boolean = false;
 
     pdfUrls: { name: string; url: string }[] = [];
@@ -136,6 +139,7 @@ export class SustentacionExamenComponent implements OnInit {
     constructor(
         private fb: FormBuilder,
         private router: Router,
+        private confirmationService: ConfirmationService,
         private trabajoDeGradoService: TrabajoDeGradoService,
         private resolucionService: ResolucionService,
         private sustentacionService: SustentacionService,
@@ -727,6 +731,46 @@ export class SustentacionExamenComponent implements OnInit {
         this.updateFormFields(this.role);
     }
 
+    editFase(event: any, fase: string) {
+        this.confirmationService.confirm({
+            target: event.target,
+            message: '¿Estás seguro de que deseas realizar esta acción?',
+            icon: PrimeIcons.STEP_BACKWARD,
+            acceptLabel: 'Si, Modificar',
+            rejectLabel: 'No',
+            accept: () => {
+                if (fase == 'coordinadorFase1') {
+                    this.isDocente = true;
+                    this.isCoordinadorFase1 = false;
+                    this.isCoordinadorFase2 = false;
+                    this.isCoordinadorFase3 = false;
+                    this.isEstudiante = false;
+                    this.isCoordinadorFase4 = false;
+                    this.updateCoordinadorFase1 = true;
+                    this.updateFormFields(this.role);
+                } else if (fase == 'coordinadorFase2') {
+                    this.isDocente = true;
+                    this.isCoordinadorFase1 = true;
+                    this.isCoordinadorFase2 = false;
+                    this.isCoordinadorFase3 = false;
+                    this.isEstudiante = false;
+                    this.isCoordinadorFase4 = false;
+                    this.updateCoordinadorFase2 = true;
+                    this.updateFormFields(this.role);
+                } else if (fase == 'coordinadorFase3') {
+                    this.isDocente = true;
+                    this.isCoordinadorFase1 = true;
+                    this.isCoordinadorFase2 = true;
+                    this.isCoordinadorFase3 = false;
+                    this.isEstudiante = false;
+                    this.isCoordinadorFase4 = false;
+                    this.updateCoordinadorFase3 = true;
+                    this.updateFormFields(this.role);
+                }
+            },
+        });
+    }
+
     //#region PDF VIEWER
     async loadPdfFiles() {
         const filesToConvert = [];
@@ -746,10 +790,13 @@ export class SustentacionExamenComponent implements OnInit {
 
         if (
             this.role.includes('ROLE_COORDINADOR') &&
+            this.updateCoordinadorFase2 == false &&
+            this.updateCoordinadorFase3 == false &&
             (this.estado ==
                 EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE1_SUSTENTACION ||
                 this.estado ==
-                    EstadoProceso.DEVUELTO_SUSTENTACION_PARA_CORREGIR_AL_DOCENTE_COORDINADOR)
+                    EstadoProceso.DEVUELTO_SUSTENTACION_PARA_CORREGIR_AL_DOCENTE_COORDINADOR ||
+                this.updateCoordinadorFase1 == true)
         ) {
             filesToConvert.push(
                 {
@@ -765,10 +812,13 @@ export class SustentacionExamenComponent implements OnInit {
 
         if (
             this.role.includes('ROLE_COORDINADOR') &&
+            this.updateCoordinadorFase1 == false &&
+            this.updateCoordinadorFase3 == false &&
             (this.estado ==
                 EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE2_SUSTENTACION ||
                 this.estado ==
-                    EstadoProceso.DEVUELTO_SUSTENTACION_PARA_CORREGIR_AL_DOCENTE_COMITE)
+                    EstadoProceso.DEVUELTO_SUSTENTACION_PARA_CORREGIR_AL_DOCENTE_COMITE ||
+                this.updateCoordinadorFase2 == true)
         ) {
             filesToConvert.push({
                 file: this.FileFormatoG,
@@ -777,9 +827,12 @@ export class SustentacionExamenComponent implements OnInit {
         }
 
         if (
-            this.role.includes('ROLE_COORDINADOR') &&
-            this.estado ==
-                EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE3_SUSTENTACION
+            (this.role.includes('ROLE_COORDINADOR') &&
+                this.updateCoordinadorFase1 == false &&
+                this.updateCoordinadorFase2 == false &&
+                this.estado ==
+                    EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE3_SUSTENTACION) ||
+            this.updateCoordinadorFase3 == true
         ) {
             filesToConvert.push({
                 file: this.FileOficioConsejo,
@@ -1366,6 +1419,15 @@ export class SustentacionExamenComponent implements OnInit {
                             this.trabajoDeGradoId
                         )
                     );
+                } else if (
+                    this.estado ==
+                    EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_ESTUDIANTE_SUSTENTACION
+                ) {
+                    this.isSending = false;
+                    this.messageService.clear();
+                    return this.messageService.add(
+                        errorMessage('No puedes modificar los datos.')
+                    );
                 } else {
                     this.isSending = false;
                     this.messageService.clear();
@@ -1412,6 +1474,7 @@ export class SustentacionExamenComponent implements OnInit {
                     );
                 } else if (
                     this.isCoordinadorFase2Created == false &&
+                    this.updateCoordinadorFase1 == false &&
                     this.estado ==
                         EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE2_SUSTENTACION
                 ) {
@@ -1516,6 +1579,7 @@ export class SustentacionExamenComponent implements OnInit {
                     );
                 } else if (
                     this.isCoordinadorFase3Created == false &&
+                    this.updateCoordinadorFase2 == false &&
                     this.estado ==
                         EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE3_SUSTENTACION
                 ) {
@@ -1586,7 +1650,8 @@ export class SustentacionExamenComponent implements OnInit {
                     (this.estado ==
                         EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE1_SUSTENTACION ||
                         this.estado ==
-                            EstadoProceso.DEVUELTO_SUSTENTACION_PARA_CORREGIR_AL_DOCENTE_COORDINADOR)
+                            EstadoProceso.DEVUELTO_SUSTENTACION_PARA_CORREGIR_AL_DOCENTE_COORDINADOR ||
+                        this.updateCoordinadorFase1 == true)
                 ) {
                     const { linkEstudioHojaVidaAcademica } =
                         this.sustentacionForm.value;
@@ -1622,7 +1687,8 @@ export class SustentacionExamenComponent implements OnInit {
                     (this.estado ==
                         EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE2_SUSTENTACION ||
                         this.estado ==
-                            EstadoProceso.DEVUELTO_SUSTENTACION_PARA_CORREGIR_AL_DOCENTE_COMITE)
+                            EstadoProceso.DEVUELTO_SUSTENTACION_PARA_CORREGIR_AL_DOCENTE_COMITE ||
+                        this.updateCoordinadorFase2 == true)
                 ) {
                     const { fechaActa, numeroActa, linkFormatoG } =
                         this.sustentacionForm.value;
@@ -1725,8 +1791,9 @@ export class SustentacionExamenComponent implements OnInit {
                     );
                 } else if (
                     this.isCoordinadorFase3Created == true &&
-                    this.estado ==
-                        EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE3_SUSTENTACION
+                    (this.estado ==
+                        EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE3_SUSTENTACION ||
+                        this.updateCoordinadorFase3 == true)
                 ) {
                     const {
                         idJuradoInterno,
@@ -1910,18 +1977,6 @@ export class SustentacionExamenComponent implements OnInit {
                 }
             }
 
-            if (
-                (this.role.includes('ROLE_COORDINADOR') ||
-                    this.role.includes('ROLE_DOCENTE')) &&
-                this.estado ==
-                    EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_ESTUDIANTE_SUSTENTACION
-            ) {
-                this.isSending = false;
-                this.messageService.clear();
-                return this.messageService.add(
-                    errorMessage('No puedes modificar los datos.')
-                );
-            }
             this.isSending = false;
             this.messageService.clear();
             this.messageService.add(infoMessage(Mensaje.ACTUALIZACION_EXITOSA));

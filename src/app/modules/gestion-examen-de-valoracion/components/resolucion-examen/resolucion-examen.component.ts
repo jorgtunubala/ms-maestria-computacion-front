@@ -22,7 +22,7 @@ import {
     of,
     timer,
 } from 'rxjs';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService, PrimeIcons } from 'primeng/api';
 import { FileUpload } from 'primeng/fileupload';
 import { DialogService } from 'primeng/dynamicdialog';
 import {
@@ -94,6 +94,8 @@ export class ResolucionExamenComponent implements OnInit {
     isResolucionValid: boolean = false;
     isSustentacionCreated: boolean = false;
     isReviewed: boolean = false;
+    updateCoordinadorFase1: boolean = false;
+    updateCoordinadorFase2: boolean = false;
     messageShown: boolean = false;
 
     role: string[];
@@ -118,6 +120,7 @@ export class ResolucionExamenComponent implements OnInit {
     constructor(
         private fb: FormBuilder,
         private router: Router,
+        private confirmationService: ConfirmationService,
         private trabajoDeGradoService: TrabajoDeGradoService,
         private respuestaService: RespuestaService,
         private resolucionService: ResolucionService,
@@ -509,6 +512,33 @@ export class ResolucionExamenComponent implements OnInit {
         );
     }
 
+    editFase(event: any, fase: string) {
+        this.confirmationService.confirm({
+            target: event.target,
+            message: '¿Estás seguro de que deseas realizar esta acción?',
+            icon: PrimeIcons.STEP_BACKWARD,
+            acceptLabel: 'Si, Modificar',
+            rejectLabel: 'No',
+            accept: () => {
+                if (fase == 'coordinadorFase1') {
+                    this.isDocente = true;
+                    this.isCoordinadorFase1 = false;
+                    this.isCoordinadorFase2 = false;
+                    this.isCoordinadorFase3 = false;
+                    this.updateCoordinadorFase1 = true;
+                    this.updateFormFields(this.role);
+                } else if (fase == 'coordinadorFase2') {
+                    this.isDocente = true;
+                    this.isCoordinadorFase1 = true;
+                    this.isCoordinadorFase2 = false;
+                    this.isCoordinadorFase3 = false;
+                    this.updateCoordinadorFase2 = true;
+                    this.updateFormFields(this.role);
+                }
+            },
+        });
+    }
+
     //#region PDF VIEWER
     async loadPdfFiles() {
         const filesToConvert = [];
@@ -527,10 +557,12 @@ export class ResolucionExamenComponent implements OnInit {
             );
         } else if (
             this.role.includes('ROLE_COORDINADOR') &&
+            this.updateCoordinadorFase2 == false &&
             (this.estado ==
                 EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE1_GENERACION_RESOLUCION ||
                 this.estado ==
-                    EstadoProceso.DEVUELTO_GENERACION_DE_RESOLUCION_POR_COORDINADOR)
+                    EstadoProceso.DEVUELTO_GENERACION_DE_RESOLUCION_POR_COORDINADOR ||
+                this.updateCoordinadorFase1 == true)
         ) {
             filesToConvert.push(
                 {
@@ -545,10 +577,12 @@ export class ResolucionExamenComponent implements OnInit {
             );
         } else if (
             this.role.includes('ROLE_COORDINADOR') &&
+            this.updateCoordinadorFase1 == false &&
             (this.estado ==
                 EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE2_GENERACION_RESOLUCION ||
                 this.estado ==
-                    EstadoProceso.DEVUELTO_GENERACION_DE_RESOLUCION_POR_COMITE)
+                    EstadoProceso.DEVUELTO_GENERACION_DE_RESOLUCION_POR_COMITE ||
+                this.updateCoordinadorFase2 == true)
         ) {
             if (this.formatoBEv1 && this.formatoBEv2) {
                 const FileFormatoBEv1 = this.convertBase64ToFile(
@@ -1001,6 +1035,7 @@ export class ResolucionExamenComponent implements OnInit {
                     );
                 } else if (
                     this.isCoordinadorFase2Created == false &&
+                    this.updateCoordinadorFase1 == false &&
                     this.estado ==
                         EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE2_GENERACION_RESOLUCION
                 ) {
@@ -1076,6 +1111,7 @@ export class ResolucionExamenComponent implements OnInit {
                     );
                 } else if (
                     this.isCoordinadorFase3Created == false &&
+                    this.updateCoordinadorFase2 == false &&
                     this.estado ==
                         EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE3_GENERACION_RESOLUCION
                 ) {
@@ -1090,7 +1126,8 @@ export class ResolucionExamenComponent implements OnInit {
                     (this.estado ==
                         EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE1_GENERACION_RESOLUCION ||
                         this.estado ==
-                            EstadoProceso.DEVUELTO_GENERACION_DE_RESOLUCION_POR_COORDINADOR)
+                            EstadoProceso.DEVUELTO_GENERACION_DE_RESOLUCION_POR_COORDINADOR ||
+                        this.updateCoordinadorFase1 == true)
                 ) {
                     const resolucionData =
                         this.resolucionForm.get('conceptoDocumentosCoordinador')
@@ -1122,7 +1159,8 @@ export class ResolucionExamenComponent implements OnInit {
                     (this.estado ==
                         EstadoProceso.PENDIENTE_SUBIDA_ARCHIVOS_COORDINADOR_FASE2_GENERACION_RESOLUCION ||
                         this.estado ==
-                            EstadoProceso.DEVUELTO_GENERACION_DE_RESOLUCION_POR_COMITE)
+                            EstadoProceso.DEVUELTO_GENERACION_DE_RESOLUCION_POR_COMITE ||
+                        this.updateCoordinadorFase2 == true)
                 ) {
                     const b64AnteproyectoFinal = await this.formatFileString(
                         this.FileAnteproyectoFinal,

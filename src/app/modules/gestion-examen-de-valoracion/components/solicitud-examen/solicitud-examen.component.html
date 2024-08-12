@@ -876,6 +876,25 @@
                     >
                         <div
                             class="flex flex-1 justify-content-end align-items-center"
+                            *ngIf="isCoordinadorFase1"
+                        >
+                            <button
+                                *ngIf="
+                                    editMode &&
+                                    solicitudForm.get('conceptoComite').value !=
+                                        'Avalado'
+                                "
+                                pButton
+                                class="p-button p-button-warning"
+                                icon="pi pi-pencil"
+                                pTooltip="Modificar"
+                                tooltipPosition="top"
+                                (click)="editFase($event)"
+                            ></button>
+                            <p-confirmPopup></p-confirmPopup>
+                        </div>
+                        <div
+                            class="flex flex-1 justify-content-end align-items-center"
                             *ngIf="isDocente && !isCoordinadorFase1"
                         >
                             <button
@@ -1193,11 +1212,11 @@
                                         icon="pi pi-plus"
                                         class="align-self-center"
                                         label="Crear Documento"
-                                        pTooltip="Este documento confirma la designación de evaluadores para el examen de valoración del anteproyecto de maestría. Revisa los detalles del proceso y los evaluadores asignados."
+                                        pTooltip="Para confirmar la designación de evaluadores para el examen de valoración del anteproyecto de maestría. Revisa los detalles del proceso y los evaluadores asignados."
+                                        tooltipPosition="top"
                                         (click)="
                                             showFormatoOficioDirigidoEvaluadores()
                                         "
-                                        tooltipPosition="top"
                                         [loading]="loading"
                                         [disabled]="
                                             !fechaMaximaEvaluacion.value
@@ -1290,7 +1309,11 @@
                 <button
                     *ngIf="editMode"
                     pButton
-                    icon="pi pi-pencil"
+                    [icon]="
+                        getButtonLabel() == 'Guardar'
+                            ? 'pi pi-save'
+                            : 'pi pi-pencil'
+                    "
                     [label]="getButtonLabel()"
                     (click)="updateSolicitudExamen()"
                     [disabled]="!isReviewed"

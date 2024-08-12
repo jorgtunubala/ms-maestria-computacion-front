@@ -199,8 +199,16 @@
                                 <p-fieldset
                                     legend="Evaluacion {{ i + 1 }}"
                                     [formGroupName]="i"
-                                    [toggleable]="true"
-                                    [collapsed]="true"
+                                    [toggleable]="
+                                        isExamenCreado('expertoEvaluaciones', i)
+                                            ? true
+                                            : false
+                                    "
+                                    [collapsed]="
+                                        isExamenCreado('expertoEvaluaciones', i)
+                                            ? true
+                                            : false
+                                    "
                                 >
                                     <div class="grid column-gap-4 mb-6">
                                         <label
@@ -778,8 +786,16 @@
                                 <p-fieldset
                                     legend="Evaluacion {{ i + 1 }}"
                                     formGroupName="{{ i }}"
-                                    [toggleable]="true"
-                                    [collapsed]="true"
+                                    [toggleable]="
+                                        isExamenCreado('docenteEvaluaciones', i)
+                                            ? true
+                                            : false
+                                    "
+                                    [collapsed]="
+                                        isExamenCreado('docenteEvaluaciones', i)
+                                            ? true
+                                            : false
+                                    "
                                 >
                                     <div class="grid column-gap-4 mb-6">
                                         <label
