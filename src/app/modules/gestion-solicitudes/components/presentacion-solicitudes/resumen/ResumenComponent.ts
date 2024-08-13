@@ -114,7 +114,6 @@ export class ResumenComponent implements OnInit {
         }
 
         //this.bloquearBoton = true;
-        console.log('entre');
 
         if (this.validarFirmaCargada()) {
             this.guardadoEnProceso = true;

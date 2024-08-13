@@ -14,6 +14,7 @@
         <ng-container *ngIf="cargandoDatos">
             <app-skelinfosolicitud></app-skelinfosolicitud>
         </ng-container>
+
         <div class="flex block">
             <div style="padding-top: 5px">
                 <p-tag
@@ -33,26 +34,31 @@
                 <p class="text-base m-0">
                     Solicitante:
 
-                    {{ radicar.datosSolicitante.nombres }}
-                    {{ radicar.datosSolicitante.apellidos }}
+                    {{ radicar.formInfoPersonal?.get("nombres")?.value }}
+                    {{ radicar.formInfoPersonal?.get("apellidos")?.value }}
                 </p>
                 <p class="text-base m-0">
                     Identificación:
 
-                    {{ radicar.datosSolicitante.numeroDocumento }}
+                    {{
+                        radicar.formInfoPersonal?.get("numeroDocumento")?.value
+                    }}
                 </p>
                 <p class="text-base m-0">
-                    Código: {{ radicar.datosSolicitante.codigoAcademico }}
+                    Código:
+                    {{
+                        radicar.formInfoPersonal?.get("codigoAcademico")?.value
+                    }}
                 </p>
             </div>
             <div class="col-4 mt-1">
                 <p class="text-base m-0">
                     Correo:
-                    {{ radicar.datosSolicitante.correo }}
+                    {{ radicar.formInfoPersonal?.get("correo")?.value }}
                 </p>
                 <p class="text-base m-0">
                     Celular:
-                    {{ radicar.datosSolicitante.celular }}
+                    {{ radicar.formInfoPersonal?.get("celular")?.value }}
                 </p>
             </div>
             <div class="col-4 mt-1">

@@ -169,9 +169,11 @@ export class FormulariosComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        if (this.radicar.datosSolicitante.nombres == null) {
+        /*
+        if (this.radicar.formInfoPersonal.get('nombres').value == null) {
             this.obtenerInfoDeSolicitante();
         }
+            */
 
         if (
             this.radicar.tipoSolicitudEscogida &&
@@ -336,6 +338,7 @@ export class FormulariosComponent implements OnInit {
         return estadoGeneral;
     }
 
+    /*
     obtenerInfoDeSolicitante() {
         this.gestorHttp
             .obtenerInfoPersonalSolicitante(this.identificadorSolicitante)
@@ -343,6 +346,7 @@ export class FormulariosComponent implements OnInit {
                 this.radicar.datosSolicitante = respuesta;
             });
     }
+        */
 
     agregarInstancia() {
         this.radicar.numeroInstAsignHomologar++;

@@ -3,45 +3,42 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RadicarService } from 'src/app/modules/gestion-solicitudes/services/radicar.service';
 
 @Component({
-    selector: 'app-beca',
-    templateUrl: './beca.component.html',
-    styleUrls: ['./beca.component.scss'],
+    selector: 'app-becadescuento',
+    templateUrl: './becadescuento.component.html',
+    styleUrls: ['./becadescuento.component.scss'],
 })
-export class BecaComponent implements OnInit {
+export class BecaDescuentoComponent implements OnInit {
     listaTiposDeBeca: string[];
-    formListaBecas: FormGroup;
+    formSolicitudBecaDescuento: FormGroup;
 
     constructor(public radicar: RadicarService, private fb: FormBuilder) {
         this.listaTiposDeBeca = [
-            'Seleccione una opción',
             'Beca - Trabajo',
             'Beca - Mejor promedio en pregrado',
             'Beca - Convenio (cidesco)',
         ];
-
-        this.formListaBecas = this.fb.group({
-            tipoBeca: ['', Validators.required],
-            justificacion: ['', Validators.required],
-        });
     }
 
     ngOnInit(): void {
-        if (this.radicar.tipoBeca.trim() !== '') {
-            this.formListaBecas.patchValue({
-                tipoBeca: this.radicar.tipoBeca,
-            });
-        }
-
-        if (this.radicar.motivoDeSolicitud.trim() !== '') {
-            this.formListaBecas.patchValue({
-                justificacion: this.radicar.motivoDeSolicitud,
-            });
-        }
-
-        this.formListaBecas.valueChanges.subscribe((value) => {
-            this.radicar.tipoBeca = value.tipoBeca;
-            this.radicar.motivoDeSolicitud = value.justificacion;
+        this.formSolicitudBecaDescuento = this.fb.group({
+            tipoBeca: ['', Validators.required],
+            justificacion: ['', Validators.required],
         });
+
+        // Verificar si ya hay datos en el servicio
+        const formData = this.radicar.formSolicitudBecaDescuento.value;
+        const hasData = Object.values(formData).some(
+            (value) => value !== null && value !== ''
+        );
+
+        if (hasData) {
+            // Cargar datos en el formulario desde el servicio
+            this.formSolicitudBecaDescuento.patchValue(formData);
+        }
+
+        // Establecer el formulario en el servicio para compartirlo
+        this.radicar.formSolicitudBecaDescuento =
+            this.formSolicitudBecaDescuento;
     }
 
     onUpload(event, fubauto, indice) {

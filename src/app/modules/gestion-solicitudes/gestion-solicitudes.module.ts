@@ -38,7 +38,7 @@ import { ContenedorComponent } from './components/gestion-coordinacion/contenedo
 import { TramiteComponent } from './components/gestion-coordinacion/tramite/tramite.component';
 import { CreditosComponent } from './components/presentacion-solicitudes/formularios/complementarios/creditos/creditos.component';
 import { AvalpracticadocenteComponent } from './components/presentacion-solicitudes/formularios/complementarios/avalpracticadocente/avalpracticadocente.component';
-import { BecaComponent } from './components/presentacion-solicitudes/formularios/complementarios/beca/beca.component';
+import { BecaDescuentoComponent } from './components/presentacion-solicitudes/formularios/complementarios/becadescuento/becadescuento.component';
 import { SkelinfosolicitudComponent } from './components/utilidades/skeleton/skelinfosolicitud/skelinfosolicitud.component';
 import { SkeltablaComponent } from './components/utilidades/skeleton/skeltabla/skeltabla.component';
 import { PruebaComponent } from './components/presentacion-solicitudes/formularios/complementarios/prueba/prueba.component';
@@ -77,7 +77,7 @@ import { PruebaComponent } from './components/presentacion-solicitudes/formulari
         TramiteComponent,
         CreditosComponent,
         AvalpracticadocenteComponent,
-        BecaComponent,
+        BecaDescuentoComponent,
         SkelinfosolicitudComponent,
         SkeltablaComponent,
         PruebaComponent,

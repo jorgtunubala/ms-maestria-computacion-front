@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
 import {
+    DatosComunSolicitud,
     InfoActividadesReCreditos,
     InfoPersonal,
     RequisitosSolicitud,
@@ -12,7 +13,7 @@ import { DatosSolicitudRequest } from '../models/solicitudes/datosSolicitudReque
 import { InfoAsingAdicionCancelacion } from '../models/solicitudes/solicitud-adic-cancel-asig/infoAsignAdicionCancelacion';
 import { HttpService } from './http.service';
 import { UtilidadesService } from './utilidades.service';
-import { FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 interface AdjuntosActividad {
     archivos: File[];
@@ -30,6 +31,8 @@ export class RadicarService {
     listadoTutoresYDirectores: TutorYDirector[];
 
     formInfoDePrueba: FormGroup = new FormGroup({});
+    formInfoPersonal: FormGroup = new FormGroup({});
+    formSolicitudBecaDescuento: FormGroup = new FormGroup({});
 
     fechaEnvio: Date = null;
     tipoSolicitudEscogida: TipoSolicitud;
@@ -37,16 +40,6 @@ export class RadicarService {
     actividadesReCreditos: InfoActividadesReCreditos[];
     actividadesSeleccionadas: InfoActividadesReCreditos[];
     requisitosSolicitudEscogida: RequisitosSolicitud;
-    datosSolicitante: InfoPersonal = new InfoPersonal(
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null
-    );
 
     oficioDeSolicitud: File = null;
     documentosAdjuntos: File[] = [];
@@ -130,20 +123,14 @@ export class RadicarService {
     constructor(
         private gestorHttp: HttpService,
         private sanitizer: DomSanitizer,
-        private utilidades: UtilidadesService
+        private utilidades: UtilidadesService,
+        private fb: FormBuilder
     ) {}
 
     restrablecerValores() {
-        this.datosSolicitante = new InfoPersonal(
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null
-        );
+        this.formInfoPersonal = new FormGroup({});
+        this.formSolicitudBecaDescuento = new FormGroup({});
+
         this.tipoSolicitudEscogida = null;
         this.radicadoAsignado = '';
         this.asignaturasAdicCancel = [];
@@ -214,19 +201,20 @@ export class RadicarService {
         infoSolicitud: DatosSolicitudRequest
     ) {
         //Datos del Solicitante
-        this.datosSolicitante = {
-            id: '',
-            nombres: infoSolicitud.datosComunSolicitud.nombreSolicitante,
-            apellidos: infoSolicitud.datosComunSolicitud.apellidoSolicitante,
-            correo: infoSolicitud.datosComunSolicitud.emailSolicitante,
-            celular: infoSolicitud.datosComunSolicitud.celularSolicitante,
-            codigoAcademico:
-                infoSolicitud.datosComunSolicitud.codigoSolicitante,
-            tipoDocumento:
-                infoSolicitud.datosComunSolicitud.tipoIdentSolicitante,
-            numeroDocumento:
-                infoSolicitud.datosComunSolicitud.numeroIdentSolicitante,
-        };
+        const datosSolicitante = DatosComunSolicitud.toDatosSolicitante(
+            infoSolicitud.datosComunSolicitud
+        );
+
+        this.formInfoPersonal = this.fb.group({
+            id: [null],
+            nombres: [datosSolicitante.nombres],
+            apellidos: [datosSolicitante.apellidos],
+            correo: [datosSolicitante.correo],
+            celular: [datosSolicitante.celular],
+            codigoAcademico: [datosSolicitante.codAcademico],
+            tipoDocumento: [datosSolicitante.tipoIdentificacion],
+            numeroDocumento: [datosSolicitante.identificacion],
+        });
 
         //Datos Tutor
         this.tutor = {
@@ -568,6 +556,26 @@ export class RadicarService {
                 }
                 break;
 
+            case 'SO_BECA':
+                const { tipo, motivo, formatoSolicitudBeca } =
+                    infoSolicitud.datoSolicitudBeca;
+
+                // Inicialización del formulario
+                this.formSolicitudBecaDescuento = this.fb.group({
+                    tipoBeca: [tipo],
+                    justificacion: [motivo],
+                });
+
+                // Verificación y conversión de documento adjunto
+                if (formatoSolicitudBeca) {
+                    this.documentosAdjuntos[0] =
+                        await this.utilidades.convertirBase64AFile(
+                            formatoSolicitudBeca
+                        );
+                }
+                break;
+
+            /*
             case 'RE_CRED_DIS':
             case 'PR_CURS_TEO':
             case 'AS_CRED_MAT':
@@ -605,11 +613,13 @@ export class RadicarService {
                     infoSolicitud.datosReconocimientoCreditos.documentosAdjuntos
                 );
                 break;
+             
             case 'AV_SEMI_ACT':
                 this.asignarDocumentosAdjuntos(
                     infoSolicitud.datosAvalSeminario.documentosAdjuntos
                 );
                 break;
+            */
 
             default:
                 break;

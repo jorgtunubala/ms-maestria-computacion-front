@@ -38,3 +38,4 @@ export { DatosAvalPracticaDResponse } from './solicitudes/solicitud-aval-pract-d
 export { EventoHistorial } from './historial/eventoHistorial';
 export { NumeroRadicado } from './historial/numeroRadicado';
 export { DocumentoRequerido } from './requisitos/documentoRequerido';
+export { DatosSolicitudBecaDescuento } from './solicitudes/solicitud-beca-descuento/datosSolicitudBecaDescuento';
