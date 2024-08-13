@@ -39,12 +39,15 @@ export class PruebaComponent implements OnInit {
             numeroDocumento: ['', Validators.required],
         });
 
-        // Verificar si hay datos en el servicio
-        if (this.radicar.formInfoDePrueba.value.nombres) {
+        // Verificar si ya hay datos en el servicio
+        const formData = this.radicar.formInfoDePrueba.value;
+        const hasData = Object.values(formData).some(
+            (value) => value !== null && value !== ''
+        );
+
+        if (hasData) {
             // Cargar datos en el formulario desde el servicio
-            this.formInfoDePrueba.patchValue(
-                this.radicar.formInfoDePrueba.value
-            );
+            this.formInfoDePrueba.patchValue(formData);
         } else {
             // Obtener información del solicitante desde la base de datos
             this.obtenerInfoDeSolicitante();

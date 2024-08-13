@@ -1,4 +1,4 @@
-<form [formGroup]="formListaBecas">
+<form [formGroup]="this.radicar.formSolicitudBecaDescuento">
     <div class="mt-4">
         <p-fieldset legend="Tipo de Beca" styleClass="bg-bluegray-50">
             <div class="grid">
@@ -17,7 +17,10 @@
 
                 <div
                     class="col-12"
-                    *ngIf="radicar.tipoBeca === 'Beca - Trabajo'"
+                    *ngIf="
+                        formSolicitudBecaDescuento.get('tipoBeca').value ===
+                        'Beca - Trabajo'
+                    "
                 >
                     <span class="p-float-label mt-3">
                         <textarea
@@ -37,8 +40,10 @@
                 <div
                     class="col-12 mt-3"
                     *ngIf="
-                        radicar.tipoBeca === 'Beca - Convenio (cidesco)' ||
-                        radicar.tipoBeca === 'Beca - Mejor promedio en pregrado'
+                        formSolicitudBecaDescuento.get('tipoBeca').value ===
+                            'Beca - Convenio (cidesco)' ||
+                        formSolicitudBecaDescuento.get('tipoBeca').value ===
+                            'Beca - Mejor promedio en pregrado'
                     "
                 >
                     <p-panel

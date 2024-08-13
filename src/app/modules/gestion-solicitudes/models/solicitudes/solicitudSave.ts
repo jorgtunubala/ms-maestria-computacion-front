@@ -11,6 +11,7 @@ import {
     DatosApoyoPublicacion,
     DatosActividadPracticaDocente,
     DatosAvalPracticaDocente,
+    DatosSolicitudBecaDescuento,
 } from '../indiceModelos';
 
 export class SolicitudSave {
@@ -32,6 +33,7 @@ export class SolicitudSave {
             obj['datosApoyoEconomicoPublicacion'],
             obj['datosActividadDocenteRequest'],
             obj['datosAvalComite'],
+            obj['datoSolicitudBeca'],
             obj['requiereFirmaDirector'],
             obj['firmaEstudiante'],
             obj['oficioPdf']
@@ -55,6 +57,7 @@ export class SolicitudSave {
         public datosApoyoEconomicoPublicacion: DatosApoyoPublicacion,
         public datosActividadDocenteRequest: DatosActividadPracticaDocente[],
         public datosAvalComite: DatosAvalPracticaDocente[],
+        public datosSolicitudBeca: DatosSolicitudBecaDescuento,
         public requiereFirmaDirector: boolean,
         public firmaEstudiante: string,
         public oficioPdf: string

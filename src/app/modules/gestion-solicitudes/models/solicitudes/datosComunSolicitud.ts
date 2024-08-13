@@ -1,3 +1,5 @@
+import { DatosSolicitante } from '../indiceModelos';
+
 export class DatosComunSolicitud {
     static nuevoDatosComunSolicitud(obj: Object) {
         return new DatosComunSolicitud(
@@ -42,4 +44,16 @@ export class DatosComunSolicitud {
         public estadoSolicitud: string,
         public oficioPdf: string
     ) {}
+
+    static toDatosSolicitante(obj: DatosComunSolicitud): DatosSolicitante {
+        return new DatosSolicitante(
+            obj.nombreSolicitante,
+            obj.apellidoSolicitante,
+            obj.emailSolicitante,
+            obj.celularSolicitante,
+            obj.codigoSolicitante,
+            obj.tipoIdentSolicitante,
+            obj.numeroIdentSolicitante
+        );
+    }
 }

@@ -25,8 +25,12 @@ export class InfopersonalComponent implements OnInit {
             'Pasaporte',
             'CC',
         ];
+    }
 
+    ngOnInit(): void {
+        // Inicializar el formulario
         this.formInfoPersonal = this.fb.group({
+            id: [null], // Campo `id` agregado
             nombres: [{ value: '', disabled: true }, Validators.required],
             apellidos: [{ value: '', disabled: true }, Validators.required],
             correo: [
@@ -44,15 +48,23 @@ export class InfopersonalComponent implements OnInit {
                 Validators.required,
             ],
         });
-    }
 
-    ngOnInit(): void {
-        if (this.radicar.datosSolicitante.nombres == null) {
-            this.obtenerInfoDeSolicitante();
+        // Verificar si ya hay datos en el servicio
+        const formData = this.radicar.formInfoPersonal.value;
+        const hasData = Object.values(formData).some(
+            (value) => value !== null && value !== ''
+        );
+
+        if (hasData) {
+            // Cargar datos en el formulario desde el servicio
+            this.formInfoPersonal.patchValue(formData);
         } else {
-            // Si ya hay información en datosSolicitante, cargarla en el formulario
-            this.formInfoPersonal.patchValue(this.radicar.datosSolicitante);
+            // Obtener información del solicitante desde la base de datos
+            this.obtenerInfoDeSolicitante();
         }
+
+        // Establecer el formulario en el servicio para compartirlo
+        this.radicar.formInfoPersonal = this.formInfoPersonal;
     }
 
     obtenerInfoDeSolicitante() {
@@ -61,7 +73,11 @@ export class InfopersonalComponent implements OnInit {
             .subscribe((respuesta) => {
                 // Al recibir la respuesta, actualizar tanto el formulario como los datos en el servicio
                 this.formInfoPersonal.patchValue(respuesta);
-                this.radicar.datosSolicitante = respuesta;
+
+                // Actualizar datos en el servicio
+                if (this.radicar.formInfoPersonal) {
+                    this.radicar.formInfoPersonal.patchValue(respuesta);
+                }
             });
     }
 }

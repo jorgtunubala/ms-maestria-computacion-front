@@ -153,9 +153,10 @@
         <br />Entidad Bancaria: {{ radicar.banco }} <br />Tipo de Cuenta:
         {{ radicar.tipoCuenta }} <br />Numero de Cuenta:
         {{ radicar.numeroCuenta }} <br />Titular:
-        {{ radicar.datosSolicitante.nombres }}
-        {{ radicar.datosSolicitante.apellidos }} <br />Celdula:
-        {{ radicar.cedulaCuentaBanco }} <br />Dirección: {{ radicar.direccion }}
+        {{ radicar.formInfoPersonal.get("nombres").value }}
+        {{ radicar.formInfoPersonal.get("apellidos").value }}
+        <br />Celdula: {{ radicar.cedulaCuentaBanco }} <br />Dirección:
+        {{ radicar.direccion }}
     </ng-container>
 
     <!--Solicitud de aval para realizacion de actividades de practica docente-->
@@ -456,11 +457,29 @@
         *ngIf="
             ['SO_BECA'].includes(radicar.tipoSolicitudEscogida.codigoSolicitud)
         "
-        >el otorgamiento de una "{{ radicar.tipoBeca }}".
+        >el otorgamiento de una "{{
+            radicar.formSolicitudBecaDescuento.get("tipoBeca").value
+        }}".
+
         <ng-container
             *ngIf="
-                radicar.tipoBeca === 'Beca - Convenio (cidesco)' ||
-                radicar.tipoBeca === 'Beca - Mejor promedio en pregrado'
+                radicar.formSolicitudBecaDescuento.get('tipoBeca').value ===
+                'Beca - Trabajo'
+            "
+        >
+            La presente solicitud obedece a que
+            {{
+                " " +
+                    radicar.formSolicitudBecaDescuento.get("justificacion")
+                        .value | lowercase
+            }}
+        </ng-container>
+        <ng-container
+            *ngIf="
+                radicar.formSolicitudBecaDescuento.get('tipoBeca').value ===
+                    'Beca - Convenio (cidesco)' ||
+                radicar.formSolicitudBecaDescuento.get('tipoBeca').value ===
+                    'Beca - Mejor promedio en pregrado'
             "
             >Adjunto a esta solicitud el formato FA diligenciado con los datos
             correspondientes para su estudio.</ng-container
@@ -651,11 +670,7 @@
         *ngIf="
             ['CA_ASIG', 'AP_SEME', 'PR_EXAM', 'CU_ASIG'].includes(
                 radicar.tipoSolicitudEscogida.codigoSolicitud
-            ) ||
-            (['SO_BECA'].includes(
-                radicar.tipoSolicitudEscogida.codigoSolicitud
-            ) &&
-                radicar.tipoBeca === 'Beca - Trabajo')
+            )
         "
     >
         La presente solicitud obedece a que
@@ -692,11 +707,12 @@
 
     <!-- Info Remitente -->
     <div class="col-6 line-height-1">
-        {{ radicar.datosSolicitante.nombres }}
-        {{ radicar.datosSolicitante.apellidos }}<br />
-        Codigo: {{ radicar.datosSolicitante.codigoAcademico }}<br />
-        email: {{ radicar.datosSolicitante.correo }}<br />
-        Celular: {{ radicar.datosSolicitante.celular }}<br />
+        {{ radicar.formInfoPersonal.get("nombres").value }}
+        {{ radicar.formInfoPersonal.get("apellidos").value }}<br />
+        Codigo: {{ radicar.formInfoPersonal.get("codigoAcademico").value
+        }}<br />
+        email: {{ radicar.formInfoPersonal.get("correo").value }}<br />
+        Celular: {{ radicar.formInfoPersonal.get("celular").value }}<br />
     </div>
 
     <!-- Info VoBo Tutor -->
@@ -781,9 +797,11 @@
         !['AD_ASIG', 'CA_ASIG', 'AP_SEME', 'AV_COMI_PR'].includes(
             radicar.tipoSolicitudEscogida.codigoSolicitud
         ) ||
-        (['SO_BECA'].includes(radicar.tipoSolicitudEscogida.codigoSolicitud) &&
-            radicar.tipoBeca === 'Beca - Convenio (cidesco)') ||
-        radicar.tipoBeca === 'Beca - Mejor promedio en pregrado'
+        (radicar.tipoSolicitudEscogida.codigoSolicitud === 'SO_BECA' &&
+            (radicar.formSolicitudBecaDescuento.get('tipoBeca').value ===
+                'Beca - Convenio (cidesco)' ||
+                radicar.formSolicitudBecaDescuento.get('tipoBeca').value ===
+                    'Beca - Mejor promedio en pregrado'))
     "
 >
     <div class="mt-5">

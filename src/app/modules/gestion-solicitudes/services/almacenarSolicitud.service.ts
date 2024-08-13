@@ -16,6 +16,7 @@ import {
     FormHomologPost,
     SolicitudSave,
     DatosAvalPracticaDocente,
+    DatosSolicitudBecaDescuento,
 } from '../models/indiceModelos';
 import { HttpService } from './http.service';
 import { RadicarService } from './radicar.service';
@@ -112,6 +113,7 @@ export class AlmacenarSolicitudService {
                 RE_CRED_PUB: this.reunirDatosSolRecCreditosSinLink,
                 AV_SEMI_ACT: this.reunirDatosSolAvalSeminario,
                 AV_COMI_PR: this.reunirDatosAvalPractDocente,
+                SO_BECA: this.reunirDatosSolBecaDescuento,
             };
 
             // Obtener el código de solicitud actual
@@ -138,6 +140,42 @@ export class AlmacenarSolicitudService {
             }));
 
         return this.construirObjAGuardar('AD_ASIG', asignaturasParaAdicionar);
+    }
+
+    async reunirDatosSolBecaDescuento(): Promise<SolicitudSave> {
+        let tipo = '';
+        if (this.radicar.formSolicitudBecaDescuento.get('tipoBeca').value) {
+            switch (
+                this.radicar.formSolicitudBecaDescuento.get('tipoBeca').value
+            ) {
+                case 'Beca - Trabajo':
+                    tipo = 'Beca-Trabajo';
+                    break;
+                case 'Beca - Mejor promedio en pregrado':
+                    tipo = 'Beca-Mejor Promedio';
+                    break;
+                case 'Beca - Convenio (cidesco)':
+                    tipo = 'Beca-Convenio';
+                    break;
+            }
+        }
+
+        let formatoDiligenciado = '';
+
+        if (this.radicar.documentosAdjuntos[0]) {
+            formatoDiligenciado = await this.convertirABase64(
+                this.radicar.documentosAdjuntos[0]
+            );
+        }
+
+        const infoBecaDescuento: DatosSolicitudBecaDescuento = {
+            formatoSolicitudBeca: formatoDiligenciado,
+            tipo: tipo,
+            motivo: this.radicar.formSolicitudBecaDescuento.get('justificacion')
+                .value,
+        };
+
+        return this.construirObjAGuardar('SO_BECA', infoBecaDescuento);
     }
 
     async reunirDatosSolCancelAsig(): Promise<SolicitudSave> {
@@ -459,7 +497,7 @@ export class AlmacenarSolicitudService {
     ): Promise<SolicitudSave> {
         const infoSolicitud: SolicitudSave = {
             idTipoSolicitud: this.radicar.tipoSolicitudEscogida.idSolicitud,
-            idEstudiante: this.radicar.datosSolicitante.id,
+            idEstudiante: this.radicar.formInfoPersonal.get('id').value,
             idTutor: this.radicar.tutor.id,
             datosHomologacion: tipo === 'HO_ASIG' ? infoEspecifica : null,
             datosAdicionAsignatura: tipo === 'AD_ASIG' ? infoEspecifica : null,
@@ -479,6 +517,7 @@ export class AlmacenarSolicitudService {
             datosActividadDocenteRequest:
                 tipo === 'RE_CRED_PAS' ? infoEspecifica : null,
             datosAvalComite: tipo === 'AV_COMI_PR' ? infoEspecifica : null,
+            datosSolicitudBeca: tipo === 'SO_BECA' ? infoEspecifica : null,
             requiereFirmaDirector:
                 tipo === 'AP_ECON_INV' || tipo === 'ApoyoEconomico'
                     ? true
