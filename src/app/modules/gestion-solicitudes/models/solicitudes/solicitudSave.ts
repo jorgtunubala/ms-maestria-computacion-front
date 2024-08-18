@@ -35,6 +35,7 @@ export class SolicitudSave {
             obj['datosAvalComite'],
             obj['datoSolicitudBeca'],
             obj['requiereFirmaDirector'],
+            obj['idDirector'],
             obj['firmaEstudiante'],
             obj['oficioPdf']
         );
@@ -59,6 +60,7 @@ export class SolicitudSave {
         public datosAvalComite: DatosAvalPracticaDocente[],
         public datosSolicitudBeca: DatosSolicitudBecaDescuento,
         public requiereFirmaDirector: boolean,
+        public idDirector: string,
         public firmaEstudiante: string,
         public oficioPdf: string
     ) {}

@@ -11,10 +11,14 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { HttpService } from '../../../services/http.service';
 import { DatosSolicitudRequest } from '../../../models/solicitudes/datosSolicitudRequest';
 import { OficioComponent } from '../../utilidades/oficio/oficio.component';
-import { DatosAvalSolicitud } from '../../../models/indiceModelos';
+import {
+    DatosAvalSolicitud,
+    DetallesRechazo,
+} from '../../../models/indiceModelos';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { UtilidadesService } from '../../../services/utilidades.service';
 import { Router } from '@angular/router';
+import { DialogService } from 'primeng/dynamicdialog';
 
 @Component({
     selector: 'app-visoraval',
@@ -58,7 +62,8 @@ export class VisoravalComponent implements OnInit {
         private sanitizer: DomSanitizer,
         private messageService: MessageService,
         private confirmationService: ConfirmationService,
-        private utilidades: UtilidadesService
+        private utilidades: UtilidadesService,
+        public dialogService: DialogService
     ) {}
 
     ngOnInit(): void {
@@ -150,6 +155,7 @@ export class VisoravalComponent implements OnInit {
 
     onUpload(event, firmante) {
         const rol: any = 'Tutor';
+        //const rol: any = 'Director';
         const reader = new FileReader();
 
         switch (rol) {
@@ -209,6 +215,9 @@ export class VisoravalComponent implements OnInit {
         if (this.habilitarAval) {
             this.avalEnProceso = true;
             this.deshabilitarRechazo = true;
+
+            /*
+            
             await this.convertirOficioEnPDF();
 
             let prmfirmaTutor: string = null;
@@ -235,6 +244,24 @@ export class VisoravalComponent implements OnInit {
                         this.radicar.oficioDeSolicitud
                     ),
             };
+*/
+            await this.convertirOficioEnPDF();
+
+            const convertirFileABase64 = async (file: File | null) =>
+                file ? await this.utilidades.convertirFileABase64(file) : null;
+
+            const aval: DatosAvalSolicitud = {
+                idSolicitud: this.radicar.tipoSolicitudEscogida.idSolicitud,
+                firmaTutor: await convertirFileABase64(this.radicar.firmaTutor),
+                firmaDirector: await convertirFileABase64(
+                    this.radicar.firmaDirector
+                ),
+                documentoPdfSolicitud: await convertirFileABase64(
+                    this.radicar.oficioDeSolicitud
+                ),
+            };
+
+            console.log(aval);
 
             this.http.guardarAvalesSolicitud(aval).subscribe(
                 (resultado) => {
@@ -286,9 +313,57 @@ export class VisoravalComponent implements OnInit {
         }
 
         this.rechazoEnProceso = true;
+
+        const detalles: DetallesRechazo = {
+            idSolicitud: this.radicar.tipoSolicitudEscogida.idSolicitud,
+            emailRevisor: 'lsierra@unicauca.edu.co',
+            estado: 'NO_AVALADA',
+            comentario:
+                'Los documentos aportados no se corresponden con los requisitos para dar tramite a esta solicitud',
+        };
+
+        this.http.rechazarSolicitud(detalles).subscribe(
+            (resultado) => {
+                if (resultado) {
+                    this.rechazoEnProceso = false;
+                    this.confirmationService.confirm({
+                        message:
+                            'La solicitud se ha sido rechazada y se ha notificado al solicitante',
+                        header: 'Solicitud no avalada',
+                        icon: 'pi pi-exclamation-circle',
+                        acceptLabel: 'Aceptar',
+                        rejectVisible: false,
+                        accept: () => {
+                            this.mostrarBtnRechazar = false;
+                            this.mostrarBtnAvalar = false;
+                            this.mostrarPFSet = false;
+                        },
+                        reject: () => {
+                            this.mostrarBtnRechazar = false;
+                            this.mostrarBtnAvalar = false;
+                            this.mostrarPFSet = false;
+                        },
+                    });
+                } else {
+                    this.rechazoEnProceso = false;
+                    this.confirmationService.confirm({
+                        message:
+                            'Ha ocurrido un error inesperado al rechazar la solicitud, intentelo nuevamente.',
+                        header: 'Error al rechazar',
+                        icon: 'pi pi-exclamation-triangle',
+                        acceptLabel: 'Aceptar',
+                        rejectVisible: false,
+                        accept: () => {},
+                    });
+                }
+            },
+            (error) => {
+                console.error('Error al rechazar la solicitud:', error);
+            }
+        );
     }
 
-    renderizarImagen(imagen: File, firmante: any): void {
+    renderizarImagen(imagen: File, firmante: string): void {
         const reader = new FileReader();
         reader.onload = () => {
             switch (firmante) {

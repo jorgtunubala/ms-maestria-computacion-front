@@ -13,6 +13,7 @@ import {
     InfoActividadesReCreditos,
     EventoHistorial,
     NumeroRadicado,
+    DetallesRechazo,
 } from '../models/indiceModelos';
 import { InfoPersonalResponse } from '../models/solicitante/infoPersonalResponse';
 import { DatosSolicitudRequest } from '../models/solicitudes/datosSolicitudRequest';
@@ -122,5 +123,10 @@ export class HttpService {
             map((respuesta) => respuesta),
             catchError(this.manejarError)
         );
+    }
+
+    rechazarSolicitud(objeto: DetallesRechazo): Observable<any> {
+        const url = `${this.apiUrl}${httpConfig.rechazarSolicitud}`;
+        return this.http.post(url, objeto).pipe(catchError(this.manejarError));
     }
 }

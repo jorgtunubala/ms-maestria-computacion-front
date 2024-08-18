@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { RadicarService } from 'src/app/modules/gestion-solicitudes/services/radicar.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpService } from 'src/app/modules/gestion-solicitudes/services/http.service';
+import { id } from 'date-fns/locale';
 
 @Component({
     selector: 'app-infopersonal',
@@ -30,7 +31,7 @@ export class InfopersonalComponent implements OnInit {
     ngOnInit(): void {
         // Inicializar el formulario
         this.formInfoPersonal = this.fb.group({
-            id: [null], // Campo `id` agregado
+            id: [''],
             nombres: [{ value: '', disabled: true }, Validators.required],
             apellidos: [{ value: '', disabled: true }, Validators.required],
             correo: [
@@ -50,10 +51,10 @@ export class InfopersonalComponent implements OnInit {
         });
 
         // Verificar si ya hay datos en el servicio
-        const formData = this.radicar.formInfoPersonal.value;
-        const hasData = Object.values(formData).some(
-            (value) => value !== null && value !== ''
-        );
+        const formData = this.formInfoPersonal.value;
+        const hasData = Object.keys(formData)
+            .filter((key) => key !== 'id') // Filtrar el campo 'id'
+            .some((key) => formData[key] !== null && formData[key] !== ''); // Verificar los otros campos
 
         if (hasData) {
             // Cargar datos en el formulario desde el servicio
@@ -71,13 +72,8 @@ export class InfopersonalComponent implements OnInit {
         this.gestorHttp
             .obtenerInfoPersonalSolicitante(this.identificadorSolicitante)
             .subscribe((respuesta) => {
-                // Al recibir la respuesta, actualizar tanto el formulario como los datos en el servicio
+                // Actualizar solo los campos específicos del formulario
                 this.formInfoPersonal.patchValue(respuesta);
-
-                // Actualizar datos en el servicio
-                if (this.radicar.formInfoPersonal) {
-                    this.radicar.formInfoPersonal.patchValue(respuesta);
-                }
             });
     }
 }

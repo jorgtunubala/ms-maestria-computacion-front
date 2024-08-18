@@ -59,4 +59,30 @@ export class UtilidadesService {
 
         return archivo;
     }
+
+    extraerFechaDeRange(
+        campoFechas: Date[],
+        posicionFecha: number,
+        separador: string,
+        orden: number
+    ): string {
+        if (
+            posicionFecha < 0 ||
+            posicionFecha >= campoFechas.length ||
+            (orden !== 0 && orden !== 1)
+        ) {
+            throw new Error('Parámetros inválidos');
+        }
+
+        const fecha = campoFechas[posicionFecha];
+        const [dia, mes, anio] = [
+            fecha.getDate().toString().padStart(2, '0'),
+            (fecha.getMonth() + 1).toString().padStart(2, '0'),
+            fecha.getFullYear(),
+        ];
+
+        return orden === 0
+            ? `${dia}${separador}${mes}${separador}${anio}`
+            : `${anio}${separador}${mes}${separador}${dia}`;
+    }
 }

@@ -32,6 +32,9 @@ export class RadicarService {
 
     formInfoDePrueba: FormGroup = new FormGroup({});
     formInfoPersonal: FormGroup = new FormGroup({});
+    //formSolicitudAdiCancel: FormGroup = new FormGroup({});
+    formSemestreAplazar: FormGroup = new FormGroup({});
+    formApoyoAsistEvento: FormGroup = new FormGroup({});
     formSolicitudBecaDescuento: FormGroup = new FormGroup({});
 
     fechaEnvio: Date = null;
@@ -49,9 +52,9 @@ export class RadicarService {
     firmaSolicitante: File = null;
     firmaSolicitanteUrl: SafeUrl = '';
     firmaTutor: File = null;
-    firmaTutorUrl: string = '';
+    firmaTutorUrl: SafeUrl = '';
     firmaDirector: File = null;
-    firmaDirectorUrl: string = '';
+    firmaDirectorUrl: SafeUrl = '';
 
     fechasEstancia: Date[] = [];
     lugarEstancia: string = '';
@@ -110,7 +113,7 @@ export class RadicarService {
         calificacion: number;
         contenidos: File;
     }[] = [];
-    semestreAplazamiento: string;
+    //semestreAplazamiento: string;
     estadoSolicitud: string = '';
     esperando: boolean = false;
 
@@ -129,6 +132,9 @@ export class RadicarService {
 
     restrablecerValores() {
         this.formInfoPersonal = new FormGroup({});
+        //this.formSolicitudAdiCancel = new FormGroup({});
+        this.formSemestreAplazar = new FormGroup({});
+        this.formApoyoAsistEvento = new FormGroup({});
         this.formSolicitudBecaDescuento = new FormGroup({});
 
         this.tipoSolicitudEscogida = null;
@@ -143,7 +149,7 @@ export class RadicarService {
         this.instanciasAsignHomologar = [{}];
         this.datosAsignaturasAHomologar = [];
         this.datosInstitucionHomologar = { institucion: '', programa: '' };
-        this.semestreAplazamiento = '';
+        //this.semestreAplazamiento = '';
         this.actividadesReCreditos = [];
         this.actividadesSeleccionadas = [];
         this.numeroInstanciasAsignExterna = 1;
@@ -200,6 +206,7 @@ export class RadicarService {
     async poblarConDatosSolicitudGuardada(
         infoSolicitud: DatosSolicitudRequest
     ) {
+        console.log(infoSolicitud);
         //Datos del Solicitante
         const datosSolicitante = DatosComunSolicitud.toDatosSolicitante(
             infoSolicitud.datosComunSolicitud
@@ -237,11 +244,34 @@ export class RadicarService {
         this.firmaSolicitante = this.utilidades.convertirBase64AFile(
             infoSolicitud.datosComunSolicitud.firmaSolicitante
         );
-
         // Convertir la firma del solicitante a URL segura
         if (this.firmaSolicitante) {
             this.firmaSolicitanteUrl = this.sanitizer.bypassSecurityTrustUrl(
                 URL.createObjectURL(this.firmaSolicitante)
+            );
+        }
+        //Firma Tutor
+        if (infoSolicitud.datosComunSolicitud.firmaTutor) {
+            this.firmaTutor = this.utilidades.convertirBase64AFile(
+                infoSolicitud.datosComunSolicitud.firmaTutor
+            );
+        }
+        // Convertir la firma del Tutor a URL segura
+        if (this.firmaTutor) {
+            this.firmaTutorUrl = this.sanitizer.bypassSecurityTrustUrl(
+                URL.createObjectURL(this.firmaTutor)
+            );
+        }
+        //Firma Director
+        if (infoSolicitud.datosComunSolicitud.firmaDirector) {
+            this.firmaDirector = this.utilidades.convertirBase64AFile(
+                infoSolicitud.datosComunSolicitud.firmaDirector
+            );
+        }
+        // Convertir la firma del Director a URL segura
+        if (this.firmaDirector) {
+            this.firmaDirectorUrl = this.sanitizer.bypassSecurityTrustUrl(
+                URL.createObjectURL(this.firmaDirector)
             );
         }
 
@@ -268,6 +298,7 @@ export class RadicarService {
                 break;
             case 'HO_ASIG_POS':
             case 'HO_ASIG_ESP':
+                console.log(infoSolicitud);
                 //Datos institucion externa
                 this.datosInstitucionHomologar = {
                     institucion:
@@ -281,6 +312,7 @@ export class RadicarService {
                 //Datos asignaturas a homologar
                 infoSolicitud.datosSolicitudHomologacion.datosAsignatura.forEach(
                     (asignatura: any) => {
+                        console.log(asignatura.contenidoProgramatico);
                         let asignaturaAHomologar = {
                             asignatura: asignatura.nombreAsignatura,
                             creditos: asignatura.creditos,
@@ -295,6 +327,10 @@ export class RadicarService {
                     }
                 );
 
+                console.log(
+                    infoSolicitud.datosSolicitudHomologacion.documentosAdjuntos
+                );
+
                 //Docs Adjuntos
                 await this.asignarDocumentosAdjuntos(
                     infoSolicitud.datosSolicitudHomologacion.documentosAdjuntos
@@ -302,14 +338,17 @@ export class RadicarService {
 
                 break;
 
-            case 'AP_SEME':
-                this.semestreAplazamiento =
-                    infoSolicitud.datosSolicitudAplazarSemestre.semestre;
-                this,
-                    (this.motivoDeSolicitud =
-                        infoSolicitud.datosSolicitudAplazarSemestre.motivo);
+            case 'AP_SEME': {
+                const { semestre, motivo } =
+                    infoSolicitud.datosSolicitudAplazarSemestre;
+
+                this.formSemestreAplazar = this.fb.group({
+                    semestre: [semestre],
+                    motivo: [motivo],
+                });
 
                 break;
+            }
 
             case 'CU_ASIG':
                 this.motivoDeSolicitud =
@@ -384,19 +423,36 @@ export class RadicarService {
 
                 break;
 
-            case 'AP_ECON_ASI':
-                this.nombreCongreso =
-                    infoSolicitud.datosApoyoEconomicoCongreso.nombreCongreso;
-                this.tipoCongreso =
-                    infoSolicitud.datosApoyoEconomicoCongreso.tipoCongreso;
-                this.fechasEstancia[0] = this.parseFecha(
-                    infoSolicitud.datosApoyoEconomicoCongreso.fechaInicio
-                );
-                this.fechasEstancia[1] = this.parseFecha(
-                    infoSolicitud.datosApoyoEconomicoCongreso.fechaFin
-                );
-                this.tituloPublicacion =
-                    infoSolicitud.datosApoyoEconomicoCongreso.tituloPublicacion;
+            case 'AP_ECON_ASI': {
+                const {
+                    nombreCongreso,
+                    tipoCongreso,
+                    fechaInicio,
+                    fechaFin,
+                    tituloPublicacion,
+                    valorApoyo,
+                    entidadBancaria,
+                    tipoCuenta,
+                    numeroCuenta,
+                    numeroCedulaAsociada,
+                    direccionResidencia,
+                } = infoSolicitud.datosApoyoEconomicoCongreso;
+
+                const fechaI = this.convertirFecha(fechaInicio);
+                const fechaF = this.convertirFecha(fechaFin);
+                this.formApoyoAsistEvento = this.fb.group({
+                    nombreCongreso: [nombreCongreso],
+                    tipoCongreso: [tipoCongreso],
+                    tituloPublicacion: [tituloPublicacion],
+                    fechas: [[fechaI, fechaF]],
+                    valorApoyo: [valorApoyo],
+                    entidadBancaria: [entidadBancaria],
+                    tipoCuenta: [tipoCuenta],
+                    numeroCuenta: [numeroCuenta],
+                    numeroCedulaAsociada: [numeroCedulaAsociada],
+                    direccionResidencia: [direccionResidencia],
+                });
+
                 this.director = {
                     id: infoSolicitud.datosApoyoEconomicoCongreso
                         .idDirectorGrupo,
@@ -406,24 +462,12 @@ export class RadicarService {
                             .nombreDirectorGrupo,
                 };
 
-                this.valorApoyoEcon =
-                    infoSolicitud.datosApoyoEconomicoCongreso.valorApoyo;
-                this.banco =
-                    infoSolicitud.datosApoyoEconomicoCongreso.entidadBancaria;
-                this.tipoCuenta =
-                    infoSolicitud.datosApoyoEconomicoCongreso.tipoCuenta;
-                this.numeroCuenta =
-                    infoSolicitud.datosApoyoEconomicoCongreso.numeroCuenta;
-                this.cedulaCuentaBanco =
-                    infoSolicitud.datosApoyoEconomicoCongreso.numeroCedulaAsociada;
-                this.direccion =
-                    infoSolicitud.datosApoyoEconomicoCongreso.direccionResidencia;
-
                 await this.asignarDocumentosAdjuntos(
                     infoSolicitud.datosApoyoEconomicoCongreso.documentosAdjuntos
                 );
 
                 break;
+            }
 
             case 'PA_PUBL_EVE':
                 this.nombreCongreso =
@@ -556,11 +600,10 @@ export class RadicarService {
                 }
                 break;
 
-            case 'SO_BECA':
+            case 'SO_BECA': {
                 const { tipo, motivo, formatoSolicitudBeca } =
                     infoSolicitud.datoSolicitudBeca;
 
-                // Inicialización del formulario
                 this.formSolicitudBecaDescuento = this.fb.group({
                     tipoBeca: [tipo],
                     justificacion: [motivo],
@@ -574,46 +617,9 @@ export class RadicarService {
                         );
                 }
                 break;
+            }
 
             /*
-            case 'RE_CRED_DIS':
-            case 'PR_CURS_TEO':
-            case 'AS_CRED_MAT':
-                this.documentosAdjuntos = await Promise.all(
-                    infoSolicitud.datosReconocimientoCreditos.documentosAdjuntos
-                        .slice(0, -1)
-                        .map(
-                            async (documento: any) =>
-                                await this.utilidades.convertirBase64AFile(
-                                    documento
-                                )
-                        )
-                );
-
-                this.enlaceMaterialAudiovisual =
-                    infoSolicitud.datosReconocimientoCreditos.documentosAdjuntos[
-                        infoSolicitud.datosReconocimientoCreditos
-                            .documentosAdjuntos.length - 1
-                    ];
-
-                break;
-
-            case 'AS_CRED_DO':
-            case 'RE_CRED_SEM':
-            case 'AS_CRED_MON':
-            case 'TG_PREG_POS':
-            case 'JU_PREG_POS':
-            case 'EV_ANTE_PRE':
-            case 'EV_PROD_INT':
-            case 'EV_INFO_SAB':
-            case 'PA_COMI_PRO':
-            case 'OT_ACTI_APO':
-            case 'RE_CRED_PUB':
-                this.asignarDocumentosAdjuntos(
-                    infoSolicitud.datosReconocimientoCreditos.documentosAdjuntos
-                );
-                break;
-             
             case 'AV_SEMI_ACT':
                 this.asignarDocumentosAdjuntos(
                     infoSolicitud.datosAvalSeminario.documentosAdjuntos
@@ -627,6 +633,7 @@ export class RadicarService {
     }
 
     async asignarDocumentosAdjuntos(docs: string[]): Promise<void> {
+        console.log(docs);
         this.documentosAdjuntos = await Promise.all(
             docs.map(async (cadenaBase64) => {
                 const archivo =
@@ -640,10 +647,17 @@ export class RadicarService {
                 }
             })
         );
+
+        console.log(this.documentosAdjuntos);
     }
 
     parseFecha(fechaString) {
         const [day, month, year] = fechaString.split('/').map(Number);
         return new Date(year, month - 1, day);
+    }
+
+    convertirFecha(fechaStr) {
+        const [dia, mes, anio] = fechaStr.split('/').map(Number);
+        return new Date(anio, mes - 1, dia); // Los meses en JavaScript son 0-indexados (0 = enero, 1 = febrero, etc.)
     }
 }

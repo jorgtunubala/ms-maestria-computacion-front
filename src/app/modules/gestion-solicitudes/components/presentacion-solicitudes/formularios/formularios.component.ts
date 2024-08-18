@@ -238,7 +238,6 @@ export class FormulariosComponent implements OnInit {
             case 'AP_SEME':
                 estadoGeneral =
                     this.formAplzSemestre.obtenerEstadoFormulario() &&
-                    this.formMotivo.obtenerEstadoFormulario() &&
                     this.formListaTutores.obtenerEstadoFormulario();
                 break;
             case 'CU_ASIG':
@@ -294,7 +293,6 @@ export class FormulariosComponent implements OnInit {
             case 'AP_ECON_ASI':
                 estadoGeneral =
                     this.formApyAsistEvnt.obtenerEstadoFormulario() &&
-                    this.formApyAsistEvnt.validarFechas() &&
                     this.formListaTutores.obtenerEstadoFormulario() &&
                     this.formDirectores.obtenerEstadoFormulario();
                 break;
