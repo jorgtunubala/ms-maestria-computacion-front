@@ -3,6 +3,8 @@ import { PrimeIcons } from 'primeng/api';
 import { SeguimientoService } from '../../../services/seguimiento.service';
 import { EventoHistorial } from '../../../models/indiceModelos';
 import { DatePipe } from '@angular/common';
+import { Router } from '@angular/router';
+import { HttpService } from '../../../services/http.service';
 
 @Component({
     selector: 'app-historial',
@@ -16,16 +18,27 @@ export class HistorialComponent implements OnInit {
         [estadoSolicitud: string]: { color: string; icon: string };
     } = {
         Radicada: { color: '#0F2041', icon: 'pi pi-check-circle' },
-        'No Avalada': { color: '#AF0000', icon: 'pi pi-ban' },
+        Avalada: { color: '#0F2041', icon: 'pi pi-check-circle' },
+        'Avalada Tutor': { color: '#0F2041', icon: 'pi pi-check-circle' },
+        'Avalada Director': { color: '#0F2041', icon: 'pi pi-check-circle' },
+        'No Avalada Tutor': { color: '#AF0000', icon: 'pi pi-ban' },
+        'No Avalada Director': { color: '#AF0000', icon: 'pi pi-ban' },
+        'Rechazada Coordinador': { color: '#AF0000', icon: 'pi pi-ban' },
     };
 
     constructor(
         public seguimiento: SeguimientoService,
-        private datePipe: DatePipe
+        private datePipe: DatePipe,
+        private router: Router
     ) {}
 
     ngOnInit(): void {
-        this.eventos = this.seguimiento.historial;
+        if (this.seguimiento.historial.length > 0) {
+            this.eventos = this.seguimiento.historial;
+            console.log(this.seguimiento.historial);
+        } else {
+            this.router.navigate(['/gestionsolicitudes/portafolio/opciones']);
+        }
     }
 
     retornarNombreArchivo(cadena: string): string {

@@ -61,6 +61,7 @@ export class BuzonComponent implements OnInit {
 
     mostrarDetalles() {
         this.gestor.solicitudSeleccionada = this.seleccionada;
+        this.gestor.rutaPrevia = this.router.url;
         this.router.navigate(['/gestionsolicitudes/visor']);
     }
 }
