@@ -42,6 +42,7 @@ import { BecaDescuentoComponent } from './components/presentacion-solicitudes/fo
 import { SkelinfosolicitudComponent } from './components/utilidades/skeleton/skelinfosolicitud/skelinfosolicitud.component';
 import { SkeltablaComponent } from './components/utilidades/skeleton/skeltabla/skeltabla.component';
 import { PruebaComponent } from './components/presentacion-solicitudes/formularios/complementarios/prueba/prueba.component';
+import { FormulariorechazoComponent } from './components/gestion-coordinacion/complementos/formulariorechazo/formulariorechazo.component';
 
 @NgModule({
     declarations: [
@@ -81,6 +82,7 @@ import { PruebaComponent } from './components/presentacion-solicitudes/formulari
         SkelinfosolicitudComponent,
         SkeltablaComponent,
         PruebaComponent,
+        FormulariorechazoComponent,
     ],
     imports: [
         CommonModule,
