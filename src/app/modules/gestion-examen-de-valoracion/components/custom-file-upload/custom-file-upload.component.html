@@ -1,4 +1,6 @@
-<div class="flex flex-row w-full justify-content-between">
+<div
+    class="flex flex-row w-full justify-content-between align-items-start column-gap-2"
+>
     <p-fileUpload
         #fileUpload
         [auto]="true"
@@ -8,7 +10,7 @@
         accept=".pdf"
         chooseIcon="pi pi-file"
         maxFileSize="5000000"
-        class="w-full max-w-30rem"
+        class="w-full max-w-30rem flex-1"
         chooseLabel="Buscar documento"
         [disabled]="selected && selected[arrayName + '.' + filename]"
     >

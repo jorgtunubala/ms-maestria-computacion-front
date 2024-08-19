@@ -1,14 +1,14 @@
 <p-panel>
     <div id="formatoHvaGrado">
-        <div class="header px-8">
+        <div class="header px-0 md:px-8">
             <table class="p-datatable p-component header-table">
                 <tr class="header-title">
                     <td>
                         <img
-                            src="assets/layout/images/logoUnicauca.png"
                             alt="Logo Unicauca"
-                            width="80px"
                             height="140px"
+                            src="assets/layout/images/logoUnicauca.png"
+                            width="80px"
                         />
                     </td>
                     <td colspan="2">
@@ -31,9 +31,11 @@
                 </tr>
             </table>
         </div>
-        <div class="mt-4 px-8">
+        <div class="mt-4 px-1 lg:px-8">
             <form [formGroup]="formatoHvaGradoForm">
-                <div class="flex align-items-center justify-content-start mt-2">
+                <div
+                    class="flex flex-wrap lg:flex-nowrap align-items-center justify-content-start mt-2"
+                >
                     <label
                         class="font-semibold"
                         style="text-wrap: nowrap"
@@ -42,7 +44,7 @@
                     >
                     <input
                         pInputText
-                        class="w-full ml-2"
+                        class="w-full ml-0 lg:ml-2"
                         type="text"
                         id="facultad"
                         formControlName="facultad"
@@ -50,7 +52,9 @@
                     />
                 </div>
 
-                <div class="flex align-items-center justify-content-start mt-2">
+                <div
+                    class="flex flex-wrap lg:flex-nowrap align-items-center justify-content-start mt-2"
+                >
                     <label
                         class="font-semibold"
                         style="text-wrap: nowrap"
@@ -59,7 +63,7 @@
                     >
                     <input
                         pInputText
-                        class="w-full ml-2"
+                        class="w-full ml-0 lg:ml-2"
                         type="text"
                         id="programa"
                         formControlName="programa"
@@ -67,7 +71,9 @@
                     />
                 </div>
 
-                <div class="flex align-items-center justify-content-start mt-2">
+                <div
+                    class="flex flex-wrap lg:flex-nowrap align-items-center justify-content-start mt-2"
+                >
                     <label
                         class="font-semibold"
                         style="text-wrap: nowrap"
@@ -76,7 +82,7 @@
                     >
                     <input
                         pInputText
-                        class="w-full ml-2"
+                        class="w-full ml-0 lg:ml-2"
                         type="text"
                         id="estudiante"
                         formControlName="estudiante"
@@ -84,7 +90,9 @@
                     />
                 </div>
 
-                <div class="flex align-items-center justify-content-start mt-2">
+                <div
+                    class="flex flex-wrap lg:flex-nowrap align-items-center justify-content-start mt-2"
+                >
                     <label
                         class="label-required font-semibold"
                         style="text-wrap: nowrap"
@@ -93,14 +101,16 @@
                     >
                     <input
                         pInputText
-                        class="w-full ml-2"
+                        class="w-full ml-0 lg:ml-2"
                         type="text"
                         id="cedula"
                         formControlName="cedula"
                     />
                 </div>
 
-                <div class="flex align-items-center justify-content-start mt-2">
+                <div
+                    class="flex flex-wrap lg:flex-nowrap align-items-center justify-content-start mt-2"
+                >
                     <label
                         class="label-required font-semibold"
                         style="text-wrap: nowrap"
@@ -109,14 +119,16 @@
                     >
                     <input
                         pInputText
-                        class="w-full ml-2"
+                        class="w-full ml-0 lg:ml-2"
                         type="text"
                         id="lugar-expedicion"
                         formControlName="lugarExpedicion"
                     />
                 </div>
 
-                <div class="flex align-items-center justify-content-start mt-2">
+                <div
+                    class="flex flex-wrap lg:flex-nowrap align-items-center justify-content-start mt-2"
+                >
                     <label
                         class="label-required font-semibold"
                         style="text-wrap: nowrap"
@@ -125,14 +137,16 @@
                     >
                     <input
                         pInputText
-                        class="w-full ml-2"
+                        class="w-full ml-0 lg:ml-2"
                         type="text"
                         id="codigo"
                         formControlName="codigo"
                     />
                 </div>
 
-                <div class="flex align-items-center justify-content-start mt-2">
+                <div
+                    class="flex flex-column lg:flex-row align-items-start lg:align-items-center justify-content-start mt-2"
+                >
                     <label
                         class="label-required font-semibold"
                         style="text-wrap: nowrap"
@@ -141,27 +155,29 @@
                     >
                     <input
                         pInputText
-                        class="w-full ml-2"
+                        class="w-full ml:0 lg:ml-2"
                         type="text"
                         id="telefono-fijo"
                         formControlName="telefonoFijo"
                     />
                     <label
                         style="text-wrap: nowrap"
-                        class="label-required font-semibold ml-4"
+                        class="label-required font-semibold ml-0 lg:ml-4"
                         for="telefono-celular"
                         >Teléfono Celular:</label
                     >
                     <input
                         pInputText
-                        class="w-full ml-2"
+                        class="w-full ml-0 lg:ml-2"
                         type="text"
                         id="telefono-celular"
                         formControlName="telefonoCelular"
                     />
                 </div>
 
-                <div class="flex align-items-center justify-content-start mt-2">
+                <div
+                    class="flex flex-wrap lg:flex-nowrap align-items-center justify-content-start mt-2"
+                >
                     <label
                         class="label-required font-semibold"
                         style="text-wrap: nowrap"
@@ -170,14 +186,16 @@
                     >
                     <input
                         pInputText
-                        class="w-full ml-2"
+                        class="w-full ml-0 lg:ml-2"
                         type="text"
                         id="codigo-saber-pro"
                         formControlName="codigoSaberPro"
                     />
                 </div>
 
-                <div class="flex align-items-center justify-content-start mt-2">
+                <div
+                    class="flex flex-wrap lg:flex-nowrap align-items-center justify-content-start mt-2"
+                >
                     <label
                         class="label-required font-semibold"
                         style="text-wrap: nowrap"
@@ -186,14 +204,16 @@
                     >
                     <input
                         pInputText
-                        class="w-full ml-2"
+                        class="w-full ml-0 lg:ml-2"
                         type="text"
                         id="residencia"
                         formControlName="residenciaActual"
                     />
                 </div>
 
-                <div class="flex align-items-center justify-content-start mt-2">
+                <div
+                    class="flex flex-wrap lg:flex-nowrap align-items-center justify-content-start mt-2"
+                >
                     <label
                         class="label-required font-semibold"
                         style="text-wrap: nowrap"
@@ -202,13 +222,15 @@
                     >
                     <input
                         pInputText
-                        class="w-full ml-2"
+                        class="w-full ml-0 lg:ml-2"
                         type="text"
                         id="departamento"
                         formControlName="departamento"
                     />
                 </div>
-                <div class="flex align-items-center justify-content-start mt-2">
+                <div
+                    class="flex flex-column lg:flex-row align-items-start lg:align-items-center justify-content-start mt-2"
+                >
                     <label
                         class="label-required font-semibold"
                         style="text-wrap: nowrap"
@@ -217,20 +239,20 @@
                     >
                     <input
                         pInputText
-                        class="w-full ml-2"
+                        class="w-full ml-0 lg:ml-2"
                         type="text"
                         id="municipio"
                         formControlName="municipio"
                     />
                     <label
-                        class="label-required font-semibold ml-4"
+                        class="label-required font-semibold ml-0 lg:ml-4"
                         style="text-wrap: nowrap"
                         for="email"
                         >Email:</label
                     >
                     <input
                         pInputText
-                        class="w-full ml-2"
+                        class="w-full ml-0 lg:ml-2"
                         type="email"
                         id="email"
                         formControlName="email"
@@ -238,10 +260,10 @@
                 </div>
                 <div class="footer-logo mt-8">
                     <img
-                        src="assets/layout/images/asset-calidad.png"
                         alt="Asset Calidad"
-                        width="140px"
                         height="100px"
+                        src="assets/layout/images/asset-calidad.png"
+                        width="140px"
                     />
                     <div
                         class="flex flex-column align-items-center justify-content-center"
@@ -249,15 +271,15 @@
                         <span>
                             Carrera 2 No. 15N esquina-Sector Tulcán
                             Popayán-Cauca-Colombia Teléfono: 6028209800 ext.
-                            2100 ó 2101. decafiet@unicauca.edu.co |
+                            2100 ó 2101. decafiet&#64;unicauca.edu.co |
                             <strong>www.unicauca.edu.co</strong>
                         </span>
                     </div>
                     <img
-                        src="assets/layout/images/logosIcontec.png"
                         alt="Logo Icontec"
-                        width="120px"
                         height="80px"
+                        src="assets/layout/images/logosIcontec.png"
+                        width="120px"
                     />
                 </div>
                 <div

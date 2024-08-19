@@ -2,29 +2,29 @@
     <div id="formatoEvaluadores">
         <div class="flex flex-column w-full mb-4 header-logo">
             <img
-                src="assets/layout/images/asset-header.jpg"
                 alt="Asset Header"
                 class="header-image"
+                src="assets/layout/images/asset-header.jpg"
             />
             <div class="flex justify-content-start logo-container">
                 <img
-                    src="assets/layout/images/logoFacultad.png"
                     alt="Logo Facultad"
                     class="logo-image"
+                    src="assets/layout/images/logoFacultad.png"
                 />
             </div>
         </div>
-        <div class="mt-4 form-container px-8">
+        <div class="mt-4 form-container px-1 md:px-4 lg:px-8">
             <form class="p-fluid" [formGroup]="formatoEvaluadoresForm">
                 <div class="flex flex-column mt-4">
                     <label class="font-semibold mb-2" for="consecutivo"
                         >Consecutivo:</label
                     >
                     <input
-                        pInputText
-                        type="text"
                         id="consecutivo"
                         formControlName="consecutivo"
+                        pInputText
+                        type="text"
                     />
                 </div>
                 <div class="flex flex-column mt-4">
@@ -34,11 +34,11 @@
                         >Propuesta:</label
                     >
                     <input
-                        pInputText
-                        type="text"
                         id="propuesta"
                         formControlName="propuesta"
+                        pInputText
                         readonly
+                        type="text"
                     />
                 </div>
                 <div class="flex flex-column mt-4">
@@ -48,60 +48,70 @@
                         >Asunto:</label
                     >
                     <textarea
-                        pInputTextarea
                         id="asunto"
                         formControlName="asunto"
+                        pInputTextarea
                         rows="5"
                     ></textarea>
                 </div>
                 <div
-                    class="flex justify-content-between align-items-center mt-4"
+                    class="flex flex-column xl:flex-row justify-content-start xl:justify-content-between row-gap-4 xl:row-gap-0 align-items-start xl:align-items-center mt-4"
                 >
-                    <div class="flex align-items-center mr-2">
+                    <div
+                        class="flex flex-column xl:flex-row xl:align-items-center mr-2 w-full xl:w-auto"
+                    >
                         <label
                             class="label-required font-semibold mr-2"
                             for="coordinador"
                             >Coordinador(a):</label
                         >
                         <input
+                            id="coordinador"
+                            class="mt-2 xl:mt-0"
+                            formControlName="coordinador"
                             pInputText
                             type="text"
-                            id="coordinador"
-                            formControlName="coordinador"
                         />
                     </div>
-                    <div class="flex align-items-center mr-2">
+                    <div
+                        class="flex flex-column xl:flex-row xl:align-items-center mr-2 w-full xl:w-auto"
+                    >
                         <label
                             class="label-required font-semibold mr-2"
                             for="docente"
                             >Docente:</label
                         >
-                        <input
-                            class="flex-1 mr-2"
-                            pInputText
-                            type="text"
-                            id="docente"
-                            formControlName="docente"
-                            readonly
-                        />
-                        <button
-                            pButton
-                            icon="pi pi-search"
-                            (click)="onSeleccionarDocente()"
-                        ></button>
+                        <div class="flex mt-2 xl:mt-0">
+                            <input
+                                id="docente"
+                                class="mr-2"
+                                formControlName="docente"
+                                pInputText
+                                readonly
+                                type="text"
+                            />
+                            <button
+                                icon="pi pi-search"
+                                pButton
+                                (click)="onSeleccionarDocente()"
+                            ></button>
+                        </div>
                     </div>
-                    <div class="flex align-items-center">
+                    <div
+                        class="flex flex-column xl:flex-row xl:align-items-center w-full xl:w-auto"
+                    >
                         <label
                             class="label-required font-semibold mr-2"
                             for="estudiante"
                             >Estudiante:</label
                         >
                         <input
-                            pInputText
-                            type="text"
                             id="estudiante"
+                            class="mt-2 xl:mt-0"
                             formControlName="estudiante"
+                            pInputText
                             readonly
+                            type="text"
                         />
                     </div>
                 </div>
@@ -144,20 +154,20 @@
                         <label
                             class="label-required font-semibold"
                             for="fechaSesion"
-                            >Fecha de Sesión:
-                        </label>
+                            >Fecha de Sesión:</label
+                        >
                         <i
                             class="pi pi-info-circle"
-                            style="color: orangered; font-size: 16px"
                             pTooltip="Fecha en la que se celebró la sesión ordinaria del comité, que es importante para el seguimiento del proceso."
+                            style="color: orangered; font-size: 16px"
                             tooltipPosition="top"
                         ></i>
                     </div>
                     <p-calendar
                         id="fechaSesion"
                         formControlName="fechaSesion"
+                        [dateFormat]="'dd.mm.yy'"
                         [showIcon]="true"
-                        dateFormat="dd.mm.yy"
                     ></p-calendar>
                 </div>
                 <div class="flex flex-column mt-4 max-w-20rem">
@@ -165,28 +175,28 @@
                         <label
                             class="label-required font-semibold"
                             for="fechaRespuesta"
-                            >Fecha de Respuestas:
-                        </label>
+                            >Fecha de Respuestas:</label
+                        >
                         <i
                             class="pi pi-info-circle"
-                            style="color: orangered; font-size: 16px"
                             pTooltip="Fecha límite para enviar los formatos B y C a la coordinación. Asegúrate de enviar la información antes de esta fecha para cumplir con el plazo."
+                            style="color: orangered; font-size: 16px"
                             tooltipPosition="top"
                         ></i>
                     </div>
                     <p-calendar
                         id="fechaRespuesta"
                         formControlName="fechaRespuesta"
+                        [dateFormat]="'dd.mm.yy'"
                         [showIcon]="true"
-                        dateFormat="dd.mm.yy"
                     ></p-calendar>
                 </div>
                 <div class="flex flex-column mt-4">
                     <button
-                        pButton
                         class="max-w-20rem align-self-end"
                         icon="pi pi-plus"
                         label="Rellenar Información"
+                        pButton
                         (click)="generateContent()"
                         [disabled]="!isFormValid()"
                         pTooltip="Este botón generará automáticamente el contenido del oficio basado en los datos proporcionados en el formulario."
@@ -198,26 +208,27 @@
                         >Contenido:</label
                     >
                     <textarea
-                        pInputTextarea
                         id="contenido"
-                        style="text-align: justify"
-                        rows="20"
-                        cols="30"
                         formControlName="contenido"
+                        pInputTextarea
+                        rows="20"
+                        style="text-align: justify"
                         [readonly]="!isFormValid()"
                     ></textarea>
                 </div>
                 <div class="field grid mt-4">
-                    <span class="col-9 text-right">
+                    <span
+                        class="col-12 xl:col-9 xl:mb-0 mb-2 text-left xl:text-right"
+                    >
                         <b>Firma Coordinador(a)</b>
                     </span>
-                    <div class="col-3 text-center">
+                    <div class="col-12 xl:col-3 xl:text-right text-center">
                         <p-fileUpload
-                            name="firmaCoordinador"
-                            chooseIcon="pi pi-file"
                             accept=".png, .jpg, .jpeg"
+                            chooseIcon="pi pi-file"
                             chooseLabel="Seleccionar"
                             class="w-full max-w-30rem"
+                            name="firmaCoordinador"
                             previewWidth="100"
                             [auto]="true"
                             (onSelect)="
@@ -231,8 +242,8 @@
                             >
                                 <div *ngIf="firmaCoordinador">
                                     <img
-                                        [src]="firmaCoordinador"
                                         alt="Vista Previa de la Firma"
+                                        [src]="firmaCoordinador"
                                         style="
                                             min-height: 120px;
                                             min-width: 150px;
@@ -247,10 +258,10 @@
                 </div>
                 <div class="footer-logo mt-8">
                     <img
-                        src="assets/layout/images/asset-calidad.png"
                         alt="Asset Calidad"
-                        width="140px"
                         height="100px"
+                        src="assets/layout/images/asset-calidad.png"
+                        width="140px"
                     />
                     <div
                         class="flex flex-column align-items-center justify-content-center"
@@ -258,15 +269,15 @@
                         <span>
                             Carrera 2 No. 15N esquina-Sector Tulcán
                             Popayán-Cauca-Colombia Teléfono: 6028209800 ext.
-                            2100 ó 2101. decafiet@unicauca.edu.co |
+                            2100 ó 2101. decafiet&#64;unicauca.edu.co |
                             <strong>www.unicauca.edu.co</strong>
                         </span>
                     </div>
                     <img
-                        src="assets/layout/images/logosIcontec.png"
                         alt="Logo Icontec"
-                        width="120px"
                         height="80px"
+                        src="assets/layout/images/logosIcontec.png"
+                        width="120px"
                     />
                 </div>
             </form>
@@ -287,8 +298,8 @@
             type="button"
             icon="pi pi-download"
             label="Descargar"
-            (click)="onDownload()"
             [loading]="loading"
+            (click)="onDownload()"
         ></button>
     </div>
 </p-panel>

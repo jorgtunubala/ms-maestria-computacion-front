@@ -366,7 +366,7 @@ export class DocumentoFormatoBService {
                         {
                             stack: [
                                 {
-                                    text: 'Carrera 2 No. 15N esquina-Sector Tulcán\nPopayán-Cauca-Colombia\nTeléfono: 6028209800 ext. 2100 ó 2101\ndecafiet@unicauca.edu.co | www.unicauca.edu.co',
+                                    text: 'Carrera 2 No. 15N esquina-Sector Tulcán\nPopayán-Cauca-Colombia\nTeléfono: 6028209800 ext. 2100 ó 2101\ndecafiet&#64;unicauca.edu.co | www.unicauca.edu.co',
                                     alignment: 'center',
                                     fontSize: 8,
                                     color: '#1f497d',

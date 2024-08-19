@@ -1,34 +1,42 @@
-<p-panel *ngIf="!isLoading && !isSending; else spinner">
+<p-panel
+    class="panel-resolucion"
+    *ngIf="!isLoading && !isSending; else spinner"
+>
     <ng-template pTemplate="header">
-        <span class="font-bold w-full text-center" style="font-size: 20px"
-            >Generación de resolución</span
+        <div
+            class="flex flex-column align-items-center justify-content-center w-full row-gap-4"
         >
+            <p-card
+                class="m-2 w-full max-w-30rem"
+                header="Datos del Estudiante"
+                *ngIf="estudianteSeleccionado"
+            >
+                <div class="mt-2 card-data flex justify-content-between">
+                    <span>Código</span>
+                    <span>{{ estudianteSeleccionado.codigo }}</span>
+                </div>
+                <div class="mt-2 card-data flex justify-content-between">
+                    <span>Numero de Identificación</span>
+                    <span>{{ estudianteSeleccionado.identificacion }}</span>
+                </div>
+                <div class="mt-2 card-data flex justify-content-between">
+                    <span>Nombres y Apellidos</span>
+                    <span
+                        >{{ estudianteSeleccionado.nombre }}
+                        {{ estudianteSeleccionado.apellido }}</span
+                    >
+                </div>
+            </p-card>
+            <span class="font-bold w-full text-center" style="font-size: 20px"
+                >Generación de resolución</span
+            >
+        </div>
     </ng-template>
-    <div class="col flex align-items-center justify-content-center">
-        <p-card
-            class="m-2 w-full max-w-30rem"
-            header="Datos del Estudiante"
-            *ngIf="estudianteSeleccionado"
-        >
-            <div class="mt-2 card-data flex justify-content-between">
-                <span>Código</span>
-                <span>{{ estudianteSeleccionado.codigo }}</span>
-            </div>
-            <div class="mt-2 card-data flex justify-content-between">
-                <span>Numero de Identificación</span>
-                <span>{{ estudianteSeleccionado.identificacion }}</span>
-            </div>
-            <div class="mt-2 card-data flex justify-content-between">
-                <span>Nombres y Apellidos</span>
-                <span
-                    >{{ estudianteSeleccionado.nombre }}
-                    {{ estudianteSeleccionado.apellido }}</span
-                >
-            </div>
-        </p-card>
+    <div class="flex align-items-center justify-content-center">
         <p-dialog
             *ngIf="role.includes('ROLE_DOCENTE') && this.directorSeleccionado"
             header="Solicitud al comité para resolución de aprobación de trabajo de grado"
+            class="dialog-responsive"
             [(visible)]="displayFormatoResolucionComite"
             [style]="{ width: '70vw' }"
             [modal]="true"
@@ -49,6 +57,7 @@
         <p-dialog
             *ngIf="role.includes('ROLE_COORDINADOR') && this.isDocenteCreated"
             header="Solicitud al consejo de facultad para resolución de aprobación de trabajo de grado"
+            class="dialog-responsive"
             [(visible)]="displayFormatoResolucionConsejo"
             [style]="{ width: '70vw' }"
             [modal]="true"
@@ -73,6 +82,7 @@
                 width: '80vw',
                 height: '80vh'
             }"
+            class="dialog-responsive"
             (onHide)="closeModal()"
         >
             <ng-template pTemplate="header">
@@ -253,14 +263,13 @@
                         "
                     >
                         <div class="field grid justify-content-center">
-                            <div class="col-12 lg:col-5">
+                            <div class="col-12 lg:col-6 xl:col-8">
                                 <label class="label-required"
                                     >Título del Trabajo de Investigación</label
                                 >
                                 <input
                                     pInputText
                                     [maxLength]="250"
-                                    style="max-width: 50rem"
                                     class="p-inputtext-md mt-2 w-full"
                                     [value]="tituloSeleccionado"
                                     [disabled]="true"
@@ -268,7 +277,7 @@
                             </div>
                         </div>
                         <div class="field grid justify-content-center">
-                            <div class="col-12 lg:col-5 mt-4">
+                            <div class="col-12 lg:col-6 xl:col-8 mt-4">
                                 <label class="label-required">Director</label>
                                 <div class="mt-2" *ngIf="directorSeleccionado">
                                     <p-card class="w-full m-0">
@@ -317,7 +326,7 @@
                             </div>
                         </div>
                         <div class="field grid justify-content-center">
-                            <div class="col-12 lg:col-5 mt-4">
+                            <div class="col-12 lg:col-6 xl:col-8 mt-4">
                                 <label class="label-required"
                                     >Co-Director</label
                                 >
@@ -374,19 +383,18 @@
                             </div>
                         </div>
                         <div class="field grid justify-content-center">
-                            <div class="col-12 lg:col-5 mt-4">
+                            <div class="col-12 lg:col-6 xl:col-8 mt-4">
                                 <label class="label-required"
                                     >Anteproyecto final (.pdf)
                                 </label>
                                 <div
-                                    style="max-width: 50rem"
                                     class="flex flex-wrap gap-2 mt-2 align-items-start"
                                 >
                                     <div
                                         class="flex flex-column row-gap-2 align-items-start justify-content-start flex-1"
                                     >
                                         <div
-                                            class="flex flex-row w-full justify-content-between"
+                                            class="flex flex-row w-full align-items-start justify-content-between column-gap-1"
                                         >
                                             <p-fileUpload
                                                 #AnteproyectoFinal
@@ -395,8 +403,8 @@
                                                 [auto]="true"
                                                 accept=".pdf"
                                                 chooseIcon="pi pi-file"
-                                                class="w-full"
-                                                maxFileSize="5000000"
+                                                class="w-full flex-1"
+                                                maxFileSize="20000000"
                                                 (onSelect)="
                                                     onFileSelectAnteproyectoFinal(
                                                         $event
@@ -468,20 +476,19 @@
                             </div>
                         </div>
                         <div class="field grid justify-content-center">
-                            <div class="col-12 lg:col-5 mt-4">
+                            <div class="col-12 lg:col-6 xl:col-8 mt-4">
                                 <label class="label-required"
                                     >Solicitud al comité para resolución de
                                     aprobación de trabajo de grado (.pdf)
                                 </label>
                                 <div
-                                    style="max-width: 50rem"
                                     class="flex flex-wrap gap-2 mt-2 align-items-start"
                                 >
                                     <div
                                         class="flex flex-column row-gap-2 align-items-start justify-content-start flex-1"
                                     >
                                         <div
-                                            class="flex flex-row w-full justify-content-between"
+                                            class="flex flex-row w-full align-items-start justify-content-between column-gap-1"
                                         >
                                             <p-fileUpload
                                                 #SolicitudComite
@@ -490,8 +497,8 @@
                                                 [auto]="true"
                                                 accept=".pdf"
                                                 chooseIcon="pi pi-file"
-                                                class="w-full"
-                                                maxFileSize="5000000"
+                                                class="w-full flex-1"
+                                                maxFileSize="20000000"
                                                 (onSelect)="
                                                     onFileSelectSolicitudComite(
                                                         $event
@@ -618,7 +625,7 @@
                     >
                         <div class="field grid">
                             <div
-                                class="flex flex-1 justify-content-end align-items-center"
+                                class="flex flex-1 justify-content-end align-items-center mb-4 lg:mb-0"
                                 *ngIf="isCoordinadorFase1"
                             >
                                 <button
@@ -639,7 +646,7 @@
                                 <p-confirmPopup></p-confirmPopup>
                             </div>
                             <div
-                                class="flex flex-1 justify-content-end align-items-center"
+                                class="flex flex-1 justify-content-end align-items-center mb-4 lg:mb-0"
                                 *ngIf="isDocente && !isCoordinadorFase1"
                             >
                                 <button
@@ -688,7 +695,7 @@
                             "
                             class="field grid justify-content-center"
                         >
-                            <div class="col-12 lg:col-5">
+                            <div class="col-12 lg:col-6 xl:col-8">
                                 <div>
                                     <label class="label-required">Asunto</label>
                                     <input
@@ -749,7 +756,7 @@
                     >
                         <div class="field grid">
                             <div
-                                class="flex flex-1 justify-content-end align-items-center"
+                                class="flex flex-1 justify-content-end align-items-center mb-4 lg:mb-0"
                                 *ngIf="isCoordinadorFase2"
                             >
                                 <button
@@ -796,7 +803,7 @@
                             *ngIf="resolucionForm.get('conceptoComite').value"
                             class="field grid justify-content-center"
                         >
-                            <div class="col-12 lg:col-5">
+                            <div class="col-12 lg:col-6 xl:col-8">
                                 <div>
                                     <label class="label-required">Asunto</label>
                                     <input
@@ -825,27 +832,36 @@
                             *ngIf="resolucionForm.get('conceptoComite').value"
                             class="field grid justify-content-center"
                         >
-                            <div
-                                class="col-12 lg:col-5 flex flex-nowrap align-items-center justify-content-between"
-                            >
-                                <label class="label-required">
-                                    No de resolución
-                                </label>
-                                <input
-                                    class="max-w-10rem ml-2"
-                                    pInputText
-                                    formControlName="numeroActa"
-                                />
-                                <label class="label-required ml-4"
-                                    >Fecha resolución</label
+                            <div class="col-12 lg:col-6 xl:col-8">
+                                <div
+                                    class="p-field flex flex-column xl:flex-row xl:align-items-center xl:column-gap-2 justify-content-between"
                                 >
-                                <p-calendar
-                                    class="ml-2"
-                                    formControlName="fechaActa"
-                                    [showIcon]="true"
-                                    dateFormat="dd.mm.yy"
-                                    [maxDate]="maxDate"
-                                ></p-calendar>
+                                    <label
+                                        class="label-required text-left"
+                                        for="numeroActa"
+                                    >
+                                        No de resolución
+                                    </label>
+                                    <input
+                                        id="numeroActa"
+                                        class="mt-2 w-full xl:w-10rem"
+                                        pInputText
+                                        formControlName="numeroActa"
+                                    />
+                                    <label
+                                        class="label-required text-left mt-2 xl:mt-0"
+                                        for="fechaActa"
+                                        >Fecha resolución</label
+                                    >
+                                    <p-calendar
+                                        id="fechaActa"
+                                        class="mt-2 w-full xl:w-15rem"
+                                        formControlName="fechaActa"
+                                        [showIcon]="true"
+                                        dateFormat="dd.mm.yy"
+                                        [maxDate]="maxDate"
+                                    ></p-calendar>
+                                </div>
                             </div>
                         </div>
                         <div
@@ -855,21 +871,20 @@
                             "
                             class="field grid justify-content-center"
                         >
-                            <div class="col-12 lg:col-5 mt-4">
+                            <div class="col-12 lg:col-6 xl:col-8 mt-4">
                                 <label class="label-required"
                                     >Solicitud al consejo de facultad para
                                     resolución de aprobación de trabajo de grado
                                     (.pdf)
                                 </label>
                                 <div
-                                    style="max-width: 50rem"
                                     class="flex flex-wrap gap-2 mt-2 align-items-start"
                                 >
                                     <div
                                         class="flex flex-column row-gap-2 align-items-start justify-content-start flex-1"
                                     >
                                         <div
-                                            class="flex flex-row w-full justify-content-between"
+                                            class="flex flex-row w-full align-items-start justify-content-between column-gap-1"
                                         >
                                             <p-fileUpload
                                                 #SolicitudConsejo
@@ -878,8 +893,8 @@
                                                 [auto]="true"
                                                 accept=".pdf"
                                                 chooseIcon="pi pi-file"
-                                                class="w-full"
-                                                maxFileSize="5000000"
+                                                class="w-full flex-1"
+                                                maxFileSize="20000000"
                                                 (onSelect)="
                                                     onFileSelectSolicitudConsejo(
                                                         $event
@@ -1012,44 +1027,52 @@
                         "
                     >
                         <div class="field grid justify-content-center">
-                            <div
-                                class="col-12 lg:col-5 flex flex-nowrap align-items-center justify-content-between"
-                            >
-                                <label class="label-required">
-                                    No de resolución generada por el consejo de
-                                    facultad
-                                </label>
-                                <input
-                                    class="max-w-10rem ml-2"
-                                    pInputText
-                                    formControlName="numeroActaConsejo"
-                                />
-                                <label class="label-required ml-4"
-                                    >Fecha resolución</label
+                            <div class="col-12 lg:col-6 xl:col-8">
+                                <div
+                                    class="p-field flex flex-column xl:flex-row xl:align-items-center xl:column-gap-2 justify-content-between"
                                 >
-                                <p-calendar
-                                    class="ml-2"
-                                    formControlName="fechaActaConsejo"
-                                    [showIcon]="true"
-                                    dateFormat="dd.mm.yy"
-                                    [maxDate]="maxDate"
-                                ></p-calendar>
+                                    <label
+                                        class="label-required text-left"
+                                        for="numeroActaConsejo"
+                                    >
+                                        No de resolución generada por el consejo
+                                        de facultad
+                                    </label>
+                                    <input
+                                        id="numeroActaConsejo"
+                                        class="mt-2 w-full xl:w-10rem"
+                                        pInputText
+                                        formControlName="numeroActaConsejo"
+                                    />
+                                    <label
+                                        class="label-required text-left mt-2 xl:mt-0"
+                                        for="fechaActaConsejo"
+                                        >Fecha resolución</label
+                                    >
+                                    <p-calendar
+                                        id="fechaActaConsejo"
+                                        class="mt-2 w-full xl:w-15rem"
+                                        formControlName="fechaActaConsejo"
+                                        [showIcon]="true"
+                                        dateFormat="dd.mm.yy"
+                                        [maxDate]="maxDate"
+                                    ></p-calendar>
+                                </div>
                             </div>
                         </div>
                         <div class="field grid justify-content-center">
-                            <div class="col-12 lg:col-5 mt-4">
+                            <div class="col-12 lg:col-6 xl:col-8 mt-4">
                                 <label class="label-required"
                                     >Oficio Consejo (.pdf)
                                 </label>
                                 <div
-                                    style="max-width: 50rem"
                                     class="flex flex-wrap gap-2 mt-2 align-items-start"
                                 >
                                     <div
                                         class="flex flex-column row-gap-2 align-items-start justify-content-start flex-1"
                                     >
                                         <div
-                                            class="flex flex-row w-full justify-content-between"
+                                            class="flex flex-row w-full align-items-start justify-content-between column-gap-1"
                                         >
                                             <p-fileUpload
                                                 #OficioConsejo
@@ -1058,8 +1081,8 @@
                                                 [auto]="true"
                                                 accept=".pdf"
                                                 chooseIcon="pi pi-file"
-                                                class="w-full"
-                                                maxFileSize="5000000"
+                                                class="w-full flex-1"
+                                                maxFileSize="20000000"
                                                 (onSelect)="
                                                     onFileSelectOficioConsejo(
                                                         $event

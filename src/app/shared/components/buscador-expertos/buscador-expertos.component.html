@@ -17,12 +17,13 @@
     [paginator]="true"
     [loading]="loading"
     [rows]="5"
-    [scrollable]="true"
     [showCurrentPageReport]="true"
-    currentPageReportTemplate="{first} - {last} de {totalRecords}"
-    selectionMode="single"
+    [scrollable]="true"
     [(selection)]="expertoSeleccionado"
+    currentPageReportTemplate="{first} - {last} de {totalRecords}"
     dataKey="id"
+    selectionMode="single"
+    styleClass="p-datatable-gridlines p-datatable-striped"
 >
     <ng-template pTemplate="header">
         <tr>

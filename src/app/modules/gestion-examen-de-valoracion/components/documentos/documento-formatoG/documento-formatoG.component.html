@@ -14,18 +14,18 @@
                 />
             </div>
         </div>
-        <div class="mt-4 px-8">
+        <div class="mt-4 px-1 lg:px-8">
             <form [formGroup]="formatoGForm">
                 <div class="field grid justify-content-start">
                     <label
-                        class="col-2 label-required font-semibold"
+                        class="col-2 col-label label-required font-semibold"
                         for="consecutivo"
                         >Consecutivo</label
                     >
                     <div class="col-10">
                         <input
                             pInputText
-                            class="p-inputtext-md"
+                            class="p-inputtext-md col-input"
                             type="text"
                             id="consecutivo"
                             formControlName="consecutivo"
@@ -34,13 +34,13 @@
                 </div>
 
                 <div class="field grid justify-content-start">
-                    <label class="col-2 font-semibold" for="facultad"
+                    <label class="col-2 col-label font-semibold" for="facultad"
                         >Facultad</label
                     >
                     <div class="col-10">
                         <input
                             pInputText
-                            class="p-inputtext-md w-full"
+                            class="p-inputtext-md col-input w-full"
                             type="text"
                             id="facultad"
                             formControlName="facultad"
@@ -50,13 +50,13 @@
                 </div>
 
                 <div class="field grid justify-content-start">
-                    <label class="col-2 font-semibold" for="programa"
+                    <label class="col-2 col-label font-semibold" for="programa"
                         >Programa</label
                     >
                     <div class="col-10">
                         <input
                             pInputText
-                            class="p-inputtext-md w-full"
+                            class="p-inputtext-md col-input w-full"
                             type="text"
                             id="programa"
                             formControlName="programa"
@@ -67,14 +67,14 @@
 
                 <div class="field grid justify-content-start">
                     <label
-                        class="col-2 label-required font-semibold"
+                        class="col-2 col-label label-required font-semibold"
                         for="coordinador"
                         >Coordinador(a)</label
                     >
                     <div class="col-10">
                         <input
                             pInputText
-                            class="p-inputtext-md w-full"
+                            class="p-inputtext-md col-input w-full"
                             type="text"
                             id="coordinador"
                             formControlName="coordinador"
@@ -83,13 +83,15 @@
                 </div>
 
                 <div class="field grid justify-content-start">
-                    <label class="col-2 font-semibold" for="estudiante"
+                    <label
+                        class="col-2 col-label font-semibold"
+                        for="estudiante"
                         >Nombre del estudiante</label
                     >
                     <div class="col-10">
                         <input
                             pInputText
-                            class="p-inputtext-md w-full"
+                            class="p-inputtext-md col-input w-full"
                             type="text"
                             id="estudiante"
                             formControlName="estudiante"
@@ -99,13 +101,13 @@
                 </div>
 
                 <div class="field grid justify-content-start">
-                    <label class="col-2 font-semibold" for="director"
+                    <label class="col-2 col-label font-semibold" for="director"
                         >Nombre del director</label
                     >
                     <div class="col-10">
                         <input
                             pInputText
-                            class="p-inputtext-md w-full"
+                            class="p-inputtext-md col-input w-full"
                             type="text"
                             id="director"
                             formControlName="director"
@@ -116,7 +118,7 @@
 
                 <div class="field grid justify-content-start">
                     <label
-                        class="col-2 label-required font-semibold"
+                        class="col-2 col-label label-required font-semibold"
                         for="observaciones"
                         >Observaciones</label
                     >
@@ -132,7 +134,9 @@
                 </div>
 
                 <div class="field grid justify-content-start">
-                    <label class="col-2 font-semibold">Jurado Interno</label>
+                    <label class="col-2 col-label font-semibold"
+                        >Jurado Interno</label
+                    >
                     <div class="col-10">
                         <p-card class="w-full m-0">
                             <div class="flex">
@@ -147,7 +151,9 @@
                     </div>
                 </div>
                 <div class="field grid justify-content-start">
-                    <label class="col-2 font-semibold">Jurado Externo</label>
+                    <label class="col-2 col-label font-semibold"
+                        >Jurado Externo</label
+                    >
                     <div class="col-10">
                         <p-card class="w-full m-0">
                             <div class="flex">
@@ -163,10 +169,10 @@
                 </div>
 
                 <div class="field grid mt-4">
-                    <span class="col-9 text-right">
+                    <span class="col-12 lg:col-9 text-right">
                         <b>Firma Coordinador(a)</b>
                     </span>
-                    <div class="col-3 text-center">
+                    <div class="col-12 lg:col-3 text-right lg:text-center">
                         <p-fileUpload
                             name="firmaCoordinador"
                             chooseIcon="pi pi-file"
@@ -213,7 +219,7 @@
                         <span>
                             Carrera 2 No. 15N esquina-Sector Tulcán
                             Popayán-Cauca-Colombia Teléfono: 6028209800 ext.
-                            2100 ó 2101. decafiet@unicauca.edu.co |
+                            2100 ó 2101. decafiet&#64;unicauca.edu.co |
                             <strong>www.unicauca.edu.co</strong>
                         </span>
                     </div>

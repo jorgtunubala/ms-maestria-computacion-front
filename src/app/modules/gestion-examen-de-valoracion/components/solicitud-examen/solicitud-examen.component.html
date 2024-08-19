@@ -1,33 +1,38 @@
-<p-panel *ngIf="!isLoading && !isSending; else spinner">
+<p-panel class="panel-solicitud" *ngIf="!isLoading && !isSending; else spinner">
     <ng-template pTemplate="header">
-        <span class="font-bold w-full text-center" style="font-size: 20px"
-            >Examen de Valoración</span
+        <div
+            class="flex flex-column align-items-center justify-content-center w-full row-gap-4"
         >
+            <span class="font-bold w-full text-center" style="font-size: 20px"
+                >Examen de Valoración</span
+            >
+            <p-card
+                class="m-2 w-full max-w-30rem"
+                header="Datos del Estudiante"
+                *ngIf="estudianteSeleccionado"
+            >
+                <div class="mt-2 card-data flex justify-content-between">
+                    <span>Código</span>
+                    <span>{{ estudianteSeleccionado.codigo }}</span>
+                </div>
+                <div class="mt-2 card-data flex justify-content-between">
+                    <span>Numero de Identificación</span>
+                    <span>{{ estudianteSeleccionado.identificacion }}</span>
+                </div>
+                <div class="mt-2 card-data flex justify-content-between">
+                    <span>Nombres y Apellidos</span>
+                    <span
+                        >{{ estudianteSeleccionado.nombre }}
+                        {{ estudianteSeleccionado.apellido }}</span
+                    >
+                </div>
+            </p-card>
+        </div>
     </ng-template>
-    <div class="col flex align-items-center justify-content-center">
-        <p-card
-            class="m-2 w-full max-w-30rem"
-            header="Datos del Estudiante"
-            *ngIf="estudianteSeleccionado"
-        >
-            <div class="mt-2 card-data flex justify-content-between">
-                <span>Código</span>
-                <span>{{ estudianteSeleccionado.codigo }}</span>
-            </div>
-            <div class="mt-2 card-data flex justify-content-between">
-                <span>Numero de Identificación</span>
-                <span>{{ estudianteSeleccionado.identificacion }}</span>
-            </div>
-            <div class="mt-2 card-data flex justify-content-between">
-                <span>Nombres y Apellidos</span>
-                <span
-                    >{{ estudianteSeleccionado.nombre }}
-                    {{ estudianteSeleccionado.apellido }}</span
-                >
-            </div>
-        </p-card>
+    <div class="flex align-items-center justify-content-center">
         <p-dialog
             header="Formato A"
+            class="dialog-responsive"
             [(visible)]="displayFormatoA"
             [style]="{ width: '70vw' }"
             [modal]="true"
@@ -45,6 +50,7 @@
         <p-dialog
             *ngIf="fechaMaximaEvaluacion.value"
             header="Formato Oficio Dirigido A Evaluadores"
+            class="dialog-responsive"
             [(visible)]="displayFormatoOficioDirigidoEvaluadores"
             [style]="{ width: '70vw' }"
             [modal]="true"
@@ -71,6 +77,7 @@
                 width: '80vw',
                 height: '80vh'
             }"
+            class="dialog-responsive"
             (onHide)="closeModal()"
         >
             <ng-template pTemplate="header">
@@ -270,14 +277,13 @@
                         "
                     >
                         <div class="field grid justify-content-center">
-                            <div class="col-12 lg:col-5">
+                            <div class="col-12 lg:col-6 xl:col-8">
                                 <label class="label-required"
                                     >Título del Trabajo de Investigación</label
                                 >
                                 <input
                                     pInputText
                                     [maxLength]="250"
-                                    style="max-width: 50rem"
                                     class="p-inputtext-md mt-2 w-full"
                                     formControlName="titulo"
                                 />
@@ -290,7 +296,7 @@
                                 role.includes('ROLE_DOCENTE')
                             "
                         >
-                            <div class="col-12 lg:col-5 mt-4">
+                            <div class="col-12 lg:col-6 xl:col-8 mt-4">
                                 <label class="label-required"
                                     >Evaluador Externo</label
                                 >
@@ -330,17 +336,15 @@
                                                 class="mt-2 flex justify-content-between"
                                             >
                                                 <span>Nombres y Apellidos</span>
-                                                <span
-                                                    >{{
-                                                        evaluadorExternoSeleccionado.nombres
-                                                    }}
-                                                </span>
+                                                <span class="truncate-text">{{
+                                                    evaluadorExternoSeleccionado.nombres
+                                                }}</span>
                                             </div>
                                             <div
                                                 class="mt-2 flex justify-content-between"
                                             >
                                                 <span>Universidad</span>
-                                                <span>{{
+                                                <span class="truncate-text">{{
                                                     evaluadorExternoSeleccionado.universidad
                                                 }}</span>
                                             </div>
@@ -348,7 +352,7 @@
                                                 class="mt-2 flex justify-content-between"
                                             >
                                                 <span>Correo</span>
-                                                <span>{{
+                                                <span class="truncate-text">{{
                                                     evaluadorExternoSeleccionado.correo
                                                 }}</span>
                                             </div>
@@ -377,7 +381,7 @@
                                 role.includes('ROLE_DOCENTE')
                             "
                         >
-                            <div class="col-12 lg:col-5 mt-4">
+                            <div class="col-12 lg:col-6 xl:col-8 mt-4">
                                 <label class="label-required"
                                     >Evaluador Interno</label
                                 >
@@ -416,7 +420,7 @@
                                                 class="mt-2 flex justify-content-between"
                                             >
                                                 <span>Nombres y Apellidos</span>
-                                                <span>{{
+                                                <span class="truncate-text">{{
                                                     evaluadorInternoSeleccionado.nombres
                                                 }}</span>
                                             </div>
@@ -424,7 +428,7 @@
                                                 class="mt-2 flex justify-content-between"
                                             >
                                                 <span>Universidad</span>
-                                                <span>{{
+                                                <span class="truncate-text">{{
                                                     evaluadorInternoSeleccionado.universidad
                                                 }}</span>
                                             </div>
@@ -432,7 +436,7 @@
                                                 class="mt-2 flex justify-content-between"
                                             >
                                                 <span>Correo</span>
-                                                <span>{{
+                                                <span class="truncate-text">{{
                                                     evaluadorInternoSeleccionado.correo
                                                 }}</span>
                                             </div>
@@ -455,20 +459,19 @@
                             </div>
                         </div>
                         <div class="field grid justify-content-center">
-                            <div class="col-12 lg:col-5 mt-4">
+                            <div class="col-12 lg:col-6 xl:col-8 mt-4">
                                 <label class="label-required"
                                     >Solicitud Examen de Valoración (Formato A
                                     .pdf)
                                 </label>
                                 <div
-                                    style="max-width: 50rem"
                                     class="flex flex-wrap mt-2 gap-2 align-items-start"
                                 >
                                     <div
                                         class="flex flex-column row-gap-2 align-items-start justify-content-start flex-1"
                                     >
                                         <div
-                                            class="flex flex-row w-full justify-content-between"
+                                            class="flex flex-row w-full align-items-start justify-content-between column-gap-1"
                                         >
                                             <p-fileUpload
                                                 #FormatoA
@@ -477,8 +480,8 @@
                                                 [auto]="true"
                                                 accept=".pdf"
                                                 chooseIcon="pi pi-file"
-                                                class="w-full max-w-30rem"
-                                                maxFileSize="2000000"
+                                                class="w-full flex-1 max-w-30rem"
+                                                maxFileSize="20000000"
                                                 (onSelect)="
                                                     onFileSelectFormatoA($event)
                                                 "
@@ -557,20 +560,19 @@
                             </div>
                         </div>
                         <div class="field grid justify-content-center">
-                            <div class="col-12 lg:col-5 mt-4">
+                            <div class="col-12 lg:col-6 xl:col-8 mt-4">
                                 <label class="label-required"
                                     >Anteproyecto presentado a Examen (Formato D
                                     .pdf)
                                 </label>
                                 <div
-                                    style="max-width: 50rem"
                                     class="flex flex-wrap gap-2 mt-2 align-items-start"
                                 >
                                     <div
                                         class="flex flex-column row-gap-2 align-items-start justify-content-start flex-1"
                                     >
                                         <div
-                                            class="flex flex-row w-full justify-content-between"
+                                            class="flex flex-row w-full align-items-start justify-content-between column-gap-1"
                                         >
                                             <p-fileUpload
                                                 #FormatoD
@@ -579,8 +581,8 @@
                                                 [auto]="true"
                                                 accept=".pdf"
                                                 chooseIcon="pi pi-file"
-                                                class="w-full max-w-30rem"
-                                                maxFileSize="5000000"
+                                                class="w-full flex-1 max-w-30rem"
+                                                maxFileSize="20000000"
                                                 (onSelect)="
                                                     onFileSelectFormatoD($event)
                                                 "
@@ -639,19 +641,18 @@
                             </div>
                         </div>
                         <div class="field grid justify-content-center">
-                            <div class="col-12 lg:col-5 mt-4">
+                            <div class="col-12 lg:col-6 xl:col-8 mt-4">
                                 <label class="label-required"
                                     >Examen de valoración (Formato E .pdf)
                                 </label>
                                 <div
-                                    style="max-width: 50rem"
                                     class="flex flex-wrap gap-2 mt-2 align-items-start"
                                 >
                                     <div
                                         class="flex flex-column row-gap-2 align-items-start justify-content-start flex-1"
                                     >
                                         <div
-                                            class="flex flex-row w-full justify-content-between"
+                                            class="flex flex-row w-full align-items-start justify-content-between column-gap-1"
                                         >
                                             <p-fileUpload
                                                 #FormatoE
@@ -660,8 +661,8 @@
                                                 name="linkFormatoE"
                                                 chooseIcon="pi pi-file"
                                                 accept=".pdf"
-                                                class="w-full max-w-30rem"
-                                                maxFileSize="5000000"
+                                                class="w-full flex-1 max-w-30rem"
+                                                maxFileSize="20000000"
                                                 (onSelect)="
                                                     onFileSelectFormatoE($event)
                                                 "
@@ -719,25 +720,24 @@
                             </div>
                         </div>
                         <div class="field grid justify-content-center">
-                            <div class="col-12 lg:col-5 mt-4">
+                            <div class="col-12 lg:col-6 xl:col-8 mt-4">
                                 <label>Anexos (.pdf) </label>
                                 <div
-                                    style="max-width: 50rem"
                                     class="flex flex-wrap gap-2 mt-2 align-items-start"
                                 >
                                     <div
                                         class="flex flex-column row-gap-2 align-items-start justify-content-start flex-1"
                                     >
                                         <div
-                                            class="flex flex-row w-full justify-content-between"
+                                            class="flex flex-row w-full align-items-start justify-content-between column-gap-1"
                                         >
                                             <p-fileUpload
                                                 name="anexos"
-                                                class="w-full"
-                                                chooseIcon="pi pi-file"
+                                                class="w-full flex-1"
                                                 multiple="multiple"
                                                 accept=".pdf"
-                                                maxFileSize="5000000"
+                                                chooseIcon="pi pi-file"
+                                                maxFileSize="20000000"
                                                 chooseLabel="Buscar documento"
                                                 (onSelect)="onUpload($event)"
                                                 [disabled]="
@@ -875,7 +875,7 @@
                         "
                     >
                         <div
-                            class="flex flex-1 justify-content-end align-items-center"
+                            class="flex flex-1 justify-content-end align-items-center mb-4 lg:mb-0"
                             *ngIf="isCoordinadorFase1"
                         >
                             <button
@@ -894,7 +894,7 @@
                             <p-confirmPopup></p-confirmPopup>
                         </div>
                         <div
-                            class="flex flex-1 justify-content-end align-items-center"
+                            class="flex flex-1 justify-content-end align-items-center mb-4 lg:mb-0"
                             *ngIf="isDocente && !isCoordinadorFase1"
                         >
                             <button
@@ -944,7 +944,7 @@
                             "
                             class="field grid justify-content-center"
                         >
-                            <div class="col-12 lg:col-5">
+                            <div class="col-12 lg:col-6 xl:col-8">
                                 <div>
                                     <label class="label-required">Asunto</label>
                                     <input
@@ -1035,7 +1035,7 @@
                             *ngIf="solicitudForm.get('conceptoComite').value"
                             class="field grid justify-content-center"
                         >
-                            <div class="col-12 lg:col-5">
+                            <div class="col-12 lg:col-6 xl:col-8">
                                 <p-card class="w-full m-0">
                                     <div class="text-center mb-4">
                                         <span>
@@ -1063,7 +1063,7 @@
                             *ngIf="solicitudForm.get('conceptoComite').value"
                             class="field grid justify-content-center"
                         >
-                            <div class="col-12 lg:col-5">
+                            <div class="col-12 lg:col-6 xl:col-8">
                                 <div>
                                     <label class="label-required">Asunto</label>
                                     <input
@@ -1096,7 +1096,7 @@
                             "
                         >
                             <div
-                                class="col-12 lg:col-5 flex flex-nowrap justify-content-between align-items-center"
+                                class="col-12 lg:col-6 xl:col-8 flex flex-nowrap justify-content-between align-items-center"
                             >
                                 <label class="label-required"
                                     >Fecha máxima de la evaluación</label
@@ -1119,21 +1119,20 @@
                             "
                             class="field grid justify-content-center"
                         >
-                            <div class="col-12 lg:col-5 mt-2">
+                            <div class="col-12 lg:col-6 xl:col-8 mt-2">
                                 <label class="label-required"
                                     >Oficio dirigido a evaluadores sobre
                                     instrucciones para el examen de valoración
                                     (.pdf)
                                 </label>
                                 <div
-                                    style="max-width: 50rem"
                                     class="flex flex-wrap gap-2 mt-2 align-items-start"
                                 >
                                     <div
                                         class="flex flex-column row-gap-2 align-items-start justify-content-start flex-1"
                                     >
                                         <div
-                                            class="flex flex-row w-full justify-content-between"
+                                            class="flex flex-row w-full align-items-start justify-content-between column-gap-1"
                                         >
                                             <p-fileUpload
                                                 #OficioDirigidoEvaluadores
@@ -1142,8 +1141,8 @@
                                                 [auto]="true"
                                                 accept=".pdf"
                                                 chooseIcon="pi pi-file"
-                                                class="w-full max-w-30rem"
-                                                maxFileSize="2000000"
+                                                class="w-full flex-1 max-w-30rem"
+                                                maxFileSize="20000000"
                                                 (onSelect)="
                                                     onFileSelectOficioDirigidoEvaluadores(
                                                         $event
@@ -1240,33 +1239,44 @@
                             *ngIf="solicitudForm.get('conceptoComite').value"
                             class="field grid justify-content-center"
                         >
-                            <div
-                                class="col-12 lg:col-5 flex flex-nowrap justify-content-between align-items-center"
-                            >
-                                <label class="label-required">{{
-                                    solicitudForm.get("conceptoComite")
-                                        .value === "Avalado"
-                                        ? "No Acta de aprobación del examen"
-                                        : "No Acta del examen"
-                                }}</label>
-                                <input
-                                    class="max-w-10rem ml-2"
-                                    pInputText
-                                    formControlName="numeroActa"
-                                />
-                                <label class="label-required ml-4"
-                                    >Fecha del Acta</label
+                            <div class="col-12 lg:col-6 xl:col-8">
+                                <div
+                                    class="p-field flex flex-column xl:flex-row xl:align-items-center xl:column-gap-2 justify-content-between"
                                 >
-                                <p-calendar
-                                    class="ml-2"
-                                    formControlName="fechaActa"
-                                    [showIcon]="true"
-                                    dateFormat="dd.mm.yy"
-                                    [maxDate]="maxDate"
-                                ></p-calendar>
+                                    <label
+                                        class="label-required text-left"
+                                        for="numeroActa"
+                                    >
+                                        {{
+                                            solicitudForm.get("conceptoComite")
+                                                .value === "Avalado"
+                                                ? "No Acta de aprobación del examen"
+                                                : "No Acta del examen"
+                                        }}
+                                    </label>
+                                    <input
+                                        id="numeroActa"
+                                        class="mt-2 w-full xl:w-10rem"
+                                        pInputText
+                                        formControlName="numeroActa"
+                                    />
+                                    <label
+                                        class="label-required text-left mt-2 xl:mt-0"
+                                        for="fechaActa"
+                                    >
+                                        Fecha del Acta
+                                    </label>
+                                    <p-calendar
+                                        id="fechaActa"
+                                        class="mt-2 w-full xl:w-15rem"
+                                        formControlName="fechaActa"
+                                        [showIcon]="true"
+                                        dateFormat="dd.mm.yy"
+                                        [maxDate]="maxDate"
+                                    ></p-calendar>
+                                </div>
                             </div>
                         </div>
-
                         <div
                             class="flex flex-1 justify-content-end align-items-center"
                             *ngIf="

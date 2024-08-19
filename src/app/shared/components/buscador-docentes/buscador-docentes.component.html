@@ -10,21 +10,21 @@
         />
     </span>
 </div>
-<br/>
+<br />
 <p-table
     #tableDocentes
     [value]="docentes"
     [paginator]="true"
     [loading]="loading"
     [rows]="5"
-    breakpoint="768px"
-    styleClass="p-datatable-gridlines p-datatable-striped"
     [showCurrentPageReport]="true"
-    currentPageReportTemplate="{first} - {last} de {totalRecords}"
-    selectionMode="single"
+    [scrollable]="true"
     [(selection)]="docenteSeleccionado"
+    currentPageReportTemplate="{first} - {last} de {totalRecords}"
     dataKey="id"
-    >
+    selectionMode="single"
+    styleClass="p-datatable-gridlines p-datatable-striped"
+>
     <ng-template pTemplate="header">
         <tr>
             <th scope="col">Nombres</th>
@@ -41,9 +41,7 @@
     <!-- Mensaje sin registros -->
     <ng-template pTemplate="emptymessage" let-columns>
         <tr>
-            <td [attr.colspan]="6">
-                No se encontraron registros
-            </td>
+            <td [attr.colspan]="6">No se encontraron registros</td>
         </tr>
     </ng-template>
 </p-table>

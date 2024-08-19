@@ -42,3 +42,22 @@
 .footer-logo div span {
     color: #1f497d;
 }
+
+@media (max-width: 1024px) {
+    .col-label {
+        text-align: left !important;
+        margin-bottom: 10px;
+    }
+
+    .col-label,
+    .col-input {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 425px) {
+    .footer-logo {
+        display: none;
+    }
+}

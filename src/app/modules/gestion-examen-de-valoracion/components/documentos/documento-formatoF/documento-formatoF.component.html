@@ -14,13 +14,13 @@
                 />
             </div>
         </div>
-        <div class="mt-4 px-8">
+        <div class="mt-4 px-1 md:px-4 lg:px-8">
             <form [formGroup]="formatoFForm">
                 <div class="field grid justify-content-start">
-                    <label class="col-2 font-semibold" for="titulo"
+                    <label class="col-3 col-label font-semibold" for="titulo"
                         >Titulo</label
                     >
-                    <div class="col-10">
+                    <div class="col-9 col-input">
                         <input
                             pInputText
                             type="text"
@@ -33,10 +33,12 @@
                 </div>
 
                 <div class="field grid justify-content-start">
-                    <label class="col-2 font-semibold" for="estudiante"
+                    <label
+                        class="col-3 col-label font-semibold"
+                        for="estudiante"
                         >Estudiante</label
                     >
-                    <div class="col-10">
+                    <div class="col-9 col-input">
                         <input
                             pInputText
                             type="text"
@@ -49,10 +51,10 @@
                 </div>
 
                 <div class="field grid justify-content-start">
-                    <label class="col-2 font-semibold" for="director"
+                    <label class="col-3 col-label font-semibold" for="director"
                         >Director</label
                     >
-                    <div class="col-10">
+                    <div class="col-9 col-input">
                         <input
                             pInputText
                             type="text"
@@ -65,12 +67,14 @@
                 </div>
 
                 <div class="field grid justify-content-start">
-                    <label class="col-2 font-semibold" for="trabajoCumple"
+                    <label
+                        class="col-3 col-label font-semibold"
+                        for="trabajoCumple"
                         >A) El trabajo cumple con las condiciones de
                         entrega?</label
                     >
                     <div
-                        class="col-10 flex justify-content-start align-items-center"
+                        class="col-9 flex justify-content-start align-items-center"
                     >
                         <div class="flex align-items-center column-gap-2">
                             <label for="trabajoCumpleSi">SI</label>
@@ -92,11 +96,13 @@
                 </div>
 
                 <div class="field grid justify-content-start">
-                    <label class="col-2 font-semibold" for="documentoTerminado"
+                    <label
+                        class="col-3 col-label font-semibold"
+                        for="documentoTerminado"
                         >B) Documentos y anexos completamente terminados?</label
                     >
                     <div
-                        class="col-10 flex justify-content-start align-items-center"
+                        class="col-9 flex justify-content-start align-items-center"
                     >
                         <div class="flex align-items-center column-gap-2">
                             <label for="documentoTerminadoSi">SI</label>
@@ -119,11 +125,11 @@
 
                 <div class="field grid justify-content-start">
                     <label
-                        class="col-2 label-required font-semibold"
+                        class="col-3 label-required font-semibold"
                         for="observaciones"
                         >Observaciones</label
                     >
-                    <div class="col-10">
+                    <div class="col-9 col-input">
                         <textarea
                             pInputTextarea
                             [maxLength]="250"
@@ -135,7 +141,7 @@
                 </div>
 
                 <div class="field grid justify-content-start">
-                    <label class="col-2 font-semibold"
+                    <label class="col-3 col-label font-semibold"
                         >Jurados sugeridos y datos de contacto</label
                     >
                     <div
@@ -143,7 +149,7 @@
                             juradoExternoSeleccionado &&
                             juradoInternoSeleccionado
                         "
-                        class="col-10"
+                        class="col-9"
                     >
                         <div
                             class="flex flex-column justify-content-start align-items-start column-gap-4"
@@ -167,17 +173,21 @@
                 </div>
 
                 <div class="field grid justify-content-start">
-                    <label class="col-2 font-semibold" for="fecha">FECHA</label>
-                    <div class="col-10">
+                    <label class="col-3 col-label font-semibold" for="fecha"
+                        >FECHA</label
+                    >
+                    <div class="col-9 col-input">
                         <span> {{ fechaActual | date : "dd/MM/yyyy" }} </span>
                     </div>
                 </div>
 
                 <div class="field grid mt-4">
-                    <span class="col-9 text-right">
+                    <span
+                        class="col-12 xl:col-9 xl:mb-0 mb-2 text-left xl:text-right"
+                    >
                         <b>Firma Director</b>
                     </span>
-                    <div class="col-3 text-center">
+                    <div class="col-12 xl:col-3 xl:text-right text-center">
                         <p-fileUpload
                             name="firmaDirector"
                             chooseIcon="pi pi-file"
@@ -222,7 +232,7 @@
                         <span>
                             Carrera 2 No. 15N esquina-Sector Tulcán
                             Popayán-Cauca-Colombia Teléfono: 6028209800 ext.
-                            2100 ó 2101. decafiet@unicauca.edu.co |
+                            2100 ó 2101. decafiet&#64;unicauca.edu.co |
                             <strong>www.unicauca.edu.co</strong>
                         </span>
                     </div>

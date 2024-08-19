@@ -1,97 +1,99 @@
 <p-panel>
     <div id="formatoResolucionComite">
-        <div class="flex flex-column w-full mb-4 header-logo">
+        <div class="flex flex-column header-logo mb-4 w-full">
             <img
-                src="assets/layout/images/asset-header.jpg"
                 alt="Asset Header"
                 class="header-image"
+                src="assets/layout/images/asset-header.jpg"
             />
             <div class="flex justify-content-start logo-container">
                 <img
-                    src="assets/layout/images/logoFacultad.png"
                     alt="Logo Facultad"
                     class="logo-image"
+                    src="assets/layout/images/logoFacultad.png"
                 />
             </div>
         </div>
-        <div class="mt-4 px-8">
+        <div class="lg:px-8 md:px-4 mt-4 px-1">
             <form [formGroup]="formatoResolucionComiteForm">
                 <div class="field grid justify-content-start">
-                    <label class="col-2 font-semibold" for="consecutivo"
+                    <label
+                        class="col-3 col-label font-semibold"
+                        for="consecutivo"
                         >Consecutivo</label
                     >
-                    <div class="col-10">
+                    <div class="col-9 col-input">
                         <input
-                            pInputText
                             class="p-inputtext-md"
-                            type="text"
-                            id="consecutivo"
                             formControlName="consecutivo"
+                            id="consecutivo"
+                            pInputText
+                            type="text"
                         />
                     </div>
                 </div>
 
                 <div class="field grid justify-content-start">
-                    <label class="col-2 font-semibold" for="titulo"
+                    <label class="col-3 col-label font-semibold" for="titulo"
                         >Titulo</label
                     >
-                    <div class="col-10">
+                    <div class="col-9 col-input">
                         <input
-                            pInputText
                             class="p-inputtext-md w-full"
-                            type="text"
-                            id="titulo"
                             formControlName="titulo"
+                            id="titulo"
+                            pInputText
                             readonly
+                            type="text"
                         />
                     </div>
                 </div>
 
                 <div class="field grid justify-content-start">
-                    <label class="col-2 font-semibold" for="facultad"
+                    <label class="col-3 col-label font-semibold" for="facultad"
                         >Facultad</label
                     >
-                    <div class="col-10">
+                    <div class="col-9 col-input">
                         <input
-                            pInputText
                             class="p-inputtext-md w-full"
-                            type="text"
-                            id="facultad"
                             formControlName="facultad"
+                            id="facultad"
+                            pInputText
                             readonly
+                            type="text"
                         />
                     </div>
                 </div>
 
                 <div class="field grid justify-content-start">
-                    <label class="col-2 font-semibold" for="programa"
+                    <label class="col-3 col-label font-semibold" for="programa"
                         >Programa</label
                     >
-                    <div class="col-10">
+                    <div class="col-9 col-input">
                         <input
-                            pInputText
                             class="p-inputtext-md w-full"
-                            type="text"
-                            id="programa"
                             formControlName="programa"
+                            id="programa"
+                            pInputText
                             readonly
+                            type="text"
                         />
                     </div>
                 </div>
 
                 <div class="field grid justify-content-start">
                     <label
-                        class="col-2 label-required font-semibold"
+                        class="col-3 label-required font-semibold"
                         for="coordinador"
                         >Coordinador(a)</label
                     >
-                    <div class="col-10">
+                    <div class="col-9 col-input">
                         <input
-                            pInputText
                             class="p-inputtext-md w-full"
-                            type="text"
-                            id="coordinador"
                             formControlName="coordinador"
+                            id="coordinador"
+                            pInputText
+                            type="text"
                         />
                     </div>
                 </div>
@@ -99,72 +101,84 @@
                 <div
                     class="field grid justify-content-start align-items-center"
                 >
-                    <div class="col-2">
-                        <label
-                            class="label-required font-semibold"
-                            for="director"
-                            >Director(a):</label
+                    <div class="grid p-fluid w-full">
+                        <div class="col-12 lg:col-6 pl-3 pr-0 lg:pr-3">
+                            <div class="p-field">
+                                <label
+                                    class="label-required font-semibold"
+                                    for="director"
+                                    >Director(a):</label
+                                >
+                                <input
+                                    class="mt-2 w-full"
+                                    formControlName="director"
+                                    id="director"
+                                    pInputText
+                                    readonly
+                                    type="text"
+                                />
+                            </div>
+                        </div>
+                        <div
+                            class="col-12 lg:col-6 pl-3 pt-4 pr-0 lg:pl-0 lg:pt-0"
                         >
-                    </div>
-                    <div class="col-10">
-                        <input
-                            pInputText
-                            type="text"
-                            id="director"
-                            formControlName="director"
-                            readonly
-                        />
-                        <label
-                            class="label-required font-semibold mx-4"
-                            for="estudiante"
-                            >Estudiante:</label
-                        >
-                        <input
-                            pInputText
-                            type="text"
-                            id="estudiante"
-                            formControlName="estudiante"
-                            readonly
-                        />
+                            <div class="p-field">
+                                <label
+                                    class="label-required font-semibold"
+                                    for="estudiante"
+                                    >Estudiante:</label
+                                >
+                                <input
+                                    class="mt-2 w-full"
+                                    formControlName="estudiante"
+                                    id="estudiante"
+                                    pInputText
+                                    readonly
+                                    type="text"
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <div class="field grid justify-content-start">
-                    <div class="col-2">
+                    <div class="col-3 col-label">
                         <label
-                            class="label-required font-semibold mr-2"
+                            class="font-semibold label-required mr-2"
                             for="fechaSesion"
-                            >Fecha de Reunión Ordinaria:
-                        </label>
+                            >Fecha de Reunión Ordinaria:</label
+                        >
                         <i
                             class="pi pi-info-circle"
-                            style="color: orangered; font-size: 16px"
                             pTooltip="Fecha en la que se celebró la sesión ordinaria del comité, que es importante para el seguimiento del proceso."
+                            style="color: orangered; font-size: 16px"
                             tooltipPosition="top"
                         ></i>
                     </div>
-                    <div class="col-10">
+                    <div class="col-9 col-input">
                         <p-calendar
-                            id="fechaSesion"
                             class="max-w-20rem"
-                            formControlName="fechaSesion"
-                            [showIcon]="true"
                             dateFormat="dd.mm.yy"
+                            formControlName="fechaSesion"
+                            id="fechaSesion"
+                            [showIcon]="true"
                         ></p-calendar>
                     </div>
                 </div>
 
                 <div class="field grid mt-4">
-                    <span class="col-9 text-right">
+                    <span
+                        class="col-12 xl:col-9 xl:mb-0 mb-2 text-left xl:text-right"
+                    >
                         <b>Firma Coordinador(a)</b>
                     </span>
-                    <div class="col-3 text-center">
+                    <div class="col-12 xl:col-3 xl:text-right text-center">
                         <p-fileUpload
-                            name="firmaCoordinador"
-                            chooseIcon="pi pi-file"
                             accept=".png, .jpg, .jpeg"
+                            chooseIcon="pi pi-file"
                             chooseLabel="Seleccionar"
                             class="w-full max-w-30rem"
+                            name="firmaCoordinador"
                             previewWidth="100"
                             [auto]="true"
                             (onSelect)="
@@ -172,19 +186,19 @@
                             "
                         >
                             <ng-template
+                                data-file="firma"
                                 let-file
                                 pTemplate="file"
-                                data-file="firma"
                             >
                                 <div *ngIf="firmaCoordinador">
                                     <img
                                         [src]="firmaCoordinador"
                                         alt="Vista Previa de la Firma"
                                         style="
+                                            height: 100%;
                                             min-height: 120px;
                                             min-width: 150px;
                                             width: 100%;
-                                            height: 100%;
                                         "
                                     />
                                 </div>
@@ -192,12 +206,13 @@
                         </p-fileUpload>
                     </div>
                 </div>
+
                 <div class="footer-logo mt-8">
                     <img
-                        src="assets/layout/images/asset-calidad.png"
                         alt="Asset Calidad"
-                        width="140px"
                         height="100px"
+                        src="assets/layout/images/asset-calidad.png"
+                        width="140px"
                     />
                     <div
                         class="flex flex-column align-items-center justify-content-center"
@@ -205,15 +220,15 @@
                         <span>
                             Carrera 2 No. 15N esquina-Sector Tulcán
                             Popayán-Cauca-Colombia Teléfono: 6028209800 ext.
-                            2100 ó 2101. decafiet@unicauca.edu.co |
+                            2100 ó 2101. decafiet&#64;unicauca.edu.co |
                             <strong>www.unicauca.edu.co</strong>
                         </span>
                     </div>
                     <img
-                        src="assets/layout/images/logosIcontec.png"
                         alt="Logo Icontec"
-                        width="120px"
                         height="80px"
+                        src="assets/layout/images/logosIcontec.png"
+                        width="120px"
                     />
                 </div>
                 <div
@@ -233,8 +248,8 @@
                         type="button"
                         icon="pi pi-download"
                         label="Descargar"
-                        (click)="onDownload()"
                         [loading]="loading"
+                        (click)="onDownload()"
                     ></button>
                 </div>
             </form>

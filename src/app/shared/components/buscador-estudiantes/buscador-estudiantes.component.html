@@ -17,13 +17,13 @@
     [paginator]="true"
     [loading]="loading"
     [rows]="5"
-    [scrollable]="true"
     [showCurrentPageReport]="true"
+    [scrollable]="true"
     [tableStyle]="{ width: '100%' }"
-    currentPageReportTemplate="{first} - {last} de {totalRecords}"
-    selectionMode="single"
     [(selection)]="estudianteSeleccionado"
+    currentPageReportTemplate="{first} - {last} de {totalRecords}"
     dataKey="id"
+    selectionMode="single"
 >
     <ng-template pTemplate="header">
         <tr>
@@ -39,7 +39,9 @@
             <td style="min-width: 150px">
                 {{ estudiante.identificacion }}
             </td>
-            <td style="min-width: 150px">{{ estudiante.tipoIdentificacion }}</td>
+            <td style="min-width: 150px">
+                {{ estudiante.tipoIdentificacion }}
+            </td>
             <td style="min-width: 150px">{{ estudiante.nombre }}</td>
             <td style="min-width: 150px">
                 {{ estudiante.apellido }}

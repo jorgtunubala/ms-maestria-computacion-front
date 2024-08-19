@@ -55,3 +55,9 @@ table {
 .footer-logo div span {
     color: #1f497d;
 }
+
+@media (max-width: 425px) {
+    .footer-logo {
+        display: none;
+    }
+}

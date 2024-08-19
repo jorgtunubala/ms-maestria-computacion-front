@@ -10,3 +10,9 @@
 .layout-main {
     flex: 1 1 auto;
 }
+
+@media (max-width: 768px) {
+    .layout-main-container {
+        padding: 12rem 0.5rem 0.5rem 4rem;
+    }
+}
