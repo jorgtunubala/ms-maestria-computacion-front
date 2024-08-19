@@ -14,6 +14,7 @@ import { SeguimientoService } from '../../services/seguimiento.service';
 })
 export class OpcionesComponent implements OnInit {
     radicado: string = '';
+    buscandoSolicitud = false;
 
     constructor(
         private router: Router,
@@ -36,16 +37,19 @@ export class OpcionesComponent implements OnInit {
 
     buscarSolicitud() {
         if (this.radicado != '') {
+            this.buscandoSolicitud = true;
             this.http
                 .consultarHistorialSolicitud(this.radicado)
                 .subscribe((data: EventoHistorial[]) => {
                     if (data && data.length > 0) {
                         this.seguimiento.historial = data;
                         this.seguimiento.radicado = this.radicado.toUpperCase();
+                        this.buscandoSolicitud = false;
                         this.router.navigate([
                             '/gestionsolicitudes/portafolio/seguimiento/historial',
                         ]);
                     } else {
+                        this.buscandoSolicitud = false;
                         this.confirmationService.confirm({
                             message:
                                 'La solicitud con número de radicado ' +

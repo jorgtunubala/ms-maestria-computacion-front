@@ -1,4 +1,4 @@
-<form [formGroup]="formApoyoAsistEvento">
+<form [formGroup]="this.radicar.formApoyoAsistEvento">
     <p-fieldset
         legend="Información para apoyo económico"
         styleClass="bg-bluegray-50"
@@ -79,7 +79,7 @@
             <div class="col-12 md:col-6 lg:col-3">
                 <span class="p-float-label mt-3">
                     <input
-                        formControlName="nombreBanco"
+                        formControlName="entidadBancaria"
                         class="w-full"
                         id="banco"
                         type="text"
@@ -118,7 +118,7 @@
             <div class="col-12 md:col-4">
                 <span class="p-float-label mt-3">
                     <input
-                        formControlName="cedulaEnBanco"
+                        formControlName="numeroCedulaAsociada"
                         class="w-full"
                         id="cedubanco"
                         type="text"
@@ -131,7 +131,7 @@
             <div class="col-12 md:col-8">
                 <span class="p-float-label mt-3">
                     <input
-                        formControlName="direccionRecidencia"
+                        formControlName="direccionResidencia"
                         class="w-full"
                         id="direccion"
                         type="text"

@@ -79,14 +79,19 @@
     >
         el aplazamiento del
         {{
-            radicar.semestreAplazamiento.split("-")[1] === "1"
+            radicar.formSemestreAplazar.get("semestre").value.split("-")[1] ===
+            "1"
                 ? "primer"
-                : radicar.semestreAplazamiento.split("-")[1] === "2"
+                : radicar.formSemestreAplazar
+                      .get("semestre")
+                      .value.split("-")[1] === "2"
                 ? "segundo"
                 : "proximo"
         }}
         semestre de
-        {{ radicar.semestreAplazamiento.split("-")[0] }}.
+        {{ radicar.formSemestreAplazar.get("semestre").value.split("-")[0] }}.
+        La presente solicitud obedece a que
+        {{ " " + radicar.formSemestreAplazar.get("motivo").value | lowercase }}.
     </ng-container>
 
     <!-- Mension de institución y programa de procedencia -->
@@ -116,6 +121,23 @@
         requeridos para su revisión.
     </ng-container>
 
+    <!--Solicitud de reconocimiento creditos pasantia-->
+    <ng-container
+        *ngIf="
+            ['RE_CRED_PAS'].includes(
+                radicar.tipoSolicitudEscogida.codigoSolicitud
+            )
+        "
+    >
+        el reconocimiento y asignación de los créditos que corresponden a la
+        culminación satisfactoria de mi estancia de investigación. Adjunto a
+        esta solicitud, la documentación y soportes requeridos para su revisión.
+        asi como el enlace al repositorio donde se aloja el video de
+        socialización de la pasantía realizada.
+
+        <br /><br />Enlace video: {{ radicar.enlaceMaterialAudiovisual }}
+    </ng-container>
+
     <!--Solicitud apoyo economico para estancia de investigacion-->
     <ng-container
         *ngIf="
@@ -136,9 +158,10 @@
         <br />Entidad Bancaria: {{ radicar.banco }} <br />Tipo de Cuenta:
         {{ radicar.tipoCuenta }} <br />Numero de Cuenta:
         {{ radicar.numeroCuenta }} <br />Titular:
-        {{ radicar.datosSolicitante.nombres }}
-        {{ radicar.datosSolicitante.apellidos }} <br />Celdula:
-        {{ radicar.cedulaCuentaBanco }} <br />Dirección: {{ radicar.direccion }}
+        {{ radicar.formInfoPersonal.get("nombres").value }}
+        {{ radicar.formInfoPersonal.get("apellidos").value }}
+        <br />Celdula: {{ radicar.cedulaCuentaBanco }} <br />Dirección:
+        {{ radicar.direccion }}
     </ng-container>
 
     <!--Solicitud de aval para realizacion de actividades de practica docente-->
@@ -162,7 +185,9 @@
                 {{ i + 1 }}. {{ actividad.nombre }} -
                 {{ radicar.horasAsignables[i] }}h
             </p>
-            <p>{{ radicar.descripcionesActividades[i] }}</p>
+            <p style="line-height: 1.15">
+                {{ radicar.descripcionesActividades[i] }}
+            </p>
         </ng-container>
         <br />
     </ng-container>
@@ -180,7 +205,7 @@
     <!--Solicitud de reconocimiento creditos por actividades de practica docente-->
     <ng-container
         *ngIf="
-            ['RE_CRED_PAS'].includes(
+            ['RE_CRED_PR_DOC'].includes(
                 radicar.tipoSolicitudEscogida.codigoSolicitud
             )
         "
@@ -418,20 +443,43 @@
         "
     >
         un apoyo economico para la asistencia al evento: "{{
-            radicar.nombreCongreso
-        }}" que se llevara a cabo en las fechas {{ rangoFechas }} y donde se
-        hara la publicación del trabajo titulado "{{
-            radicar.tituloPublicacion
+            radicar.formApoyoAsistEvento.get("nombreCongreso").value
+        }}" que se llevara a cabo del
+        {{
+            utilidades.extraerFechaDeRange(
+                radicar.formApoyoAsistEvento.get("fechas").value,
+                0,
+                "-",
+                0
+            )
+        }}
+        al
+        {{
+            utilidades.extraerFechaDeRange(
+                radicar.formApoyoAsistEvento.get("fechas").value,
+                1,
+                "-",
+                0
+            )
+        }}
+        y donde se hara la publicación del trabajo titulado "{{
+            radicar.formApoyoAsistEvento.get("tituloPublicacion").value
         }}". Anexo a esta solicitud la documentacion e informacion requerida
         para su estudio. <br /><br />Valor apoyo economico: COP ${{
-            radicar.valorApoyoEcon | number : "."
+            radicar.formApoyoAsistEvento.get("valorApoyo").value | number : "."
         }}
-        <br />Entidad Bancaria: {{ radicar.banco }} <br />Tipo de Cuenta:
-        {{ radicar.tipoCuenta }} <br />Numero de Cuenta:
-        {{ radicar.numeroCuenta }} <br />Titular:
-        {{ radicar.datosSolicitante.nombres }}
-        {{ radicar.datosSolicitante.apellidos }} <br />Celdula:
-        {{ radicar.cedulaCuentaBanco }} <br />Dirección: {{ radicar.direccion }}
+        <br />Entidad Bancaria:
+        {{ radicar.formApoyoAsistEvento.get("entidadBancaria").value }}
+        <br />Tipo de Cuenta:
+        {{ radicar.formApoyoAsistEvento.get("tipoCuenta").value }} <br />Numero
+        de Cuenta:
+        {{ radicar.formApoyoAsistEvento.get("numeroCuenta").value }}
+        <br />Titular:
+        {{ radicar.formInfoPersonal.get("nombres").value }}
+        {{ radicar.formInfoPersonal.get("apellidos").value }} <br />Celdula:
+        {{ radicar.formApoyoAsistEvento.get("numeroCedulaAsociada").value }}
+        <br />Dirección:
+        {{ radicar.formApoyoAsistEvento.get("direccionResidencia").value }}
     </ng-container>
 
     <!--Solicitud de Beca-->
@@ -439,11 +487,29 @@
         *ngIf="
             ['SO_BECA'].includes(radicar.tipoSolicitudEscogida.codigoSolicitud)
         "
-        >el otorgamiento de una "{{ radicar.tipoBeca }}".
+        >el otorgamiento de una "{{
+            radicar.formSolicitudBecaDescuento.get("tipoBeca").value
+        }}".
+
         <ng-container
             *ngIf="
-                radicar.tipoBeca === 'Beca - Convenio (cidesco)' ||
-                radicar.tipoBeca === 'Beca - Mejor promedio en pregrado'
+                radicar.formSolicitudBecaDescuento.get('tipoBeca').value ===
+                'Beca - Trabajo'
+            "
+        >
+            La presente solicitud obedece a que
+            {{
+                " " +
+                    radicar.formSolicitudBecaDescuento.get("justificacion")
+                        .value | lowercase
+            }}
+        </ng-container>
+        <ng-container
+            *ngIf="
+                radicar.formSolicitudBecaDescuento.get('tipoBeca').value ===
+                    'Beca - Convenio (cidesco)' ||
+                radicar.formSolicitudBecaDescuento.get('tipoBeca').value ===
+                    'Beca - Mejor promedio en pregrado'
             "
             >Adjunto a esta solicitud el formato FA diligenciado con los datos
             correspondientes para su estudio.</ng-container
@@ -632,13 +698,9 @@
     <!-- Motivo en caso de Cancelación/Aplazamiento/Prorroga/CursoExterno/Beca-Trabajo -->
     <ng-container
         *ngIf="
-            ['CA_ASIG', 'AP_SEME', 'PR_EXAM', 'CU_ASIG'].includes(
+            ['CA_ASIG', 'PR_EXAM', 'CU_ASIG'].includes(
                 radicar.tipoSolicitudEscogida.codigoSolicitud
-            ) ||
-            (['SO_BECA'].includes(
-                radicar.tipoSolicitudEscogida.codigoSolicitud
-            ) &&
-                radicar.tipoBeca === 'Beca - Trabajo')
+            )
         "
     >
         La presente solicitud obedece a que
@@ -675,11 +737,12 @@
 
     <!-- Info Remitente -->
     <div class="col-6 line-height-1">
-        {{ radicar.datosSolicitante.nombres }}
-        {{ radicar.datosSolicitante.apellidos }}<br />
-        Codigo: {{ radicar.datosSolicitante.codigoAcademico }}<br />
-        email: {{ radicar.datosSolicitante.correo }}<br />
-        Celular: {{ radicar.datosSolicitante.celular }}<br />
+        {{ radicar.formInfoPersonal.get("nombres").value }}
+        {{ radicar.formInfoPersonal.get("apellidos").value }}<br />
+        Codigo: {{ radicar.formInfoPersonal.get("codigoAcademico").value
+        }}<br />
+        email: {{ radicar.formInfoPersonal.get("correo").value }}<br />
+        Celular: {{ radicar.formInfoPersonal.get("celular").value }}<br />
     </div>
 
     <!-- Info VoBo Tutor -->
@@ -764,9 +827,11 @@
         !['AD_ASIG', 'CA_ASIG', 'AP_SEME', 'AV_COMI_PR'].includes(
             radicar.tipoSolicitudEscogida.codigoSolicitud
         ) ||
-        (['SO_BECA'].includes(radicar.tipoSolicitudEscogida.codigoSolicitud) &&
-            radicar.tipoBeca === 'Beca - Convenio (cidesco)') ||
-        radicar.tipoBeca === 'Beca - Mejor promedio en pregrado'
+        (radicar.tipoSolicitudEscogida.codigoSolicitud === 'SO_BECA' &&
+            (radicar.formSolicitudBecaDescuento.get('tipoBeca').value ===
+                'Beca - Convenio (cidesco)' ||
+                radicar.formSolicitudBecaDescuento.get('tipoBeca').value ===
+                    'Beca - Mejor promedio en pregrado'))
     "
 >
     <div class="mt-5">

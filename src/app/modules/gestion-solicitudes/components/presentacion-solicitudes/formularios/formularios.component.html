@@ -204,7 +204,7 @@
             )
         "
     >
-        <app-pasantiainvest></app-pasantiainvest>
+        <app-avalpasantiainvest></app-avalpasantiainvest>
     </div>
 
     <!-- Formulario para apoyo economico estancia de investigacion -->
@@ -248,7 +248,7 @@
     <div
         class="mt-4"
         *ngIf="
-            ['CA_ASIG', 'PR_EXAM', 'AP_SEME', 'CU_ASIG'].includes(
+            ['CA_ASIG', 'PR_EXAM', 'CU_ASIG'].includes(
                 radicar.tipoSolicitudEscogida.codigoSolicitud
             )
         "
@@ -268,11 +268,11 @@
         <app-avalpracticadocente></app-avalpracticadocente>
     </div>
 
-    <!-- Selector actividades reconocimiento de creditos -->
+    <!-- Selector actividades reconocimiento de creditos practica docente-->
     <div
         class="mt-4"
         *ngIf="
-            ['RE_CRED_PAS'].includes(
+            ['RE_CRED_PR_DOC'].includes(
                 radicar.tipoSolicitudEscogida.codigoSolicitud
             )
         "
@@ -287,7 +287,7 @@
             ['SO_BECA'].includes(radicar.tipoSolicitudEscogida.codigoSolicitud)
         "
     >
-        <app-beca></app-beca>
+        <app-becadescuento></app-becadescuento>
     </div>
 
     <!-- Formulario Seleccion de un tutor -->

@@ -26,7 +26,7 @@ import { InfopersonalComponent } from './components/presentacion-solicitudes/for
 import { ListatutoresComponent } from './components/presentacion-solicitudes/formularios/complementarios/listatutores/listatutores.component';
 import { MotivosolicitudComponent } from './components/presentacion-solicitudes/formularios/complementarios/motivosolicitud/motivosolicitud.component';
 import { SemestreaplazarComponent } from './components/presentacion-solicitudes/formularios/complementarios/semestreaplazar/semestreaplazar.component';
-import { PasantiainvestComponent } from './components/presentacion-solicitudes/formularios/complementarios/pasantiainvest/pasantiainvest.component';
+import { AvalpasantiainvestComponent } from './components/presentacion-solicitudes/formularios/complementarios/avalpasantiainvest/avalpasantiainvest.component';
 import { ApyeconomicoestanciaComponent } from './components/presentacion-solicitudes/formularios/complementarios/apyeconomicoestancia/apyeconomicoestancia.component';
 import { ListadirectoresComponent } from './components/presentacion-solicitudes/formularios/complementarios/listadirectores/listadirectores.component';
 import { HistorialComponent } from './components/seguimiento-solicitudes/historial/historial.component';
@@ -38,7 +38,11 @@ import { ContenedorComponent } from './components/gestion-coordinacion/contenedo
 import { TramiteComponent } from './components/gestion-coordinacion/tramite/tramite.component';
 import { CreditosComponent } from './components/presentacion-solicitudes/formularios/complementarios/creditos/creditos.component';
 import { AvalpracticadocenteComponent } from './components/presentacion-solicitudes/formularios/complementarios/avalpracticadocente/avalpracticadocente.component';
-import { BecaComponent } from './components/presentacion-solicitudes/formularios/complementarios/beca/beca.component';
+import { BecaDescuentoComponent } from './components/presentacion-solicitudes/formularios/complementarios/becadescuento/becadescuento.component';
+import { SkelinfosolicitudComponent } from './components/utilidades/skeleton/skelinfosolicitud/skelinfosolicitud.component';
+import { SkeltablaComponent } from './components/utilidades/skeleton/skeltabla/skeltabla.component';
+import { PruebaComponent } from './components/presentacion-solicitudes/formularios/complementarios/prueba/prueba.component';
+import { FormulariorechazoComponent } from './components/gestion-coordinacion/complementos/formulariorechazo/formulariorechazo.component';
 
 @NgModule({
     declarations: [
@@ -62,11 +66,10 @@ import { BecaComponent } from './components/presentacion-solicitudes/formularios
         ListatutoresComponent,
         MotivosolicitudComponent,
         SemestreaplazarComponent,
-        PasantiainvestComponent,
+        AvalpasantiainvestComponent,
         ApyeconomicoestanciaComponent,
         ListadirectoresComponent,
         HistorialComponent,
-
         PortafolioComponent,
         OpcionesComponent,
         ApyasistenciaeventoComponent,
@@ -75,7 +78,11 @@ import { BecaComponent } from './components/presentacion-solicitudes/formularios
         TramiteComponent,
         CreditosComponent,
         AvalpracticadocenteComponent,
-        BecaComponent,
+        BecaDescuentoComponent,
+        SkelinfosolicitudComponent,
+        SkeltablaComponent,
+        PruebaComponent,
+        FormulariorechazoComponent,
     ],
     imports: [
         CommonModule,

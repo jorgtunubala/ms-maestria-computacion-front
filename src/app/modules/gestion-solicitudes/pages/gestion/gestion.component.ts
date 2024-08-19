@@ -34,7 +34,6 @@ export class GestionComponent implements OnInit {
                         routerLink: 'visor',
                         icon: 'pi pi-fw pi-times',
                     },
-                    { label: 'Eliminadas', icon: 'pi pi-fw pi-trash' },
                 ],
             },
             {

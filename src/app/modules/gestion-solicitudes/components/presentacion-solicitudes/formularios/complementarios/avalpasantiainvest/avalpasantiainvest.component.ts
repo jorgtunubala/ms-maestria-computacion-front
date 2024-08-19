@@ -8,11 +8,11 @@ import {
 import { RadicarService } from 'src/app/modules/gestion-solicitudes/services/radicar.service';
 
 @Component({
-    selector: 'app-pasantiainvest',
-    templateUrl: './pasantiainvest.component.html',
-    styleUrls: ['./pasantiainvest.component.scss'],
+    selector: 'app-avalpasantiainvest',
+    templateUrl: './avalpasantiainvest.component.html',
+    styleUrls: ['./avalpasantiainvest.component.scss'],
 })
-export class PasantiainvestComponent implements OnInit {
+export class AvalpasantiainvestComponent implements OnInit {
     formPasantiaInvest: FormGroup;
 
     constructor(public radicar: RadicarService, private fb: FormBuilder) {
