@@ -18,13 +18,14 @@ import {
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { UtilidadesService } from '../../../services/utilidades.service';
 import { Router } from '@angular/router';
-import { DialogService } from 'primeng/dynamicdialog';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { FormulariorechazoComponent } from '../../gestion-coordinacion/complementos/formulariorechazo/formulariorechazo.component';
 
 @Component({
     selector: 'app-visoraval',
     templateUrl: './visoraval.component.html',
     styleUrls: ['./visoraval.component.scss'],
-    providers: [ConfirmationService, MessageService],
+    providers: [DialogService, ConfirmationService, MessageService],
 })
 export class VisoravalComponent implements OnInit {
     @HostListener('window:beforeunload', ['$event'])
@@ -53,6 +54,8 @@ export class VisoravalComponent implements OnInit {
 
     documentosAdjuntos: File[] = [];
     enlacesAdjuntos: string[] = [];
+
+    ref: DynamicDialogRef;
 
     constructor(
         public gestor: GestorService,
@@ -216,35 +219,6 @@ export class VisoravalComponent implements OnInit {
             this.avalEnProceso = true;
             this.deshabilitarRechazo = true;
 
-            /*
-            
-            await this.convertirOficioEnPDF();
-
-            let prmfirmaTutor: string = null;
-            let prmfirmaDirector: string = null;
-
-            if (this.radicar.firmaTutor) {
-                prmfirmaTutor = await this.utilidades.convertirFileABase64(
-                    this.radicar.firmaTutor
-                );
-            }
-
-            if (this.radicar.firmaDirector) {
-                prmfirmaDirector = await this.utilidades.convertirFileABase64(
-                    this.radicar.firmaDirector
-                );
-            }
-
-            const aval: DatosAvalSolicitud = {
-                idSolicitud: this.radicar.tipoSolicitudEscogida.idSolicitud,
-                firmaTutor: prmfirmaTutor,
-                firmaDirector: prmfirmaDirector,
-                documentoPdfSolicitud:
-                    await this.utilidades.convertirFileABase64(
-                        this.radicar.oficioDeSolicitud
-                    ),
-            };
-*/
             await this.convertirOficioEnPDF();
 
             const convertirFileABase64 = async (file: File | null) =>
@@ -314,53 +288,68 @@ export class VisoravalComponent implements OnInit {
 
         this.rechazoEnProceso = true;
 
-        const detalles: DetallesRechazo = {
-            idSolicitud: this.radicar.tipoSolicitudEscogida.idSolicitud,
-            emailRevisor: 'lsierra@unicauca.edu.co',
-            estado: 'NO_AVALADA',
-            comentario:
-                'Los documentos aportados no se corresponden con los requisitos para dar tramite a esta solicitud',
-        };
+        this.ref = this.dialogService.open(FormulariorechazoComponent, {
+            header: 'No avalar solicitud',
+            width: '60%',
+            contentStyle: { 'max-height': '600px', overflow: 'hidden' },
+            baseZIndex: 10000,
+        });
 
-        this.http.rechazarSolicitud(detalles).subscribe(
-            (resultado) => {
-                if (resultado) {
-                    this.rechazoEnProceso = false;
-                    this.confirmationService.confirm({
-                        message:
-                            'La solicitud se ha sido rechazada y se ha notificado al solicitante',
-                        header: 'Solicitud no avalada',
-                        icon: 'pi pi-exclamation-circle',
-                        acceptLabel: 'Aceptar',
-                        rejectVisible: false,
-                        accept: () => {
-                            this.mostrarBtnRechazar = false;
-                            this.mostrarBtnAvalar = false;
-                            this.mostrarPFSet = false;
-                        },
-                        reject: () => {
-                            this.mostrarBtnRechazar = false;
-                            this.mostrarBtnAvalar = false;
-                            this.mostrarPFSet = false;
-                        },
-                    });
-                } else {
-                    this.rechazoEnProceso = false;
-                    this.confirmationService.confirm({
-                        message:
-                            'Ha ocurrido un error inesperado al rechazar la solicitud, intentelo nuevamente.',
-                        header: 'Error al rechazar',
-                        icon: 'pi pi-exclamation-triangle',
-                        acceptLabel: 'Aceptar',
-                        rejectVisible: false,
-                        accept: () => {},
-                    });
-                }
-            },
-            (error) => {
-                console.error('Error al rechazar la solicitud:', error);
+        this.ref.onClose.subscribe((motivoRechazo: string) => {
+            if (motivoRechazo !== undefined) {
+                //lsierra@unicauca.edu.co
+                //luz123@unicauca.edu.co
+                const detalles: DetallesRechazo = {
+                    idSolicitud: this.radicar.tipoSolicitudEscogida.idSolicitud,
+                    emailRevisor: 'luz123@unicauca.edu.co',
+                    estado: 'NO_AVALADA',
+                    comentario: motivoRechazo,
+                };
+
+                this.http.rechazarSolicitud(detalles).subscribe(
+                    (resultado) => {
+                        if (resultado) {
+                            this.rechazoEnProceso = false;
+                            this.confirmationService.confirm({
+                                message:
+                                    'La solicitud se ha sido rechazada y se ha notificado al solicitante',
+                                header: 'Solicitud no avalada',
+                                icon: 'pi pi-exclamation-circle',
+                                acceptLabel: 'Aceptar',
+                                rejectVisible: false,
+                                accept: () => {
+                                    this.mostrarBtnRechazar = false;
+                                    this.mostrarBtnAvalar = false;
+                                    this.mostrarPFSet = false;
+                                },
+                                reject: () => {
+                                    this.mostrarBtnRechazar = false;
+                                    this.mostrarBtnAvalar = false;
+                                    this.mostrarPFSet = false;
+                                },
+                            });
+                        } else {
+                            this.rechazoEnProceso = false;
+                            this.confirmationService.confirm({
+                                message:
+                                    'Ha ocurrido un error inesperado al rechazar la solicitud, intentelo nuevamente.',
+                                header: 'Error al rechazar',
+                                icon: 'pi pi-exclamation-triangle',
+                                acceptLabel: 'Aceptar',
+                                rejectVisible: false,
+                                accept: () => {},
+                            });
+                        }
+                    },
+                    (error) => {
+                        console.error('Error al rechazar la solicitud:', error);
+                    }
+                );
+            } else {
+                // El diálogo se cerró sin confirmar
+                this.rechazoEnProceso = false;
             }
-        );
+        });
     }
 
     renderizarImagen(imagen: File, firmante: string): void {
@@ -432,5 +421,26 @@ export class VisoravalComponent implements OnInit {
             summary: 'Oficio no firmado',
             detail: 'Firme el oficio de la solicitud',
         });
+    }
+
+    mostrarFormularioRechazo() {
+        this.ref = this.dialogService.open(FormulariorechazoComponent, {
+            header: 'Choose a Product',
+            width: '70%',
+            contentStyle: { 'max-height': '500px', overflow: 'auto' },
+            baseZIndex: 10000,
+        });
+
+        /*
+        this.ref.onClose.subscribe((product: Product) => {
+            if (product) {
+                this.messageService.add({
+                    severity: 'info',
+                    summary: 'Product Selected',
+                    detail: product.name,
+                });
+            }
+        });
+        */
     }
 }
