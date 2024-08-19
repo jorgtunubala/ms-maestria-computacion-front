@@ -33,52 +33,91 @@
                 *ngIf="requisitosSolicitudEscogida"
             >
                 <p-scrollPanel [style]="{ width: '100%', height: '300px' }">
-                    <div
-                        *ngIf="requisitosSolicitudEscogida.documentosRequeridos"
+                    <section
+                        *ngIf="requisitosSolicitudEscogida.descripcion"
+                        class="mb-3"
                     >
-                        <p class="font-semibold text-justify">
-                            {{ requisitosSolicitudEscogida.tituloDocumento }}
-                        </p>
-                        <p
-                            class="pl-3"
-                            *ngFor="
-                                let documento of requisitosSolicitudEscogida.documentosRequeridos;
-                                let i = index
-                            "
-                        >
-                            {{ i + 1 }}. {{ documento }}
-                        </p>
-                    </div>
-                    <br />
-
-                    <div *ngIf="requisitosSolicitudEscogida.descripcion">
                         <p class="text-justify">
                             {{ requisitosSolicitudEscogida.descripcion }}
                         </p>
-                    </div>
+                    </section>
 
-                    <div *ngIf="requisitosSolicitudEscogida.articulo">
-                        <br />
+                    <section
+                        class="mb-3"
+                        *ngIf="requisitosSolicitudEscogida.articulo"
+                    >
                         <p class="text-justify">
                             {{ requisitosSolicitudEscogida.articulo }}
                         </p>
-                    </div>
+                    </section>
 
-                    <div *ngIf="requisitosSolicitudEscogida.tenerEnCuenta">
-                        <br />
-                        <p class="font-semibold">Tener en cuenta:</p>
+                    <section
+                        class="mb-3"
+                        *ngIf="
+                            requisitosSolicitudEscogida.documentosRequeridos
+                                .length > 0
+                        "
+                    >
+                        <h2 class="font-semibold text-base text-justify">
+                            Documentos requeridos
+                        </h2>
+
+                        <ul
+                            *ngFor="
+                                let documento of requisitosSolicitudEscogida.documentosRequeridos
+                            "
+                        >
+                            <li *ngIf="documento.adjuntarDocumento">
+                                {{ documento.nombre }}
+                            </li>
+                        </ul>
+                    </section>
+
+                    <section
+                        class="mb-3"
+                        *ngIf="requisitosSolicitudEscogida.tenerEnCuenta"
+                    >
+                        <h2 class="font-semibold text-base text-justify">
+                            Tener en cuenta:
+                        </h2>
                         <p class="text-justify">
                             {{ requisitosSolicitudEscogida.tenerEnCuenta }}
                         </p>
-                    </div>
+                    </section>
 
-                    <div *ngIf="requisitosSolicitudEscogida.notas.length > 0">
-                        <br />
-                        <p class="font-semibold">Nota:</p>
+                    <section
+                        class="mb-3"
+                        *ngIf="requisitosSolicitudEscogida.notas.length > 0"
+                    >
+                        <h2 class="font-semibold text-base text-justify">
+                            Nota:
+                        </h2>
                         <p class="text-justify">
                             {{ requisitosSolicitudEscogida.notas }}
                         </p>
-                    </div>
+                    </section>
+
+                    <section
+                        class="mb-3"
+                        *ngIf="requisitosSolicitudEscogida.enlaces.length > 0"
+                    >
+                        <h2 class="font-semibold text-base text-justify">
+                            Enlaces a normativa y formatos relacionados
+                        </h2>
+                        <ul
+                            *ngFor="
+                                let enlace of requisitosSolicitudEscogida.enlaces
+                            "
+                        >
+                            <li>
+                                <a
+                                    [href]="enlace.urlAcortada"
+                                    target="_blank"
+                                    >{{ enlace.nombre }}</a
+                                >
+                            </li>
+                        </ul>
+                    </section>
                 </p-scrollPanel>
             </p-panel>
         </div>
@@ -98,3 +137,7 @@
 
     <div class="w-full"></div>
 </div>
+
+<!--
+<app-prueba></app-prueba>
+-->

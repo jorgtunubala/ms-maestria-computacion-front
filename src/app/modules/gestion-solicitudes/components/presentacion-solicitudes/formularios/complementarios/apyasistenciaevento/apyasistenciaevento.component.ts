@@ -24,97 +24,35 @@ export class ApyasistenciaeventoComponent implements OnInit {
             'Corriente',
         ];
         this.tiposCongreso = ['Seleccione una opción', 'Opcion 1', 'Opcion 2'];
+    }
 
+    ngOnInit(): void {
         this.formApoyoAsistEvento = this.fb.group({
             nombreCongreso: ['', Validators.required],
             tipoCongreso: ['', this.customValidator()],
             tituloPublicacion: ['', Validators.required],
             fechas: ['', Validators.required],
             valorApoyo: ['', Validators.required],
-            nombreBanco: ['', Validators.required],
+            entidadBancaria: ['', Validators.required],
             tipoCuenta: ['', this.customValidator()],
             numeroCuenta: ['', Validators.required],
-            cedulaEnBanco: ['', Validators.required],
-            direccionRecidencia: ['', Validators.required],
+            numeroCedulaAsociada: ['', Validators.required],
+            direccionResidencia: ['', Validators.required],
         });
-    }
 
-    ngOnInit(): void {
-        if (this.radicar.fechasEstancia.length > 0) {
-            this.formApoyoAsistEvento.patchValue({
-                fechas: this.radicar.fechasEstancia,
-            });
-        }
-        if (this.radicar.nombreCongreso.trim() !== '') {
-            this.formApoyoAsistEvento.patchValue({
-                nombreCongreso: this.radicar.nombreCongreso,
-            });
-        }
-        if (this.radicar.tipoCongreso.trim() !== '') {
-            this.formApoyoAsistEvento.patchValue({
-                tipoCongreso: this.radicar.tipoCongreso,
-            });
-        }
-        if (this.radicar.tituloPublicacion.trim() !== '') {
-            this.formApoyoAsistEvento.patchValue({
-                tituloPublicacion: this.radicar.tituloPublicacion,
-            });
-        }
-        if (this.radicar.valorApoyoEcon !== null) {
-            this.formApoyoAsistEvento.patchValue({
-                valorApoyo: this.radicar.valorApoyoEcon,
-            });
-        }
-        if (this.radicar.banco.trim() !== '') {
-            this.formApoyoAsistEvento.patchValue({
-                nombreBanco: this.radicar.banco,
-            });
-        }
-        if (this.radicar.tipoCuenta.trim() !== '') {
-            this.formApoyoAsistEvento.patchValue({
-                tipoCuenta: this.radicar.tipoCuenta,
-            });
-        }
-        if (this.radicar.numeroCuenta.trim() !== '') {
-            this.formApoyoAsistEvento.patchValue({
-                numeroCuenta: this.radicar.numeroCuenta,
-            });
-        }
-        if (this.radicar.cedulaCuentaBanco.trim() !== '') {
-            this.formApoyoAsistEvento.patchValue({
-                cedulaEnBanco: this.radicar.cedulaCuentaBanco,
-            });
-        }
-        if (this.radicar.direccion.trim() !== '') {
-            this.formApoyoAsistEvento.patchValue({
-                direccionRecidencia: this.radicar.direccion,
-            });
+        // Verificar si ya hay datos en el servicio
+        const formData = this.radicar.formApoyoAsistEvento.value;
+        const hasData = Object.values(formData).some(
+            (value) => value !== null && value !== ''
+        );
+
+        if (hasData) {
+            // Cargar datos en el formulario desde el servicio
+            this.formApoyoAsistEvento.patchValue(formData);
         }
 
-        this.formApoyoAsistEvento.valueChanges.subscribe((value) => {
-            // Verificar si value.fechas es una cadena de texto
-            if (typeof value.fechas === 'string') {
-                // Dividir el string de fechas en fechaInicio y fechaFin
-                const fechas = value.fechas
-                    .split(' - ')
-                    .map((dateString) => new Date(dateString.trim()));
-                this.radicar.fechasEstancia = fechas;
-            } else if (Array.isArray(value.fechas)) {
-                // Verificar si value.fechas es un arreglo de objetos Date
-                // Asignar el valor directamente
-                this.radicar.fechasEstancia = value.fechas;
-            }
-
-            this.radicar.nombreCongreso = value.nombreCongreso;
-            this.radicar.tipoCongreso = value.tipoCongreso;
-            this.radicar.tituloPublicacion = value.tituloPublicacion;
-            this.radicar.valorApoyoEcon = value.valorApoyo;
-            this.radicar.banco = value.nombreBanco;
-            this.radicar.tipoCuenta = value.tipoCuenta;
-            this.radicar.numeroCuenta = value.numeroCuenta;
-            this.radicar.cedulaCuentaBanco = value.cedulaEnBanco;
-            this.radicar.direccion = value.direccionRecidencia;
-        });
+        // Establecer el formulario en el servicio para compartirlo
+        this.radicar.formApoyoAsistEvento = this.formApoyoAsistEvento;
     }
 
     customValidator() {

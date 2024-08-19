@@ -1,3 +1,5 @@
+import { DocumentoRequerido } from './documentoRequerido';
+
 export class RequisitosSolicitud {
     static nuevoRequisitosSolicitud(obj: Object) {
         return new RequisitosSolicitud(
@@ -15,7 +17,7 @@ export class RequisitosSolicitud {
         public descripcion: string,
         public articulo: string,
         public tenerEnCuenta: string,
-        public documentosRequeridos: string[],
+        public documentosRequeridos: DocumentoRequerido[],
         public notas: string[]
     ) {}
 }

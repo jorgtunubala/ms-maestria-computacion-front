@@ -1,21 +1,39 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import {
+    Component,
+    ElementRef,
+    HostListener,
+    OnInit,
+    ViewChild,
+} from '@angular/core';
 import { GestorService } from '../../../services/gestor.service';
 import { RadicarService } from '../../../services/radicar.service';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { HttpService } from '../../../services/http.service';
 import { DatosSolicitudRequest } from '../../../models/solicitudes/datosSolicitudRequest';
 import { OficioComponent } from '../../utilidades/oficio/oficio.component';
-import { DatosAvalSolicitud } from '../../../models/indiceModelos';
+import {
+    DatosAvalSolicitud,
+    DetallesRechazo,
+} from '../../../models/indiceModelos';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { UtilidadesService } from '../../../services/utilidades.service';
+import { Router } from '@angular/router';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { FormulariorechazoComponent } from '../../gestion-coordinacion/complementos/formulariorechazo/formulariorechazo.component';
 
 @Component({
     selector: 'app-visoraval',
     templateUrl: './visoraval.component.html',
     styleUrls: ['./visoraval.component.scss'],
-    providers: [ConfirmationService, MessageService],
+    providers: [DialogService, ConfirmationService, MessageService],
 })
 export class VisoravalComponent implements OnInit {
+    @HostListener('window:beforeunload', ['$event'])
+    beforeUnloadHander(event: Event) {
+        event.returnValue = true;
+        return '¿Estás seguro de que quieres salir de la página?';
+    }
+
     @ViewChild(OficioComponent) oficio: OficioComponent;
     @ViewChild('firmaImage') firmaImage: ElementRef;
 
@@ -26,26 +44,45 @@ export class VisoravalComponent implements OnInit {
     mostrarBtnAvalar: boolean = false;
     mostrarPFSet: boolean = true;
     habilitarAval: boolean = false;
+    avalEnProceso: boolean = false;
+    rechazoEnProceso: boolean = false;
     deshabilitarRechazo: boolean = false;
     deshabilitarAval: boolean = false;
+    cargandoDatos: boolean = true;
 
     urlPdf: SafeResourceUrl;
 
     documentosAdjuntos: File[] = [];
     enlacesAdjuntos: string[] = [];
 
+    ref: DynamicDialogRef;
+
     constructor(
         public gestor: GestorService,
         public radicar: RadicarService,
         public http: HttpService,
+        private router: Router,
         private sanitizer: DomSanitizer,
         private messageService: MessageService,
         private confirmationService: ConfirmationService,
-        private utilidades: UtilidadesService
+        private utilidades: UtilidadesService,
+        public dialogService: DialogService
     ) {}
 
     ngOnInit(): void {
-        this.cargarDatosOficio();
+        try {
+            this.cargarDatosOficio();
+        } catch (error) {
+            const isExpectedError =
+                error instanceof TypeError &&
+                error.message.includes('idSolicitud');
+
+            if (isExpectedError) {
+                this.router.navigate(['/gestionsolicitudes/avales/pendientes']);
+            } else {
+                console.error('Error no esperado:', error);
+            }
+        }
     }
 
     capturarInformacionAdjunta() {
@@ -94,79 +131,6 @@ export class VisoravalComponent implements OnInit {
         }
     }
 
-    /*
-    capturarInformacionAdjunta() {
-        if (
-            this.radicar.datosAsignaturasExternas &&
-            this.radicar.datosAsignaturasExternas.length > 0
-        ) {
-            // Recorre cada elemento de datosAsignaturasExternas
-            this.radicar.datosAsignaturasExternas.forEach((asignatura) => {
-                // Verifica si hay información en 'contenidos'
-                if (asignatura.contenidos) {
-                    // Si hay información, extrae el nombre y guárdalo en el arreglo nombresArchivos
-                    this.documentosAdjuntos.push(asignatura.contenidos);
-                }
-                // Verifica si hay información en 'cartaAceptacion'
-                if (asignatura.cartaAceptacion) {
-                    // Si hay información, extrae el nombre y guárdalo en el arreglo nombresArchivos
-                    this.documentosAdjuntos.push(asignatura.cartaAceptacion);
-                }
-            });
-        }
-
-        if (
-            this.radicar.datosAsignaturasAHomologar &&
-            this.radicar.datosAsignaturasAHomologar.length > 0
-        ) {
-            // Recorre cada elemento de datosAsignaturasAHomologar
-            this.radicar.datosAsignaturasAHomologar.forEach((asignatura) => {
-                // Verifica si hay información en 'contenidos'
-                if (asignatura.contenidos) {
-                    // Si hay información, extrae el nombre y guárdalo en el arreglo nombresArchivos
-                    this.documentosAdjuntos.push(asignatura.contenidos);
-                }
-            });
-        }
-
-        if (
-            this.radicar.documentosAdjuntos &&
-            this.radicar.documentosAdjuntos.length > 0
-        ) {
-            this.radicar.documentosAdjuntos.forEach((doc) => {
-                this.documentosAdjuntos.push(doc);
-            });
-        }
-
-        // Verificar adjuntosDeActividades
-        if (this.radicar.adjuntosDeActividades) {
-            Object.keys(this.radicar.adjuntosDeActividades).forEach(
-                (actividadId) => {
-                    const adjuntosActividad =
-                        this.radicar.adjuntosDeActividades[Number(actividadId)];
-                    if (adjuntosActividad) {
-                        if (
-                            adjuntosActividad.archivos &&
-                            adjuntosActividad.archivos.length > 0
-                        ) {
-                            adjuntosActividad.archivos.forEach((archivo) => {
-                                this.documentosAdjuntos.push(archivo);
-                            });
-                        }
-                        if (
-                            adjuntosActividad.enlaces &&
-                            adjuntosActividad.enlaces.length > 0
-                        ) {
-                            adjuntosActividad.enlaces.forEach((enlace) => {
-                                this.enlacesAdjuntos.push(enlace);
-                            });
-                        }
-                    }
-                }
-            );
-        }
-    }
-*/
     cargarDatosOficio() {
         this.http
             .obtenerInfoSolGuardada(
@@ -181,6 +145,7 @@ export class VisoravalComponent implements OnInit {
                     this.mostrarBtnAvalar = true;
                     this.mostrarBtnRechazar = true;
                     this.capturarInformacionAdjunta();
+                    this.cargandoDatos = false;
                 },
                 (error) => {
                     console.error(
@@ -193,6 +158,7 @@ export class VisoravalComponent implements OnInit {
 
     onUpload(event, firmante) {
         const rol: any = 'Tutor';
+        //const rol: any = 'Director';
         const reader = new FileReader();
 
         switch (rol) {
@@ -241,39 +207,41 @@ export class VisoravalComponent implements OnInit {
     }
 
     async enviarOficioAvalado() {
+        if (
+            this.avalEnProceso ||
+            this.firmaEnProceso ||
+            this.rechazoEnProceso
+        ) {
+            return;
+        }
+
         if (this.habilitarAval) {
+            this.avalEnProceso = true;
             this.deshabilitarRechazo = true;
+
             await this.convertirOficioEnPDF();
 
-            let prmfirmaTutor: string = null;
-            let prmfirmaDirector: string = null;
-
-            if (this.radicar.firmaTutor) {
-                prmfirmaTutor = await this.utilidades.convertirFileABase64(
-                    this.radicar.firmaTutor
-                );
-            }
-
-            if (this.radicar.firmaDirector) {
-                prmfirmaDirector = await this.utilidades.convertirFileABase64(
-                    this.radicar.firmaDirector
-                );
-            }
+            const convertirFileABase64 = async (file: File | null) =>
+                file ? await this.utilidades.convertirFileABase64(file) : null;
 
             const aval: DatosAvalSolicitud = {
                 idSolicitud: this.radicar.tipoSolicitudEscogida.idSolicitud,
-                firmaTutor: prmfirmaTutor,
-                firmaDirector: prmfirmaDirector,
-                documentoPdfSolicitud:
-                    await this.utilidades.convertirFileABase64(
-                        this.radicar.oficioDeSolicitud
-                    ),
+                firmaTutor: await convertirFileABase64(this.radicar.firmaTutor),
+                firmaDirector: await convertirFileABase64(
+                    this.radicar.firmaDirector
+                ),
+                documentoPdfSolicitud: await convertirFileABase64(
+                    this.radicar.oficioDeSolicitud
+                ),
             };
+
+            console.log(aval);
 
             this.http.guardarAvalesSolicitud(aval).subscribe(
                 (resultado) => {
                     if (resultado) {
-                        this.gestor.ejecutarCargarSolicitudes();
+                        //this.gestor.ejecutarCargarSolicitudes();
+                        this.avalEnProceso = false;
                         this.confirmationService.confirm({
                             message: 'La solicitud se ha avalado exitosamente',
                             header: 'Solicitud avalada',
@@ -292,6 +260,7 @@ export class VisoravalComponent implements OnInit {
                             },
                         });
                     } else {
+                        this.avalEnProceso = false;
                         this.confirmationService.confirm({
                             message:
                                 'Ha ocurrido un error inesperado al avalar la solicitud, intentelo nuevamente.',
@@ -313,10 +282,77 @@ export class VisoravalComponent implements OnInit {
     }
 
     rechazarSolicitud() {
-        this.deshabilitarAval = true;
+        if (this.rechazoEnProceso || this.avalEnProceso) {
+            return;
+        }
+
+        this.rechazoEnProceso = true;
+
+        this.ref = this.dialogService.open(FormulariorechazoComponent, {
+            header: 'No avalar solicitud',
+            width: '60%',
+            contentStyle: { 'max-height': '600px', overflow: 'hidden' },
+            baseZIndex: 10000,
+        });
+
+        this.ref.onClose.subscribe((motivoRechazo: string) => {
+            if (motivoRechazo !== undefined) {
+                //lsierra@unicauca.edu.co
+                //luz123@unicauca.edu.co
+                const detalles: DetallesRechazo = {
+                    idSolicitud: this.radicar.tipoSolicitudEscogida.idSolicitud,
+                    emailRevisor: 'luz123@unicauca.edu.co',
+                    estado: 'NO_AVALADA',
+                    comentario: motivoRechazo,
+                };
+
+                this.http.rechazarSolicitud(detalles).subscribe(
+                    (resultado) => {
+                        if (resultado) {
+                            this.rechazoEnProceso = false;
+                            this.confirmationService.confirm({
+                                message:
+                                    'La solicitud se ha sido rechazada y se ha notificado al solicitante',
+                                header: 'Solicitud no avalada',
+                                icon: 'pi pi-exclamation-circle',
+                                acceptLabel: 'Aceptar',
+                                rejectVisible: false,
+                                accept: () => {
+                                    this.mostrarBtnRechazar = false;
+                                    this.mostrarBtnAvalar = false;
+                                    this.mostrarPFSet = false;
+                                },
+                                reject: () => {
+                                    this.mostrarBtnRechazar = false;
+                                    this.mostrarBtnAvalar = false;
+                                    this.mostrarPFSet = false;
+                                },
+                            });
+                        } else {
+                            this.rechazoEnProceso = false;
+                            this.confirmationService.confirm({
+                                message:
+                                    'Ha ocurrido un error inesperado al rechazar la solicitud, intentelo nuevamente.',
+                                header: 'Error al rechazar',
+                                icon: 'pi pi-exclamation-triangle',
+                                acceptLabel: 'Aceptar',
+                                rejectVisible: false,
+                                accept: () => {},
+                            });
+                        }
+                    },
+                    (error) => {
+                        console.error('Error al rechazar la solicitud:', error);
+                    }
+                );
+            } else {
+                // El diálogo se cerró sin confirmar
+                this.rechazoEnProceso = false;
+            }
+        });
     }
 
-    renderizarImagen(imagen: File, firmante: any): void {
+    renderizarImagen(imagen: File, firmante: string): void {
         const reader = new FileReader();
         reader.onload = () => {
             switch (firmante) {
@@ -385,5 +421,26 @@ export class VisoravalComponent implements OnInit {
             summary: 'Oficio no firmado',
             detail: 'Firme el oficio de la solicitud',
         });
+    }
+
+    mostrarFormularioRechazo() {
+        this.ref = this.dialogService.open(FormulariorechazoComponent, {
+            header: 'Choose a Product',
+            width: '70%',
+            contentStyle: { 'max-height': '500px', overflow: 'auto' },
+            baseZIndex: 10000,
+        });
+
+        /*
+        this.ref.onClose.subscribe((product: Product) => {
+            if (product) {
+                this.messageService.add({
+                    severity: 'info',
+                    summary: 'Product Selected',
+                    detail: product.name,
+                });
+            }
+        });
+        */
     }
 }

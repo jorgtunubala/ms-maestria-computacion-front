@@ -1,5 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { RadicarService } from '../../../services/radicar.service';
+import { UtilidadesService } from '../../../services/utilidades.service';
 
 @Component({
     selector: 'app-plantillas',
@@ -25,7 +26,10 @@ export class PlantillasComponent implements OnInit {
         'Diciembre',
     ];
 
-    constructor(public radicar: RadicarService) {}
+    constructor(
+        public radicar: RadicarService,
+        private utilidades: UtilidadesService
+    ) {}
 
     ngOnInit(): void {
         if (
@@ -36,7 +40,7 @@ export class PlantillasComponent implements OnInit {
                 'PA_PUBL_EVE',
             ].includes(this.radicar.tipoSolicitudEscogida.codigoSolicitud)
         ) {
-            this.convertirFechas();
+            //this.convertirFechas();
         }
 
         this.obtenerNombreArchivosAdjuntos();
@@ -51,8 +55,10 @@ export class PlantillasComponent implements OnInit {
     }
 
     convertirFechas() {
-        const fechaInicio = this.radicar.fechasEstancia[0];
-        const fechaFin = this.radicar.fechasEstancia[1];
+        const fechaInicio =
+            this.radicar.formApoyoAsistEvento.get('fechas').value[0];
+        const fechaFin =
+            this.radicar.formApoyoAsistEvento.get('fechas').value[1];
 
         // Obteniendo los componentes de las fechas
         const diaInicio = fechaInicio.getDate();
@@ -68,7 +74,7 @@ export class PlantillasComponent implements OnInit {
         const fechaFinStr = `${diaFin}/${mesFin}/${anioFin}`;
 
         // Concatenando las fechas formateadas con un guión entre ellas
-        const fechaEstanciaStr = `${fechaInicioStr} - ${fechaFinStr}`;
+        const fechaEstanciaStr = `${fechaInicioStr} al ${fechaFinStr}`;
 
         this.rangoFechas = fechaEstanciaStr;
     }

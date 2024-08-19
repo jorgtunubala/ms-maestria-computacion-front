@@ -4,6 +4,8 @@ import { HttpService } from '../../../services/http.service';
 import { DatosSolicitudRequest } from '../../../models/solicitudes/datosSolicitudRequest';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { UtilidadesService } from '../../../services/utilidades.service';
+import { SeguimientoService } from '../../../services/seguimiento.service';
+import { EventoHistorial } from '../../../models/indiceModelos';
 
 @Component({
     selector: 'app-visor',
@@ -15,12 +17,14 @@ export class VisorComponent implements OnInit {
     urlPdf: SafeResourceUrl;
     datosSolicitud: DatosSolicitudRequest;
     cargandoDatos: boolean = true;
+
     docsAdjuntos: File[] = [];
     enlacesAdjuntos: string[] = [];
 
     constructor(
         public gestor: GestorService,
         public http: HttpService,
+        public seguimiento: SeguimientoService,
         private sanitizer: DomSanitizer,
         private utilidades: UtilidadesService
     ) {}
@@ -43,6 +47,7 @@ export class VisorComponent implements OnInit {
                     );
                     this.gestor.estadoSolicitud =
                         infoSolicitud.datosComunSolicitud.estadoSolicitud;
+                    this.cargarHistorialDeSeguimiento();
                     this.cargandoDatos = false;
                 },
                 (error) => {
@@ -52,6 +57,17 @@ export class VisorComponent implements OnInit {
                     );
                 }
             );
+    }
+
+    cargarHistorialDeSeguimiento() {
+        this.seguimiento.radicado =
+            this.datosSolicitud.datosComunSolicitud.radicado;
+
+        this.http
+            .consultarHistorialSolicitud(this.seguimiento.radicado)
+            .subscribe((data: EventoHistorial[]) => {
+                this.seguimiento.historial = data;
+            });
     }
 
     AbrirOficioPdf() {

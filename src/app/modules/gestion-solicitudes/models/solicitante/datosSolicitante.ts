@@ -1,3 +1,5 @@
+import { DatosComunSolicitud } from '../indiceModelos';
+
 export class DatosSolicitante {
     static nuevoDatosSolicitante(obj: Object) {
         return new DatosSolicitante(
@@ -15,9 +17,9 @@ export class DatosSolicitante {
         public nombres: string = null,
         public apellidos: string = null,
         public correo: string = null,
-        public celular: number = null,
-        public codAcademico: number = null,
+        public celular: string = null,
+        public codAcademico: string = null,
         public tipoIdentificacion: string = null,
-        public identificacion: number = null
+        public identificacion: string = null
     ) {}
 }

@@ -23,7 +23,7 @@ import { AsignaturahomologarComponent } from './complementarios/asignaturahomolo
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SemestreaplazarComponent } from './complementarios/semestreaplazar/semestreaplazar.component';
 import { AsignaturaexternaComponent } from './complementarios/asignaturaexterna/asignaturaexterna.component';
-import { PasantiainvestComponent } from './complementarios/pasantiainvest/pasantiainvest.component';
+import { AvalpasantiainvestComponent } from './complementarios/avalpasantiainvest/avalpasantiainvest.component';
 import { ListadirectoresComponent } from './complementarios/listadirectores/listadirectores.component';
 import { ApyeconomicoestanciaComponent } from './complementarios/apyeconomicoestancia/apyeconomicoestancia.component';
 import { ApyasistenciaeventoComponent } from './complementarios/apyasistenciaevento/apyasistenciaevento.component';
@@ -54,8 +54,8 @@ export class FormulariosComponent implements OnInit {
     formAplzSemestre: SemestreaplazarComponent;
     @ViewChildren(AsignaturaexternaComponent)
     formsAsigExt: QueryList<AsignaturaexternaComponent>;
-    @ViewChild(PasantiainvestComponent)
-    formPasInvest: PasantiainvestComponent;
+    @ViewChild(AvalpasantiainvestComponent)
+    formPasInvest: AvalpasantiainvestComponent;
     @ViewChild(ListadirectoresComponent)
     formDirectores: ListadirectoresComponent;
     @ViewChild(ApyeconomicoestanciaComponent)
@@ -131,12 +131,12 @@ export class FormulariosComponent implements OnInit {
             }
 
             if (
-                ['RE_CRED_PAS', 'AV_COMI_PR'].includes(
+                ['RE_CRED_PR_DOC', 'AV_COMI_PR'].includes(
                     this.radicar.tipoSolicitudEscogida.codigoSolicitud
                 )
             ) {
                 this.gestorHttp
-                    .obtenerActividadesReCreditos()
+                    .obtenerActividadesDePracticaDocente()
                     .subscribe((respuesta) => {
                         this.radicar.actividadesReCreditos = respuesta;
                     });
@@ -169,9 +169,11 @@ export class FormulariosComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        if (this.radicar.datosSolicitante.nombres == null) {
+        /*
+        if (this.radicar.formInfoPersonal.get('nombres').value == null) {
             this.obtenerInfoDeSolicitante();
         }
+            */
 
         if (
             this.radicar.tipoSolicitudEscogida &&
@@ -236,7 +238,6 @@ export class FormulariosComponent implements OnInit {
             case 'AP_SEME':
                 estadoGeneral =
                     this.formAplzSemestre.obtenerEstadoFormulario() &&
-                    this.formMotivo.obtenerEstadoFormulario() &&
                     this.formListaTutores.obtenerEstadoFormulario();
                 break;
             case 'CU_ASIG':
@@ -292,7 +293,6 @@ export class FormulariosComponent implements OnInit {
             case 'AP_ECON_ASI':
                 estadoGeneral =
                     this.formApyAsistEvnt.obtenerEstadoFormulario() &&
-                    this.formApyAsistEvnt.validarFechas() &&
                     this.formListaTutores.obtenerEstadoFormulario() &&
                     this.formDirectores.obtenerEstadoFormulario();
                 break;
@@ -304,7 +304,7 @@ export class FormulariosComponent implements OnInit {
                     this.formDirectores.obtenerEstadoFormulario();
                 break;
 
-            case 'RE_CRED_PAS':
+            case 'RE_CRED_PR_DOC':
                 let totalHoras: number = 0;
 
                 estadoGeneral =
@@ -336,6 +336,7 @@ export class FormulariosComponent implements OnInit {
         return estadoGeneral;
     }
 
+    /*
     obtenerInfoDeSolicitante() {
         this.gestorHttp
             .obtenerInfoPersonalSolicitante(this.identificadorSolicitante)
@@ -343,6 +344,7 @@ export class FormulariosComponent implements OnInit {
                 this.radicar.datosSolicitante = respuesta;
             });
     }
+        */
 
     agregarInstancia() {
         this.radicar.numeroInstAsignHomologar++;
@@ -419,8 +421,8 @@ export class FormulariosComponent implements OnInit {
                     'CA_ASIG',
                     'AP_SEME',
                     'CU_ASIG',
-                    'RE_CRED_PAS',
                     'AV_COMI_PR',
+                    'RE_CRED_PR_DOC',
                     'SO_BECA',
                 ].includes(this.radicar.tipoSolicitudEscogida.codigoSolicitud)
             ) {

@@ -4,6 +4,7 @@ import { GestorService } from '../../../services/gestor.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpService } from '../../../services/http.service';
 import { SolicitudRecibida } from '../../../models/indiceModelos';
+import { SeguimientoService } from '../../../services/seguimiento.service';
 
 @Component({
     selector: 'app-buzon',
@@ -21,6 +22,7 @@ export class BuzonComponent implements OnInit {
         public gestor: GestorService,
         private router: Router,
         private route: ActivatedRoute,
+        public seguimiento: SeguimientoService,
         public http: HttpService,
         public dialogService: DialogService
     ) {}
@@ -32,6 +34,8 @@ export class BuzonComponent implements OnInit {
         if (filtro) {
             this.cargarSolicitudes(this.proporcionarEstado(filtro));
         }
+
+        this.seguimiento.restablecerValores();
     }
 
     cargarSolicitudes(prmFiltro: string) {
@@ -57,6 +61,7 @@ export class BuzonComponent implements OnInit {
 
     mostrarDetalles() {
         this.gestor.solicitudSeleccionada = this.seleccionada;
+        this.gestor.rutaPrevia = this.router.url;
         this.router.navigate(['/gestionsolicitudes/visor']);
     }
 }
