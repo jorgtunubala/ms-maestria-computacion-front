@@ -1,91 +1,17 @@
-<p-fieldset class="" legend="Información personal" styleClass="bg-bluegray-50">
-    <form [formGroup]="this.radicar.formInfoDePrueba">
-        <div class="grid">
-            <div class="col-12 lg:col-3">
-                <span class="p-float-label mt-3">
-                    <input
-                        formControlName="nombres"
-                        class="w-full"
-                        id="nombres"
-                        type="text"
-                        pInputText
-                    />
-                    <label for="nombres">Nombres</label>
-                </span>
-            </div>
-            <div class="col-12 lg:col-3">
-                <span class="p-float-label mt-3">
-                    <input
-                        formControlName="apellidos"
-                        class="w-full"
-                        id="apellidos"
-                        type="text"
-                        pInputText
-                    />
-                    <label for="apellidos">Apellidos</label>
-                </span>
-            </div>
-            <div class="col-12 lg:col-6">
-                <span class="p-float-label mt-3">
-                    <input
-                        formControlName="correo"
-                        class="w-full"
-                        id="email"
-                        autocomplete="email"
-                        type="text"
-                        pInputText
-                    />
-                    <label for="email">Correo Electronico</label>
-                </span>
-            </div>
-            <div class="col-12 lg:col-3">
-                <span class="p-float-label mt-3">
-                    <input
-                        formControlName="celular"
-                        class="w-full"
-                        id="cell"
-                        type="text"
-                        pInputText
-                    />
-                    <label for="cell">Celular</label>
-                </span>
-            </div>
-            <div class="col-12 lg:col-3">
-                <span class="p-float-label mt-3">
-                    <input
-                        formControlName="codigoAcademico"
-                        class="w-full"
-                        id="codacad"
-                        type="text"
-                        pInputText
-                    />
-                    <label for="codacad">Código Academico</label>
-                </span>
-            </div>
-            <div class="col-12 lg:col-3">
-                <span class="p-float-label mt-3">
-                    <p-dropdown
-                        formControlName="tipoDocumento"
-                        inputId="tipoid"
-                        [autoDisplayFirst]="false"
-                        [options]="tiposIdentificacion"
-                        [style]="{ width: '100%' }"
-                    ></p-dropdown>
-                    <label for="tipoid">Tipo Identificación</label>
-                </span>
-            </div>
-            <div class="col-12 lg:col-3">
-                <span class="p-float-label mt-3">
-                    <input
-                        formControlName="numeroDocumento"
-                        class="w-full"
-                        id="numid"
-                        type="text"
-                        pInputText
-                    />
-                    <label for="numid">Número de Identificación</label>
-                </span>
-            </div>
+<div class="contenedor-hoja">
+    <div class="hoja-de-papel">
+        <div class="contenido">
+            <p>
+                Es un hecho establecido hace demasiado tiempo que un lector se
+                distraerá con el contenido del texto de un sitio mientras que
+                mira su diseño. El punto de usar Lorem Ipsum es que tiene una
+                distribución más o menos normal de las letras, al contrario de
+                usar textos como por ejemplo "Contenido aquí, contenido aquí".
+                Estos textos hacen parecerlo un español que se puede leer.
+                Muchos paquetes de autoedición y editores de páginas web usan el
+                Lorem Ipsum como su texto por defecto, y al hacer una búsqueda
+                de "Lorem Ipsum" va a dar
+            </p>
         </div>
-    </form>
-</p-fieldset>
+    </div>
+</div>

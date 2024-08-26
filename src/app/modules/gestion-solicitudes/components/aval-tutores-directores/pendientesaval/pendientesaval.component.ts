@@ -16,8 +16,8 @@ import { Router } from '@angular/router';
     providers: [DialogService],
 })
 export class PendientesavalComponent implements OnInit {
-    //correoUsuario: string = 'lsierra@unicauca.edu.co';
-    correoUsuario: string = 'luz123@unicauca.edu.co';
+    correoUsuario: string = 'lsierra@unicauca.edu.co';
+    //correoUsuario: string = 'luz123@unicauca.edu.co';
     solicitudes: SolicitudRecibida[] = [];
     cargando: boolean = true;
     buzonVacio: boolean = false;

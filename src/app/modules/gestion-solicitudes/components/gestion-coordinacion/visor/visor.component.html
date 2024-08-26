@@ -14,10 +14,7 @@
                     <div style="padding-top: 5px">
                         <p-tag
                             severity="info"
-                            value="{{
-                                datosSolicitud.datosComunSolicitud
-                                    .estadoSolicitud
-                            }}"
+                            value="{{ gestor.estadoSolicitud }}"
                         ></p-tag>
                     </div>
                     <div class="col-11 text-lg font-bold">
@@ -96,6 +93,7 @@
         </p-tabPanel>
 
         <p-tabPanel
+            *ngIf="docsAdjuntos?.length > 0 || enlacesAdjuntos?.length > 0"
             header="Adjuntos"
             leftIcon="pi pi-paperclip"
             tooltip="Documentos anexos de la solicitud"
@@ -109,10 +107,7 @@
                     <div style="padding-top: 5px">
                         <p-tag
                             severity="info"
-                            value="{{
-                                datosSolicitud.datosComunSolicitud
-                                    .estadoSolicitud
-                            }}"
+                            value="{{ gestor.estadoSolicitud }}"
                         ></p-tag>
                     </div>
                     <div class="col-11 text-lg font-bold">
@@ -139,7 +134,7 @@
                         <ng-container
                             *ngIf="
                                 ['RE_CRED_PAS', 'RE_CRED_DIS'].includes(
-                                    gestor.solicitudSeleccionada.codigoSolicitud
+                                    solicitudSeleccionada.codigoSolicitud
                                 )
                             "
                         >
@@ -174,6 +169,7 @@
             </ng-container>
         </p-tabPanel>
         <p-tabPanel
+            *ngIf="mostrarGestor"
             header="Gestión"
             leftIcon="pi pi-sliders-h"
             tooltip="Tramitar solicitud"
@@ -187,10 +183,7 @@
                     <div style="padding-top: 5px">
                         <p-tag
                             severity="info"
-                            value="{{
-                                datosSolicitud.datosComunSolicitud
-                                    .estadoSolicitud
-                            }}"
+                            value="{{ gestor.estadoSolicitud }}"
                         ></p-tag>
                     </div>
                     <div class="col-11 text-lg font-bold">

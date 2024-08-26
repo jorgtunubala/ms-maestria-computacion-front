@@ -31,7 +31,7 @@ export class GestionComponent implements OnInit {
                     },
                     {
                         label: 'Rechazadas',
-                        routerLink: 'visor',
+                        routerLink: 'buzon/rechazadas',
                         icon: 'pi pi-fw pi-times',
                     },
                 ],

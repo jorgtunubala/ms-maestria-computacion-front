@@ -4,6 +4,8 @@ import { GestorService } from '../../../services/gestor.service';
 import { DetallesRechazo } from '../../../models/indiceModelos';
 import { HttpService } from '../../../services/http.service';
 import { Router } from '@angular/router';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { FormulariorechazoComponent } from '../complementos/formulariorechazo/formulariorechazo.component';
 
 @Component({
     selector: 'app-tramite',
@@ -17,25 +19,41 @@ export class TramiteComponent implements OnInit {
     enviadaAConsejo: boolean = false;
     deshabilitarEnvioAComite: boolean = false;
     deshabilitarEnvioAConsejo: boolean = false;
+    mostrarBtnRechazar: boolean = false;
+    mostrarBtnResolver: boolean = false;
 
     rechazoEnProceso: boolean = false;
     resolverEnProceso: boolean = false;
+
+    ref: DynamicDialogRef;
 
     constructor(
         private confirmationService: ConfirmationService,
         public gestor: GestorService,
         public http: HttpService,
-        private router: Router
+        private dialogService: DialogService
     ) {}
 
     ngOnInit(): void {
         switch (this.gestor.estadoSolicitud) {
+            case 'Avalada':
+                this.mostrarBtnRechazar = true;
+                this.mostrarBtnResolver = true;
+
+                break;
+
+            case 'RECHAZADA':
+                break;
             case 'EN_COMITE':
+                this.mostrarBtnRechazar = true;
+                this.mostrarBtnResolver = true;
                 this.enviadaAComite = true;
 
                 break;
 
             case 'EN_CONSEJO':
+                this.mostrarBtnRechazar = true;
+                this.mostrarBtnResolver = true;
                 this.enviadaAConsejo = true;
                 this.deshabilitarEnvioAConsejo = true;
                 break;
@@ -93,50 +111,66 @@ export class TramiteComponent implements OnInit {
 
         this.rechazoEnProceso = true;
 
-        const detalles: DetallesRechazo = {
-            idSolicitud: this.gestor.solicitudSeleccionada.idSolicitud,
-            emailRevisor: '',
-            estado: 'RECHAZADA',
-            comentario:
-                'Los documentos aportados no se corresponden con los requisitos para dar tramite a esta solicitud',
-        };
+        this.ref = this.dialogService.open(FormulariorechazoComponent, {
+            header: 'No avalar solicitud',
+            width: '60%',
+            contentStyle: { 'max-height': '600px', overflow: 'hidden' },
+            baseZIndex: 10000,
+        });
 
-        this.http.rechazarSolicitud(detalles).subscribe(
-            (resultado) => {
-                if (resultado) {
-                    this.rechazoEnProceso = false;
-                    this.confirmationService.confirm({
-                        message:
-                            'La solicitud se ha sido rechazada y se ha notificado al solicitante',
-                        header: 'Solicitud no avalada',
-                        icon: 'pi pi-exclamation-circle',
-                        acceptLabel: 'Aceptar',
-                        rejectVisible: false,
-                        accept: () => {
-                            console.log(this.gestor.rutaPrevia);
-                            this.router.navigate([this.gestor.rutaPrevia]);
-                        },
-                        reject: () => {
-                            this.router.navigate([this.gestor.rutaPrevia]);
-                        },
-                    });
-                } else {
-                    this.rechazoEnProceso = false;
-                    this.confirmationService.confirm({
-                        message:
-                            'Ha ocurrido un error inesperado al rechazar la solicitud, intentelo nuevamente.',
-                        header: 'Error al rechazar',
-                        icon: 'pi pi-exclamation-triangle',
-                        acceptLabel: 'Aceptar',
-                        rejectVisible: false,
-                        accept: () => {},
-                    });
-                }
-            },
-            (error) => {
-                console.error('Error al rechazar la solicitud:', error);
+        this.ref.onClose.subscribe((motivoRechazo: string) => {
+            if (motivoRechazo !== undefined) {
+                //lsierra@unicauca.edu.co
+                const detalles: DetallesRechazo = {
+                    idSolicitud: this.gestor.solicitudSeleccionada.idSolicitud,
+                    emailRevisor: 'lsierra@unicauca.edu.co',
+                    estado: 'RECHAZADA',
+                    comentario: motivoRechazo,
+                };
+
+                this.http.rechazarSolicitud(detalles).subscribe(
+                    (resultado) => {
+                        if (resultado) {
+                            this.rechazoEnProceso = false;
+                            this.gestor.estadoSolicitud = 'Rechazada';
+                            this.confirmationService.confirm({
+                                message:
+                                    'La solicitud se ha sido rechazada y se ha notificado al solicitante',
+                                header: 'Solicitud no avalada',
+                                icon: 'pi pi-exclamation-circle',
+                                acceptLabel: 'Aceptar',
+                                rejectVisible: false,
+                                accept: () => {
+                                    this.mostrarBtnRechazar = false;
+                                    this.mostrarBtnResolver = false;
+                                },
+                                reject: () => {
+                                    this.mostrarBtnRechazar = false;
+                                    this.mostrarBtnResolver = false;
+                                },
+                            });
+                        } else {
+                            this.rechazoEnProceso = false;
+                            this.confirmationService.confirm({
+                                message:
+                                    'Ha ocurrido un error inesperado al rechazar la solicitud, intentelo nuevamente.',
+                                header: 'Error al rechazar',
+                                icon: 'pi pi-exclamation-triangle',
+                                acceptLabel: 'Aceptar',
+                                rejectVisible: false,
+                                accept: () => {},
+                            });
+                        }
+                    },
+                    (error) => {
+                        console.error('Error al rechazar la solicitud:', error);
+                    }
+                );
+            } else {
+                // El diálogo se cerró sin confirmar
+                this.rechazoEnProceso = false;
             }
-        );
+        });
     }
 
     cambiarestadoSolicitud(estado: string) {}

@@ -5,7 +5,11 @@ import { DatosSolicitudRequest } from '../../../models/solicitudes/datosSolicitu
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { UtilidadesService } from '../../../services/utilidades.service';
 import { SeguimientoService } from '../../../services/seguimiento.service';
-import { EventoHistorial } from '../../../models/indiceModelos';
+import {
+    EventoHistorial,
+    SolicitudRecibida,
+} from '../../../models/indiceModelos';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-visor',
@@ -15,38 +19,57 @@ import { EventoHistorial } from '../../../models/indiceModelos';
 export class VisorComponent implements OnInit {
     urlOficioPdf: SafeResourceUrl;
     urlPdf: SafeResourceUrl;
+    solicitudSeleccionada: SolicitudRecibida;
     datosSolicitud: DatosSolicitudRequest;
+
     cargandoDatos: boolean = true;
 
     docsAdjuntos: File[] = [];
     enlacesAdjuntos: string[] = [];
+
+    mostrarGestor: boolean = false;
 
     constructor(
         public gestor: GestorService,
         public http: HttpService,
         public seguimiento: SeguimientoService,
         private sanitizer: DomSanitizer,
-        private utilidades: UtilidadesService
+        private utilidades: UtilidadesService,
+        private router: Router
     ) {}
 
     ngOnInit(): void {
-        this.cargarDatosSolicitud();
+        // Recuperar solicitudSeleccionada del localStorage
+        const solicitudSeleccionadaJson = localStorage.getItem(
+            'solicitudSeleccionada'
+        );
+
+        if (solicitudSeleccionadaJson) {
+            // Parsear el JSON y asignar al objeto SolicitudSeleccionada
+            this.solicitudSeleccionada = JSON.parse(
+                solicitudSeleccionadaJson
+            ) as SolicitudRecibida;
+
+            this.gestor.solicitudSeleccionada = this.solicitudSeleccionada;
+
+            // Continuar con el proceso de carga de datos
+            this.cargarDatosSolicitud();
+        }
     }
 
     cargarDatosSolicitud() {
         this.http
-            .obtenerInfoSolGuardada(
-                this.gestor.solicitudSeleccionada.idSolicitud
-            )
+            .obtenerInfoSolGuardada(this.solicitudSeleccionada.idSolicitud)
             .subscribe(
                 async (infoSolicitud: DatosSolicitudRequest) => {
                     this.datosSolicitud = infoSolicitud;
                     this.AbrirOficioPdf();
                     this.extraerAdjuntos(
-                        this.gestor.solicitudSeleccionada.codigoSolicitud
+                        this.solicitudSeleccionada.codigoSolicitud
                     );
                     this.gestor.estadoSolicitud =
                         infoSolicitud.datosComunSolicitud.estadoSolicitud;
+                    this.restringirLaVista(this.gestor.estadoSolicitud);
                     this.cargarHistorialDeSeguimiento();
                     this.cargandoDatos = false;
                 },
@@ -68,6 +91,17 @@ export class VisorComponent implements OnInit {
             .subscribe((data: EventoHistorial[]) => {
                 this.seguimiento.historial = data;
             });
+    }
+
+    restringirLaVista(estadoSolicitud: string) {
+        switch (estadoSolicitud) {
+            case 'Avalada':
+                this.mostrarGestor = true;
+                break;
+            case 'RECHAZADA':
+                this.mostrarGestor = false;
+                break;
+        }
     }
 
     AbrirOficioPdf() {

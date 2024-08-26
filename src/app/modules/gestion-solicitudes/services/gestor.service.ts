@@ -18,6 +18,12 @@ export class GestorService {
 
     constructor(private http: HttpService) {}
 
+    restablecerValores() {
+        this.solicitudSeleccionada = null;
+        this.estadoSolicitud = '';
+        this.rutaPrevia = '';
+    }
+
     setSolicitudSeleccionada(prmSolicitud: SolicitudRecibida) {
         this.solicitudSeleccionada = prmSolicitud;
     }

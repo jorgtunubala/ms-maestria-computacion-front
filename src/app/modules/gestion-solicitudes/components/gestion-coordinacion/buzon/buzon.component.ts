@@ -6,6 +6,12 @@ import { HttpService } from '../../../services/http.service';
 import { SolicitudRecibida } from '../../../models/indiceModelos';
 import { SeguimientoService } from '../../../services/seguimiento.service';
 
+interface ConfiguracionBuzon {
+    titulo: string;
+    icono: string;
+    columnaFecha: string;
+}
+
 @Component({
     selector: 'app-buzon',
     templateUrl: './buzon.component.html',
@@ -18,6 +24,24 @@ export class BuzonComponent implements OnInit {
 
     cargandoSolicitudes: boolean = true;
 
+    tituloBuzon: string;
+    iconoBuzon: string;
+    columnaFecha: string;
+
+    private configuraciones: Record<string, ConfiguracionBuzon> = {
+        nuevas: {
+            titulo: 'Solicitudes nuevas',
+            icono: 'pi pi-arrow-down',
+            columnaFecha: 'Recibida',
+        },
+        rechazadas: {
+            titulo: 'Solicitudes rechazadas',
+            icono: 'pi pi-times',
+            columnaFecha: 'Rechazada',
+        },
+        // Agregar más configuraciones según sea necesario
+    };
+
     constructor(
         public gestor: GestorService,
         private router: Router,
@@ -28,14 +52,21 @@ export class BuzonComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-        const rutaCompleta = this.route.snapshot.url.join('/');
-        const filtro = rutaCompleta.split('/').pop();
+        const filtro =
+            this.route.snapshot.url.join('/').split('/').pop() || 'nuevas';
 
-        if (filtro) {
-            this.cargarSolicitudes(this.proporcionarEstado(filtro));
-        }
-
+        this.setConfiguracion(filtro);
+        this.cargarSolicitudes(this.proporcionarEstado(filtro));
         this.seguimiento.restablecerValores();
+        this.gestor.restablecerValores();
+    }
+
+    private setConfiguracion(filtro: string): void {
+        const config =
+            this.configuraciones[filtro] || this.configuraciones.nuevas;
+        this.tituloBuzon = config.titulo;
+        this.iconoBuzon = config.icono;
+        this.columnaFecha = config.columnaFecha;
     }
 
     cargarSolicitudes(prmFiltro: string) {
@@ -60,8 +91,49 @@ export class BuzonComponent implements OnInit {
     }
 
     mostrarDetalles() {
-        this.gestor.solicitudSeleccionada = this.seleccionada;
-        this.gestor.rutaPrevia = this.router.url;
+        localStorage.removeItem('solicitudSeleccionada');
+
+        localStorage.setItem(
+            'solicitudSeleccionada',
+            JSON.stringify(this.seleccionada)
+        );
         this.router.navigate(['/gestionsolicitudes/visor']);
+    }
+
+    obtenerTituloIconoYColumna(filtro: string): {
+        titulo: string;
+        icono: string;
+        columnaRecibido: string;
+    } {
+        const configuraciones: {
+            [key: string]: {
+                titulo: string;
+                icono: string;
+                columnaRecibido: string;
+            };
+        } = {
+            nuevas: {
+                titulo: 'Solicitudes nuevas',
+                icono: 'pi pi-arrow-down',
+                columnaRecibido: 'Recibida',
+            },
+            rechazadas: {
+                titulo: 'Solicitudes rechazadas',
+                icono: 'pi pi-times',
+                columnaRecibido: 'Rechazada',
+            },
+        };
+
+        return (
+            configuraciones[filtro] || {
+                titulo: 'Bandeja de entrada',
+                icono: 'pi pi-arrow-down',
+                columnaRecibido: 'Recibida',
+            }
+        );
+    }
+
+    clear(table: any) {
+        table.clear();
     }
 }
