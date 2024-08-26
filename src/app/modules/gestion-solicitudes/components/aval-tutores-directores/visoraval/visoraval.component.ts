@@ -158,7 +158,7 @@ export class VisoravalComponent implements OnInit {
 
     onUpload(event, firmante) {
         const rol: any = 'Tutor';
-        //const rol: any = 'Director';
+        // const rol: any = 'Director';
         const reader = new FileReader();
 
         switch (rol) {
@@ -301,7 +301,7 @@ export class VisoravalComponent implements OnInit {
                 //luz123@unicauca.edu.co
                 const detalles: DetallesRechazo = {
                     idSolicitud: this.radicar.tipoSolicitudEscogida.idSolicitud,
-                    emailRevisor: 'luz123@unicauca.edu.co',
+                    emailRevisor: 'lsierra@unicauca.edu.co',
                     estado: 'NO_AVALADA',
                     comentario: motivoRechazo,
                 };

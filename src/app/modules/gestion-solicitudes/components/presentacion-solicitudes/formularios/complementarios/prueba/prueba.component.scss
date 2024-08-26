@@ -1,0 +1,31 @@
+.hoja-de-papel {
+    width: 60%; /* Ancho del 60% del contenedor */
+    aspect-ratio: 216 / 279; /* Proporción 216mm x 279mm */
+    background-color: white; /* Color de fondo */
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Sombra para darle un efecto realista */
+    margin: 0 auto; /* Centrar horizontalmente */
+    position: relative;
+    overflow: hidden; /* Oculta el contenido que pueda salir del área visible */
+}
+
+.contenido {
+    width: 100%; /* El ancho del contenido interno coincide con el ancho del div principal */
+    height: 100%; /* La altura del contenido interno coincide con la altura del div principal */
+    transform-origin: top left; /* Escala desde la esquina superior izquierda */
+    transform: scale(1); /* Escala el contenido */
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.hoja-de-papel p {
+    margin: 0;
+    padding: 10px; /* Ajusta según sea necesario */
+    font-size: 1em; /* Tamaño de fuente base */
+    line-height: 1.5em; /* Espaciado entre líneas */
+}
+
+.contenedor-hoja {
+    width: 80%;
+    margin: 0 auto;
+}

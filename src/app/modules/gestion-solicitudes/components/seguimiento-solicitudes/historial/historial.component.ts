@@ -21,6 +21,7 @@ export class HistorialComponent implements OnInit {
         Avalada: { color: '#0F2041', icon: 'pi pi-check-circle' },
         'Avalada Tutor': { color: '#0F2041', icon: 'pi pi-check-circle' },
         'Avalada Director': { color: '#0F2041', icon: 'pi pi-check-circle' },
+        'En Coordinación': { color: '#0F2041', icon: 'pi pi-check-circle' },
         'No Avalada Tutor': { color: '#AF0000', icon: 'pi pi-ban' },
         'No Avalada Director': { color: '#AF0000', icon: 'pi pi-ban' },
         'Rechazada Coordinador': { color: '#AF0000', icon: 'pi pi-ban' },

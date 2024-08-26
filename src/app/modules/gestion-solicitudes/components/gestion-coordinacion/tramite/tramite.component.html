@@ -8,19 +8,25 @@
 <div class="grid mt-3">
     <div class="col-12">
         <span class="p-buttonset">
-            <button
-                pButton
-                pRipple
-                label="Resolver"
-                icon="pi pi-check"
-            ></button>
-            <button
-                pButton
-                pRipple
-                label="Rechazar"
-                (click)="rechazarSolicitud()"
-                icon="pi pi-times"
-            ></button>
+            <ng-container *ngIf="mostrarBtnResolver">
+                <button
+                    pButton
+                    pRipple
+                    label="Resolver"
+                    icon="pi pi-check"
+                ></button>
+            </ng-container>
+            <ng-container *ngIf="mostrarBtnRechazar">
+                <button
+                    class="p-button p-button-danger"
+                    pButton
+                    pRipple
+                    label="Rechazar"
+                    (click)="rechazarSolicitud()"
+                    [loading]="rechazoEnProceso"
+                    icon="pi pi-times"
+                ></button>
+            </ng-container>
 
             <ng-container *ngIf="gestor.estadoSolicitud === 'RECHAZADA'">
                 <button

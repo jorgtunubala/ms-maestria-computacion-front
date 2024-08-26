@@ -20,7 +20,6 @@ export class OficioComponent implements OnInit {
     imgDivEncabezado: HTMLImageElement;
     imgDivPiePagina: HTMLImageElement;
     imgDivContenido: HTMLImageElement;
-    //imgDivProporcionContenido: HTMLImageElement;
     segmentosContenido: HTMLImageElement[];
 
     constructor(private renderer: Renderer2, private radicar: RadicarService) {}
@@ -259,6 +258,7 @@ export class OficioComponent implements OnInit {
         }
     }
 
+    /*
     crearPDF(): Promise<void> {
         return new Promise((resolve, reject) => {
             const div = this.vistaPreviaSolicitud.nativeElement;
@@ -269,7 +269,7 @@ export class OficioComponent implements OnInit {
                     const imgData = canvas.toDataURL('image/jpeg', 1.0);
                     const pdf = new jsPDF('p', 'mm', 'letter');
 
-                    const imgWidth = 216; // Ancho de la imagen en mm (ajústalo según tus necesidades)
+                    const imgWidth = 216; // Ancho de la imagen en mm 
                     const pageHeight = 279; // Altura de la página en mm
 
                     let position = 0;
@@ -309,6 +309,78 @@ export class OficioComponent implements OnInit {
                     resolve();
                 })
                 .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+        */
+
+    // Genera un archivo PDF a partir del contenido de un elemento HTML.
+    crearPDF(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            // Obtiene el elemento HTML que se va a convertir en PDF
+            const div = this.vistaPreviaSolicitud.nativeElement;
+
+            // Factor de escala para la imagen capturada (aumenta la calidad de la imagen)
+            const scale = 3;
+
+            // Usa html2canvas para capturar el contenido del elemento HTML como una imagen en un canvas
+            html2canvas(div, { scale: scale })
+                .then((canvas) => {
+                    // Convierte el canvas a una URL de datos en formato JPEG con calidad máxima
+                    const imgData = canvas.toDataURL('image/jpeg', 1.0);
+
+                    // Crea una instancia de jsPDF para generar el PDF
+                    const pdf = new jsPDF('p', 'mm', 'letter');
+
+                    // Dimensiones de la imagen en el PDF (ajusta según tus necesidades)
+                    const imgWidth = 216; // Ancho de la imagen en mm
+                    const pageHeight = 279; // Altura de la página en mm
+
+                    // Posición vertical inicial en la página
+                    let position = 0;
+
+                    // Itera sobre los segmentos de contenido para agregar imágenes al PDF
+                    for (
+                        let index = 0;
+                        index < this.segmentosContenido.length;
+                        index++
+                    ) {
+                        // Agrega la imagen al PDF en la posición actual
+                        pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, 0);
+
+                        // Si no es el último segmento, agrega una nueva página al PDF
+                        if (index != this.segmentosContenido.length - 1) {
+                            pdf.addPage();
+                        }
+
+                        // Actualiza la posición para la próxima página (mueve hacia arriba)
+                        position -= pageHeight;
+                    }
+
+                    // Convierte el PDF generado a un objeto Blob
+                    const blob = pdf.output('blob');
+
+                    // Crea un objeto File a partir del Blob con el nombre y tipo de archivo especificados
+                    const pdfFile = new File(
+                        [blob],
+                        'Oficio de Solicitud.pdf',
+                        {
+                            type: 'application/pdf',
+                        }
+                    );
+
+                    // Asigna el archivo PDF a una propiedad para su uso posterior
+                    this.radicar.oficioDeSolicitud = pdfFile;
+
+                    // Opcional: descomenta la siguiente línea para descargar el PDF automáticamente
+                    // pdf.save('Oficio de Solicitud.pdf');
+
+                    // Resuelve la promesa indicando que la generación del PDF ha sido exitosa
+                    resolve();
+                })
+                .catch((error) => {
+                    // Rechaza la promesa en caso de error durante la generación del PDF
                     reject(error);
                 });
         });

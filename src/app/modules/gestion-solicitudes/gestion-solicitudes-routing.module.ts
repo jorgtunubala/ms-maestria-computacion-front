@@ -23,12 +23,6 @@ const routes: Routes = [
         component: GestionComponent,
         children: [
             {
-                path: 'buzon/nuevas',
-                component: BuzonComponent,
-                canActivate: [RoleGuard],
-                data: { expectedRole: 'coordinador' },
-            },
-            {
                 path: 'visor',
                 component: VisorComponent,
                 canActivate: [RoleGuard],
@@ -37,6 +31,18 @@ const routes: Routes = [
             {
                 path: 'contenedor',
                 component: ContenedorComponent,
+                canActivate: [RoleGuard],
+                data: { expectedRole: 'coordinador' },
+            },
+            {
+                path: 'buzon/nuevas',
+                component: BuzonComponent,
+                canActivate: [RoleGuard],
+                data: { expectedRole: 'coordinador' },
+            },
+            {
+                path: 'buzon/rechazadas',
+                component: BuzonComponent,
                 canActivate: [RoleGuard],
                 data: { expectedRole: 'coordinador' },
             },
