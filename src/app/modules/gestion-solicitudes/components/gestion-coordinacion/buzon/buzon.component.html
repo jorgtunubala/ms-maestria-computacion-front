@@ -26,7 +26,7 @@
                     label="Limpiar filtro"
                     class="p-button-outlined"
                     icon="pi pi-filter-slash"
-                    (click)="clear(dt1)"
+                    (click)="limpiarFiltros(dt1)"
                 ></button>
                 <span class="p-input-icon-left ml-auto">
                     <i class="pi pi-search"></i>
@@ -44,8 +44,8 @@
 
         <ng-template pTemplate="header">
             <tr>
-                <th>Remitente</th>
-                <th>Tipo</th>
+                <th>Nombre del remitente</th>
+                <th>Tipo de solicitud</th>
                 <th>{{ columnaFecha }}</th>
             </tr>
         </ng-template>

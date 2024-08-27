@@ -46,6 +46,24 @@ const routes: Routes = [
                 canActivate: [RoleGuard],
                 data: { expectedRole: 'coordinador' },
             },
+            {
+                path: 'buzon/comite',
+                component: BuzonComponent,
+                canActivate: [RoleGuard],
+                data: { expectedRole: 'coordinador' },
+            },
+            {
+                path: 'buzon/consejo',
+                component: BuzonComponent,
+                canActivate: [RoleGuard],
+                data: { expectedRole: 'coordinador' },
+            },
+            {
+                path: 'buzon/resueltas',
+                component: BuzonComponent,
+                canActivate: [RoleGuard],
+                data: { expectedRole: 'coordinador' },
+            },
         ],
     },
     {

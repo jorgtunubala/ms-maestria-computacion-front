@@ -28,18 +28,33 @@ export class BuzonComponent implements OnInit {
     iconoBuzon: string;
     columnaFecha: string;
 
+    // Configuraciones de personalización según estado de solicitudes
     private configuraciones: Record<string, ConfiguracionBuzon> = {
         nuevas: {
             titulo: 'Solicitudes nuevas',
             icono: 'pi pi-arrow-down',
-            columnaFecha: 'Recibida',
+            columnaFecha: 'Fecha de recepción',
         },
         rechazadas: {
             titulo: 'Solicitudes rechazadas',
             icono: 'pi pi-times',
-            columnaFecha: 'Rechazada',
+            columnaFecha: 'Fecha de rechazo',
         },
-        // Agregar más configuraciones según sea necesario
+        comite: {
+            titulo: 'Solicitudes en comite de programa',
+            icono: 'pi pi-users',
+            columnaFecha: 'Fecha de envio',
+        },
+        consejo: {
+            titulo: 'Solicitudes en consejo de facultad',
+            icono: 'pi pi-users',
+            columnaFecha: 'Fecha de envio',
+        },
+        resueltas: {
+            titulo: 'Solicitudes resueltas',
+            icono: 'pi pi-check-circle',
+            columnaFecha: 'Fecha de cierre',
+        },
     };
 
     constructor(
@@ -52,16 +67,20 @@ export class BuzonComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-        const filtro =
-            this.route.snapshot.url.join('/').split('/').pop() || 'nuevas';
+        const filtro = this.extraerFiltroDeRuta() || 'nuevas';
 
         this.setConfiguracion(filtro);
-        this.cargarSolicitudes(this.proporcionarEstado(filtro));
-        this.seguimiento.restablecerValores();
-        this.gestor.restablecerValores();
+        this.cargarSolicitudes(this.obtenerEstadoAsociado(filtro));
+        this.restablecerValoresEnServicios();
     }
 
-    private setConfiguracion(filtro: string): void {
+    // Extrae el filtro de la ruta actual
+    extraerFiltroDeRuta(): string {
+        return this.route.snapshot.url.join('/').split('/').pop();
+    }
+
+    // Personaliza la vista del buzón según el filtro
+    setConfiguracion(filtro: string): void {
         const config =
             this.configuraciones[filtro] || this.configuraciones.nuevas;
         this.tituloBuzon = config.titulo;
@@ -69,7 +88,8 @@ export class BuzonComponent implements OnInit {
         this.columnaFecha = config.columnaFecha;
     }
 
-    cargarSolicitudes(prmFiltro: string) {
+    // Carga las solicitudes desde el servidor según el filtro
+    cargarSolicitudes(prmFiltro: string): void {
         this.http.consultarSolicitudesCoordinacion(prmFiltro).subscribe(
             (solicitudes: SolicitudRecibida[]) => {
                 this.solicitudes = solicitudes;
@@ -81,18 +101,27 @@ export class BuzonComponent implements OnInit {
         );
     }
 
-    proporcionarEstado(cadena: string): string {
-        const estados: { [key: string]: string } = {
+    // Proporciona el estado asociado al filtro
+    obtenerEstadoAsociado(filtro: string): string {
+        const estados: Record<string, string> = {
             nuevas: 'AVALADA',
             rechazadas: 'RECHAZADA',
+            comite: 'EN_COMITE',
+            consejo: 'EN_CONSEJO',
+            resueltas: 'RESUELTA',
         };
 
-        return estados[cadena] || '';
+        return estados[filtro] || '';
     }
 
-    mostrarDetalles() {
-        localStorage.removeItem('solicitudSeleccionada');
+    // Restablece los valores de los servicios necesarios
+    restablecerValoresEnServicios(): void {
+        this.seguimiento.restablecerValores();
+        this.gestor.restablecerValores();
+    }
 
+    // Muestra los detalles de la solicitud seleccionada
+    mostrarDetalles(): void {
         localStorage.setItem(
             'solicitudSeleccionada',
             JSON.stringify(this.seleccionada)
@@ -100,6 +129,12 @@ export class BuzonComponent implements OnInit {
         this.router.navigate(['/gestionsolicitudes/visor']);
     }
 
+    // Limpia los filtros de la tabla
+    limpiarFiltros(table: any): void {
+        table.clear();
+    }
+
+    /*
     obtenerTituloIconoYColumna(filtro: string): {
         titulo: string;
         icono: string;
@@ -132,8 +167,5 @@ export class BuzonComponent implements OnInit {
             }
         );
     }
-
-    clear(table: any) {
-        table.clear();
-    }
+        */
 }

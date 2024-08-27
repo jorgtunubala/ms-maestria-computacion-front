@@ -147,7 +147,9 @@
                                     type="button"
                                     icon="pi pi-external-link"
                                     label="Enlace a material externo"
-                                    (click)="abrirEnlace(enlace)"
+                                    (click)="
+                                        utilidades.abrirEnlaceExterno(enlace)
+                                    "
                                     class="p-button-rounded p-button-secondary mr-2 mb-2 text-sm"
                                 ></button
                             ></ng-container>

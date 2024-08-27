@@ -40,8 +40,16 @@ export class GestionComponent implements OnInit {
                 label: 'En tramite',
                 icon: 'pi pi-fw pi-pencil',
                 items: [
-                    { label: 'En comite', icon: 'pi pi-fw pi-users' },
-                    { label: 'En consejo', icon: 'pi pi-fw pi-users' },
+                    {
+                        label: 'En comite',
+                        routerLink: 'buzon/comite',
+                        icon: 'pi pi-fw pi-users',
+                    },
+                    {
+                        label: 'En consejo',
+                        routerLink: 'buzon/consejo',
+                        icon: 'pi pi-fw pi-users',
+                    },
                 ],
             },
             {
@@ -50,6 +58,7 @@ export class GestionComponent implements OnInit {
                 items: [
                     {
                         label: 'Resueltas',
+                        routerLink: 'buzon/resueltas',
                         icon: 'pi pi-fw pi-check-circle',
                     },
                 ],

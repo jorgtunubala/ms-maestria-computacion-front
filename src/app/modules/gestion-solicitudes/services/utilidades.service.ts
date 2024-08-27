@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Injectable({
     providedIn: 'root',
 })
 export class UtilidadesService {
-    constructor() {}
+    constructor(private sanitizer: DomSanitizer) {}
 
     async convertirFileABase64(archivo: File | null): Promise<string | null> {
         return new Promise((resolve, reject) => {
@@ -58,6 +59,24 @@ export class UtilidadesService {
         const archivo = new File([blob], nombre);
 
         return archivo;
+    }
+
+    // Crea una URL segura para mostrar el archivo PDF
+    crearUrlSeguroParaPDF(documento: File): SafeResourceUrl {
+        const tipoMIME = 'application/pdf';
+        const blob = new Blob([documento], { type: tipoMIME });
+        const url = URL.createObjectURL(blob);
+        return this.sanitizer.bypassSecurityTrustResourceUrl(url);
+    }
+
+    // Abre un enlace en una nueva pestaña
+    abrirEnlaceExterno(enlace: string): void {
+        if (enlace) {
+            const enlaceCompleto = enlace.startsWith('http')
+                ? enlace
+                : `http://${enlace}`;
+            window.open(enlaceCompleto, '_blank');
+        }
     }
 
     extraerFechaDeRange(
