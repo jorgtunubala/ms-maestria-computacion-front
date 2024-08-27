@@ -33,37 +33,37 @@ export class VisorComponent implements OnInit {
         public gestor: GestorService,
         public http: HttpService,
         public seguimiento: SeguimientoService,
-        private sanitizer: DomSanitizer,
         private utilidades: UtilidadesService,
         private router: Router
     ) {}
 
     ngOnInit(): void {
-        // Recuperar solicitudSeleccionada del localStorage
+        this.recuperarSolicitudSeleccionada();
+    }
+
+    // Recupera la solicitud seleccionada del localStorage y carga los datos
+    recuperarSolicitudSeleccionada(): void {
         const solicitudSeleccionadaJson = localStorage.getItem(
             'solicitudSeleccionada'
         );
 
         if (solicitudSeleccionadaJson) {
-            // Parsear el JSON y asignar al objeto SolicitudSeleccionada
             this.solicitudSeleccionada = JSON.parse(
                 solicitudSeleccionadaJson
             ) as SolicitudRecibida;
-
             this.gestor.solicitudSeleccionada = this.solicitudSeleccionada;
-
-            // Continuar con el proceso de carga de datos
             this.cargarDatosSolicitud();
         }
     }
 
-    cargarDatosSolicitud() {
+    // Carga los datos de la solicitud desde el servidor
+    cargarDatosSolicitud(): void {
         this.http
             .obtenerInfoSolGuardada(this.solicitudSeleccionada.idSolicitud)
             .subscribe(
                 async (infoSolicitud: DatosSolicitudRequest) => {
                     this.datosSolicitud = infoSolicitud;
-                    this.AbrirOficioPdf();
+                    this.abrirOficioPdf();
                     this.extraerAdjuntos(
                         this.solicitudSeleccionada.codigoSolicitud
                     );
@@ -75,14 +75,15 @@ export class VisorComponent implements OnInit {
                 },
                 (error) => {
                     console.error(
-                        'Error al cargar la informacion de la solicitud:',
+                        'Error al cargar la información de la solicitud:',
                         error
                     );
                 }
             );
     }
 
-    cargarHistorialDeSeguimiento() {
+    // Carga el historial de seguimiento de la solicitud
+    cargarHistorialDeSeguimiento(): void {
         this.seguimiento.radicado =
             this.datosSolicitud.datosComunSolicitud.radicado;
 
@@ -93,52 +94,35 @@ export class VisorComponent implements OnInit {
             });
     }
 
-    restringirLaVista(estadoSolicitud: string) {
-        switch (estadoSolicitud) {
-            case 'Avalada':
-                this.mostrarGestor = true;
-                break;
-            case 'RECHAZADA':
-                this.mostrarGestor = false;
-                break;
-        }
+    // Restringe la vista del gestor según el estado de la solicitud
+    restringirLaVista(estadoSolicitud: string): void {
+        this.mostrarGestor = estadoSolicitud === 'Avalada';
     }
 
-    AbrirOficioPdf() {
+    // Abre el PDF del oficio
+    abrirOficioPdf(): void {
         const oficioPdf = this.datosSolicitud.datosComunSolicitud?.oficioPdf;
 
         if (oficioPdf) {
             const documento = this.utilidades.convertirBase64AFile(oficioPdf);
-            const tipoMIME = 'application/pdf';
-            const blob = new Blob([documento], { type: tipoMIME });
-            const url = URL.createObjectURL(blob);
             this.urlOficioPdf =
-                this.sanitizer.bypassSecurityTrustResourceUrl(url);
+                this.utilidades.crearUrlSeguroParaPDF(documento);
         }
     }
 
-    abrirArchivo(nombreDocumento: string) {
+    // Abre un archivo PDF adjunto
+    abrirArchivo(nombreDocumento: string): void {
         const documento = this.docsAdjuntos.find(
             (doc) => doc.name === nombreDocumento
         );
 
         if (documento) {
-            const blob = new Blob([documento], { type: 'application/pdf' });
-            const url = URL.createObjectURL(blob);
-            this.urlPdf = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+            this.urlPdf = this.utilidades.crearUrlSeguroParaPDF(documento);
         }
     }
 
-    abrirEnlace(enlace: string): void {
-        if (enlace) {
-            const enlaceCompleto = enlace.startsWith('http')
-                ? enlace
-                : 'http://' + enlace;
-            window.open(enlaceCompleto, '_blank');
-        }
-    }
-
-    extraerAdjuntos(tipoSolicitud: string) {
+    // Extrae los archivos adjuntos según el tipo de solicitud
+    extraerAdjuntos(tipoSolicitud: string): void {
         const procesarDocumentosAdjuntos = (
             documentosAdjuntos: any[]
         ): void => {
@@ -152,80 +136,85 @@ export class VisorComponent implements OnInit {
         switch (tipoSolicitud) {
             case 'HO_ASIG_ESP':
             case 'HO_ASIG_POS':
-                procesarDocumentosAdjuntos(
-                    this.datosSolicitud.datosSolicitudHomologacion
-                        .documentosAdjuntos
-                );
-
-                this.datosSolicitud.datosSolicitudHomologacion.datosAsignatura.forEach(
-                    (asignatura) => {
-                        if (asignatura.contenidoProgramatico) {
-                            this.docsAdjuntos.push(
-                                this.utilidades.convertirBase64AFile(
-                                    asignatura.contenidoProgramatico
-                                )
-                            );
-                        }
-                    }
-                );
+                this.extraerAdjuntosHomologacion(procesarDocumentosAdjuntos);
                 break;
-
             case 'CU_ASIG':
                 procesarDocumentosAdjuntos(
                     this.datosSolicitud.datosSolicitudCursarAsignaturas
                         .documentosAdjuntos
                 );
                 break;
-
             case 'AV_PASA_INV':
                 procesarDocumentosAdjuntos(
                     this.datosSolicitud.datoAvalPasantiaInv.documentosAdjuntos
                 );
                 break;
-
             case 'AP_ECON_INV':
                 procesarDocumentosAdjuntos(
                     this.datosSolicitud.datosApoyoEconomico.documentosAdjuntos
                 );
                 break;
-
             case 'RE_CRED_PAS':
-                this.datosSolicitud.datosActividadDocente?.forEach(
-                    (actividad) => {
-                        procesarDocumentosAdjuntos(actividad.documentos);
-                        actividad.enlaces?.forEach((enlace) => {
-                            this.enlacesAdjuntos.push(enlace);
-                        });
-                    }
+                this.extraerAdjuntosActividadDocente(
+                    procesarDocumentosAdjuntos
                 );
                 break;
-
             case 'RE_CRED_PUB':
                 procesarDocumentosAdjuntos(
                     this.datosSolicitud.datosReconocimientoCreditos
                         .documentosAdjuntos
                 );
                 break;
-
             case 'AP_ECON_ASI':
                 procesarDocumentosAdjuntos(
                     this.datosSolicitud.datosApoyoEconomicoCongreso
                         .documentosAdjuntos
                 );
                 break;
-
             case 'PA_PUBL_EVE':
                 procesarDocumentosAdjuntos(
                     this.datosSolicitud.datosApoyoEconomicoPublicacion
                         .documentosAdjuntos
                 );
                 break;
-
             case 'SO_BECA':
             case 'SO_DESC':
             default:
                 // No se realiza ninguna acción para estos tipos de solicitud
                 break;
         }
+    }
+
+    // Extrae los adjuntos de homologación
+    extraerAdjuntosHomologacion(
+        procesarDocumentosAdjuntos: (documentosAdjuntos: any[]) => void
+    ): void {
+        procesarDocumentosAdjuntos(
+            this.datosSolicitud.datosSolicitudHomologacion.documentosAdjuntos
+        );
+
+        this.datosSolicitud.datosSolicitudHomologacion.datosAsignatura.forEach(
+            (asignatura) => {
+                if (asignatura.contenidoProgramatico) {
+                    this.docsAdjuntos.push(
+                        this.utilidades.convertirBase64AFile(
+                            asignatura.contenidoProgramatico
+                        )
+                    );
+                }
+            }
+        );
+    }
+
+    // Extrae los adjuntos de la actividad docente
+    extraerAdjuntosActividadDocente(
+        procesarDocumentosAdjuntos: (documentosAdjuntos: any[]) => void
+    ): void {
+        this.datosSolicitud.datosActividadDocente?.forEach((actividad) => {
+            procesarDocumentosAdjuntos(actividad.documentos);
+            actividad.enlaces?.forEach((enlace) =>
+                this.enlacesAdjuntos.push(enlace)
+            );
+        });
     }
 }
