@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { MatriculaEvaluacionService } from '../../services/matricula-evaluacion.service'; // Asegúrate de importar correctamente el servicio
 
 @Component({
     selector: 'app-bandeja-evaluacion-docente',
@@ -12,7 +13,10 @@ export class BandejaEvaluacionDocenteComponent implements OnInit {
     hasActiveEvaluations: boolean = false;
     loading: boolean = true;
 
-    constructor(private router: Router) {}
+    constructor(
+        private router: Router,
+        private matriculaEvaluacionService: MatriculaEvaluacionService // Inyectar el servicio
+    ) {}
 
     ngOnInit() {
         // Inicialización de datos
@@ -28,62 +32,37 @@ export class BandejaEvaluacionDocenteComponent implements OnInit {
     loadEvaluations(event: any) {
         this.loading = true;
 
-        // Simulación de carga de datos
-        setTimeout(() => {
-            const datosSimulados = [
-                {
-                    periodo: '2',
-                    anio: 2020,
-                    nombre: 'Cuestionario de evaluación docente',
-                    asignaturasEvaluadas: 10,
-                    estado: 'Cerrada',
-                },
-                {
-                    periodo: '1',
-                    anio: 2020,
-                    nombre: 'Cuestionario de evaluación docente',
-                    asignaturasEvaluadas: 10,
-                    estado: 'Cerrada',
-                },
-                {
-                    periodo: '2',
-                    anio: 2019,
-                    nombre: 'Cuestionario de evaluación docente',
-                    asignaturasEvaluadas: 9,
-                    estado: 'Cerrada',
-                },
-                {
-                    periodo: '1',
-                    anio: 2019,
-                    nombre: 'Cuestionario de evaluación docente',
-                    asignaturasEvaluadas: 8,
-                    estado: 'Cerrada',
-                },
+        this.matriculaEvaluacionService.listarEvaluciones().subscribe(
+            (data: any[]) => {
+                // Mapear los datos para que coincidan con la estructura esperada en la tabla
+                this.evaluaciones = data.map((evaluacion) => ({
+                    periodo: evaluacion.periodo,
+                    anio: evaluacion.anio,
+                    nombre: evaluacion.nombreCuestionario,
+                    asignaturasEvaluadas: evaluacion.cantidadAsignaturas,
+                    estado: evaluacion.estado
+                }));
 
-                {
-                    periodo: '1',
-                    anio: 2023,
-                    nombre: 'Cuestionario de evaluación docente',
-                    asignaturasEvaluadas: 12,
-                    estado: 'Cerrada',
-                }, // Evaluación activa
-            ];
+                // Ordenar datos por el campo especificado
+                this.evaluaciones.sort((a, b) => {
+                    const fieldA = a[event.sortField];
+                    const fieldB = b[event.sortField];
+                    return (fieldA < fieldB ? -1 : 1) * event.sortOrder;
+                });
 
-            // Ordenar datos por el campo especificado
-            this.evaluaciones = datosSimulados.sort((a, b) => {
-                const fieldA = a[event.sortField];
-                const fieldB = b[event.sortField];
-                return (fieldA < fieldB ? -1 : 1) * event.sortOrder;
-            });
+                this.totalRecords = this.evaluaciones.length;
+                this.loading = false;
 
-            this.totalRecords = this.evaluaciones.length;
-            this.loading = false;
-
-            // Verificar si hay evaluaciones activas
-            this.hasActiveEvaluations = this.evaluaciones.some(
-                (e) => e.estado === 'Activa'
-            );
-        }, 1000);
+                // Verificar si hay evaluaciones activas
+                this.hasActiveEvaluations = this.evaluaciones.some(
+                    (e) => e.estado === 'ACTIVO'
+                );
+            },
+            (error) => {
+                console.error('Error al cargar las evaluaciones', error);
+                this.loading = false;
+            }
+        );
     }
 
     viewStatistics(evaluacion: any) {

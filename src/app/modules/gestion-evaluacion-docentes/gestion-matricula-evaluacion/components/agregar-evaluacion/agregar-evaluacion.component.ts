@@ -17,7 +17,8 @@ export class AgregarEvaluacionComponent implements OnInit {
     mostrarDetalles: boolean = false;
     evaluacionExistente: boolean = false;
     yearRange: string;
-    areas: any[] = [];
+    areasFormacion: any[] = [];
+    cantidadEstudiantesRegistrados: number = 0;
 
     constructor(private cuestionarioService: CuestionarioService) {
         const currentYear = new Date().getFullYear();
@@ -30,32 +31,92 @@ export class AgregarEvaluacionComponent implements OnInit {
         ];
         this.loadCuestionarios();
 
-        this.areas = [
+        this.areasFormacion = [
             {
-                nombre: 'Área de fundamentación',
-                asignaturas: [
-                    { codigo: '27611', grupo: 'A', nombre: 'Metodología de la Investigación', docente: 'CESAR JESUS PARDO CALVACHE, ERWIN MEZA VEGA, NESTOR MILCIADES DIAZ', cantidadEstudiantes: 10 },
-                    { codigo: '27700', grupo: 'A', nombre: 'Seminario de Matemáticas', docente: 'JULIO ARIEL HURTADO ALEGRIA', cantidadEstudiantes: 5 },
-                    { codigo: '27701', grupo: 'A', nombre: 'Gestión de la Tecnología y la Innovación', docente: 'RICARDO ANTONIO ZAMBRANO SEGUR', cantidadEstudiantes: 4 }
+                idArea: 1,
+                nombre: 'Área de Fundamentación',
+                cursos: [
+                    {
+                        id: 1,
+                        grupoCurso: 'A',
+                        idArea: 1,
+                        area: 'Área de Fundamentación',
+                        codigo: 1,
+                        asignatura: 'Metodología de la Investigación',
+                        docentes: [
+                            {
+                                id: 1,
+                                codigo: 'DOC001',
+                                nombre: 'Andrés',
+                                apellido: 'García',
+                                correo: 'agarcia@example.com'
+                            },
+                            {
+                                id: 2,
+                                codigo: 'DOC002',
+                                nombre: 'María',
+                                apellido: 'Martínez',
+                                correo: 'mmartinez@example.com'
+                            },
+                            {
+                                id: 9,
+                                codigo: 'DOC009',
+                                nombre: 'Alejandro',
+                                apellido: 'Díaz',
+                                correo: 'adiaz@example.com'
+                            }
+                        ],
+                        cantidadEstudiantes: 12
+                    },
+                    {
+                        id: 2,
+                        grupoCurso: 'A',
+                        idArea: 1,
+                        area: 'Área de Fundamentación',
+                        codigo: 2,
+                        asignatura: 'Seminario de Matemáticas',
+                        docentes: [
+                            {
+                                id: 4,
+                                codigo: 'DOC004',
+                                nombre: 'Sandra',
+                                apellido: 'Pérez',
+                                correo: 'sperez@example.com'
+                            }
+                        ],
+                        cantidadEstudiantes: 10
+                    }
                 ]
             },
             {
-                nombre: 'Área de electivas',
-                asignaturas: [
-                    { codigo: '123', grupo: 'A', nombre: 'Metodologías ágiles para la gestión de proyectos de dllo de Sw', docente: 'CESAR JESUS PARDO CALVACHE', cantidadEstudiantes: 4 },
-                    { codigo: '342', grupo: 'A', nombre: 'Ingeniería de la Usabilidad', docente: 'CESAR ALBERTO COLLAZOS ORDOÑE', cantidadEstudiantes: 2 },
-                    { codigo: '2341', grupo: 'A', nombre: 'Ingeniería de Procesos Sw', docente: 'JULIO ARIEL HURTADO ALEGRIA', cantidadEstudiantes: 3 }
-                ]
-            },
-            {
-                nombre: 'Área de investigación',
-                asignaturas: [
-                    { codigo: '27708', grupo: 'A', nombre: 'Seminario de Investigación', docente: 'CESAR ALBERTO COLLAZOS ORDOÑE', cantidadEstudiantes: 4 },
-                    { codigo: '27708', grupo: 'B', nombre: 'Seminario de Investigación', docente: 'CARLOS ALBERTO COBOS LOZADA', cantidadEstudiantes: 3 },
-                    { codigo: '27708', grupo: 'C', nombre: 'Seminario de Investigación', docente: 'CAROLINA GONZALEZ SERRANO', cantidadEstudiantes: 2 }
+                idArea: 2,
+                nombre: 'Área de Electivas',
+                cursos: [
+                    {
+                        id: 4,
+                        grupoCurso: 'A',
+                        idArea: 2,
+                        area: 'Área de Electivas',
+                        codigo: 4,
+                        asignatura: 'Metodologías ágiles para la gestión de proyectos de desarrollo de software',
+                        docentes: [
+                            {
+                                id: 6,
+                                codigo: 'DOC006',
+                                nombre: 'Laura',
+                                apellido: 'González',
+                                correo: 'lgonzalez@example.com'
+                            }
+                        ],
+                        cantidadEstudiantes: 10
+                    }
                 ]
             }
         ];
+
+        this.cantidadEstudiantesRegistrados = this.areasFormacion.reduce((total, area) => {
+            return total + area.cursos.reduce((areaTotal, curso) => areaTotal + curso.cantidadEstudiantes, 0);
+        }, 0);
     }
 
     loadCuestionarios(): void {

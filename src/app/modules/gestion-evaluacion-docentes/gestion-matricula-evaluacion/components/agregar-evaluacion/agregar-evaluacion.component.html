@@ -24,29 +24,35 @@
 
       <div class="card">
         <h4 class="text-lg font-semibold">Detalles de la evaluación a realizar</h4>
-        <p>Cantidad de estudiantes que responderán la evaluación: 15</p>
+        <p>Cantidad de estudiantes que responderán la evaluación: {{ cantidadEstudiantesRegistrados }}</p>
 
         <h5 class="text-md font-semibold mt-2">Asignaturas a evaluar</h5>
-        <div *ngFor="let area of areas" class="mt-4">
+        <div *ngFor="let area of areasFormacion" class="mt-4">
           <div class="card p-4">
             <h6 class="text-sm font-medium">{{ area.nombre }}</h6>
-            <p-table [value]="area.asignaturas" class="mt-2 w-full">
+            <p-table [value]="area.cursos" class="mt-2 w-full">
               <ng-template pTemplate="header">
                 <tr>
-                  <th>Código</th>
-                  <th>Grupo</th>
-                  <th>Nombre</th>
-                  <th>Docente</th>
-                  <th>Cantidad de estudiantes que responderán en la plataforma</th>
+                  <th scope="col">Código</th>
+                  <th scope="col">Grupo</th>
+                  <th scope="col">Asignatura</th>
+                  <th scope="col">Docentes</th>
+                  <th scope="col">Cantidad de estudiantes</th>
                 </tr>
               </ng-template>
-              <ng-template pTemplate="body" let-asignatura>
+              <ng-template pTemplate="body" let-curso>
                 <tr>
-                  <td>{{ asignatura.codigo }}</td>
-                  <td>{{ asignatura.grupo }}</td>
-                  <td>{{ asignatura.nombre }}</td>
-                  <td>{{ asignatura.docente }}</td>
-                  <td>{{ asignatura.cantidadEstudiantes }}</td>
+                  <td>{{ curso.codigo }}</td>
+                  <td>{{ curso.grupoCurso }}</td>
+                  <td>{{ curso.asignatura }}</td>
+                  <td>
+                    <ul>
+                      <li *ngFor="let docente of curso.docentes">
+                        {{ docente.nombre }} {{ docente.apellido }}
+                      </li>
+                    </ul>
+                  </td>
+                  <td>{{ curso.cantidadEstudiantes }}</td>
                 </tr>
               </ng-template>
             </p-table>
