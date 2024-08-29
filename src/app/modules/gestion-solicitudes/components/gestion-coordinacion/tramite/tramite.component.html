@@ -6,6 +6,19 @@
 ></p-confirmDialog>
 
 <div class="grid mt-3">
+    <button
+        pButton
+        pRipple
+        type="button"
+        label="Oficio para Consejo"
+        class="p-button-outlined p-button-secondary"
+        icon="pi pi-download"
+        iconPos="right"
+        (click)="
+            descargarDocumentoPDF('Oficio de solicitud ', 'oficioParaConcejo')
+        "
+    ></button>
+
     <div class="col-12">
         <span class="p-buttonset">
             <ng-container *ngIf="mostrarBtnResolver">
@@ -97,7 +110,53 @@
                             slotChar="mm/dd/yyyy"
                         ></p-inputMask>
                     </div>
-                    <div class="col-2"></div>
+                    <div class="flex gap-2">
+                        <button
+                            pButton
+                            pRipple
+                            type="button"
+                            label="Oficio para Consejo"
+                            class="p-button-outlined p-button-secondary"
+                            icon="pi pi-download"
+                            iconPos="right"
+                            (click)="
+                                descargarDocumentoPDF(
+                                    'Oficio de solicitud ',
+                                    'oficioParaConcejo'
+                                )
+                            "
+                        ></button>
+                        <button
+                            pButton
+                            pRipple
+                            type="button"
+                            label="Respuesta para Solicitante"
+                            class="p-button-outlined p-button-secondary"
+                            icon="pi pi-download"
+                            iconPos="right"
+                            (click)="
+                                descargarDocumentoPDF(
+                                    'Respuesta a la solicitud ',
+                                    'respuestaSolicitante'
+                                )
+                            "
+                        ></button>
+                        <button
+                            pButton
+                            pRipple
+                            type="button"
+                            label="Respuesta para Tutor"
+                            class="p-button-outlined p-button-secondary"
+                            icon="pi pi-download"
+                            iconPos="right"
+                            (click)="
+                                descargarDocumentoPDF(
+                                    'Respuesta a la solicitud ',
+                                    'respuestaTutor'
+                                )
+                            "
+                        ></button>
+                    </div>
                 </div>
             </p-accordionTab>
             <p-accordionTab header="Consejo de Facultad">

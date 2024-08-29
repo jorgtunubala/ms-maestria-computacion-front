@@ -6,6 +6,7 @@ import { HttpService } from '../../../services/http.service';
 import { Router } from '@angular/router';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { FormulariorechazoComponent } from '../complementos/formulariorechazo/formulariorechazo.component';
+import { PdfService } from '../../../services/pdf.service';
 
 @Component({
     selector: 'app-tramite',
@@ -31,7 +32,8 @@ export class TramiteComponent implements OnInit {
         private confirmationService: ConfirmationService,
         public gestor: GestorService,
         public http: HttpService,
-        private dialogService: DialogService
+        private dialogService: DialogService,
+        private servicioPDF: PdfService
     ) {}
 
     ngOnInit(): void {
@@ -171,6 +173,29 @@ export class TramiteComponent implements OnInit {
                 this.rechazoEnProceso = false;
             }
         });
+    }
+
+    descargarDocumentoPDF(nombre: string, tipo: string) {
+        switch (tipo) {
+            case 'respuestaSolicitante': {
+                const doc = this.servicioPDF.generateTemplate1();
+                doc.save(nombre + '.pdf');
+                break;
+            }
+            case 'respuestaTutor':
+                break;
+            case 'respuestaDirector':
+                break;
+            case 'oficioParaConcejo': {
+                const doc = this.servicioPDF.generateTemplate1();
+                doc.save(nombre + '.pdf');
+                break;
+            }
+            case 'oficioParaViceAdmin':
+                break;
+            default:
+                break;
+        }
     }
 
     cambiarestadoSolicitud(estado: string) {}
