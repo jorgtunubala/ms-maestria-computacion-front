@@ -12,17 +12,7 @@ import {
 export class PdfService {
     constructor() {}
 
-    generateTemplate1() {
-        const doc = new jsPDF({ format: 'letter' });
-
-        // Definir el límite inferior antes de llegar al pie de página
-        const alturaPagina = doc.internal.pageSize.height;
-        const margenSuperior = 60; // Margen superior despues del encabezado
-        const margenInferior = 40; // Margen inferior antes del pie de página
-        const limiteInferiorContenido = alturaPagina - margenInferior; // Límite para el contenido
-        let posicionYActual = margenSuperior; // Posición inicial en Y para el contenido
-
-        //Elementos multimedia
+    addTemplate(doc) {
         const imgBannerSup = '../assets/layout/images/motivoencabezado.png';
         const imgEscudo = '../assets/layout/images/escudo-unicauca.png';
         const imgISO90001 = '../assets/layout/images/Logo_ISO_9001.png';
@@ -82,13 +72,31 @@ export class PdfService {
         // Logos de certificaciones
         doc.addImage(imgISO90001, 'JPEG', 173, 251, 12, 16);
         doc.addImage(imgIQNET, 'JPEG', 186, 253, 12, 12);
-
-        return doc;
     }
 
-    generateTemplate2() {
-        const doc = new jsPDF();
-        doc.text('This is Template 2', 10, 10);
+    // Método para agregar contenido personalizado sobre la plantilla común
+    generateTemplate1() {
+        const doc = new jsPDF({ format: 'letter' });
+
+        // Añadir primera página con la plantilla
+        this.addTemplate(doc);
+
+        // Agregar contenido personalizado
+        doc.setFont('OpenSans', 'regular');
+        doc.setFontSize(11);
+        doc.setTextColor(79, 79, 79);
+        doc.text('Popayán, XX de XXXX de XXXX', 20, 65);
+
+        // Añadir una nueva página y repetir la plantilla
+        doc.addPage();
+        this.addTemplate(doc);
+
+        // Agregar más contenido en la nueva página
+        doc.setFont('OpenSans', 'regular');
+        doc.setFontSize(11);
+        doc.setTextColor(0, 18, 130);
+        doc.text('More content on page 2', 20, 65);
+
         return doc;
     }
 
