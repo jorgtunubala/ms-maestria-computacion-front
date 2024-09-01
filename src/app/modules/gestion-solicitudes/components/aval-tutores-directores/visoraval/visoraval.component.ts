@@ -5,6 +5,8 @@ import {
     OnInit,
     ViewChild,
 } from '@angular/core';
+import jsPDF from 'jspdf';
+import { PDFDocument, rgb } from 'pdf-lib';
 import { GestorService } from '../../../services/gestor.service';
 import { RadicarService } from '../../../services/radicar.service';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -37,6 +39,9 @@ export class VisoravalComponent implements OnInit {
     @ViewChild(OficioComponent) oficio: OficioComponent;
     @ViewChild('firmaImage') firmaImage: ElementRef;
 
+    rol: any = 'Tutor';
+    //rol: any = 'Director';
+
     mostrarOficio: boolean = false;
     mostrarBtnFirmar: boolean = false;
     mostrarBtnRechazar: boolean = false;
@@ -50,7 +55,12 @@ export class VisoravalComponent implements OnInit {
     deshabilitarAval: boolean = false;
     cargandoDatos: boolean = true;
 
+    pdfSolicitud: File;
+
+    pdfCopiaBase64: string = '';
+
     urlPdf: SafeResourceUrl;
+    urlPdfSolicitud: SafeResourceUrl;
 
     documentosAdjuntos: File[] = [];
     enlacesAdjuntos: string[] = [];
@@ -138,6 +148,19 @@ export class VisoravalComponent implements OnInit {
             )
             .subscribe(
                 async (infoSolicitud: DatosSolicitudRequest) => {
+                    this.pdfCopiaBase64 =
+                        infoSolicitud.datosComunSolicitud?.oficioPdf;
+                    const oficioPdf =
+                        infoSolicitud.datosComunSolicitud?.oficioPdf;
+                    if (oficioPdf) {
+                        this.pdfSolicitud =
+                            this.utilidades.convertirBase64AFile(oficioPdf);
+                        this.urlPdfSolicitud =
+                            this.utilidades.crearUrlSeguroParaPDF(
+                                this.pdfSolicitud
+                            );
+                    }
+
                     await this.radicar.poblarConDatosSolicitudGuardada(
                         infoSolicitud
                     );
@@ -157,14 +180,12 @@ export class VisoravalComponent implements OnInit {
     }
 
     onUpload(event, firmante) {
-        const rol: any = 'Tutor';
-        // const rol: any = 'Director';
         const reader = new FileReader();
 
-        switch (rol) {
+        switch (this.rol) {
             case 'Tutor':
                 this.radicar.firmaTutor = event.files[0];
-                this.renderizarImagen(this.radicar.firmaTutor, rol);
+                this.renderizarImagen(this.radicar.firmaTutor, this.rol);
 
                 reader.onload = (e) => {
                     this.firmaImage.nativeElement.src = e.target.result;
@@ -175,7 +196,7 @@ export class VisoravalComponent implements OnInit {
 
             case 'Director':
                 this.radicar.firmaDirector = event.files[0];
-                this.renderizarImagen(this.radicar.firmaDirector, rol);
+                this.renderizarImagen(this.radicar.firmaDirector, this.rol);
 
                 reader.onload = (e) => {
                     this.firmaImage.nativeElement.src = e.target.result;
@@ -194,6 +215,24 @@ export class VisoravalComponent implements OnInit {
     firmarSolicitud() {
         this.firmaEnProceso = true;
 
+        switch (this.rol) {
+            case 'Tutor':
+                this.agregarImagenAPDF(
+                    this.radicar.firmaTutorUrl.toString(), // Imagen en Base64
+                    1, // Número de página (por ejemplo, la primera página)
+                    137.2666, // Coordenada X
+                    181 - 0.2, // Coordenada Y
+                    58.63, // Ancho
+                    20 // Alto
+                );
+                break;
+            case 'Director':
+                break;
+
+            default:
+                break;
+        }
+
         setTimeout(() => {
             this.mostrarOficio = false;
 
@@ -204,6 +243,114 @@ export class VisoravalComponent implements OnInit {
                 this.habilitarAval = true;
             }, 100);
         }, 100);
+    }
+
+    async agregarImagenAPDF(
+        imagenBase64: string,
+        paginaNumero: number,
+        xMm: number, // Coordenada X en mm
+        yMm: number, // Coordenada Y en mm
+        anchoMm: number, // Ancho en mm
+        altoMm: number // Alto en mm
+    ) {
+        try {
+            let pdfBase64 = this.pdfCopiaBase64;
+
+            // Eliminar el nombre del archivo para obtener solo el contenido Base64
+            if (pdfBase64.includes(':')) {
+                pdfBase64 = pdfBase64.split(':')[1];
+            }
+
+            // Decodificar PDF desde base64
+            const pdfBytes = Uint8Array.from(atob(pdfBase64), (c) =>
+                c.charCodeAt(0)
+            );
+
+            // Cargar el documento PDF con pdf-lib
+            const pdfDoc = await PDFDocument.load(pdfBytes);
+
+            // Obtener la página en la que deseas agregar la imagen
+            const pagina = pdfDoc.getPage(paginaNumero - 1); // Restar 1 para usar índice basado en 0
+
+            // Decodificar la imagen en base64
+            const tipoImagen = imagenBase64.split(';')[0].split('/')[1]; // Obtener el tipo de imagen (png, jpeg, etc.)
+            const imagenSinEncabezado = imagenBase64.includes(',')
+                ? imagenBase64.split(',')[1]
+                : imagenBase64;
+            const imagenBytes = Uint8Array.from(
+                atob(imagenSinEncabezado),
+                (c) => c.charCodeAt(0)
+            );
+
+            // Incorporar la imagen en el PDF
+            let imagen;
+            if (tipoImagen === 'png') {
+                imagen = await pdfDoc.embedPng(imagenBytes);
+            } else if (tipoImagen === 'jpeg' || tipoImagen === 'jpg') {
+                imagen = await pdfDoc.embedJpg(imagenBytes);
+            } else {
+                throw new Error(
+                    'Tipo de imagen no soportado. Solo se admiten PNG y JPEG.'
+                );
+            }
+
+            // Convertir las dimensiones y coordenadas de mm a puntos
+            const mmToPoints = 2.83465;
+            const x = xMm * mmToPoints;
+            const y = yMm * mmToPoints;
+            const ancho = anchoMm * mmToPoints;
+            const alto = altoMm * mmToPoints;
+
+            // Obtener la altura total en puntos de la página
+            const { height: alturaPagina } = pagina.getSize();
+
+            // Ajustar la coordenada Y
+            const yAjustado = alturaPagina - y - alto;
+
+            // Agregar la imagen a la página con las coordenadas y dimensiones proporcionadas
+            pagina.drawImage(imagen, {
+                x: x,
+                y: yAjustado,
+                width: ancho,
+                height: alto,
+            });
+
+            // Serializar el documento PDF modificado a un Uint8Array
+            const pdfModificadoBytes = await pdfDoc.save();
+
+            // Convertir el PDF modificado a Base64 sin desbordar la pila
+            const pdfModificadoBase64 = await this.arrayBufferToBase64(
+                pdfModificadoBytes
+            );
+
+            // Si deseas mostrar o descargar el PDF modificado en el navegador
+            const pdfModificadoBlob = new Blob([pdfModificadoBytes], {
+                type: 'application/pdf',
+            });
+
+            const pdfFile = new File([pdfModificadoBlob], 'Solicitud.pdf', {
+                type: 'application/pdf',
+            });
+            this.urlPdfSolicitud =
+                this.utilidades.crearUrlSeguroParaPDF(pdfFile);
+
+            this.radicar.oficioDeSolicitud = pdfFile;
+        } catch (error) {
+            console.error('Error al agregar la imagen al PDF:', error);
+        }
+    }
+
+    // Función para convertir un ArrayBuffer a Base64
+    arrayBufferToBase64(arrayBuffer: ArrayBuffer): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const base64String = (reader.result as string).split(',')[1];
+                resolve(base64String);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(new Blob([arrayBuffer]));
+        });
     }
 
     async enviarOficioAvalado() {

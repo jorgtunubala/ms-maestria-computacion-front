@@ -57,6 +57,7 @@ export class DocsAdjuntosComponent implements OnInit {
     }
 
     validarDocsCompletos(): boolean {
+        /*
         if (
             [
                 'RE_CRED_PAS',
@@ -94,7 +95,7 @@ export class DocsAdjuntosComponent implements OnInit {
                 return false;
             }
         }
-
+*/
         return true; // Si pasa ambas verificaciones, devuelve true
     }
 

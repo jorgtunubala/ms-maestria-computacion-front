@@ -176,9 +176,10 @@ export class TramiteComponent implements OnInit {
     }
 
     descargarDocumentoPDF(nombre: string, tipo: string) {
+        /*
         switch (tipo) {
             case 'respuestaSolicitante': {
-                const doc = this.servicioPDF.generateTemplate1();
+                const doc = this.servicioPDF.generateTemplate1(false);
                 doc.save(nombre + '.pdf');
                 break;
             }
@@ -187,7 +188,7 @@ export class TramiteComponent implements OnInit {
             case 'respuestaDirector':
                 break;
             case 'oficioParaConcejo': {
-                const doc = this.servicioPDF.generateTemplate1();
+                const doc = this.servicioPDF.generateTemplate1(false);
                 doc.save(nombre + '.pdf');
                 break;
             }
@@ -196,6 +197,7 @@ export class TramiteComponent implements OnInit {
             default:
                 break;
         }
+                */
     }
 
     cambiarestadoSolicitud(estado: string) {}

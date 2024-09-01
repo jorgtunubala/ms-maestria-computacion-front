@@ -12,6 +12,9 @@ import { Router } from '@angular/router';
 import { RadicarService } from '../../../services/radicar.service';
 import { AlmacenarSolicitudService } from '../../../services/almacenarSolicitud.service';
 import { OficioComponent } from '../../utilidades/oficio/oficio.component';
+import { SafeResourceUrl } from '@angular/platform-browser';
+import { PlantillasService } from '../../../services/plantillas.service';
+import { UtilidadesService } from '../../../services/utilidades.service';
 
 @Component({
     selector: 'app-resumen',
@@ -24,6 +27,7 @@ export class ResumenComponent implements OnInit {
     @ViewChild('firmaImage') firmaImage: ElementRef;
 
     codTipoSolicitudEscogida: string;
+    urlVistaPreviaSolicitudPDF: SafeResourceUrl;
 
     @HostListener('window:beforeunload', ['$event'])
     beforeUnloadHander(event: Event) {
@@ -44,11 +48,15 @@ export class ResumenComponent implements OnInit {
         public almacenar: AlmacenarSolicitudService,
         private router: Router,
         private confirmationService: ConfirmationService,
-        private messageService: MessageService
+        private messageService: MessageService,
+        private servicioPlantillas: PlantillasService,
+        private servicioUtilidades: UtilidadesService
     ) {
         try {
             this.codTipoSolicitudEscogida =
                 this.radicar.tipoSolicitudEscogida.codigoSolicitud;
+
+            this.cargarVistaPreviaPDF(this.codTipoSolicitudEscogida, true);
         } catch (error) {
             if (
                 error instanceof TypeError &&
@@ -65,6 +73,62 @@ export class ResumenComponent implements OnInit {
 
     ngOnInit() {}
 
+    cargarVistaPreviaPDF(codigoSolicitud: string, agregarMarcaDeAgua: boolean) {
+        // Mapa que asocia el código de solicitud con la función correspondiente de servicioPlantillas
+        const funcionesPlantillas: { [key: string]: Function } = {
+            AD_ASIG: this.servicioPlantillas.adicionAsignaturas.bind(
+                this.servicioPlantillas
+            ),
+            CA_ASIG: this.servicioPlantillas.cancelacionAsignaturas.bind(
+                this.servicioPlantillas
+            ),
+            HO_ASIG_POS:
+                this.servicioPlantillas.homologacionAsignaturasPos.bind(
+                    this.servicioPlantillas
+                ),
+            HO_ASIG_ESP:
+                this.servicioPlantillas.homologacionAsignaturasEsp.bind(
+                    this.servicioPlantillas
+                ),
+            AP_ECON_INV: this.servicioPlantillas.apoyoEconomicoPasantia.bind(
+                this.servicioPlantillas
+            ),
+        };
+
+        // Verifica si el código de solicitud es válido
+        if (!funcionesPlantillas[codigoSolicitud]) {
+            return; // Salir si el código no está en el mapa
+        }
+
+        // Obtiene la función correspondiente y genera el documento PDF
+        const generarPDF = funcionesPlantillas[codigoSolicitud];
+
+        // Función para crear un archivo PDF y asignar su URL
+        const crearArchivoPDF = (pdfDoc: any, nombreArchivo: string) => {
+            const pdfBlob = pdfDoc.output('blob');
+            const pdfFile = new File([pdfBlob], nombreArchivo, {
+                type: 'application/pdf',
+            });
+            return this.servicioUtilidades.crearUrlSeguroParaPDF(pdfFile);
+        };
+
+        // Genera y asigna el PDF con marca de agua
+        const pdfDocConMarca = generarPDF(agregarMarcaDeAgua);
+        this.urlVistaPreviaSolicitudPDF = crearArchivoPDF(
+            pdfDocConMarca,
+            'Solicitud.pdf'
+        );
+
+        // Genera y asigna el PDF sin marca de agua
+        const pdfDocSinMarca = generarPDF(false);
+        const pdfFileSinMarca = new File(
+            [pdfDocSinMarca.output('blob')],
+            'Oficio de Solicitud.pdf',
+            { type: 'application/pdf' }
+        );
+        this.radicar.oficioDeSolicitud = pdfFileSinMarca;
+    }
+
     onUpload(event, firmante) {
         this.radicar.firmaSolicitante = event.files[0];
         this.renderizarImagen(this.radicar.firmaSolicitante);
@@ -79,6 +143,7 @@ export class ResumenComponent implements OnInit {
 
     firmarSolicitud() {
         this.firmaEnProceso = true;
+        this.cargarVistaPreviaPDF(this.codTipoSolicitudEscogida, true);
 
         setTimeout(() => {
             this.mostrarOficio = false;
@@ -119,7 +184,7 @@ export class ResumenComponent implements OnInit {
             this.guardadoEnProceso = true;
 
             try {
-                await this.convertirOficioEnPDF();
+                //await this.convertirOficioEnPDF();
 
                 const resultado = await this.almacenar.almacenarSolicitudEnBD();
 
@@ -178,22 +243,15 @@ export class ResumenComponent implements OnInit {
         }
     }
 
-    convertirOficioEnPDF(): Promise<void> {
-        return new Promise((resolve, reject) => {
-            if (this.oficio) {
-                this.oficio
-                    .crearPDF()
-                    .then(() => {
-                        resolve();
-                    })
-                    .catch((error) => {
-                        reject(error);
-                    });
-            } else {
-                resolve();
-            }
+    /*
+    convertirOficioEnPDF() {
+        const pdfDoc = this.servicioPlantillas.adicionAsignaturas(false);
+        const pdfBlob = pdfDoc.output('blob');
+        const pdfFile = new File([pdfBlob], 'Solicitud.pdf', {
+            type: 'application/pdf',
         });
     }
+*/
 
     renderizarImagen(imagen: File): void {
         const reader = new FileReader();

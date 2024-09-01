@@ -53,8 +53,14 @@ export class RadicarService {
     firmaSolicitanteUrl: SafeUrl = '';
     firmaTutor: File = null;
     firmaTutorUrl: SafeUrl = '';
+    firmaTutorPag: number = null;
+    firmaTutorX: number = null;
+    firmaTutorY: number = null;
     firmaDirector: File = null;
     firmaDirectorUrl: SafeUrl = '';
+    firmaDirectorPag: number = null;
+    firmaDirectorX: number = null;
+    firmaDirectorY: number = null;
 
     fechasEstancia: Date[] = [];
     lugarEstancia: string = '';
@@ -184,6 +190,12 @@ export class RadicarService {
         this.adjuntosDeActividades = {};
         this.tipoBeca = 'Seleccione una opción';
         this.descripcionesActividades = [];
+        this.firmaTutorPag = null;
+        this.firmaTutorX = null;
+        this.firmaTutorY = null;
+        this.firmaDirectorPag = null;
+        this.firmaDirectorX = null;
+        this.firmaDirectorY = null;
     }
 
     agregarInstancia() {

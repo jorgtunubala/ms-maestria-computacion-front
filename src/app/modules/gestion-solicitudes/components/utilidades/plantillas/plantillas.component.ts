@@ -32,6 +32,7 @@ export class PlantillasComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
+        /*
         if (
             [
                 'AV_PASA_INV',
@@ -40,8 +41,27 @@ export class PlantillasComponent implements OnInit {
                 'PA_PUBL_EVE',
             ].includes(this.radicar.tipoSolicitudEscogida.codigoSolicitud)
         ) {
-            //this.convertirFechas();
+            switch (this.radicar.tipoSolicitudEscogida.codigoSolicitud) {
+                case 'AP_ECON_ASI':
+                    this.convertirFechas(
+                        this.radicar.formApoyoAsistEvento.get('fechas')
+                            .value[0],
+                        this.radicar.formApoyoAsistEvento.get('fechas').value[1]
+                    );
+                    break;
+
+                case 'AP_ECON_INV':
+                    this.convertirFechas(
+                        this.radicar.fechasEstancia[0],
+                        this.radicar.fechasEstancia[1]
+                    );
+                    break;
+
+                default:
+                    break;
+            }
         }
+            */
 
         this.obtenerNombreArchivosAdjuntos();
     }
@@ -52,31 +72,6 @@ export class PlantillasComponent implements OnInit {
             return palabras[posicion];
         }
         return '';
-    }
-
-    convertirFechas() {
-        const fechaInicio =
-            this.radicar.formApoyoAsistEvento.get('fechas').value[0];
-        const fechaFin =
-            this.radicar.formApoyoAsistEvento.get('fechas').value[1];
-
-        // Obteniendo los componentes de las fechas
-        const diaInicio = fechaInicio.getDate();
-        const mesInicio = fechaInicio.getMonth() + 1;
-        const anioInicio = fechaInicio.getFullYear();
-
-        const diaFin = fechaFin.getDate();
-        const mesFin = fechaFin.getMonth() + 1;
-        const anioFin = fechaFin.getFullYear();
-
-        // Formateando las fechas como dd/mm/aa
-        const fechaInicioStr = `${diaInicio}/${mesInicio}/${anioInicio}`;
-        const fechaFinStr = `${diaFin}/${mesFin}/${anioFin}`;
-
-        // Concatenando las fechas formateadas con un guión entre ellas
-        const fechaEstanciaStr = `${fechaInicioStr} al ${fechaFinStr}`;
-
-        this.rangoFechas = fechaEstanciaStr;
     }
 
     obtenerNombreArchivosAdjuntos(): void {

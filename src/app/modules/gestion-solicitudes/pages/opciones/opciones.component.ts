@@ -5,6 +5,9 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { HttpService } from '../../services/http.service';
 import { EventoHistorial, NumeroRadicado } from '../../models/indiceModelos';
 import { SeguimientoService } from '../../services/seguimiento.service';
+import { SafeResourceUrl } from '@angular/platform-browser';
+import { UtilidadesService } from '../../services/utilidades.service';
+import { PdfService } from '../../services/pdf.service';
 
 @Component({
     selector: 'app-opciones',
@@ -15,6 +18,7 @@ import { SeguimientoService } from '../../services/seguimiento.service';
 export class OpcionesComponent implements OnInit {
     radicado: string = '';
     buscandoSolicitud = false;
+    urlPdf: SafeResourceUrl; // ELIMINAR CODIGO DE PRUEBA
 
     constructor(
         private router: Router,
@@ -22,7 +26,9 @@ export class OpcionesComponent implements OnInit {
         public radicar: RadicarService,
         private confirmationService: ConfirmationService,
         public seguimiento: SeguimientoService,
-        private messageService: MessageService
+        private messageService: MessageService,
+        private utilidades: UtilidadesService,
+        private servicioPDF: PdfService
     ) {}
 
     ngOnInit(): void {
