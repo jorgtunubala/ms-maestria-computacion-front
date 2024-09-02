@@ -79,6 +79,26 @@ export class ResumenComponent implements OnInit {
             AD_ASIG: this.servicioPlantillas.adicionAsignaturas.bind(
                 this.servicioPlantillas
             ),
+            AP_SEME: this.servicioPlantillas.aplazamientoSemestre.bind(
+                this.servicioPlantillas
+            ),
+            AP_ECON_ASI: this.servicioPlantillas.apoyoEconomicoCongresos.bind(
+                this.servicioPlantillas
+            ),
+            AP_ECON_INV: this.servicioPlantillas.apoyoEconomicoPasantia.bind(
+                this.servicioPlantillas
+            ),
+            PA_PUBL_EVE:
+                this.servicioPlantillas.apoyoEconomicoPublicOInscrip.bind(
+                    this.servicioPlantillas
+                ),
+
+            AV_COMI_PR: this.servicioPlantillas.avalPracticaDocente.bind(
+                this.servicioPlantillas
+            ),
+            AV_PASA_INV: this.servicioPlantillas.avalPasantia.bind(
+                this.servicioPlantillas
+            ),
             CA_ASIG: this.servicioPlantillas.cancelacionAsignaturas.bind(
                 this.servicioPlantillas
             ),
@@ -90,9 +110,6 @@ export class ResumenComponent implements OnInit {
                 this.servicioPlantillas.homologacionAsignaturasEsp.bind(
                     this.servicioPlantillas
                 ),
-            AP_ECON_INV: this.servicioPlantillas.apoyoEconomicoPasantia.bind(
-                this.servicioPlantillas
-            ),
         };
 
         // Verifica si el código de solicitud es válido

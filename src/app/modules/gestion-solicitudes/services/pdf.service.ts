@@ -18,6 +18,21 @@ interface AgregarTextoOptions {
     fontStyle?: 'regular' | 'bold' | 'italic' | 'bolditalic';
 }
 
+interface AgregarVinetasOptions {
+    text: string;
+    startX?: number;
+    startY?: number;
+    maxWidth?: number;
+    lineHeight?: number;
+    pageHeight?: number;
+    alignment?: 'left' | 'center' | 'right' | 'justify';
+    fontStyle?: 'normal' | 'bold' | 'italic' | 'bolditalic';
+    bulletType?: 'bullet' | 'number'; // Punto o numerado
+    fontSize?: number;
+    bulletSpacing?: number;
+    watermark?: boolean;
+}
+
 @Injectable({
     providedIn: 'root',
 })
@@ -510,5 +525,73 @@ export class PdfService {
                 y: adjustedImageY,
             },
         };
+    }
+
+    agregarVinetas(doc: jsPDF, options: AgregarVinetasOptions): number {
+        // Valores predeterminados
+        const {
+            text,
+            startX = 20,
+            startY = 65,
+            maxWidth = 175,
+            lineHeight = 5,
+            pageHeight = doc.internal.pageSize.height,
+            alignment = 'left',
+            fontStyle = 'regular',
+            bulletType = 'bullet',
+            fontSize = 11,
+            bulletSpacing = 4, // Espacio entre viñeta y texto
+            watermark = false,
+        } = options;
+
+        // Configurar la fuente según la opción de estilo
+        doc.setFont('OpenSans', fontStyle);
+        doc.setFontSize(fontSize);
+
+        // Dividir el texto en líneas según los saltos de línea
+        const lines = text.split('\n');
+        let cursorY = startY;
+        const marginBottom = 30; // Espacio para pie de página
+
+        lines.forEach((line, index) => {
+            if (cursorY + lineHeight > pageHeight - marginBottom) {
+                // Si el texto excede la página, añade una nueva
+                doc.addPage();
+                this.agregarMembretes(doc, watermark);
+                this.setDefaultTextStyle(doc); // Reaplicar estilo de texto
+                cursorY = 65; // Restablecer cursor a la parte superior del área de contenido
+            }
+
+            // Construir la viñeta
+            let bullet = bulletType === 'number' ? `${index + 1}.` : '•';
+
+            // Calcular las posiciones para la viñeta y el texto
+            let bulletX = startX;
+            let textX = bulletX + doc.getTextWidth(bullet) + bulletSpacing;
+
+            if (alignment === 'center') {
+                bulletX =
+                    (doc.internal.pageSize.width - doc.getTextWidth(line)) / 2;
+                textX = bulletX + doc.getTextWidth(bullet) + bulletSpacing;
+            } else if (alignment === 'right') {
+                textX =
+                    maxWidth +
+                    startX -
+                    doc.getTextWidth(line) +
+                    doc.getTextWidth(bullet) +
+                    bulletSpacing;
+                bulletX = textX - doc.getTextWidth(bullet) - bulletSpacing;
+            }
+
+            // Dibujar la viñeta y el texto
+            doc.text(bullet, bulletX, cursorY);
+            doc.text(line, textX, cursorY);
+
+            // Avanzar el cursor verticalmente
+            cursorY += lineHeight;
+        });
+
+        // Devuelve la posición Y final después de agregar todo el texto
+        return cursorY;
     }
 }
