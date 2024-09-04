@@ -118,9 +118,6 @@ export class PlantillasService {
         return doc;
     }
 
-    homologacionAsignaturasPos(marcaDeAgua: boolean) {}
-    homologacionAsignaturasEsp(marcaDeAgua: boolean) {}
-
     apoyoEconomicoCongresos(marcaDeAgua: boolean) {
         const doc = new jsPDF({ format: 'letter' });
 
@@ -454,6 +451,374 @@ export class PlantillasService {
         return doc;
     }
 
+    cursarEnOtrosProgramas(marcaDeAgua: boolean) {
+        const doc = new jsPDF({ format: 'letter' });
+
+        const textAsunto = `Asunto: Solicitud para cursar asignaturas en otros programas\n`;
+        const textSolicitud = `Reciban cordial saludo, comedidamente me dirijo a ustedes con el fin de solicitar se me permita cursar las asignaturas relacionadas en la tabla acontinuación y en los programas en mension. Adicionalmente adjunto la documentacion requerida para el estudio de mi solicitud.`;
+        const textMotivo = `La presente solicitud obedece a que ${this.servicioRadicar.motivoDeSolicitud.toLowerCase()}.`;
+
+        let cursorY = this.agregarContenidoComun(doc, marcaDeAgua);
+
+        cursorY = this.agregarAsuntoYSolicitud(
+            doc,
+            cursorY,
+            textAsunto,
+            textSolicitud,
+            marcaDeAgua
+        );
+
+        // Datos para la tabla
+        const headers = [
+            'Asignatura',
+            'Código',
+            'Créd.',
+            'Intens. Horaria',
+            'Grupo',
+            'Programa',
+            'Docente',
+        ];
+
+        const data = this.servicioRadicar.datosAsignaturasExternas.map(
+            (item) => [
+                item.nombre,
+                item.codigo,
+                item.creditos.toString(),
+                item.intensidad.toString(),
+                item.grupo,
+                item.programa,
+                item.docente,
+            ]
+        );
+
+        cursorY = this.agregarTabla(doc, cursorY, headers, data, marcaDeAgua);
+
+        cursorY = this.servicioPDF.agregarTexto(doc, {
+            text: textMotivo,
+            startY: cursorY,
+            alignment: 'justify',
+            watermark: marcaDeAgua,
+        });
+
+        // Salto de linea
+        doc.text('', 5, cursorY);
+        cursorY += 5;
+        cursorY = this.agregarDespedida(doc, cursorY, marcaDeAgua);
+
+        cursorY = this.agregarEspaciosDeFirmas(
+            doc,
+            cursorY,
+            false,
+            marcaDeAgua
+        );
+
+        return doc;
+    }
+
+    homologacionAsignaturasEsp(marcaDeAgua: boolean) {
+        const doc = new jsPDF({ format: 'letter' });
+
+        const textAsunto = `Asunto: Solicitud de homologación de asignaturas Especialización en Desarrollo de Soluciones Informáticas\n`;
+        const textSolicitud = `Reciban cordial saludo, comedidamente me dirijo a ustedes con el fin de solicitar  la homologación de las asignaturas relacionadas en la tabla a continuacio, las cuales fueron cursadas en el progama de posgrado, ${this.servicioRadicar.datosInstitucionHomologar.programa} de la ${this.servicioRadicar.datosInstitucionHomologar.institucion}.`;
+
+        let cursorY = this.agregarContenidoComun(doc, marcaDeAgua);
+
+        cursorY = this.agregarAsuntoYSolicitud(
+            doc,
+            cursorY,
+            textAsunto,
+            textSolicitud,
+            marcaDeAgua
+        );
+
+        // Datos para la tabla
+        const headers = [
+            'Asignatura',
+            'Créditos',
+            'Intensidad (h/semana)',
+            'Calificación',
+        ];
+
+        const data = this.servicioRadicar.datosAsignaturasAHomologar.map(
+            (item) => [
+                item.asignatura,
+                item.creditos.toString(),
+                item.intensidad.toString(),
+                item.calificacion.toString(),
+            ]
+        );
+
+        cursorY = this.agregarTabla(doc, cursorY, headers, data, marcaDeAgua);
+        cursorY = this.agregarDespedida(doc, cursorY, marcaDeAgua);
+
+        cursorY = this.agregarEspaciosDeFirmas(
+            doc,
+            cursorY,
+            false,
+            marcaDeAgua
+        );
+
+        return doc;
+    }
+
+    homologacionAsignaturasPos(marcaDeAgua: boolean) {
+        const doc = new jsPDF({ format: 'letter' });
+
+        const textAsunto = `Asunto: Solicitud de homologación de asignaturas en otros programas de posgrado\n`;
+        const textSolicitud = `Reciban cordial saludo, comedidamente me dirijo a ustedes con el fin de solicitar la homologación de las asignaturas relacionadas en la tabla a continuación, las cuales fueron cursadas en el progama de posgrado, ${this.servicioRadicar.datosInstitucionHomologar.programa} de la ${this.servicioRadicar.datosInstitucionHomologar.institucion}.`;
+
+        let cursorY = this.agregarContenidoComun(doc, marcaDeAgua);
+
+        cursorY = this.agregarAsuntoYSolicitud(
+            doc,
+            cursorY,
+            textAsunto,
+            textSolicitud,
+            marcaDeAgua
+        );
+
+        // Datos para la tabla
+        const headers = [
+            'Asignatura',
+            'Créditos',
+            'Intensidad (h/semana)',
+            'Calificación',
+        ];
+
+        const data = this.servicioRadicar.datosAsignaturasAHomologar.map(
+            (item) => [
+                item.asignatura,
+                item.creditos.toString(),
+                item.intensidad.toString(),
+                item.calificacion.toString(),
+            ]
+        );
+
+        cursorY = this.agregarTabla(doc, cursorY, headers, data, marcaDeAgua);
+        cursorY = this.agregarDespedida(doc, cursorY, marcaDeAgua);
+
+        cursorY = this.agregarEspaciosDeFirmas(
+            doc,
+            cursorY,
+            false,
+            marcaDeAgua
+        );
+
+        return doc;
+    }
+
+    recoCredPracticaDocente(marcaDeAgua: boolean) {
+        const doc = new jsPDF({ format: 'letter' });
+
+        const textAsunto = `Asunto: Solicitud de reconocimiento de creditos por actividades de práctica docente\n`;
+        const textSolicitud = `Reciban cordial saludo, comedidamente me dirijo a ustedes con el fin de solicitar el reconocimiento y asignación de los créditos que corresponden a la ralizacion de las actividades de practica docente enumeradas a continuacion, para cada una se adjunta la documentacion y/o material de soporte requerido para su estudio.`;
+        const textAdjuntos = `${this.servicioRadicar.obtenerNombreArchivosAdjuntos()}`;
+
+        let cursorY = this.agregarContenidoComun(doc, marcaDeAgua);
+
+        cursorY = this.agregarAsuntoYSolicitud(
+            doc,
+            cursorY,
+            textAsunto,
+            textSolicitud,
+            marcaDeAgua
+        );
+
+        // Salto de linea
+        doc.text('', 5, cursorY);
+        cursorY += 5;
+
+        for (
+            let index = 0;
+            index < this.servicioRadicar.actividadesSeleccionadas.length;
+            index++
+        ) {
+            const actividad = `• Actividad ${index + 1}: ${
+                this.servicioRadicar.actividadesSeleccionadas[index].nombre
+            } - ${this.servicioRadicar.horasAsignables[index]}h`;
+
+            cursorY = this.servicioPDF.agregarTexto(doc, {
+                text: actividad,
+                startY: cursorY,
+                fontStyle: 'regular',
+                alignment: 'left',
+                watermark: marcaDeAgua,
+            });
+        }
+
+        // Salto de linea
+        doc.text('', 5, cursorY);
+        cursorY += 5;
+
+        cursorY = this.agregarDespedida(doc, cursorY, marcaDeAgua);
+
+        cursorY = this.agregarEspaciosDeFirmas(
+            doc,
+            cursorY,
+            false,
+            marcaDeAgua
+        );
+
+        this.agregarListadoAdjuntos(doc, cursorY, textAdjuntos, marcaDeAgua);
+
+        return doc;
+    }
+
+    recoCredPasantia(marcaDeAgua: boolean) {
+        const doc = new jsPDF({ format: 'letter' });
+
+        const textAsunto = `Asunto: Solicitud de reconocimiento de creditos por pasantia de investigación\n`;
+        const textSolicitud = `Reciban cordial saludo, comedidamente me dirijo a ustedes con el fin de solicitar el reconocimiento y asignación de los créditos que corresponden a la culminación satisfactoria de mi estancia de investigación. Adjunto a esta solicitud, la documentación y soportes requeridos para su revisión. asi como el enlace al repositorio donde se aloja el video de socialización de la pasantía realizada.`;
+        const textVideo = `\nEnlace video de socialización: ${this.servicioRadicar.enlaceMaterialAudiovisual}`;
+        const textAdjuntos = `${this.servicioRadicar.obtenerNombreArchivosAdjuntos()}`;
+
+        let cursorY = this.agregarContenidoComun(doc, marcaDeAgua);
+
+        cursorY = this.agregarAsuntoYSolicitud(
+            doc,
+            cursorY,
+            textAsunto,
+            textSolicitud,
+            marcaDeAgua
+        );
+
+        cursorY = this.servicioPDF.agregarTexto(doc, {
+            startY: cursorY,
+            text: textVideo,
+            alignment: 'left',
+            watermark: marcaDeAgua,
+        });
+
+        // Salto de linea
+        doc.text('', 5, cursorY);
+        cursorY += 5;
+
+        cursorY = this.agregarDespedida(doc, cursorY, marcaDeAgua);
+
+        cursorY = this.agregarEspaciosDeFirmas(
+            doc,
+            cursorY,
+            false,
+            marcaDeAgua
+        );
+
+        this.agregarListadoAdjuntos(doc, cursorY, textAdjuntos, marcaDeAgua);
+
+        return doc;
+    }
+
+    recoCredPublicacion(marcaDeAgua: boolean) {
+        const doc = new jsPDF({ format: 'letter' });
+
+        const textAsunto = `Asunto: Solicitud de reconocimiento de creditos por publicación\n`;
+        const textSolicitud = `Reciban cordial saludo, comedidamente me dirijo a ustedes con el fin de solicitar el reconocimiento y asignación de los créditos que corresponden por la publicacion en eventos o revistas. Adjunto a esta solicitud, la documentación y soportes requeridos para su revisión.`;
+        const textAdjuntos = `${this.servicioRadicar.obtenerNombreArchivosAdjuntos()}`;
+
+        let cursorY = this.agregarContenidoComun(doc, marcaDeAgua);
+
+        cursorY = this.agregarAsuntoYSolicitud(
+            doc,
+            cursorY,
+            textAsunto,
+            textSolicitud,
+            marcaDeAgua
+        );
+
+        // Salto de linea
+        doc.text('', 5, cursorY);
+        cursorY += 5;
+
+        cursorY = this.agregarDespedida(doc, cursorY, marcaDeAgua);
+
+        cursorY = this.agregarEspaciosDeFirmas(
+            doc,
+            cursorY,
+            false,
+            marcaDeAgua
+        );
+
+        this.agregarListadoAdjuntos(doc, cursorY, textAdjuntos, marcaDeAgua);
+
+        return doc;
+    }
+
+    solicitudDeBeca(marcaDeAgua: boolean) {
+        const doc = new jsPDF({ format: 'letter' });
+
+        const textAsunto = `Asunto: Solicitud de ${
+            this.servicioRadicar.formSolicitudBecaDescuento.get('tipoBeca')
+                .value
+        }\n`;
+        const textSolicitud = `Reciban cordial saludo, comedidamente me dirijo a ustedes con el fin de solicitar el otorgamiento de una "${
+            this.servicioRadicar.formSolicitudBecaDescuento.get('tipoBeca')
+                .value
+        }".`;
+        const textMotivoBeca = ` La presente solicitud obedece a que ${this.servicioRadicar.formSolicitudBecaDescuento
+            .get('justificacion')
+            .value.toLowerCase()}`;
+        const textComplemento = ` Adjunto a esta solicitud el formato FA diligenciado con los datos correspondientes para su estudio.`;
+        const textAdjuntos = `${this.servicioRadicar.obtenerNombreArchivosAdjuntos()}`;
+
+        let cursorY = this.agregarContenidoComun(doc, marcaDeAgua);
+
+        if (
+            this.servicioRadicar.formSolicitudBecaDescuento.get('tipoBeca')
+                .value === 'Beca - Trabajo'
+        ) {
+            cursorY = this.agregarAsuntoYSolicitud(
+                doc,
+                cursorY,
+                textAsunto,
+                textSolicitud + textMotivoBeca,
+                marcaDeAgua
+            );
+        }
+
+        if (
+            this.servicioRadicar.formSolicitudBecaDescuento.get('tipoBeca')
+                .value === 'Beca - Convenio (cidesco)' ||
+            this.servicioRadicar.formSolicitudBecaDescuento.get('tipoBeca')
+                .value === 'Beca - Mejor promedio en pregrado'
+        ) {
+            cursorY = this.agregarAsuntoYSolicitud(
+                doc,
+                cursorY,
+                textAsunto,
+                textSolicitud + textComplemento,
+                marcaDeAgua
+            );
+        }
+
+        // Salto de linea
+        doc.text('', 5, cursorY);
+        cursorY += 5;
+
+        cursorY = this.agregarDespedida(doc, cursorY, marcaDeAgua);
+
+        cursorY = this.agregarEspaciosDeFirmas(
+            doc,
+            cursorY,
+            false,
+            marcaDeAgua
+        );
+
+        if (
+            this.servicioRadicar.formSolicitudBecaDescuento.get('tipoBeca')
+                .value === 'Beca - Convenio (cidesco)' ||
+            this.servicioRadicar.formSolicitudBecaDescuento.get('tipoBeca')
+                .value === 'Beca - Mejor promedio en pregrado'
+        ) {
+            this.agregarListadoAdjuntos(
+                doc,
+                cursorY,
+                textAdjuntos,
+                marcaDeAgua
+            );
+        }
+
+        return doc;
+    }
+
     private agregarContenidoComun(doc: jsPDF, marcaDeAgua: boolean) {
         // Añadir estilos institucionales
         this.servicioPDF.agregarMembretes(doc, marcaDeAgua);
@@ -663,6 +1028,7 @@ export class PlantillasService {
             fontSize: 8,
             lineHeight: 4,
             bulletSpacing: 4,
+            watermark: marcaDeAgua,
         });
 
         return nuevaPosicionY;

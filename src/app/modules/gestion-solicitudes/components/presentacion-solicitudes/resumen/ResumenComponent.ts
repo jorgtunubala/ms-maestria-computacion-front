@@ -102,14 +102,30 @@ export class ResumenComponent implements OnInit {
             CA_ASIG: this.servicioPlantillas.cancelacionAsignaturas.bind(
                 this.servicioPlantillas
             ),
-            HO_ASIG_POS:
-                this.servicioPlantillas.homologacionAsignaturasPos.bind(
-                    this.servicioPlantillas
-                ),
+            CU_ASIG: this.servicioPlantillas.cursarEnOtrosProgramas.bind(
+                this.servicioPlantillas
+            ),
             HO_ASIG_ESP:
                 this.servicioPlantillas.homologacionAsignaturasEsp.bind(
                     this.servicioPlantillas
                 ),
+            HO_ASIG_POS:
+                this.servicioPlantillas.homologacionAsignaturasPos.bind(
+                    this.servicioPlantillas
+                ),
+            RE_CRED_PR_DOC:
+                this.servicioPlantillas.recoCredPracticaDocente.bind(
+                    this.servicioPlantillas
+                ),
+            RE_CRED_PAS: this.servicioPlantillas.recoCredPasantia.bind(
+                this.servicioPlantillas
+            ),
+            RE_CRED_PUB: this.servicioPlantillas.recoCredPublicacion.bind(
+                this.servicioPlantillas
+            ),
+            SO_BECA: this.servicioPlantillas.solicitudDeBeca.bind(
+                this.servicioPlantillas
+            ),
         };
 
         // Verifica si el código de solicitud es válido

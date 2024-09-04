@@ -558,7 +558,10 @@ export class PdfService {
                 // Si el texto excede la página, añade una nueva
                 doc.addPage();
                 this.agregarMembretes(doc, watermark);
-                this.setDefaultTextStyle(doc); // Reaplicar estilo de texto
+                //this.setDefaultTextStyle(doc); // Reaplicar estilo de texto
+                doc.setFont('OpenSans', fontStyle);
+                doc.setFontSize(fontSize);
+                doc.setTextColor(79, 79, 79);
                 cursorY = 65; // Restablecer cursor a la parte superior del área de contenido
             }
 

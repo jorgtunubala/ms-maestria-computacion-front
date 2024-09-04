@@ -14,7 +14,6 @@ import { ResumenComponent } from './components/presentacion-solicitudes/resumen/
 import { VisorComponent } from './components/gestion-coordinacion/visor/visor.component';
 import { FormulariosComponent } from './components/presentacion-solicitudes/formularios/formularios.component';
 import { AsignaturahomologarComponent } from './components/presentacion-solicitudes/formularios/complementarios/asignaturahomologar/asignaturahomologar.component';
-import { PlantillasComponent } from './components/utilidades/plantillas/plantillas.component';
 import { FirmaelectronicaComponent } from './components/utilidades/firmaelectronica/firmaelectronica.component';
 import { BuzondeavalesComponent } from './components/aval-tutores-directores/buzondeavales/buzondeavales.component';
 import { PendientesavalComponent } from './components/aval-tutores-directores/pendientesaval/pendientesaval.component';
@@ -54,7 +53,6 @@ import { FormulariorechazoComponent } from './components/gestion-coordinacion/co
         ResumenComponent,
         VisorComponent,
         AsignaturahomologarComponent,
-        PlantillasComponent,
         FirmaelectronicaComponent,
         BuzondeavalesComponent,
         PendientesavalComponent,
