@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, SecurityContext, ViewChild } from '@angular/core';
 import { GestorService } from '../../../services/gestor.service';
 import { HttpService } from '../../../services/http.service';
 import { DatosSolicitudRequest } from '../../../models/solicitudes/datosSolicitudRequest';
@@ -9,7 +9,9 @@ import {
     EventoHistorial,
     SolicitudRecibida,
 } from '../../../models/indiceModelos';
-import { Router } from '@angular/router';
+
+import * as JSZip from 'jszip';
+import { TramiteComponent } from '../tramite/tramite.component';
 
 @Component({
     selector: 'app-visor',
@@ -34,11 +36,15 @@ export class VisorComponent implements OnInit {
         public http: HttpService,
         public seguimiento: SeguimientoService,
         private utilidades: UtilidadesService,
-        private router: Router
+        private sanitizer: DomSanitizer
     ) {}
 
     ngOnInit(): void {
         this.recuperarSolicitudSeleccionada();
+
+        this.gestor.descargarArchivos$.subscribe(() => {
+            this.descargarTodosLosArchivos();
+        });
     }
 
     // Recupera la solicitud seleccionada del localStorage y carga los datos
@@ -216,5 +222,68 @@ export class VisorComponent implements OnInit {
                 this.enlacesAdjuntos.push(enlace)
             );
         });
+    }
+
+    async descargarTodosLosArchivos(): Promise<void> {
+        const zip = new JSZip();
+
+        // Agregar el archivo del oficio PDF al ZIP si existe
+        if (this.urlOficioPdf) {
+            const urlOficio = this.sanitizer.sanitize(
+                SecurityContext.RESOURCE_URL,
+                this.urlOficioPdf
+            );
+            if (urlOficio) {
+                try {
+                    const response = await fetch(urlOficio);
+                    const data = await response.blob();
+                    zip.file(
+                        `Carta de Solicitud - ${this.solicitudSeleccionada.nombreEstudiante.toUpperCase()}.pdf`,
+                        data
+                    ); // Usa timestamp para asegurar nombre único
+                } catch (error) {
+                    console.error(
+                        'Error al descargar el archivo del oficio PDF:',
+                        error
+                    );
+                }
+            }
+        }
+
+        // Agregar los archivos adjuntos al ZIP con nombres únicos
+        await Promise.all(
+            this.docsAdjuntos.map(async (file, index) => {
+                const fileUrl = URL.createObjectURL(file);
+                try {
+                    const response = await fetch(fileUrl);
+                    const data = await response.blob();
+                    zip.file(`${index}_${file.name}`, data); // Usa índice para asegurar nombre único
+                } catch (error) {
+                    console.error(
+                        `Error al descargar el archivo adjunto ${file.name}:`,
+                        error
+                    );
+                } finally {
+                    URL.revokeObjectURL(fileUrl); // Liberar memoria
+                }
+            })
+        );
+
+        // Generar el archivo ZIP y descargarlo
+        zip.generateAsync({ type: 'blob' })
+            .then((content) => {
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(content);
+
+                a.download = `Solicitud ${
+                    this.solicitudSeleccionada.abreviatura
+                } - ${this.solicitudSeleccionada.nombreEstudiante.toUpperCase()}.zip`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            })
+            .catch((error) => {
+                console.error('Error al generar el archivo ZIP:', error);
+            });
     }
 }

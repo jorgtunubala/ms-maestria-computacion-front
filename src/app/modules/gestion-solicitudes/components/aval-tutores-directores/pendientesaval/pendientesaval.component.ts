@@ -19,6 +19,7 @@ export class PendientesavalComponent implements OnInit {
     correoUsuario: string = 'lsierra@unicauca.edu.co';
     //correoUsuario: string = 'luz123@unicauca.edu.co';
     solicitudes: SolicitudRecibida[] = [];
+    seleccionada: SolicitudRecibida;
     cargando: boolean = true;
     buzonVacio: boolean = false;
     solicitudSeleccionada: SolicitudRecibida = {
@@ -39,44 +40,43 @@ export class PendientesavalComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-        this.radicar.restrablecerValores();
+        this.gestor.restablecerValores();
         this.cargarSolicitudes();
 
+        /*
         this.gestor.cargarSolicitudes$.subscribe(() => {
             this.cargarSolicitudes();
         });
+        */
+        this.gestor.restablecerValores();
     }
 
     cargarSolicitudes() {
-        this.http.obtenerListaSolPendientesAval(this.correoUsuario).subscribe(
-            (solicitudes: SolicitudRecibida[]) => {
-                this.solicitudes = solicitudes;
-                this.cargando = false;
-
-                // Verifica si el arreglo está vacío correctamente
-                if (solicitudes.length === 0) {
-                    this.buzonVacio = true;
-                } else {
-                    this.buzonVacio = false;
+        this.gestor
+            .obtenerSolicitudesTutorDirector(this.correoUsuario)
+            .subscribe(
+                (solicitudes: SolicitudRecibida[]) => {
+                    //this.solicitudes = solicitudes;
+                    this.cargando = false;
+                    this.buzonVacio = solicitudes.length === 0;
+                },
+                (error) => {
+                    console.error('Error al cargar las solicitudes:', error);
                 }
-            },
-            (error) => {
-                console.error('Error al cargar las solicitudes:', error);
-            }
-        );
+            );
     }
 
-    mostrarDetalles(event) {
-        // Obtiene la solicitud seleccionada
-        this.gestor.setSolicitudSeleccionada(this.solicitudSeleccionada);
+    // Limpia los filtros de la tabla
+    limpiarFiltros(table: any): void {
+        table.clear();
+    }
 
-        const tipoSolicitud: TipoSolicitud = {
-            idSolicitud: this.solicitudSeleccionada.idSolicitud,
-            codigoSolicitud: this.solicitudSeleccionada.codigoSolicitud,
-            nombreSolicitud: this.solicitudSeleccionada.nombreTipoSolicitud,
-        };
-
-        this.radicar.tipoSolicitudEscogida = tipoSolicitud;
+    mostrarDetalles() {
+        console.log(this.seleccionada);
+        localStorage.setItem(
+            'solicitudSeleccionadaTutorDirector',
+            JSON.stringify(this.seleccionada)
+        );
 
         // Navega a VistaComponent pasando la ID de la solicitud seleccionada como parámetro de ruta
         this.router.navigate([

@@ -7,6 +7,199 @@
 
 <div class="grid mt-3">
     <div class="col-12">
+        <p-accordion>
+            <p-accordionTab header="Comité del Programa">
+                <div style="margin-top: -15px">
+                    <p-divider align="left">
+                        <div class="inline-flex align-items-center">
+                            <i class="pi pi-send mr-2"></i>
+                            <b>Envio al comité</b>
+                        </div>
+                    </p-divider>
+                </div>
+                <div class="flex justify-content-center flex-wrap">
+                    <div class="flex gap-1 mt-1 mb-4" style="width: 96%">
+                        <button
+                            pButton
+                            pRipple
+                            type="button"
+                            label="Descargar adjuntos"
+                            class="p-button-outlined p-button-secondary"
+                            icon="pi pi-download"
+                            iconPos="right"
+                            (click)="onDescargarArchivos()"
+                        ></button>
+                        <div class="flex align-items-center ml-4">
+                            <p-inputSwitch
+                                [(ngModel)]="enviadaAComite"
+                                (onChange)="validarCambioEstadoComite()"
+                                [disabled]="deshabilitarEnvioAComite"
+                            ></p-inputSwitch>
+                        </div>
+                        <div
+                            class="flex align-items-center justify-content-center ml-2"
+                            style="padding-bottom: 3px"
+                        >
+                            Solicitud enviada al comité de programa
+                        </div>
+                    </div>
+                </div>
+
+                <p-divider align="left" *ngIf="deshabilitarEnvioAComite">
+                    <div class="inline-flex align-items-center">
+                        <i class="pi pi-envelope mr-2"></i>
+                        <b>Respuesta del comité</b>
+                    </div>
+                </p-divider>
+
+                <div class="flex justify-content-center flex-wrap">
+                    <div
+                        class="grid mt-1 mb-4"
+                        *ngIf="deshabilitarEnvioAComite"
+                        style="width: 96%"
+                    >
+                        <div class="col-3">
+                            <p class="font-semibold">¿El comité dio su aval?</p>
+                            <div class="field-radiobutton">
+                                <p-radioButton
+                                    name="conceptoSi"
+                                    value="Si"
+                                    [(ngModel)]="conceptoComite"
+                                    inputId="conceptoComite1"
+                                ></p-radioButton>
+                                <label for="conceptoComite1">Si</label>
+                            </div>
+                            <div class="field-radiobutton">
+                                <p-radioButton
+                                    name="conceptoNo"
+                                    value="No"
+                                    [(ngModel)]="conceptoComite"
+                                    inputId="conceptoComite2"
+                                ></p-radioButton>
+                                <label for="conceptoComite2">No</label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <p class="font-semibold">Concepto del comité</p>
+                            <textarea
+                                rows="4"
+                                cols="40"
+                                pInputTextarea
+                            ></textarea>
+                        </div>
+                        <div class="col-3">
+                            <p class="font-semibold">Acta</p>
+                            <input
+                                class="mb-2"
+                                type="text"
+                                placeholder="Número"
+                                pInputText
+                            />
+                            <p-inputMask
+                                mask="99/99/9999"
+                                [(ngModel)]="val3"
+                                placeholder="Fecha"
+                                slotChar="mm/dd/yyyy"
+                            ></p-inputMask>
+                        </div>
+                        <div
+                            class="grid grid-nogutter mb-4 justify-content-end w-full"
+                        >
+                            <p-button
+                                label="Guardar"
+                                icon="pi pi-save"
+                                iconPos="left"
+                                (click)="guardarRespuestaComite()"
+                            ></p-button>
+                        </div>
+                    </div>
+                </div>
+
+                <p-divider
+                    align="left"
+                    *ngIf="
+                        habilitarRespuestaSolicitante || habilitarRespuestaTutor
+                    "
+                >
+                    <div class="inline-flex align-items-center">
+                        <i class="pi pi-envelope mr-2"></i>
+                        <b>Respuesta para solicitantes</b>
+                    </div>
+                </p-divider>
+
+                <div class="flex justify-content-center flex-wrap">
+                    <div
+                        class="flex gap-2 mt-1 mb-4"
+                        *ngIf="
+                            habilitarRespuestaSolicitante ||
+                            habilitarRespuestaTutor
+                        "
+                        style="width: 96%"
+                    >
+                        <button
+                            pButton
+                            pRipple
+                            type="button"
+                            label="Respuesta para Solicitante"
+                            class="p-button-outlined p-button-secondary"
+                            icon="pi pi-download"
+                            iconPos="right"
+                            (click)="
+                                descargarDocumentoPDF(
+                                    'Oficio de solicitud ',
+                                    'oficioParaConcejo'
+                                )
+                            "
+                        ></button>
+                        <button
+                            pButton
+                            pRipple
+                            type="button"
+                            label="Respuesta para Tutor"
+                            class="p-button-outlined p-button-secondary"
+                            icon="pi pi-download"
+                            iconPos="right"
+                            (click)="
+                                descargarDocumentoPDF(
+                                    'Oficio de solicitud ',
+                                    'oficioParaConcejo'
+                                )
+                            "
+                        ></button>
+                    </div>
+                </div>
+            </p-accordionTab>
+            <p-accordionTab header="Consejo de Facultad" *ngIf="vaAlConcejo">
+                <div class="flex flex-row flex-wrap">
+                    <div
+                        class="flex align-items-center justify-content-center mr-1"
+                    >
+                        <p-inputSwitch
+                            [(ngModel)]="enviadaAConsejo"
+                            (onChange)="validarCambioEstadoConcejo()"
+                            [disabled]="deshabilitarEnvioAConsejo"
+                        ></p-inputSwitch>
+                    </div>
+                    <div
+                        class="flex align-items-center justify-content-center ml-2"
+                        style="padding-bottom: 3px"
+                    >
+                        Solicitud enviada al consejo de facultad
+                    </div>
+                </div>
+                <div class="col-12 mt-3" *ngIf="deshabilitarEnvioAConsejo">
+                    <button
+                        pButton
+                        pRipple
+                        label="Cargar Resolución"
+                        icon="pi pi-upload"
+                    ></button>
+                </div>
+            </p-accordionTab>
+        </p-accordion>
+    </div>
+
+    <div class="col-12">
         <span class="p-buttonset">
             <ng-container *ngIf="mostrarBtnResolver">
                 <button
@@ -37,96 +230,5 @@
                 ></button
             ></ng-container>
         </span>
-    </div>
-    <div class="col-12">
-        <p-accordion>
-            <p-accordionTab header="Comité del Programa">
-                <div class="flex flex-row flex-wrap">
-                    <div class="flex align-items-center justify-content-center">
-                        <p-inputSwitch
-                            [(ngModel)]="enviadaAComite"
-                            (onChange)="validarCambioEstadoComite()"
-                            [disabled]="deshabilitarEnvioAComite"
-                        ></p-inputSwitch>
-                    </div>
-                    <div
-                        class="flex align-items-center justify-content-center ml-2"
-                        style="padding-bottom: 3px"
-                    >
-                        Solicitud enviada al comité de programa
-                    </div>
-                </div>
-                <div class="grid mt-3" *ngIf="deshabilitarEnvioAComite">
-                    <div class="col-3">
-                        <p class="font-semibold">¿El comité dio su aval?</p>
-                        <div class="field-radiobutton">
-                            <p-radioButton
-                                name="conceptoSi"
-                                value="Si"
-                                [(ngModel)]="conceptoComite"
-                                inputId="conceptoComite1"
-                            ></p-radioButton>
-                            <label for="conceptoComite1">Si</label>
-                        </div>
-                        <div class="field-radiobutton">
-                            <p-radioButton
-                                name="conceptoNo"
-                                value="No"
-                                [(ngModel)]="conceptoComite"
-                                inputId="conceptoComite2"
-                            ></p-radioButton>
-                            <label for="conceptoComite2">No</label>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <p class="font-semibold">Concepto del comité</p>
-                        <textarea rows="4" cols="40" pInputTextarea></textarea>
-                    </div>
-                    <div class="col-3">
-                        <p class="font-semibold">Acta</p>
-                        <input
-                            class="mb-2"
-                            type="text"
-                            placeholder="Número"
-                            pInputText
-                        />
-                        <p-inputMask
-                            mask="99/99/9999"
-                            [(ngModel)]="val3"
-                            placeholder="Fecha"
-                            slotChar="mm/dd/yyyy"
-                        ></p-inputMask>
-                    </div>
-                    <div class="col-2"></div>
-                </div>
-            </p-accordionTab>
-            <p-accordionTab header="Consejo de Facultad">
-                <div class="flex flex-row flex-wrap">
-                    <div
-                        class="flex align-items-center justify-content-center mr-1"
-                    >
-                        <p-inputSwitch
-                            [(ngModel)]="enviadaAConsejo"
-                            (onChange)="validarCambioEstadoConcejo()"
-                            [disabled]="deshabilitarEnvioAConsejo"
-                        ></p-inputSwitch>
-                    </div>
-                    <div
-                        class="flex align-items-center justify-content-center ml-2"
-                        style="padding-bottom: 3px"
-                    >
-                        Solicitud enviada al consejo de facultad
-                    </div>
-                </div>
-                <div class="col-12 mt-3" *ngIf="deshabilitarEnvioAConsejo">
-                    <button
-                        pButton
-                        pRipple
-                        label="Cargar Resolución"
-                        icon="pi pi-upload"
-                    ></button>
-                </div>
-            </p-accordionTab>
-        </p-accordion>
     </div>
 </div>

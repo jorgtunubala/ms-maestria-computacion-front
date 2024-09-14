@@ -20,6 +20,12 @@ export class DatosComunSolicitud {
             obj['firmaTutor'],
             obj['firmaDirector'],
             obj['estadoSolicitud'],
+            obj['numPaginaTutor'],
+            obj['numPaginaDirector'],
+            obj['posXTutor'],
+            obj['posYTutor'],
+            obj['posXDirector'],
+            obj['posYDirector'],
             obj['oficioPdf']
         );
     }
@@ -38,10 +44,16 @@ export class DatosComunSolicitud {
         public nombreTutor: string,
         public nombreDirector: string,
         public requiereFirmaDirector: boolean,
-        public firmaSolicitante: string,
-        public firmaTutor: string,
-        public firmaDirector: string,
+        public firmaSolicitante: boolean,
+        public firmaTutor: boolean,
+        public firmaDirector: boolean,
         public estadoSolicitud: string,
+        public numPaginaTutor: number,
+        public numPaginaDirector: number,
+        public posXTutor: number,
+        public posYTutor: number,
+        public posXDirector: number,
+        public posYDirector: number,
         public oficioPdf: string
     ) {}
 

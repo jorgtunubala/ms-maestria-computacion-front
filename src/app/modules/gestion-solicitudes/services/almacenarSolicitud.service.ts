@@ -81,21 +81,7 @@ export class AlmacenarSolicitudService {
                 AP_ECON_ASI: this.reunirDatosSolApoyoCongreso,
                 PA_PUBL_EVE: this.reunirDatosSolApoyoPublicacion,
                 RE_CRED_PAS: this.reunirDatosSolRecCredPracticaDocente,
-                RE_CRED_DIS: this.reunirDatosSolRecCreditosConLink,
-                PR_CURS_TEO: this.reunirDatosSolRecCreditosConLink,
-                AS_CRED_MAT: this.reunirDatosSolRecCreditosConLink,
-                AS_CRED_DO: this.reunirDatosSolRecCreditosSinLink,
-                RE_CRED_SEM: this.reunirDatosSolRecCreditosSinLink,
-                AS_CRED_MON: this.reunirDatosSolRecCreditosSinLink,
-                TG_PREG_POS: this.reunirDatosSolRecCreditosSinLink,
-                JU_PREG_POS: this.reunirDatosSolRecCreditosSinLink,
-                EV_ANTE_PRE: this.reunirDatosSolRecCreditosSinLink,
-                EV_PROD_INT: this.reunirDatosSolRecCreditosSinLink,
-                EV_INFO_SAB: this.reunirDatosSolRecCreditosSinLink,
-                PA_COMI_PRO: this.reunirDatosSolRecCreditosSinLink,
-                OT_ACTI_APO: this.reunirDatosSolRecCreditosSinLink,
                 RE_CRED_PUB: this.reunirDatosSolRecCreditosSinLink,
-                AV_SEMI_ACT: this.reunirDatosSolAvalSeminario,
                 AV_COMI_PR: this.reunirDatosAvalPractDocente,
                 SO_BECA: this.reunirDatosSolBecaDescuento,
             };
@@ -528,14 +514,17 @@ export class AlmacenarSolicitudService {
                 tipo === 'PA_PUBL_EVE'
                     ? this.radicar.director.id
                     : null,
-            firmaEstudiante: this.firmaSolicitante,
+            firmaEstudiante: true,
             oficioPdf: await this.utilidades.convertirFileABase64(
                 this.radicar.oficioDeSolicitud
             ),
+            numPaginaTutor: this.radicar.firmaTutorPag,
+            numPaginaDirector: this.radicar.firmaDirectorPag,
+            posXTutor: this.radicar.firmaTutorX,
+            posYTutor: this.radicar.firmaTutorY,
+            posXDirector: this.radicar.firmaDirectorX,
+            posYDirector: this.radicar.firmaDirectorY,
         };
-
-        console.log(this.radicar.tutor);
-        console.log(this.radicar.director);
 
         console.log(infoSolicitud);
         return infoSolicitud;

@@ -14,13 +14,11 @@ import { ResumenComponent } from './components/presentacion-solicitudes/resumen/
 import { VisorComponent } from './components/gestion-coordinacion/visor/visor.component';
 import { FormulariosComponent } from './components/presentacion-solicitudes/formularios/formularios.component';
 import { AsignaturahomologarComponent } from './components/presentacion-solicitudes/formularios/complementarios/asignaturahomologar/asignaturahomologar.component';
-import { PlantillasComponent } from './components/utilidades/plantillas/plantillas.component';
 import { FirmaelectronicaComponent } from './components/utilidades/firmaelectronica/firmaelectronica.component';
 import { BuzondeavalesComponent } from './components/aval-tutores-directores/buzondeavales/buzondeavales.component';
 import { PendientesavalComponent } from './components/aval-tutores-directores/pendientesaval/pendientesaval.component';
 import { VisoravalComponent } from './components/aval-tutores-directores/visoraval/visoraval.component';
 import { AsignaturaexternaComponent } from './components/presentacion-solicitudes/formularios/complementarios/asignaturaexterna/asignaturaexterna.component';
-import { OficioComponent } from './components/utilidades/oficio/oficio.component';
 import { AsignaturadicioncancelComponent } from './components/presentacion-solicitudes/formularios/complementarios/asignaturadicioncancel/asignaturadicioncancel.component';
 import { InfopersonalComponent } from './components/presentacion-solicitudes/formularios/complementarios/infopersonal/infopersonal.component';
 import { ListatutoresComponent } from './components/presentacion-solicitudes/formularios/complementarios/listatutores/listatutores.component';
@@ -54,13 +52,11 @@ import { FormulariorechazoComponent } from './components/gestion-coordinacion/co
         ResumenComponent,
         VisorComponent,
         AsignaturahomologarComponent,
-        PlantillasComponent,
         FirmaelectronicaComponent,
         BuzondeavalesComponent,
         PendientesavalComponent,
         VisoravalComponent,
         AsignaturaexternaComponent,
-        OficioComponent,
         AsignaturadicioncancelComponent,
         InfopersonalComponent,
         ListatutoresComponent,

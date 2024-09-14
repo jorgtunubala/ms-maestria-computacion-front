@@ -37,6 +37,12 @@ export class SolicitudSave {
             obj['requiereFirmaDirector'],
             obj['idDirector'],
             obj['firmaEstudiante'],
+            obj['numPaginaTutor'],
+            obj['numPaginaDirector'],
+            obj['posXTutor'],
+            obj['posYTutor'],
+            obj['posXDirector'],
+            obj['posYDirector'],
             obj['oficioPdf']
         );
     }
@@ -61,7 +67,13 @@ export class SolicitudSave {
         public datosSolicitudBeca: DatosSolicitudBecaDescuento,
         public requiereFirmaDirector: boolean,
         public idDirector: string,
-        public firmaEstudiante: string,
+        public firmaEstudiante: boolean,
+        public numPaginaTutor: number,
+        public numPaginaDirector: number,
+        public posXTutor: number,
+        public posYTutor: number,
+        public posXDirector: number,
+        public posYDirector: number,
         public oficioPdf: string
     ) {}
 }

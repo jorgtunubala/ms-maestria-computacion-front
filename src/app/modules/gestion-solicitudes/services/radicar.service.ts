@@ -53,8 +53,14 @@ export class RadicarService {
     firmaSolicitanteUrl: SafeUrl = '';
     firmaTutor: File = null;
     firmaTutorUrl: SafeUrl = '';
+    firmaTutorPag: number = 0;
+    firmaTutorX: number = 0;
+    firmaTutorY: number = 0;
     firmaDirector: File = null;
     firmaDirectorUrl: SafeUrl = '';
+    firmaDirectorPag: number = 0;
+    firmaDirectorX: number = 0;
+    firmaDirectorY: number = 0;
 
     fechasEstancia: Date[] = [];
     lugarEstancia: string = '';
@@ -184,6 +190,12 @@ export class RadicarService {
         this.adjuntosDeActividades = {};
         this.tipoBeca = 'Seleccione una opción';
         this.descripcionesActividades = [];
+        this.firmaTutorPag = 0;
+        this.firmaTutorX = 0;
+        this.firmaTutorY = 0;
+        this.firmaDirectorPag = 0;
+        this.firmaDirectorX = 0;
+        this.firmaDirectorY = 0;
     }
 
     agregarInstancia() {
@@ -223,12 +235,14 @@ export class RadicarService {
             numeroDocumento: [datosSolicitante.identificacion],
         });
 
+        /*
         //Datos Tutor
         this.tutor = {
             id: 'ID TUT PROVISIONAL',
             codigoTutor: 'COD TUT PROVISIONAL',
             nombreTutor: infoSolicitud.datosComunSolicitud.nombreTutor,
         };
+        */
 
         //Estado de solicitud
         this.estadoSolicitud =
@@ -240,6 +254,7 @@ export class RadicarService {
         //Número de radicado
         this.radicadoAsignado = infoSolicitud.datosComunSolicitud.radicado;
 
+        /*
         //Firma Solicitante
         this.firmaSolicitante = this.utilidades.convertirBase64AFile(
             infoSolicitud.datosComunSolicitud.firmaSolicitante
@@ -274,8 +289,11 @@ export class RadicarService {
                 URL.createObjectURL(this.firmaDirector)
             );
         }
+            
+        */
 
         switch (this.tipoSolicitudEscogida.codigoSolicitud) {
+            /*
             case 'AD_ASIG':
             case 'CA_ASIG':
                 this.datosAsignAdiCancel =
@@ -296,10 +314,12 @@ export class RadicarService {
                 }
 
                 break;
+                */
             case 'HO_ASIG_POS':
             case 'HO_ASIG_ESP':
-                console.log(infoSolicitud);
+                //console.log(infoSolicitud);
                 //Datos institucion externa
+                /*
                 this.datosInstitucionHomologar = {
                     institucion:
                         infoSolicitud.datosSolicitudHomologacion
@@ -308,11 +328,11 @@ export class RadicarService {
                         infoSolicitud.datosSolicitudHomologacion
                             .programaProcedencia,
                 };
-
+*/
                 //Datos asignaturas a homologar
                 infoSolicitud.datosSolicitudHomologacion.datosAsignatura.forEach(
                     (asignatura: any) => {
-                        console.log(asignatura.contenidoProgramatico);
+                        //console.log(asignatura.contenidoProgramatico);
                         let asignaturaAHomologar = {
                             asignatura: asignatura.nombreAsignatura,
                             creditos: asignatura.creditos,
@@ -327,9 +347,11 @@ export class RadicarService {
                     }
                 );
 
+                /*
                 console.log(
                     infoSolicitud.datosSolicitudHomologacion.documentosAdjuntos
                 );
+                */
 
                 //Docs Adjuntos
                 await this.asignarDocumentosAdjuntos(
@@ -338,6 +360,7 @@ export class RadicarService {
 
                 break;
 
+            /*
             case 'AP_SEME': {
                 const { semestre, motivo } =
                     infoSolicitud.datosSolicitudAplazarSemestre;
@@ -349,11 +372,12 @@ export class RadicarService {
 
                 break;
             }
-
+            */
             case 'CU_ASIG':
+                /*
                 this.motivoDeSolicitud =
                     infoSolicitud.datosSolicitudCursarAsignaturas.motivo;
-
+*/
                 this.datosAsignaturasExternas =
                     infoSolicitud.datosSolicitudCursarAsignaturas.datosAsignaturaOtroProgramas.map(
                         (asignatura) => ({
@@ -374,6 +398,7 @@ export class RadicarService {
                 break;
 
             case 'AV_PASA_INV':
+                /*
                 this.lugarEstancia =
                     infoSolicitud.datoAvalPasantiaInv.lugarPasantia;
                 this.fechasEstancia[0] = this.parseFecha(
@@ -382,6 +407,7 @@ export class RadicarService {
                 this.fechasEstancia[1] = this.parseFecha(
                     infoSolicitud.datoAvalPasantiaInv.fechaFin
                 );
+                */
                 await this.asignarDocumentosAdjuntos(
                     infoSolicitud.datoAvalPasantiaInv.documentosAdjuntos
                 );
@@ -389,6 +415,7 @@ export class RadicarService {
                 break;
 
             case 'AP_ECON_INV':
+                /*
                 this.lugarEstancia =
                     infoSolicitud.datosApoyoEconomico.lugarPasantia;
                 this.fechasEstancia[0] = this.parseFecha(
@@ -417,6 +444,7 @@ export class RadicarService {
                 this.direccion =
                     infoSolicitud.datosApoyoEconomico.direccionResidencia;
 
+                    */
                 await this.asignarDocumentosAdjuntos(
                     infoSolicitud.datosApoyoEconomico.documentosAdjuntos
                 );
@@ -424,6 +452,7 @@ export class RadicarService {
                 break;
 
             case 'AP_ECON_ASI': {
+                /*
                 const {
                     nombreCongreso,
                     tipoCongreso,
@@ -461,7 +490,7 @@ export class RadicarService {
                         infoSolicitud.datosApoyoEconomicoCongreso
                             .nombreDirectorGrupo,
                 };
-
+*/
                 await this.asignarDocumentosAdjuntos(
                     infoSolicitud.datosApoyoEconomicoCongreso.documentosAdjuntos
                 );
@@ -470,6 +499,7 @@ export class RadicarService {
             }
 
             case 'PA_PUBL_EVE':
+                /*
                 this.nombreCongreso =
                     infoSolicitud.datosApoyoEconomicoPublicacion.nombreEvento;
                 this.tipoCongreso =
@@ -503,7 +533,7 @@ export class RadicarService {
                     infoSolicitud.datosApoyoEconomicoPublicacion.numeroCedulaAsociada;
                 this.direccion =
                     infoSolicitud.datosApoyoEconomicoPublicacion.direccionResidencia;
-
+*/
                 await this.asignarDocumentosAdjuntos(
                     infoSolicitud.datosApoyoEconomicoPublicacion
                         .documentosAdjuntos
@@ -511,6 +541,7 @@ export class RadicarService {
 
                 break;
 
+            /*
             case 'AV_COMI_PR':
                 try {
                     const actividadesReCreditos = await this.gestorHttp
@@ -558,7 +589,10 @@ export class RadicarService {
                 }
                 break;
 
+                */
             case 'RE_CRED_PAS':
+                /*
+                
                 try {
                     const actividadesReCreditos = await this.gestorHttp
                         .obtenerActividadesDePracticaDocente()
@@ -598,9 +632,11 @@ export class RadicarService {
                         error
                     );
                 }
+                    */
                 break;
 
             case 'SO_BECA': {
+                /*
                 const { tipo, motivo, formatoSolicitudBeca } =
                     infoSolicitud.datoSolicitudBeca;
 
@@ -608,24 +644,23 @@ export class RadicarService {
                     tipoBeca: [tipo],
                     justificacion: [motivo],
                 });
+                */
 
                 // Verificación y conversión de documento adjunto
-                if (formatoSolicitudBeca) {
+                if (infoSolicitud.datoSolicitudBeca.formatoSolicitudBeca) {
                     this.documentosAdjuntos[0] =
                         await this.utilidades.convertirBase64AFile(
-                            formatoSolicitudBeca
+                            infoSolicitud.datoSolicitudBeca.formatoSolicitudBeca
                         );
                 }
                 break;
             }
 
-            /*
             case 'AV_SEMI_ACT':
                 this.asignarDocumentosAdjuntos(
                     infoSolicitud.datosAvalSeminario.documentosAdjuntos
                 );
                 break;
-            */
 
             default:
                 break;
@@ -650,6 +685,137 @@ export class RadicarService {
 
         console.log(this.documentosAdjuntos);
     }
+
+    obtenerNombreArchivosAdjuntos(): string {
+        const adjuntos: string[] = [];
+
+        const agregarNombre = (nombre: string | undefined) => {
+            if (nombre) {
+                adjuntos.push(nombre);
+            }
+        };
+
+        // Procesar datosAsignaturasExternas
+        this.datosAsignaturasExternas?.forEach((asignatura) => {
+            agregarNombre(asignatura.contenidos?.name);
+            agregarNombre(asignatura.cartaAceptacion?.name);
+        });
+
+        // Procesar datosAsignaturasAHomologar
+        this.datosAsignaturasAHomologar?.forEach((asignatura) => {
+            agregarNombre(asignatura.contenidos?.name);
+        });
+
+        // Procesar documentosAdjuntos
+        this.documentosAdjuntos?.forEach((doc) => {
+            agregarNombre(doc.name);
+        });
+
+        // Procesar adjuntosDeActividades
+        if (this.adjuntosDeActividades) {
+            Object.keys(this.adjuntosDeActividades).forEach((actividadId) => {
+                const adjuntosActividad =
+                    this.adjuntosDeActividades[Number(actividadId)];
+                if (adjuntosActividad) {
+                    adjuntos.push(`Actividad ${Number(actividadId) + 1}`);
+                    adjuntosActividad.archivos?.forEach((archivo) => {
+                        agregarNombre(`- ${archivo.name}`);
+                    });
+                    adjuntosActividad.enlaces?.forEach((enlace) => {
+                        agregarNombre(`- Enlace: ${enlace}`);
+                    });
+                }
+            });
+        }
+
+        // Unir los nombres con salto de línea
+        return adjuntos.join('\n');
+    }
+
+    /*
+    obtenerNombreArchivosAdjuntos() {
+        let adjuntos = '';
+
+        if (
+            this.datosAsignaturasExternas &&
+            this.datosAsignaturasExternas.length > 0
+        ) {
+            // Recorre cada elemento de datosAsignaturasExternas
+            this.datosAsignaturasExternas.forEach((asignatura) => {
+                // Verifica si hay información en 'contenidos'
+                if (asignatura.contenidos) {
+                    // Si hay información, extrae el nombre y guárdalo en el arreglo nombresArchivos
+
+                    adjuntos = adjuntos + asignatura.contenidos.name + '\n';
+                }
+                // Verifica si hay información en 'cartaAceptacion'
+                if (asignatura.cartaAceptacion) {
+                    // Si hay información, extrae el nombre y guárdalo en el arreglo nombresArchivos
+
+                    adjuntos =
+                        adjuntos + asignatura.cartaAceptacion.name + '\n';
+                }
+            });
+        }
+
+        if (
+            this.datosAsignaturasAHomologar &&
+            this.datosAsignaturasAHomologar.length > 0
+        ) {
+            // Recorre cada elemento de datosAsignaturasAHomologar
+            this.datosAsignaturasAHomologar.forEach((asignatura) => {
+                // Verifica si hay información en 'contenidos'
+                if (asignatura.contenidos) {
+                    // Si hay información, extrae el nombre y guárdalo en el arreglo nombresArchivos
+
+                    adjuntos = adjuntos + asignatura.contenidos.name + '\n';
+                }
+            });
+        }
+
+        if (this.documentosAdjuntos && this.documentosAdjuntos.length > 0) {
+            this.documentosAdjuntos.forEach((doc) => {
+                adjuntos = adjuntos + doc.name + '\n';
+            });
+        }
+
+        // Verificar adjuntosDeActividades
+        if (this.adjuntosDeActividades) {
+            Object.keys(this.adjuntosDeActividades).forEach((actividadId) => {
+                const adjuntosActividad =
+                    this.adjuntosDeActividades[Number(actividadId)];
+                if (adjuntosActividad) {
+                    adjuntos =
+                        adjuntos +
+                        `Actividad ${Number(actividadId) + 1}  + '\n'`;
+                    if (
+                        adjuntosActividad.archivos &&
+                        adjuntosActividad.archivos.length > 0
+                    ) {
+                        adjuntosActividad.archivos.forEach((archivo) => {
+                            adjuntos = adjuntos + `- ${archivo.name}  + '\n'`;
+                        });
+                    }
+                    if (
+                        adjuntosActividad.enlaces &&
+                        adjuntosActividad.enlaces.length > 0
+                    ) {
+                        adjuntosActividad.enlaces.forEach((enlace) => {
+                            adjuntos = adjuntos + `- Enlace: ${enlace}  + '\n'`;
+                        });
+                    }
+                }
+            });
+        }
+
+        // Elimina el último carácter de nueva línea si existe
+        if (adjuntos.endsWith('\n')) {
+            adjuntos = adjuntos.slice(0, -1);
+        }
+
+        return adjuntos;
+    }
+    */
 
     parseFecha(fechaString) {
         const [day, month, year] = fechaString.split('/').map(Number);

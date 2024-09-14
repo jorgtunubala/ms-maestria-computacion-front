@@ -104,4 +104,24 @@ export class UtilidadesService {
             ? `${dia}${separador}${mes}${separador}${anio}`
             : `${anio}${separador}${mes}${separador}${dia}`;
     }
+
+    describirRangoFechas(fechaInicio: any, fechaFin: any) {
+        // Obteniendo los componentes de las fechas
+        const diaInicio = fechaInicio.getDate();
+        const mesInicio = fechaInicio.getMonth() + 1;
+        const anioInicio = fechaInicio.getFullYear();
+
+        const diaFin = fechaFin.getDate();
+        const mesFin = fechaFin.getMonth() + 1;
+        const anioFin = fechaFin.getFullYear();
+
+        // Formateando las fechas como dd/mm/aa
+        const fechaInicioStr = `${diaInicio}/${mesInicio}/${anioInicio}`;
+        const fechaFinStr = `${diaFin}/${mesFin}/${anioFin}`;
+
+        // Concatenando las fechas formateadas con un guión entre ellas
+        const fechaEstanciaStr = `${fechaInicioStr} al ${fechaFinStr}`;
+
+        return fechaEstanciaStr;
+    }
 }

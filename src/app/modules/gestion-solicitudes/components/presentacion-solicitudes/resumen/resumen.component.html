@@ -13,8 +13,19 @@
         <p>Revise, corrija y firme el oficio de la solicitud a enviar</p>
     </div>
 
-    <app-oficio *ngIf="mostrarOficio"></app-oficio>
+    <div class="col-12 mt-2">
+        <embed
+            id="vistaPreviaSolicitudPDF"
+            [src]="urlVistaPreviaSolicitudPDF"
+            type="application/pdf"
+            width="100%"
+            height="600px"
+        />
+    </div>
 
+    <!--
+    <app-oficio *ngIf="mostrarOficio"></app-oficio>
+    -->
     <div
         class="w-full md:w-8 mt-4"
         style="margin-left: auto; margin-right: auto"
