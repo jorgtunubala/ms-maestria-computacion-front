@@ -11,7 +11,6 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 import { RadicarService } from '../../../services/radicar.service';
 import { AlmacenarSolicitudService } from '../../../services/almacenarSolicitud.service';
-import { OficioComponent } from '../../utilidades/oficio/oficio.component';
 import { SafeResourceUrl } from '@angular/platform-browser';
 import { PlantillasService } from '../../../services/plantillas.service';
 import { UtilidadesService } from '../../../services/utilidades.service';
@@ -23,7 +22,6 @@ import { UtilidadesService } from '../../../services/utilidades.service';
     providers: [ConfirmationService, MessageService],
 })
 export class ResumenComponent implements OnInit {
-    @ViewChild(OficioComponent) oficio: OficioComponent;
     @ViewChild('firmaImage') firmaImage: ElementRef;
 
     codTipoSolicitudEscogida: string;

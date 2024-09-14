@@ -7,20 +7,50 @@
     </p-divider>
 
     <p-table
-        *ngIf="!buzonVacio"
-        [value]="solicitudes"
+        #dt1
+        [value]="gestor.solicitudesTutorDirectorCache"
         selectionMode="single"
-        (onRowSelect)="mostrarDetalles($event)"
-        [(selection)]="solicitudSeleccionada"
+        (onRowSelect)="mostrarDetalles()"
+        [(selection)]="seleccionada"
         responsiveLayout="scroll"
+        [paginator]="true"
+        [rows]="10"
+        [showCurrentPageReport]="true"
+        currentPageReportTemplate="Mostrando solicitudes {first} a {last} de {totalRecords}"
+        [rowsPerPageOptions]="[10, 25, 50]"
+        [globalFilterFields]="['nombreEstudiante', 'abreviatura', 'fecha']"
     >
+        <ng-template pTemplate="caption">
+            <div class="flex">
+                <button
+                    pButton
+                    label="Limpiar filtro"
+                    class="p-button-outlined"
+                    icon="pi pi-filter-slash"
+                    (click)="limpiarFiltros(dt1)"
+                ></button>
+                <span class="p-input-icon-left ml-auto">
+                    <i class="pi pi-search"></i>
+                    <input
+                        pInputText
+                        type="text"
+                        (input)="
+                            dt1.filterGlobal($event.target.value, 'contains')
+                        "
+                        placeholder="Buscar..."
+                    />
+                </span>
+            </div>
+        </ng-template>
+
         <ng-template pTemplate="header">
             <tr>
-                <th>Remitente</th>
-                <th>Tipo</th>
-                <th>Recibido</th>
+                <th>Nombre del remitente</th>
+                <th>Tipo de solicitud</th>
+                <th>Fecha de recepción</th>
             </tr>
         </ng-template>
+
         <ng-template pTemplate="body" let-solicitud>
             <tr [pSelectableRow]="solicitud">
                 <td>

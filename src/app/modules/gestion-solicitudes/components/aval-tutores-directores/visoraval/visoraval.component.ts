@@ -12,10 +12,11 @@ import { RadicarService } from '../../../services/radicar.service';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { HttpService } from '../../../services/http.service';
 import { DatosSolicitudRequest } from '../../../models/solicitudes/datosSolicitudRequest';
-import { OficioComponent } from '../../utilidades/oficio/oficio.component';
+
 import {
     DatosAvalSolicitud,
     DetallesRechazo,
+    SolicitudRecibida,
 } from '../../../models/indiceModelos';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { UtilidadesService } from '../../../services/utilidades.service';
@@ -36,8 +37,10 @@ export class VisoravalComponent implements OnInit {
         return '¿Estás seguro de que quieres salir de la página?';
     }
 
-    @ViewChild(OficioComponent) oficio: OficioComponent;
     @ViewChild('firmaImage') firmaImage: ElementRef;
+
+    solicitudSeleccionada: SolicitudRecibida;
+    datosSolicitud: DatosSolicitudRequest;
 
     rol: any = 'Tutor';
     //rol: any = 'Director';
@@ -57,12 +60,13 @@ export class VisoravalComponent implements OnInit {
 
     pdfSolicitud: File;
 
-    pdfCopiaBase64: string = '';
-
     urlPdf: SafeResourceUrl;
-    urlPdfSolicitud: SafeResourceUrl;
+    //urlPdfSolicitud: SafeResourceUrl;
 
-    documentosAdjuntos: File[] = [];
+    urlOficioPdf: SafeResourceUrl;
+    OficioPdfBase64: string = '';
+
+    docsAdjuntos: File[] = [];
     enlacesAdjuntos: string[] = [];
 
     ref: DynamicDialogRef;
@@ -80,6 +84,9 @@ export class VisoravalComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
+        this.recuperarSolicitudSeleccionada();
+
+        /*
         try {
             this.cargarDatosOficio();
         } catch (error) {
@@ -93,8 +100,25 @@ export class VisoravalComponent implements OnInit {
                 console.error('Error no esperado:', error);
             }
         }
+            */
     }
 
+    // Recupera la solicitud seleccionada del localStorage y carga los datos
+    recuperarSolicitudSeleccionada(): void {
+        const solicitudSeleccionadaJson = localStorage.getItem(
+            'solicitudSeleccionadaTutorDirector'
+        );
+
+        if (solicitudSeleccionadaJson) {
+            this.solicitudSeleccionada = JSON.parse(
+                solicitudSeleccionadaJson
+            ) as SolicitudRecibida;
+            this.gestor.solicitudSeleccionada = this.solicitudSeleccionada;
+            this.cargarDatosSolicitud();
+        }
+    }
+
+    /*
     capturarInformacionAdjunta() {
         if (this.radicar.datosAsignaturasExternas?.length > 0) {
             this.radicar.datosAsignaturasExternas.forEach((asignatura) => {
@@ -140,34 +164,140 @@ export class VisoravalComponent implements OnInit {
             );
         }
     }
+        */
 
-    cargarDatosOficio() {
+    // Extrae los archivos adjuntos según el tipo de solicitud
+    extraerAdjuntos(tipoSolicitud: string): void {
+        const procesarDocumentosAdjuntos = (
+            documentosAdjuntos: any[]
+        ): void => {
+            documentosAdjuntos?.forEach((docAdjunto) => {
+                this.docsAdjuntos.push(
+                    this.utilidades.convertirBase64AFile(docAdjunto)
+                );
+            });
+        };
+
+        switch (tipoSolicitud) {
+            case 'HO_ASIG_ESP':
+            case 'HO_ASIG_POS':
+                this.extraerAdjuntosHomologacion(procesarDocumentosAdjuntos);
+                break;
+            case 'CU_ASIG':
+                procesarDocumentosAdjuntos(
+                    this.datosSolicitud.datosSolicitudCursarAsignaturas
+                        .documentosAdjuntos
+                );
+                break;
+            case 'AV_PASA_INV':
+                procesarDocumentosAdjuntos(
+                    this.datosSolicitud.datoAvalPasantiaInv.documentosAdjuntos
+                );
+                break;
+            case 'AP_ECON_INV':
+                procesarDocumentosAdjuntos(
+                    this.datosSolicitud.datosApoyoEconomico.documentosAdjuntos
+                );
+                break;
+            case 'RE_CRED_PAS':
+                this.extraerAdjuntosActividadDocente(
+                    procesarDocumentosAdjuntos
+                );
+                break;
+            case 'RE_CRED_PUB':
+                procesarDocumentosAdjuntos(
+                    this.datosSolicitud.datosReconocimientoCreditos
+                        .documentosAdjuntos
+                );
+                break;
+            case 'AP_ECON_ASI':
+                procesarDocumentosAdjuntos(
+                    this.datosSolicitud.datosApoyoEconomicoCongreso
+                        .documentosAdjuntos
+                );
+                break;
+            case 'PA_PUBL_EVE':
+                procesarDocumentosAdjuntos(
+                    this.datosSolicitud.datosApoyoEconomicoPublicacion
+                        .documentosAdjuntos
+                );
+                break;
+            case 'SO_BECA':
+                procesarDocumentosAdjuntos([
+                    this.datosSolicitud.datoSolicitudBeca.formatoSolicitudBeca,
+                ]);
+                break;
+            case 'SO_DESC':
+            default:
+                // No se realiza ninguna acción para estos tipos de solicitud
+                break;
+        }
+    }
+
+    // Extrae los adjuntos de homologación
+    extraerAdjuntosHomologacion(
+        procesarDocumentosAdjuntos: (documentosAdjuntos: any[]) => void
+    ): void {
+        procesarDocumentosAdjuntos(
+            this.datosSolicitud.datosSolicitudHomologacion.documentosAdjuntos
+        );
+
+        this.datosSolicitud.datosSolicitudHomologacion.datosAsignatura.forEach(
+            (asignatura) => {
+                if (asignatura.contenidoProgramatico) {
+                    this.docsAdjuntos.push(
+                        this.utilidades.convertirBase64AFile(
+                            asignatura.contenidoProgramatico
+                        )
+                    );
+                }
+            }
+        );
+    }
+
+    // Extrae los adjuntos de la actividad docente
+    extraerAdjuntosActividadDocente(
+        procesarDocumentosAdjuntos: (documentosAdjuntos: any[]) => void
+    ): void {
+        this.datosSolicitud.datosActividadDocente?.forEach((actividad) => {
+            procesarDocumentosAdjuntos(actividad.documentos);
+            actividad.enlaces?.forEach((enlace) =>
+                this.enlacesAdjuntos.push(enlace)
+            );
+        });
+    }
+
+    private verificarRestricciones() {
+        if (
+            this.datosSolicitud.datosComunSolicitud.estadoSolicitud !=
+            'Radicada'
+        ) {
+            this.mostrarPFSet = false;
+            this.mostrarBtnAvalar = false;
+            this.mostrarBtnRechazar = false;
+        } else {
+            this.mostrarBtnAvalar = true;
+            this.mostrarBtnRechazar = true;
+        }
+    }
+
+    cargarDatosSolicitud() {
         this.http
-            .obtenerInfoSolGuardada(
-                this.radicar.tipoSolicitudEscogida.idSolicitud
-            )
+            .obtenerInfoSolGuardada(this.solicitudSeleccionada.idSolicitud)
             .subscribe(
                 async (infoSolicitud: DatosSolicitudRequest) => {
-                    this.pdfCopiaBase64 =
-                        infoSolicitud.datosComunSolicitud?.oficioPdf;
-                    const oficioPdf =
-                        infoSolicitud.datosComunSolicitud?.oficioPdf;
-                    if (oficioPdf) {
-                        this.pdfSolicitud =
-                            this.utilidades.convertirBase64AFile(oficioPdf);
-                        this.urlPdfSolicitud =
-                            this.utilidades.crearUrlSeguroParaPDF(
-                                this.pdfSolicitud
-                            );
-                    }
+                    this.datosSolicitud = infoSolicitud;
+                    this.abrirOficioPdf();
 
-                    await this.radicar.poblarConDatosSolicitudGuardada(
-                        infoSolicitud
+                    this.extraerAdjuntos(
+                        this.solicitudSeleccionada.codigoSolicitud
                     );
-                    this.mostrarOficio = true;
-                    this.mostrarBtnAvalar = true;
-                    this.mostrarBtnRechazar = true;
-                    this.capturarInformacionAdjunta();
+
+                    this.gestor.estadoSolicitud =
+                        infoSolicitud.datosComunSolicitud.estadoSolicitud;
+
+                    this.verificarRestricciones();
+
                     this.cargandoDatos = false;
                 },
                 (error) => {
@@ -177,6 +307,17 @@ export class VisoravalComponent implements OnInit {
                     );
                 }
             );
+    }
+
+    // Abre el PDF del oficio
+    abrirOficioPdf(): void {
+        const oficioPdf = this.datosSolicitud.datosComunSolicitud?.oficioPdf;
+
+        if (oficioPdf) {
+            const documento = this.utilidades.convertirBase64AFile(oficioPdf);
+            this.urlOficioPdf =
+                this.utilidades.crearUrlSeguroParaPDF(documento);
+        }
     }
 
     onUpload(event, firmante) {
@@ -219,14 +360,22 @@ export class VisoravalComponent implements OnInit {
             case 'Tutor':
                 this.agregarImagenAPDF(
                     this.radicar.firmaTutorUrl.toString(), // Imagen en Base64
-                    1, // Número de página (por ejemplo, la primera página)
-                    137.2666, // Coordenada X
-                    181 - 0.2, // Coordenada Y
+                    this.datosSolicitud.datosComunSolicitud.numPaginaTutor, // Número de página (por ejemplo, la primera página)
+                    this.datosSolicitud.datosComunSolicitud.posXTutor, // Coordenada X
+                    this.datosSolicitud.datosComunSolicitud.posYTutor - 0.2, // Coordenada Y
                     58.63, // Ancho
                     20 // Alto
                 );
                 break;
             case 'Director':
+                this.agregarImagenAPDF(
+                    this.radicar.firmaTutorUrl.toString(), // Imagen en Base64
+                    this.datosSolicitud.datosComunSolicitud.numPaginaDirector, // Número de página (por ejemplo, la primera página)
+                    this.datosSolicitud.datosComunSolicitud.posXDirector, // Coordenada X
+                    this.datosSolicitud.datosComunSolicitud.posYDirector - 0.2, // Coordenada Y
+                    58.63, // Ancho
+                    20 // Alto
+                );
                 break;
 
             default:
@@ -254,7 +403,7 @@ export class VisoravalComponent implements OnInit {
         altoMm: number // Alto en mm
     ) {
         try {
-            let pdfBase64 = this.pdfCopiaBase64;
+            let pdfBase64 = this.datosSolicitud.datosComunSolicitud.oficioPdf;
 
             // Eliminar el nombre del archivo para obtener solo el contenido Base64
             if (pdfBase64.includes(':')) {
@@ -331,8 +480,7 @@ export class VisoravalComponent implements OnInit {
             const pdfFile = new File([pdfModificadoBlob], 'Solicitud.pdf', {
                 type: 'application/pdf',
             });
-            this.urlPdfSolicitud =
-                this.utilidades.crearUrlSeguroParaPDF(pdfFile);
+            this.urlOficioPdf = this.utilidades.crearUrlSeguroParaPDF(pdfFile);
 
             this.radicar.oficioDeSolicitud = pdfFile;
         } catch (error) {
@@ -366,17 +514,24 @@ export class VisoravalComponent implements OnInit {
             this.avalEnProceso = true;
             this.deshabilitarRechazo = true;
 
-            await this.convertirOficioEnPDF();
+            //await this.convertirOficioEnPDF();
 
             const convertirFileABase64 = async (file: File | null) =>
                 file ? await this.utilidades.convertirFileABase64(file) : null;
 
+            const firmoTutor =
+                this.rol === 'Tutor'
+                    ? true
+                    : this.datosSolicitud.datosComunSolicitud.firmaTutor;
+            const firmoDirector =
+                this.rol === 'Director'
+                    ? true
+                    : this.datosSolicitud.datosComunSolicitud.firmaDirector;
+
             const aval: DatosAvalSolicitud = {
-                idSolicitud: this.radicar.tipoSolicitudEscogida.idSolicitud,
-                firmaTutor: await convertirFileABase64(this.radicar.firmaTutor),
-                firmaDirector: await convertirFileABase64(
-                    this.radicar.firmaDirector
-                ),
+                idSolicitud: this.solicitudSeleccionada.idSolicitud,
+                firmaTutor: firmoTutor,
+                firmaDirector: firmoDirector,
                 documentoPdfSolicitud: await convertirFileABase64(
                     this.radicar.oficioDeSolicitud
                 ),
@@ -388,6 +543,16 @@ export class VisoravalComponent implements OnInit {
                 (resultado) => {
                     if (resultado) {
                         //this.gestor.ejecutarCargarSolicitudes();
+
+                        // Remover la solicitud de la lista local
+                        this.gestor.solicitudesTutorDirectorCache =
+                            this.gestor.solicitudesTutorDirectorCache.filter(
+                                (solicitud) =>
+                                    solicitud.idSolicitud !==
+                                    this.gestor.solicitudSeleccionada
+                                        .idSolicitud
+                            );
+
                         this.avalEnProceso = false;
                         this.confirmationService.confirm({
                             message: 'La solicitud se ha avalado exitosamente',
@@ -447,7 +612,7 @@ export class VisoravalComponent implements OnInit {
                 //lsierra@unicauca.edu.co
                 //luz123@unicauca.edu.co
                 const detalles: DetallesRechazo = {
-                    idSolicitud: this.radicar.tipoSolicitudEscogida.idSolicitud,
+                    idSolicitud: this.solicitudSeleccionada.idSolicitud,
                     emailRevisor: 'lsierra@unicauca.edu.co',
                     estado: 'NO_AVALADA',
                     comentario: motivoRechazo,
@@ -456,7 +621,17 @@ export class VisoravalComponent implements OnInit {
                 this.http.rechazarSolicitud(detalles).subscribe(
                     (resultado) => {
                         if (resultado) {
+                            // Remover la solicitud de la lista local
+                            this.gestor.solicitudesTutorDirectorCache =
+                                this.gestor.solicitudesTutorDirectorCache.filter(
+                                    (solicitud) =>
+                                        solicitud.idSolicitud !==
+                                        this.gestor.solicitudSeleccionada
+                                            .idSolicitud
+                                );
+
                             this.rechazoEnProceso = false;
+                            this.gestor.estadoSolicitud = 'No Avalada';
                             this.confirmationService.confirm({
                                 message:
                                     'La solicitud se ha sido rechazada y se ha notificado al solicitante',
@@ -517,6 +692,7 @@ export class VisoravalComponent implements OnInit {
         reader.readAsDataURL(imagen);
     }
 
+    /*
     convertirOficioEnPDF(): Promise<void> {
         return new Promise((resolve, reject) => {
             if (this.oficio) {
@@ -533,10 +709,10 @@ export class VisoravalComponent implements OnInit {
             }
         });
     }
-
+*/
     abrirArchivo(nombreDocumento: string) {
         // Buscar el archivo por su nombre
-        const documento = this.documentosAdjuntos.find(
+        const documento = this.docsAdjuntos.find(
             (doc) => doc.name === nombreDocumento
         );
 

@@ -54,31 +54,31 @@ export class PdfService {
         // ENCABEZADO DE LA PLANTILLA
 
         // Banner 'Diversidad'
-        doc.addImage(imgBannerSup, 'JPEG', 0, 0, 216, 7);
+        //doc.addImage(imgBannerSup, 'JPEG', 0, 0, 216, 7);
 
         // Escudo Unicauca
-        doc.addImage(imgEscudo, 'JPEG', 15, 13.5, 30, 40.87);
+        doc.addImage(imgEscudo, 'JPEG', 15, 10.5, 30, 40.87);
 
         doc.setDrawColor(0, 18, 130);
-        doc.line(43, 23, 43, 46);
+        doc.line(43, 17, 43, 39);
 
         // Nombre de dependencia
         doc.setFont('OpenSans', 'bold');
         doc.setFontSize(12);
         doc.setTextColor(0, 18, 130);
-        doc.text('Facultad de Ingeniería', 46, 31);
-        doc.text('Electrónica y', 46, 36);
-        doc.text('Telecomunicaciones', 46, 41);
+        doc.text('Facultad de Ingeniería', 46, 24);
+        doc.text('Electrónica y', 46, 29);
+        doc.text('Telecomunicaciones', 46, 34);
 
         doc.setDrawColor(0, 18, 130);
-        doc.line(96, 23, 96, 46);
+        doc.line(96, 16, 96, 39);
 
         // Nombre del programa
         doc.setFont('OpenSans', 'regular');
         doc.setFontSize(12);
         doc.setTextColor(0, 18, 130);
-        doc.text('Maestría en', 99, 33);
-        doc.text('Computación', 99, 38);
+        doc.text('Maestría en', 99, 26);
+        doc.text('Computación', 99, 31);
 
         // PIE DE PAGINA DE LA PLANTILLA
 

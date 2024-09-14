@@ -828,7 +828,7 @@ export class PlantillasService {
         const textLugarFecha = `Popayán, ${this.fechaActual.getDate()} de ${
             this.nombresMes[this.fechaActual.getMonth()]
         } del ${this.fechaActual.getFullYear()}\n`;
-        const textDestinatario = `Señores\nComité de Programa Maestría en Computación\nAtte: Dra Luz Marina Sierra\nCoordinadora programa\nUniversidad del Cauca\n`;
+        const textDestinatario = `Señores\nComité de Programa Maestría en Computación\nUniversidad del Cauca\n`;
 
         // Agregar el primer bloque de texto dinámico
         let cursorY = this.servicioPDF.agregarTexto(doc, {
@@ -946,6 +946,7 @@ export class PlantillasService {
                 this.servicioRadicar.firmaSolicitanteUrl.toString();
         }
 
+        console.log(nuevaPosicionY);
         // Agregar la firma del solicitante
         let resultadoSolicitante = this.servicioPDF.agregarFirma(
             doc,
@@ -962,6 +963,7 @@ export class PlantillasService {
             nuevaPosicionY = 65; // Reinicia cursorY para alinear ambas firmas en la nueva página
         }
 
+        console.log(nuevaPosicionY);
         // Agregar la firma del tutor
         const resultadoTutor = this.servicioPDF.agregarFirma(
             doc,
@@ -975,7 +977,7 @@ export class PlantillasService {
 
         nuevaPosicionY = resultadoTutor.cursorY;
 
-        this.servicioRadicar.firmaTutorPag = resultadoTutor.pageNumber;
+        this.servicioRadicar.firmaTutorPag = resultadoTutor.pageNumber - 1;
         this.servicioRadicar.firmaTutorX =
             resultadoTutor.signatureCoordinates.x;
         this.servicioRadicar.firmaTutorY =
@@ -1000,7 +1002,7 @@ export class PlantillasService {
             nuevaPosicionY = resultadoDirector.cursorY;
 
             this.servicioRadicar.firmaDirectorPag =
-                resultadoDirector.pageNumber;
+                resultadoDirector.pageNumber - 1;
             this.servicioRadicar.firmaDirectorX =
                 resultadoDirector.signatureCoordinates.x;
             this.servicioRadicar.firmaDirectorY =

@@ -45,10 +45,40 @@ export class DocsAdjuntosComponent implements OnInit {
     }
 
     onUpload(event, fubauto, indice) {
+        /*
+        console.log(indice);
+        console.log(
+            '' +
+                this.radicar.requisitosSolicitudEscogida.documentosRequeridos[
+                    indice
+                ].nombre
+        );
         for (let doc of event.files) {
             this.radicar.documentosAdjuntos[indice] = doc;
         }
 
+        fubauto.clear();
+        */
+        for (let doc of event.files) {
+            // Obtener el nombre del archivo original y la extensión
+            const originalName = doc.name;
+            const fileExtension = originalName.split('.').pop();
+
+            // Obtener el nuevo nombre del archivo
+            const nuevoNombre =
+                this.radicar.requisitosSolicitudEscogida.documentosRequeridos[
+                    indice
+                ].nombre;
+            const nuevoNombreConExtension = `${nuevoNombre}.${fileExtension}`;
+
+            const renamedFile = new File([doc], nuevoNombreConExtension, {
+                type: 'application/pdf', // Establece el tipo MIME correcto para un PDF
+            });
+            // Actualizar la lista de documentos adjuntos
+            this.radicar.documentosAdjuntos[indice] = renamedFile;
+        }
+
+        // Limpiar el componente de subida de archivos
         fubauto.clear();
     }
 

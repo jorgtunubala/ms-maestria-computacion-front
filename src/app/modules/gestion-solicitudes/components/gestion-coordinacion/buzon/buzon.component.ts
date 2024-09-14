@@ -19,7 +19,6 @@ interface ConfiguracionBuzon {
     providers: [DialogService],
 })
 export class BuzonComponent implements OnInit {
-    solicitudes: SolicitudRecibida[];
     seleccionada: SolicitudRecibida;
 
     cargandoSolicitudes: boolean = true;
@@ -90,13 +89,17 @@ export class BuzonComponent implements OnInit {
 
     // Carga las solicitudes desde el servidor según el filtro
     cargarSolicitudes(prmFiltro: string): void {
-        this.http.consultarSolicitudesCoordinacion(prmFiltro).subscribe(
+        // Limpiar la lista de solicitudes antes de hacer la nueva carga
+        this.gestor.solicitudesCoordinadorCache = [];
+        this.cargandoSolicitudes = true; // Mostrar el estado de carga
+
+        this.gestor.obtenerSolicitudesCoordinador(prmFiltro).subscribe(
             (solicitudes: SolicitudRecibida[]) => {
-                this.solicitudes = solicitudes;
-                this.cargandoSolicitudes = false;
+                this.cargandoSolicitudes = false; // Ocultar el indicador de carga cuando se obtienen los datos
             },
             (error) => {
                 console.error('Error al cargar las solicitudes:', error);
+                this.cargandoSolicitudes = false; // Asegurarse de ocultar el estado de carga en caso de error
             }
         );
     }
@@ -133,39 +136,4 @@ export class BuzonComponent implements OnInit {
     limpiarFiltros(table: any): void {
         table.clear();
     }
-
-    /*
-    obtenerTituloIconoYColumna(filtro: string): {
-        titulo: string;
-        icono: string;
-        columnaRecibido: string;
-    } {
-        const configuraciones: {
-            [key: string]: {
-                titulo: string;
-                icono: string;
-                columnaRecibido: string;
-            };
-        } = {
-            nuevas: {
-                titulo: 'Solicitudes nuevas',
-                icono: 'pi pi-arrow-down',
-                columnaRecibido: 'Recibida',
-            },
-            rechazadas: {
-                titulo: 'Solicitudes rechazadas',
-                icono: 'pi pi-times',
-                columnaRecibido: 'Rechazada',
-            },
-        };
-
-        return (
-            configuraciones[filtro] || {
-                titulo: 'Bandeja de entrada',
-                icono: 'pi pi-arrow-down',
-                columnaRecibido: 'Recibida',
-            }
-        );
-    }
-        */
 }

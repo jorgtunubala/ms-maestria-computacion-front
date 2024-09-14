@@ -53,14 +53,14 @@ export class RadicarService {
     firmaSolicitanteUrl: SafeUrl = '';
     firmaTutor: File = null;
     firmaTutorUrl: SafeUrl = '';
-    firmaTutorPag: number = null;
-    firmaTutorX: number = null;
-    firmaTutorY: number = null;
+    firmaTutorPag: number = 0;
+    firmaTutorX: number = 0;
+    firmaTutorY: number = 0;
     firmaDirector: File = null;
     firmaDirectorUrl: SafeUrl = '';
-    firmaDirectorPag: number = null;
-    firmaDirectorX: number = null;
-    firmaDirectorY: number = null;
+    firmaDirectorPag: number = 0;
+    firmaDirectorX: number = 0;
+    firmaDirectorY: number = 0;
 
     fechasEstancia: Date[] = [];
     lugarEstancia: string = '';
@@ -190,12 +190,12 @@ export class RadicarService {
         this.adjuntosDeActividades = {};
         this.tipoBeca = 'Seleccione una opción';
         this.descripcionesActividades = [];
-        this.firmaTutorPag = null;
-        this.firmaTutorX = null;
-        this.firmaTutorY = null;
-        this.firmaDirectorPag = null;
-        this.firmaDirectorX = null;
-        this.firmaDirectorY = null;
+        this.firmaTutorPag = 0;
+        this.firmaTutorX = 0;
+        this.firmaTutorY = 0;
+        this.firmaDirectorPag = 0;
+        this.firmaDirectorX = 0;
+        this.firmaDirectorY = 0;
     }
 
     agregarInstancia() {
@@ -235,12 +235,14 @@ export class RadicarService {
             numeroDocumento: [datosSolicitante.identificacion],
         });
 
+        /*
         //Datos Tutor
         this.tutor = {
             id: 'ID TUT PROVISIONAL',
             codigoTutor: 'COD TUT PROVISIONAL',
             nombreTutor: infoSolicitud.datosComunSolicitud.nombreTutor,
         };
+        */
 
         //Estado de solicitud
         this.estadoSolicitud =
@@ -252,6 +254,7 @@ export class RadicarService {
         //Número de radicado
         this.radicadoAsignado = infoSolicitud.datosComunSolicitud.radicado;
 
+        /*
         //Firma Solicitante
         this.firmaSolicitante = this.utilidades.convertirBase64AFile(
             infoSolicitud.datosComunSolicitud.firmaSolicitante
@@ -286,8 +289,11 @@ export class RadicarService {
                 URL.createObjectURL(this.firmaDirector)
             );
         }
+            
+        */
 
         switch (this.tipoSolicitudEscogida.codigoSolicitud) {
+            /*
             case 'AD_ASIG':
             case 'CA_ASIG':
                 this.datosAsignAdiCancel =
@@ -308,10 +314,12 @@ export class RadicarService {
                 }
 
                 break;
+                */
             case 'HO_ASIG_POS':
             case 'HO_ASIG_ESP':
-                console.log(infoSolicitud);
+                //console.log(infoSolicitud);
                 //Datos institucion externa
+                /*
                 this.datosInstitucionHomologar = {
                     institucion:
                         infoSolicitud.datosSolicitudHomologacion
@@ -320,11 +328,11 @@ export class RadicarService {
                         infoSolicitud.datosSolicitudHomologacion
                             .programaProcedencia,
                 };
-
+*/
                 //Datos asignaturas a homologar
                 infoSolicitud.datosSolicitudHomologacion.datosAsignatura.forEach(
                     (asignatura: any) => {
-                        console.log(asignatura.contenidoProgramatico);
+                        //console.log(asignatura.contenidoProgramatico);
                         let asignaturaAHomologar = {
                             asignatura: asignatura.nombreAsignatura,
                             creditos: asignatura.creditos,
@@ -339,9 +347,11 @@ export class RadicarService {
                     }
                 );
 
+                /*
                 console.log(
                     infoSolicitud.datosSolicitudHomologacion.documentosAdjuntos
                 );
+                */
 
                 //Docs Adjuntos
                 await this.asignarDocumentosAdjuntos(
@@ -350,6 +360,7 @@ export class RadicarService {
 
                 break;
 
+            /*
             case 'AP_SEME': {
                 const { semestre, motivo } =
                     infoSolicitud.datosSolicitudAplazarSemestre;
@@ -361,11 +372,12 @@ export class RadicarService {
 
                 break;
             }
-
+            */
             case 'CU_ASIG':
+                /*
                 this.motivoDeSolicitud =
                     infoSolicitud.datosSolicitudCursarAsignaturas.motivo;
-
+*/
                 this.datosAsignaturasExternas =
                     infoSolicitud.datosSolicitudCursarAsignaturas.datosAsignaturaOtroProgramas.map(
                         (asignatura) => ({
@@ -386,6 +398,7 @@ export class RadicarService {
                 break;
 
             case 'AV_PASA_INV':
+                /*
                 this.lugarEstancia =
                     infoSolicitud.datoAvalPasantiaInv.lugarPasantia;
                 this.fechasEstancia[0] = this.parseFecha(
@@ -394,6 +407,7 @@ export class RadicarService {
                 this.fechasEstancia[1] = this.parseFecha(
                     infoSolicitud.datoAvalPasantiaInv.fechaFin
                 );
+                */
                 await this.asignarDocumentosAdjuntos(
                     infoSolicitud.datoAvalPasantiaInv.documentosAdjuntos
                 );
@@ -401,6 +415,7 @@ export class RadicarService {
                 break;
 
             case 'AP_ECON_INV':
+                /*
                 this.lugarEstancia =
                     infoSolicitud.datosApoyoEconomico.lugarPasantia;
                 this.fechasEstancia[0] = this.parseFecha(
@@ -429,6 +444,7 @@ export class RadicarService {
                 this.direccion =
                     infoSolicitud.datosApoyoEconomico.direccionResidencia;
 
+                    */
                 await this.asignarDocumentosAdjuntos(
                     infoSolicitud.datosApoyoEconomico.documentosAdjuntos
                 );
@@ -436,6 +452,7 @@ export class RadicarService {
                 break;
 
             case 'AP_ECON_ASI': {
+                /*
                 const {
                     nombreCongreso,
                     tipoCongreso,
@@ -473,7 +490,7 @@ export class RadicarService {
                         infoSolicitud.datosApoyoEconomicoCongreso
                             .nombreDirectorGrupo,
                 };
-
+*/
                 await this.asignarDocumentosAdjuntos(
                     infoSolicitud.datosApoyoEconomicoCongreso.documentosAdjuntos
                 );
@@ -482,6 +499,7 @@ export class RadicarService {
             }
 
             case 'PA_PUBL_EVE':
+                /*
                 this.nombreCongreso =
                     infoSolicitud.datosApoyoEconomicoPublicacion.nombreEvento;
                 this.tipoCongreso =
@@ -515,7 +533,7 @@ export class RadicarService {
                     infoSolicitud.datosApoyoEconomicoPublicacion.numeroCedulaAsociada;
                 this.direccion =
                     infoSolicitud.datosApoyoEconomicoPublicacion.direccionResidencia;
-
+*/
                 await this.asignarDocumentosAdjuntos(
                     infoSolicitud.datosApoyoEconomicoPublicacion
                         .documentosAdjuntos
@@ -523,6 +541,7 @@ export class RadicarService {
 
                 break;
 
+            /*
             case 'AV_COMI_PR':
                 try {
                     const actividadesReCreditos = await this.gestorHttp
@@ -570,7 +589,10 @@ export class RadicarService {
                 }
                 break;
 
+                */
             case 'RE_CRED_PAS':
+                /*
+                
                 try {
                     const actividadesReCreditos = await this.gestorHttp
                         .obtenerActividadesDePracticaDocente()
@@ -610,9 +632,11 @@ export class RadicarService {
                         error
                     );
                 }
+                    */
                 break;
 
             case 'SO_BECA': {
+                /*
                 const { tipo, motivo, formatoSolicitudBeca } =
                     infoSolicitud.datoSolicitudBeca;
 
@@ -620,24 +644,23 @@ export class RadicarService {
                     tipoBeca: [tipo],
                     justificacion: [motivo],
                 });
+                */
 
                 // Verificación y conversión de documento adjunto
-                if (formatoSolicitudBeca) {
+                if (infoSolicitud.datoSolicitudBeca.formatoSolicitudBeca) {
                     this.documentosAdjuntos[0] =
                         await this.utilidades.convertirBase64AFile(
-                            formatoSolicitudBeca
+                            infoSolicitud.datoSolicitudBeca.formatoSolicitudBeca
                         );
                 }
                 break;
             }
 
-            /*
             case 'AV_SEMI_ACT':
                 this.asignarDocumentosAdjuntos(
                     infoSolicitud.datosAvalSeminario.documentosAdjuntos
                 );
                 break;
-            */
 
             default:
                 break;

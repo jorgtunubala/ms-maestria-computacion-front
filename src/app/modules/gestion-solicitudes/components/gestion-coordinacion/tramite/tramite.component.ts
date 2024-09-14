@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output } from '@angular/core';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { GestorService } from '../../../services/gestor.service';
 import { DetallesRechazo } from '../../../models/indiceModelos';
@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { FormulariorechazoComponent } from '../complementos/formulariorechazo/formulariorechazo.component';
 import { PdfService } from '../../../services/pdf.service';
+import { EventEmitter } from '@angular/core';
 
 @Component({
     selector: 'app-tramite',
@@ -16,10 +17,16 @@ import { PdfService } from '../../../services/pdf.service';
 })
 export class TramiteComponent implements OnInit {
     conceptoComite: string;
+    avalComite: boolean = false;
     enviadaAComite: boolean = false;
     enviadaAConsejo: boolean = false;
     deshabilitarEnvioAComite: boolean = false;
     deshabilitarEnvioAConsejo: boolean = false;
+    vaAlConcejo: boolean = true;
+
+    habilitarRespuestaSolicitante: boolean = false;
+    habilitarRespuestaTutor: boolean = false;
+
     mostrarBtnRechazar: boolean = false;
     mostrarBtnResolver: boolean = false;
 
@@ -37,6 +44,10 @@ export class TramiteComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
+        console.log(this.gestor.solicitudSeleccionada.codigoSolicitud);
+        this.restringirAcciones(
+            this.gestor.solicitudSeleccionada.codigoSolicitud
+        );
         switch (this.gestor.estadoSolicitud) {
             case 'Avalada':
                 this.mostrarBtnRechazar = true;
@@ -60,6 +71,11 @@ export class TramiteComponent implements OnInit {
                 this.deshabilitarEnvioAConsejo = true;
                 break;
         }
+    }
+
+    // Método enviar orden de dascargar archivos al componente padre
+    onDescargarArchivos() {
+        this.gestor.emitirDescargarArchivos();
     }
 
     validarCambioEstadoConcejo() {
@@ -198,6 +214,29 @@ export class TramiteComponent implements OnInit {
                 break;
         }
                 */
+    }
+
+    guardarRespuestaComite() {
+        //GUARDAR LA INFO... PENDIENTE DEL SERVICIO BACK
+
+        if (!this.vaAlConcejo) {
+            this.habilitarRespuestaSolicitante = true;
+            this.habilitarRespuestaTutor = true;
+        }
+    }
+
+    restringirAcciones(tipoSolicitud: string) {
+        switch (tipoSolicitud) {
+            case 'RE_CRED_PUB':
+            case 'RE_CRED_PAS':
+            case 'RE_CRED_PR_DOC':
+            case 'CU_ASIG':
+                this.vaAlConcejo = false;
+                break;
+
+            default:
+                break;
+        }
     }
 
     cambiarestadoSolicitud(estado: string) {}
