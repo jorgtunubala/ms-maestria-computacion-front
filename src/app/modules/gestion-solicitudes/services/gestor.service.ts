@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpService } from './http.service';
 import { Observable, of, Subject, tap } from 'rxjs';
 import { SolicitudRecibida } from '../models/indiceModelos';
+import { DatosSolicitudRequest } from '../models/solicitudes/datosSolicitudRequest';
 
 @Injectable({
     providedIn: 'root',
@@ -11,6 +12,7 @@ export class GestorService {
     descargarArchivos$ = this.descargarArchivosSource.asObservable();
 
     solicitudSeleccionada: SolicitudRecibida;
+    infoSolicitud: DatosSolicitudRequest;
     estadoSolicitud: string;
 
     solicitudesTutorDirectorCache: SolicitudRecibida[] = [];

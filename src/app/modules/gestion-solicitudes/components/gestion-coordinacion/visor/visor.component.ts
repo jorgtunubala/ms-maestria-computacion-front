@@ -1,4 +1,10 @@
-import { Component, OnInit, SecurityContext, ViewChild } from '@angular/core';
+import {
+    Component,
+    OnDestroy,
+    OnInit,
+    SecurityContext,
+    ViewChild,
+} from '@angular/core';
 import { GestorService } from '../../../services/gestor.service';
 import { HttpService } from '../../../services/http.service';
 import { DatosSolicitudRequest } from '../../../models/solicitudes/datosSolicitudRequest';
@@ -12,13 +18,14 @@ import {
 
 import * as JSZip from 'jszip';
 import { TramiteComponent } from '../tramite/tramite.component';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-visor',
     templateUrl: './visor.component.html',
     styleUrls: ['./visor.component.scss'],
 })
-export class VisorComponent implements OnInit {
+export class VisorComponent implements OnInit, OnDestroy {
     urlOficioPdf: SafeResourceUrl;
     urlPdf: SafeResourceUrl;
     solicitudSeleccionada: SolicitudRecibida;
@@ -31,6 +38,8 @@ export class VisorComponent implements OnInit {
 
     mostrarGestor: boolean = false;
 
+    private descargaArchivosSubscription: Subscription;
+
     constructor(
         public gestor: GestorService,
         public http: HttpService,
@@ -41,10 +50,17 @@ export class VisorComponent implements OnInit {
 
     ngOnInit(): void {
         this.recuperarSolicitudSeleccionada();
+        this.descargaArchivosSubscription =
+            this.gestor.descargarArchivos$.subscribe(() => {
+                this.descargarTodosLosArchivos();
+            });
+    }
 
-        this.gestor.descargarArchivos$.subscribe(() => {
-            this.descargarTodosLosArchivos();
-        });
+    // Método de limpieza de suscripción al destruir el componente
+    ngOnDestroy(): void {
+        if (this.descargaArchivosSubscription) {
+            this.descargaArchivosSubscription.unsubscribe();
+        }
     }
 
     // Recupera la solicitud seleccionada del localStorage y carga los datos
@@ -69,6 +85,7 @@ export class VisorComponent implements OnInit {
             .subscribe(
                 async (infoSolicitud: DatosSolicitudRequest) => {
                     this.datosSolicitud = infoSolicitud;
+                    this.gestor.infoSolicitud = infoSolicitud;
                     this.abrirOficioPdf();
                     this.extraerAdjuntos(
                         this.solicitudSeleccionada.codigoSolicitud

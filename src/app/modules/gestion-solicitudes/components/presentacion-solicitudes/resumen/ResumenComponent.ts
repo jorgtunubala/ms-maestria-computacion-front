@@ -3,7 +3,6 @@ import {
     ElementRef,
     HostListener,
     OnInit,
-    Renderer2,
     ViewChild,
 } from '@angular/core';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -12,8 +11,8 @@ import { Router } from '@angular/router';
 import { RadicarService } from '../../../services/radicar.service';
 import { AlmacenarSolicitudService } from '../../../services/almacenarSolicitud.service';
 import { SafeResourceUrl } from '@angular/platform-browser';
-import { PlantillasService } from '../../../services/plantillas.service';
 import { UtilidadesService } from '../../../services/utilidades.service';
+import { DocumentoPDFFactory } from '../../utilidades/documentos-pdf/documento-pdf-factory';
 
 @Component({
     selector: 'app-resumen',
@@ -47,8 +46,9 @@ export class ResumenComponent implements OnInit {
         private router: Router,
         private confirmationService: ConfirmationService,
         private messageService: MessageService,
-        private servicioPlantillas: PlantillasService,
-        private servicioUtilidades: UtilidadesService
+
+        private servicioUtilidades: UtilidadesService,
+        private factory: DocumentoPDFFactory
     ) {
         try {
             this.codTipoSolicitudEscogida =
@@ -72,67 +72,19 @@ export class ResumenComponent implements OnInit {
     ngOnInit() {}
 
     cargarVistaPreviaPDF(codigoSolicitud: string, agregarMarcaDeAgua: boolean) {
-        // Mapa que asocia el código de solicitud con la función correspondiente de servicioPlantillas
-        const funcionesPlantillas: { [key: string]: Function } = {
-            AD_ASIG: this.servicioPlantillas.adicionAsignaturas.bind(
-                this.servicioPlantillas
-            ),
-            AP_SEME: this.servicioPlantillas.aplazamientoSemestre.bind(
-                this.servicioPlantillas
-            ),
-            AP_ECON_ASI: this.servicioPlantillas.apoyoEconomicoCongresos.bind(
-                this.servicioPlantillas
-            ),
-            AP_ECON_INV: this.servicioPlantillas.apoyoEconomicoPasantia.bind(
-                this.servicioPlantillas
-            ),
-            PA_PUBL_EVE:
-                this.servicioPlantillas.apoyoEconomicoPublicOInscrip.bind(
-                    this.servicioPlantillas
-                ),
+        // Utiliza la fábrica para obtener la estrategia basada en el código de solicitud
+        const estrategia = this.factory.crearEstrategia(codigoSolicitud);
 
-            AV_COMI_PR: this.servicioPlantillas.avalPracticaDocente.bind(
-                this.servicioPlantillas
-            ),
-            AV_PASA_INV: this.servicioPlantillas.avalPasantia.bind(
-                this.servicioPlantillas
-            ),
-            CA_ASIG: this.servicioPlantillas.cancelacionAsignaturas.bind(
-                this.servicioPlantillas
-            ),
-            CU_ASIG: this.servicioPlantillas.cursarEnOtrosProgramas.bind(
-                this.servicioPlantillas
-            ),
-            HO_ASIG_ESP:
-                this.servicioPlantillas.homologacionAsignaturasEsp.bind(
-                    this.servicioPlantillas
-                ),
-            HO_ASIG_POS:
-                this.servicioPlantillas.homologacionAsignaturasPos.bind(
-                    this.servicioPlantillas
-                ),
-            RE_CRED_PR_DOC:
-                this.servicioPlantillas.recoCredPracticaDocente.bind(
-                    this.servicioPlantillas
-                ),
-            RE_CRED_PAS: this.servicioPlantillas.recoCredPasantia.bind(
-                this.servicioPlantillas
-            ),
-            RE_CRED_PUB: this.servicioPlantillas.recoCredPublicacion.bind(
-                this.servicioPlantillas
-            ),
-            SO_BECA: this.servicioPlantillas.solicitudDeBeca.bind(
-                this.servicioPlantillas
-            ),
-        };
-
-        // Verifica si el código de solicitud es válido
-        if (!funcionesPlantillas[codigoSolicitud]) {
-            return; // Salir si el código no está en el mapa
+        // Verifica si se encontró una estrategia válida
+        if (!estrategia) {
+            console.error(
+                `No se encontró una estrategia para el código de solicitud: ${codigoSolicitud}`
+            );
+            return;
         }
 
-        // Obtiene la función correspondiente y genera el documento PDF
-        const generarPDF = funcionesPlantillas[codigoSolicitud];
+        // Genera el documento PDF usando la estrategia
+        const pdfDocConMarca = estrategia.generarDocumento(agregarMarcaDeAgua);
 
         // Función para crear un archivo PDF y asignar su URL
         const crearArchivoPDF = (pdfDoc: any, nombreArchivo: string) => {
@@ -144,19 +96,20 @@ export class ResumenComponent implements OnInit {
         };
 
         // Genera y asigna el PDF con marca de agua
-        const pdfDocConMarca = generarPDF(agregarMarcaDeAgua);
         this.urlVistaPreviaSolicitudPDF = crearArchivoPDF(
             pdfDocConMarca,
             'Solicitud.pdf'
         );
 
-        // Genera y asigna el PDF sin marca de agua
-        const pdfDocSinMarca = generarPDF(false);
+        // Genera el PDF sin marca de agua
+        const pdfDocSinMarca = estrategia.generarDocumento(false);
         const pdfFileSinMarca = new File(
             [pdfDocSinMarca.output('blob')],
             'Oficio de Solicitud.pdf',
             { type: 'application/pdf' }
         );
+
+        // Asigna el documento generado al oficio de solicitud
         this.radicar.oficioDeSolicitud = pdfFileSinMarca;
     }
 
@@ -273,16 +226,6 @@ export class ResumenComponent implements OnInit {
             this.showWarn();
         }
     }
-
-    /*
-    convertirOficioEnPDF() {
-        const pdfDoc = this.servicioPlantillas.adicionAsignaturas(false);
-        const pdfBlob = pdfDoc.output('blob');
-        const pdfFile = new File([pdfBlob], 'Solicitud.pdf', {
-            type: 'application/pdf',
-        });
-    }
-*/
 
     renderizarImagen(imagen: File): void {
         const reader = new FileReader();

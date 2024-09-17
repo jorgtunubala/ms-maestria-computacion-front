@@ -1,14 +1,18 @@
-import { Component, OnInit, Output } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { GestorService } from '../../../services/gestor.service';
 import { DetallesRechazo } from '../../../models/indiceModelos';
 import { HttpService } from '../../../services/http.service';
-import { Router } from '@angular/router';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { FormulariorechazoComponent } from '../complementos/formulariorechazo/formulariorechazo.component';
 import { PdfService } from '../../../services/pdf.service';
-import { EventEmitter } from '@angular/core';
 
+interface datosComiteAux {
+    aval: string;
+    concepto: string;
+    numActa: string;
+    fecha: string;
+}
 @Component({
     selector: 'app-tramite',
     templateUrl: './tramite.component.html',
@@ -16,22 +20,30 @@ import { EventEmitter } from '@angular/core';
     providers: [ConfirmationService, MessageService],
 })
 export class TramiteComponent implements OnInit {
-    conceptoComite: string;
-    avalComite: boolean = false;
+    avalComite: datosComiteAux = {
+        aval: '',
+        concepto: '',
+        numActa: '',
+        fecha: '',
+    };
+    bloquearConceptoComite: boolean = false;
+    conceptoComiteGuardado: boolean = false;
+
     enviadaAComite: boolean = false;
     enviadaAConsejo: boolean = false;
     deshabilitarEnvioAComite: boolean = false;
     deshabilitarEnvioAConsejo: boolean = false;
     vaAlConcejo: boolean = true;
 
-    habilitarRespuestaSolicitante: boolean = false;
-    habilitarRespuestaTutor: boolean = false;
+    habilitarRespuestaSolicitantes: boolean = false;
 
     mostrarBtnRechazar: boolean = false;
     mostrarBtnResolver: boolean = false;
 
     rechazoEnProceso: boolean = false;
     resolverEnProceso: boolean = false;
+
+    asignaturasAprobadas: any[] = [];
 
     ref: DynamicDialogRef;
 
@@ -217,11 +229,24 @@ export class TramiteComponent implements OnInit {
     }
 
     guardarRespuestaComite() {
-        //GUARDAR LA INFO... PENDIENTE DEL SERVICIO BACK
+        this.habilitarRespuestaSolicitantes = false;
 
-        if (!this.vaAlConcejo) {
-            this.habilitarRespuestaSolicitante = true;
-            this.habilitarRespuestaTutor = true;
+        //GUARDAR LA INFO... PENDIENTE DEL SERVICIO BACK
+        if (this.conceptoComiteGuardado) {
+            this.bloquearConceptoComite = false;
+            this.conceptoComiteGuardado = false;
+
+            // Lógica para editar
+        } else {
+            this.bloquearConceptoComite = true;
+            this.conceptoComiteGuardado = true;
+
+            // Lógica para guardar
+
+            //Si no va al concejo o no fue aprobada por el comite habilitar respuestas tutor y solicitante
+            if (!this.vaAlConcejo || this.avalComite.aval === 'No') {
+                this.habilitarRespuestaSolicitantes = true;
+            }
         }
     }
 

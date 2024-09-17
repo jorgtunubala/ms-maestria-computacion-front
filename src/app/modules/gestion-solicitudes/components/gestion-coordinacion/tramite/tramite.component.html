@@ -58,14 +58,15 @@
                         *ngIf="deshabilitarEnvioAComite"
                         style="width: 96%"
                     >
-                        <div class="col-3">
-                            <p class="font-semibold">¿El comité dio su aval?</p>
+                        <div class="col-4 md:col-2">
+                            <p class="font-semibold">¿El comité avaló?</p>
                             <div class="field-radiobutton">
                                 <p-radioButton
                                     name="conceptoSi"
                                     value="Si"
-                                    [(ngModel)]="conceptoComite"
+                                    [(ngModel)]="avalComite.aval"
                                     inputId="conceptoComite1"
+                                    [disabled]="bloquearConceptoComite"
                                 ></p-radioButton>
                                 <label for="conceptoComite1">Si</label>
                             </div>
@@ -73,41 +74,96 @@
                                 <p-radioButton
                                     name="conceptoNo"
                                     value="No"
-                                    [(ngModel)]="conceptoComite"
+                                    [(ngModel)]="avalComite.aval"
                                     inputId="conceptoComite2"
+                                    [disabled]="bloquearConceptoComite"
                                 ></p-radioButton>
                                 <label for="conceptoComite2">No</label>
                             </div>
                         </div>
-                        <div class="col-6">
+                        <div class="col-8: md:col-7">
                             <p class="font-semibold">Concepto del comité</p>
                             <textarea
                                 rows="4"
-                                cols="40"
                                 pInputTextarea
+                                [(ngModel)]="avalComite.concepto"
+                                [disabled]="bloquearConceptoComite"
+                                style="width: 100%; box-sizing: border-box"
                             ></textarea>
                         </div>
-                        <div class="col-3">
+                        <div class="col-12 md:col-3">
                             <p class="font-semibold">Acta</p>
                             <input
                                 class="mb-2"
                                 type="text"
                                 placeholder="Número"
                                 pInputText
+                                [disabled]="bloquearConceptoComite"
+                                [(ngModel)]="avalComite.numActa"
                             />
-                            <p-inputMask
-                                mask="99/99/9999"
-                                [(ngModel)]="val3"
+                            <p-calendar
+                                inputId="basic"
+                                [(ngModel)]="avalComite.fecha"
                                 placeholder="Fecha"
-                                slotChar="mm/dd/yyyy"
-                            ></p-inputMask>
+                                [disabled]="bloquearConceptoComite"
+                                appendTo="body"
+                            ></p-calendar>
                         </div>
+
                         <div
-                            class="grid grid-nogutter mb-4 justify-content-end w-full"
+                            class="mt-2"
+                            *ngIf="
+                                avalComite.aval == 'Si' &&
+                                ['AD_ASIG', 'CA_ASIG'].includes(
+                                    gestor.solicitudSeleccionada.codigoSolicitud
+                                )
+                            "
+                        >
+                            <p class="font-semibold">
+                                {{
+                                    gestor.solicitudSeleccionada
+                                        .codigoSolicitud === "AD_ASIG"
+                                        ? "Asignaturas aprobadas por el comité para su adición"
+                                        : "Asignaturas aprobadas por el comité para su cancelación"
+                                }}
+                            </p>
+
+                            <div
+                                *ngFor="
+                                    let asingnatura of gestor.infoSolicitud
+                                        .dadicionCancelacionAsignatura
+                                        .listaAsignaturas
+                                "
+                                class="field-checkbox"
+                            >
+                                <p-checkbox
+                                    name="group1"
+                                    value="asingnatura"
+                                    [value]="asingnatura"
+                                    [(ngModel)]="asignaturasAprobadas"
+                                    [inputId]="asingnatura.nombreAsignatura"
+                                    [disabled]="bloquearConceptoComite"
+                                ></p-checkbox>
+                                <label [for]="asingnatura.nombreAsignatura">{{
+                                    asingnatura.nombreAsignatura
+                                }}</label>
+                            </div>
+                        </div>
+
+                        <div
+                            class="grid grid-nogutter justify-content-end w-full"
                         >
                             <p-button
-                                label="Guardar"
-                                icon="pi pi-save"
+                                [label]="
+                                    conceptoComiteGuardado
+                                        ? 'Editar respuesta'
+                                        : 'Guardar respuesta'
+                                "
+                                [icon]="
+                                    conceptoComiteGuardado
+                                        ? 'pi pi-pencil'
+                                        : 'pi pi-save'
+                                "
                                 iconPos="left"
                                 (click)="guardarRespuestaComite()"
                             ></p-button>
@@ -115,12 +171,7 @@
                     </div>
                 </div>
 
-                <p-divider
-                    align="left"
-                    *ngIf="
-                        habilitarRespuestaSolicitante || habilitarRespuestaTutor
-                    "
-                >
+                <p-divider align="left" *ngIf="habilitarRespuestaSolicitantes">
                     <div class="inline-flex align-items-center">
                         <i class="pi pi-envelope mr-2"></i>
                         <b>Respuesta para solicitantes</b>
@@ -130,10 +181,7 @@
                 <div class="flex justify-content-center flex-wrap">
                     <div
                         class="flex gap-2 mt-1 mb-4"
-                        *ngIf="
-                            habilitarRespuestaSolicitante ||
-                            habilitarRespuestaTutor
-                        "
+                        *ngIf="habilitarRespuestaSolicitantes"
                         style="width: 96%"
                     >
                         <button

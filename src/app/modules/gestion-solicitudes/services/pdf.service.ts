@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import jsPDF from 'jspdf';
-
+import { RadicarService } from './radicar.service';
 import {
     openSansRegularBase64,
     openSansBoldBase64,
@@ -37,7 +37,24 @@ interface AgregarVinetasOptions {
     providedIn: 'root',
 })
 export class PdfService {
-    constructor() {}
+    fechaActual: Date = new Date();
+    nombresMes: string[] = [
+        'Enero',
+        'Febrero',
+        'Marzo',
+        'Abril',
+        'Mayo',
+        'Junio',
+        'Julio',
+        'Agosto',
+        'Septiembre',
+        'Octubre',
+        'Noviembre',
+        'Diciembre',
+    ];
+    constructor(private servicioRadicar: RadicarService) {}
+
+    // METODOS RELACIONADAS CON LA ESTRUCTURA DEL DOCUMENTO
 
     agregarMembretes(doc, watermark: Boolean) {
         const imgBannerSup = '../assets/layout/images/motivoencabezado.png';
@@ -596,5 +613,220 @@ export class PdfService {
 
         // Devuelve la posición Y final después de agregar todo el texto
         return cursorY;
+    }
+
+    // METODOS RELACIONADAS CON EL CONTENIDO DEL DOCUMENTO
+
+    agregarContenidoComun(doc: jsPDF, marcaDeAgua: boolean) {
+        // Añadir estilos institucionales
+        this.agregarMembretes(doc, marcaDeAgua);
+        this.setDefaultTextStyle(doc); // Aplicar estilo de texto al contenido
+
+        // Lugar y fecha y destinatario
+        const textLugarFecha = `Popayán, ${this.fechaActual.getDate()} de ${
+            this.nombresMes[this.fechaActual.getMonth()]
+        } del ${this.fechaActual.getFullYear()}\n`;
+        const textDestinatario = `Señores\nComité de Programa Maestría en Computación\nUniversidad del Cauca\n`;
+
+        // Agregar el primer bloque de texto dinámico
+        let cursorY = this.agregarTexto(doc, {
+            text: textLugarFecha,
+            watermark: marcaDeAgua,
+        });
+
+        // Agregar otro bloque de texto dinámico
+        cursorY = this.agregarTexto(doc, {
+            text: textDestinatario,
+            startY: cursorY,
+            watermark: marcaDeAgua,
+        });
+
+        return cursorY;
+    }
+
+    agregarAsuntoYSolicitud(
+        doc: jsPDF,
+        posicionY: number,
+        asunto: string,
+        solicitud: string,
+        marcaDeAgua: boolean
+    ) {
+        // Agregar otro bloque de texto dinámico
+        let nuevaPosicionY = this.agregarTexto(doc, {
+            text: asunto,
+            startY: posicionY,
+            watermark: marcaDeAgua,
+            fontStyle: 'bold',
+        });
+
+        nuevaPosicionY = this.agregarTexto(doc, {
+            text: solicitud,
+            startY: nuevaPosicionY,
+            watermark: marcaDeAgua,
+            alignment: 'justify',
+        });
+
+        return nuevaPosicionY;
+    }
+
+    agregarDespedida(doc: jsPDF, posicionY: number, marcaDeAgua: boolean) {
+        const textDespedida = `Sin ningún otro motivo en particular, agradezco la atención brindada y quedo a la espera de su respuesta.\n\nUniversitariamente,`;
+
+        let nuevaPosicionY = this.agregarTexto(doc, {
+            text: textDespedida,
+            startY: posicionY,
+            watermark: marcaDeAgua,
+            alignment: 'justify',
+        });
+
+        return nuevaPosicionY;
+    }
+
+    agregarTablaPersonalizada(
+        doc: jsPDF,
+        posicionY: number,
+        encabezados: string[],
+        datos: string[][],
+        marcaDeAgua: boolean
+    ) {
+        let nuevaPosicionY = this.agregarTabla(
+            doc,
+            marcaDeAgua,
+            encabezados,
+            datos,
+            20, // startX
+            posicionY, // Usar la posición final del texto como startY
+            175, // maxWidth
+            10, // rowHeight
+            doc.internal.pageSize.height,
+            'center', // alignment
+            posicionY // Pasar la posición actual del cursor
+        );
+
+        return nuevaPosicionY;
+    }
+
+    agregarEspaciosDeFirmas(
+        doc: jsPDF,
+        posicionY: number,
+        incluirDirector: boolean,
+        marcaDeAgua: boolean
+    ) {
+        // Definir datos de la firma
+        let firmaSolicitante = '../assets/layout/images/FirmaEnBlanco.png';
+        let firmaTutor = '../assets/layout/images/FirmaEnBlanco.png';
+        let firmaDirector = '../assets/layout/images/FirmaEnBlanco.png';
+
+        let nuevaPosicionY = posicionY;
+
+        const solicitanteData = {
+            name:
+                this.servicioRadicar.formInfoPersonal.get('nombres').value +
+                ' ' +
+                this.servicioRadicar.formInfoPersonal.get('apellidos').value,
+            identification:
+                this.servicioRadicar.formInfoPersonal.get('numeroDocumento')
+                    .value,
+            email: this.servicioRadicar.formInfoPersonal.get('correo').value,
+            cell: this.servicioRadicar.formInfoPersonal.get('celular').value,
+        };
+
+        const tutorData = {
+            name: this.servicioRadicar.tutor.nombreTutor,
+        };
+
+        if (this.servicioRadicar.firmaSolicitante) {
+            firmaSolicitante =
+                this.servicioRadicar.firmaSolicitanteUrl.toString();
+        }
+
+        console.log(nuevaPosicionY);
+        // Agregar la firma del solicitante
+        let resultadoSolicitante = this.agregarFirma(
+            doc,
+            'Solicitante',
+            firmaSolicitante,
+            'left',
+            solicitanteData,
+            nuevaPosicionY,
+            marcaDeAgua
+        );
+
+        // Si la firma del solicitante provoca un salto de página, alinea la firma del tutor en la misma nueva página
+        if (resultadoSolicitante.pageNumber !== doc.internal.pages.length) {
+            nuevaPosicionY = 65; // Reinicia cursorY para alinear ambas firmas en la nueva página
+        }
+
+        console.log(nuevaPosicionY);
+        // Agregar la firma del tutor
+        const resultadoTutor = this.agregarFirma(
+            doc,
+            'Tutor',
+            firmaTutor,
+            'right',
+            tutorData,
+            nuevaPosicionY,
+            marcaDeAgua
+        );
+
+        nuevaPosicionY = resultadoTutor.cursorY;
+
+        this.servicioRadicar.firmaTutorPag = resultadoTutor.pageNumber - 1;
+        this.servicioRadicar.firmaTutorX =
+            resultadoTutor.signatureCoordinates.x;
+        this.servicioRadicar.firmaTutorY =
+            resultadoTutor.signatureCoordinates.y;
+
+        if (incluirDirector) {
+            const directorData = {
+                name: this.servicioRadicar.director.nombreTutor,
+            };
+
+            // Agregar la firma del Director
+            const resultadoDirector = this.agregarFirma(
+                doc,
+                'Director',
+                firmaDirector,
+                'right',
+                directorData,
+                resultadoTutor.cursorY,
+                marcaDeAgua
+            );
+
+            nuevaPosicionY = resultadoDirector.cursorY;
+
+            this.servicioRadicar.firmaDirectorPag =
+                resultadoDirector.pageNumber - 1;
+            this.servicioRadicar.firmaDirectorX =
+                resultadoDirector.signatureCoordinates.x;
+            this.servicioRadicar.firmaDirectorY =
+                resultadoDirector.signatureCoordinates.y;
+        }
+
+        return nuevaPosicionY;
+    }
+
+    agregarListadoAdjuntos(
+        doc: jsPDF,
+        posicionY: number,
+        adjuntos: string,
+        marcaDeAgua: boolean
+    ) {
+        let nuevaPosicionY = this.agregarTexto(doc, {
+            text: 'Documentos Adjuntos:',
+            startY: posicionY,
+            watermark: marcaDeAgua,
+        });
+
+        nuevaPosicionY = this.agregarVinetas(doc, {
+            text: adjuntos,
+            startY: nuevaPosicionY,
+            fontSize: 8,
+            lineHeight: 4,
+            bulletSpacing: 4,
+            watermark: marcaDeAgua,
+        });
+
+        return nuevaPosicionY;
     }
 }
