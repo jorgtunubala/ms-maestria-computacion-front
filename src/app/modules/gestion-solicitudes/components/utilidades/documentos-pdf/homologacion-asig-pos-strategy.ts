@@ -4,9 +4,7 @@ import { RadicarService } from '../../../services/radicar.service';
 import { PdfService } from '../../../services/pdf.service';
 import { UtilidadesService } from '../../../services/utilidades.service';
 
-export class HomologacionAsignaturasPosStrategy
-    implements DocumentoPDFStrategy
-{
+export class SolicitudHomologAsignaturasPos implements DocumentoPDFStrategy {
     constructor(
         private servicioRadicar: RadicarService,
         private pdfService: PdfService,
@@ -73,5 +71,44 @@ export class HomologacionAsignaturasPosStrategy
 
         // Retornar el documento generado
         return doc;
+    }
+}
+
+export class RespuestaComiteHomologAsignaturasPos
+    implements DocumentoPDFStrategy
+{
+    constructor(
+        private servicioRadicar: RadicarService,
+        private servicioPDF: PdfService
+    ) {}
+
+    generarDocumento(marcaDeAgua: boolean): jsPDF {
+        throw new Error('Method not implemented.');
+    }
+}
+
+export class OficioConcejoHomologAsignaturasPos
+    implements DocumentoPDFStrategy
+{
+    constructor(
+        private servicioRadicar: RadicarService,
+        private servicioPDF: PdfService
+    ) {}
+
+    generarDocumento(marcaDeAgua: boolean): jsPDF {
+        throw new Error('Method not implemented.');
+    }
+}
+
+export class RespuestaConcejoHomologAsignaturasPos
+    implements DocumentoPDFStrategy
+{
+    constructor(
+        private servicioRadicar: RadicarService,
+        private servicioPDF: PdfService
+    ) {}
+
+    generarDocumento(marcaDeAgua: boolean): jsPDF {
+        throw new Error('Method not implemented.');
     }
 }

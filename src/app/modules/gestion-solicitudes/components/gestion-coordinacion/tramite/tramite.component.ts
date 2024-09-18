@@ -6,6 +6,9 @@ import { HttpService } from '../../../services/http.service';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { FormulariorechazoComponent } from '../complementos/formulariorechazo/formulariorechazo.component';
 import { PdfService } from '../../../services/pdf.service';
+import { SafeResourceUrl } from '@angular/platform-browser';
+import { DocumentoPDFFactory } from '../../utilidades/documentos-pdf/documento-pdf-factory';
+import { UtilidadesService } from '../../../services/utilidades.service';
 
 interface datosComiteAux {
     aval: string;
@@ -45,6 +48,10 @@ export class TramiteComponent implements OnInit {
 
     asignaturasAprobadas: any[] = [];
 
+    urlRespuestaComitePdf: SafeResourceUrl;
+    urlOficioConcejoPdf: SafeResourceUrl;
+    urlRespuestaConcejoPdf: SafeResourceUrl;
+
     ref: DynamicDialogRef;
 
     constructor(
@@ -52,7 +59,9 @@ export class TramiteComponent implements OnInit {
         public gestor: GestorService,
         public http: HttpService,
         private dialogService: DialogService,
-        private servicioPDF: PdfService
+        private servicioPDF: PdfService,
+        private factory: DocumentoPDFFactory,
+        private servicioUtilidades: UtilidadesService
     ) {}
 
     ngOnInit(): void {
@@ -260,6 +269,63 @@ export class TramiteComponent implements OnInit {
                 break;
 
             default:
+                break;
+        }
+    }
+
+    previsualizarDocuementoPDF(
+        codigoSolicitud: string | null,
+        tipoDocumento: string,
+        agregarMarcaDeAgua: boolean
+    ) {
+        // Utiliza la fábrica para obtener la estrategia basada en el código de solicitud y tipo de documento
+        const estrategia = this.factory.crearEstrategia(
+            codigoSolicitud,
+            tipoDocumento
+        );
+
+        // Verifica si se encontró una estrategia válida
+        if (!estrategia) {
+            console.error(
+                `No se encontró una estrategia para el código de solicitud: ${codigoSolicitud} y tipo de documento: ${tipoDocumento}`
+            );
+            return;
+        }
+
+        // Genera el documento PDF usando la estrategia
+        const pdfDocConMarca = estrategia.generarDocumento(agregarMarcaDeAgua);
+
+        // Función para crear un archivo PDF y asignar su URL
+        const crearArchivoPDF = (pdfDoc: any, nombreArchivo: string) => {
+            const pdfBlob = pdfDoc.output('blob');
+            const pdfFile = new File([pdfBlob], nombreArchivo, {
+                type: 'application/pdf',
+            });
+            return this.servicioUtilidades.crearUrlSeguroParaPDF(pdfFile);
+        };
+
+        // Genera y asigna el PDF según el tipo de documento
+        switch (tipoDocumento) {
+            case 'respuesta-comite':
+                this.urlRespuestaComitePdf = crearArchivoPDF(
+                    pdfDocConMarca,
+                    'respuesta-comite.pdf'
+                );
+                break;
+            case 'respuesta-concejo':
+                this.urlRespuestaConcejoPdf = crearArchivoPDF(
+                    pdfDocConMarca,
+                    'respuesta-concejo.pdf'
+                );
+                break;
+            case 'oficio-concejo':
+                this.urlOficioConcejoPdf = crearArchivoPDF(
+                    pdfDocConMarca,
+                    'oficio-concejo.pdf'
+                );
+                break;
+            default:
+                console.warn(`Tipo de documento no manejado: ${tipoDocumento}`);
                 break;
         }
     }

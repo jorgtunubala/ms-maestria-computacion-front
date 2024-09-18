@@ -5,6 +5,7 @@ import {
     openSansRegularBase64,
     openSansBoldBase64,
 } from '../../../../assets/fonts/open-sans.js';
+import { GestorService } from './gestor.service';
 
 interface AgregarTextoOptions {
     watermark?: boolean;
@@ -52,7 +53,10 @@ export class PdfService {
         'Noviembre',
         'Diciembre',
     ];
-    constructor(private servicioRadicar: RadicarService) {}
+    constructor(
+        private servicioRadicar: RadicarService,
+        private servicioGestor: GestorService
+    ) {}
 
     // METODOS RELACIONADAS CON LA ESTRUCTURA DEL DOCUMENTO
 
@@ -617,17 +621,28 @@ export class PdfService {
 
     // METODOS RELACIONADAS CON EL CONTENIDO DEL DOCUMENTO
 
-    agregarContenidoComun(doc: jsPDF, marcaDeAgua: boolean) {
+    agregarContenidoComun(
+        doc: jsPDF,
+        marcaDeAgua: boolean,
+        destinatario?: string
+    ) {
         // Añadir estilos institucionales
         this.agregarMembretes(doc, marcaDeAgua);
         this.setDefaultTextStyle(doc); // Aplicar estilo de texto al contenido
 
-        // Lugar y fecha y destinatario
+        // Lugar y fecha
         const textLugarFecha = `Popayán, ${this.fechaActual.getDate()} de ${
             this.nombresMes[this.fechaActual.getMonth()]
         } del ${this.fechaActual.getFullYear()}\n`;
-        const textDestinatario = `Señores\nComité de Programa Maestría en Computación\nUniversidad del Cauca\n`;
 
+        // Determinar el texto del destinatario
+        let textDestinatario = `Señores\nComité de Programa Maestría en Computación\nUniversidad del Cauca\n`;
+
+        if (destinatario === 'solicitante') {
+            textDestinatario = `Señor(a)\n${this.servicioGestor.infoSolicitud.datosComunSolicitud.nombreSolicitante.toUpperCase()} ${this.servicioGestor.infoSolicitud.datosComunSolicitud.apellidoSolicitante.toUpperCase()}\nPrograma de Maestría en Computación\n`;
+        } else if (destinatario === 'concejo') {
+            textDestinatario = `Título\nNOMBRE DEL PRESIDENTE\nPresidente Consejo\nFacultad de Ingeniería Electrónica y Telecomunicaciones\nUniversidad del Cauca\n`;
+        }
         // Agregar el primer bloque de texto dinámico
         let cursorY = this.agregarTexto(doc, {
             text: textLugarFecha,

@@ -188,14 +188,16 @@
                             pButton
                             pRipple
                             type="button"
-                            label="Respuesta para Solicitante"
+                            label="Documento de respuesta"
                             class="p-button-outlined p-button-secondary"
-                            icon="pi pi-download"
-                            iconPos="right"
+                            icon="pi pi-file-pdf"
+                            iconPos="left"
                             (click)="
-                                descargarDocumentoPDF(
-                                    'Oficio de solicitud ',
-                                    'oficioParaConcejo'
+                                previsualizarDocuementoPDF(
+                                    gestor.solicitudSeleccionada
+                                        .codigoSolicitud,
+                                    'respuesta-comite',
+                                    false
                                 )
                             "
                         ></button>
@@ -203,9 +205,8 @@
                             pButton
                             pRipple
                             type="button"
-                            label="Respuesta para Tutor"
-                            class="p-button-outlined p-button-secondary"
-                            icon="pi pi-download"
+                            label="Enviar respuesta por correo"
+                            icon="pi pi-send"
                             iconPos="right"
                             (click)="
                                 descargarDocumentoPDF(
@@ -214,6 +215,21 @@
                                 )
                             "
                         ></button>
+                    </div>
+                    <div
+                        class="w-full mt-2"
+                        *ngIf="
+                            urlRespuestaComitePdf &&
+                            habilitarRespuestaSolicitantes
+                        "
+                    >
+                        <embed
+                            id="embedElement"
+                            [src]="urlRespuestaComitePdf"
+                            type="application/pdf"
+                            width="100%"
+                            height="600px"
+                        />
                     </div>
                 </div>
             </p-accordionTab>
