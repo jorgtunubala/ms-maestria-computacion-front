@@ -124,4 +124,22 @@ export class UtilidadesService {
 
         return fechaEstanciaStr;
     }
+
+    obtenerMesEnLetras(mes: number): string {
+        const mesesEnLetras = [
+            'enero',
+            'febrero',
+            'marzo',
+            'abril',
+            'mayo',
+            'junio',
+            'julio',
+            'agosto',
+            'septiembre',
+            'octubre',
+            'noviembre',
+            'diciembre',
+        ];
+        return mesesEnLetras[mes - 1]; // Ajuste porque getMonth() devuelve 0-11
+    }
 }

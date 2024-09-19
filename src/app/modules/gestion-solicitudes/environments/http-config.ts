@@ -13,5 +13,7 @@ export const httpConfig = {
     obtenerHistorialDeSolicitudUrl: '/historial/solicitud/',
     obtenerSolicitudesCoordinacion:
         '/obtener-solicitudes-pendientes-coordinador/',
+    obtenerConceptoComite: '/obtener-solicitudes-en-comite/',
+    guardarConceptoComite: '/save-solicitud-en-comite',
     rechazarSolicitud: '/rechazar-solicitud',
 };

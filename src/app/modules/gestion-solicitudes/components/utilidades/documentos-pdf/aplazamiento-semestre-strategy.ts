@@ -3,7 +3,7 @@ import { DocumentoPDFStrategy } from '../../../models/documentos/documento-pdf-s
 import { RadicarService } from '../../../services/radicar.service';
 import { PdfService } from '../../../services/pdf.service';
 
-export class AplazamientoSemestreStrategy implements DocumentoPDFStrategy {
+export class SolicitudAplazamientoSemestre implements DocumentoPDFStrategy {
     constructor(
         private servicioRadicar: RadicarService,
         private servicioPDF: PdfService
@@ -44,5 +44,42 @@ export class AplazamientoSemestreStrategy implements DocumentoPDFStrategy {
         );
 
         return doc;
+    }
+}
+
+export class RespuestaComiteAplazamientoSemestre
+    implements DocumentoPDFStrategy
+{
+    constructor(
+        private servicioRadicar: RadicarService,
+        private servicioPDF: PdfService
+    ) {}
+
+    generarDocumento(marcaDeAgua: boolean): jsPDF {
+        throw new Error('Method not implemented.');
+    }
+}
+
+export class OficioConcejoAplazamientoSemestre implements DocumentoPDFStrategy {
+    constructor(
+        private servicioRadicar: RadicarService,
+        private servicioPDF: PdfService
+    ) {}
+
+    generarDocumento(marcaDeAgua: boolean): jsPDF {
+        throw new Error('Method not implemented.');
+    }
+}
+
+export class RespuestaConcejoAplazamientoSemestre
+    implements DocumentoPDFStrategy
+{
+    constructor(
+        private servicioRadicar: RadicarService,
+        private servicioPDF: PdfService
+    ) {}
+
+    generarDocumento(marcaDeAgua: boolean): jsPDF {
+        throw new Error('Method not implemented.');
     }
 }
