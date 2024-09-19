@@ -33,126 +33,126 @@ export class DocumentoPDFFactory {
     constructor(
         private servicioRadicar: RadicarService,
         private servicioPDF: PdfService,
-        private servicioUtilidades: UtilidadesService,
-        private servicioGestor: GestorService
+        private servicioGestor: GestorService,
+        private servicioUtilidades: UtilidadesService
     ) {
         // Inicializar las estrategias para documentos con código de solicitud
         this.estrategiasPorSolicitud['AD_ASIG'] = {
             'carta-solicitud': StAdic.SolicitudAdicionAsignaturas,
             'respuesta-comite': StAdic.RespuestaComiteAdicionAsignaturas,
-            'oficio-concejo': StAdic.OficioConcejoAdicionAsignaturas,
-            'respuesta-concejo': StAdic.RespuestaConcejoAdicionAsignaturas,
+            'oficio-consejo': StAdic.OficioConcejoAdicionAsignaturas,
+            'respuesta-consejo': StAdic.RespuestaConcejoAdicionAsignaturas,
         };
         // Estrategias para Aplazamiento de Semestre
         this.estrategiasPorSolicitud['AP_SEME'] = {
             'carta-solicitud': StApla.SolicitudAplazamientoSemestre,
             'respuesta-comite': StApla.RespuestaComiteAplazamientoSemestre,
-            'oficio-concejo': StApla.OficioConcejoAplazamientoSemestre,
-            'respuesta-concejo': StApla.RespuestaConcejoAplazamientoSemestre,
+            'oficio-consejo': StApla.OficioConcejoAplazamientoSemestre,
+            'respuesta-consejo': StApla.RespuestaConcejoAplazamientoSemestre,
         };
 
         // Estrategias para Apoyo Económico en Congresos y Eventos
         this.estrategiasPorSolicitud['AP_ECON_ASI'] = {
             'carta-solicitud': StApCo.SolicitudApoyoEconomicoCongresos,
             'respuesta-comite': StApCo.RespuestaComiteApoyoEconomicoCongresos,
-            'oficio-concejo': StApCo.OficioConcejoApoyoEconomicoCongresos,
-            'respuesta-concejo': StApCo.RespuestaConcejoApoyoEconomicoCongresos,
+            'oficio-consejo': StApCo.OficioConcejoApoyoEconomicoCongresos,
+            'respuesta-consejo': StApCo.RespuestaConcejoApoyoEconomicoCongresos,
         };
 
         // Estrategias para Apoyo Económico en Pasantías
         this.estrategiasPorSolicitud['AP_ECON_INV'] = {
             'carta-solicitud': StApPa.SolicitudApoyoEconomicoPasantia,
             'respuesta-comite': StApPa.RespuestaComiteApoyoEconomicoPasantia,
-            'oficio-concejo': StApPa.OficioConcejoApoyoEconomicoPasantia,
-            'respuesta-concejo': StApPa.RespuestaConcejoApoyoEconomicoPasantia,
+            'oficio-consejo': StApPa.OficioConcejoApoyoEconomicoPasantia,
+            'respuesta-consejo': StApPa.RespuestaConcejoApoyoEconomicoPasantia,
         };
 
         // Estrategias para Publicaciones y Eventos
         this.estrategiasPorSolicitud['PA_PUBL_EVE'] = {
             'carta-solicitud': StApPu.SolicitudApoyoPublicOInscrip,
             'respuesta-comite': StApPu.RespuestaComiteApoyoPublicOInscrip,
-            'oficio-concejo': StApPu.OficioConcejoApoyoPublicOInscrip,
-            'respuesta-concejo': StApPu.RespuestaConcejoApoyoPublicOInscrip,
+            'oficio-consejo': StApPu.OficioConcejoApoyoPublicOInscrip,
+            'respuesta-consejo': StApPu.RespuestaConcejoApoyoPublicOInscrip,
         };
 
         // Estrategias para Aval de Práctica Docente
         this.estrategiasPorSolicitud['AV_COMI_PR'] = {
             'carta-solicitud': StAvPr.SolicitudAvalPracticaDocente,
             'respuesta-comite': StAvPr.RespuestaComiteAvalPracticaDocente,
-            'oficio-concejo': StAvPr.OficioConcejoAvalPracticaDocente,
-            'respuesta-concejo': StAvPr.RespuestaConcejoAvalPracticaDocente,
+            'oficio-consejo': StAvPr.OficioConcejoAvalPracticaDocente,
+            'respuesta-consejo': StAvPr.RespuestaConcejoAvalPracticaDocente,
         };
 
         // Estrategias para Aval de Pasantía
         this.estrategiasPorSolicitud['AV_PASA_INV'] = {
             'carta-solicitud': StAvPa.SolicitudAvalPasantia,
             'respuesta-comite': StAvPa.RespuestaComiteAvalPasantia,
-            'oficio-concejo': StAvPa.OficioConcejoAvalPasantia,
-            'respuesta-concejo': StAvPa.RespuestaConcejoAvalPasantia,
+            'oficio-consejo': StAvPa.OficioConcejoAvalPasantia,
+            'respuesta-consejo': StAvPa.RespuestaConcejoAvalPasantia,
         };
 
         // Estrategias para Cancelación de Asignaturas
         this.estrategiasPorSolicitud['CA_ASIG'] = {
             'carta-solicitud': StCanc.SolicitudCancelacionAsignaturas,
             'respuesta-comite': StCanc.RespuestaComiteCancelacionAsignaturas,
-            'oficio-concejo': StCanc.OficioConcejoCancelacionAsignaturas,
-            'respuesta-concejo': StCanc.RespuestaConcejoCancelacionAsignaturas,
+            'oficio-consejo': StCanc.OficioConcejoCancelacionAsignaturas,
+            'respuesta-consejo': StCanc.RespuestaConcejoCancelacionAsignaturas,
         };
 
         // Estrategias para Cursar en Otros Programas
         this.estrategiasPorSolicitud['CU_ASIG'] = {
             'carta-solicitud': StCuAs.SolicitudCursarEnOtrosProgramas,
             'respuesta-comite': StCuAs.RespuestaComiteCursarEnOtrosProgramas,
-            'oficio-concejo': StCuAs.OficioConcejoCursarEnOtrosProgramas,
-            'respuesta-concejo': StCuAs.RespuestaConcejoCursarEnOtrosProgramas,
+            'oficio-consejo': StCuAs.OficioConcejoCursarEnOtrosProgramas,
+            'respuesta-consejo': StCuAs.RespuestaConcejoCursarEnOtrosProgramas,
         };
 
         // Estrategias para Homologación de Asignaturas (Esp.)
         this.estrategiasPorSolicitud['HO_ASIG_ESP'] = {
             'carta-solicitud': StHoEs.SolicitudHomologAsignaturasEsp,
             'respuesta-comite': StHoEs.RespuestaComiteHomologAsignaturasEsp,
-            'oficio-concejo': StHoEs.OficioConcejoHomologAsignaturasEsp,
-            'respuesta-concejo': StHoEs.RespuestaConcejoHomologAsignaturasEsp,
+            'oficio-consejo': StHoEs.OficioConcejoHomologAsignaturasEsp,
+            'respuesta-consejo': StHoEs.RespuestaConcejoHomologAsignaturasEsp,
         };
 
         // Estrategias para Homologación de Asignaturas (Posgrado)
         this.estrategiasPorSolicitud['HO_ASIG_POS'] = {
             'carta-solicitud': StHoPs.SolicitudHomologAsignaturasPos,
             'respuesta-comite': StHoPs.RespuestaComiteHomologAsignaturasPos,
-            'oficio-concejo': StHoPs.OficioConcejoHomologAsignaturasPos,
-            'respuesta-concejo': StHoPs.RespuestaConcejoHomologAsignaturasPos,
+            'oficio-consejo': StHoPs.OficioConcejoHomologAsignaturasPos,
+            'respuesta-consejo': StHoPs.RespuestaConcejoHomologAsignaturasPos,
         };
 
         // Estrategias para Recomendación de Créditos por Práctica Docente
         this.estrategiasPorSolicitud['RE_CRED_PR_DOC'] = {
             'carta-solicitud': StRePd.SolicitudRecoCredPracticaDocente,
             'respuesta-comite': StRePd.RespuestaComiteRecoCredPracticaDocente,
-            'oficio-concejo': StRePd.OficioConcejoRecoCredPracticaDocente,
-            'respuesta-concejo': StRePd.RespuestaConcejoRecoCredPracticaDocente,
+            'oficio-consejo': StRePd.OficioConcejoRecoCredPracticaDocente,
+            'respuesta-consejo': StRePd.RespuestaConcejoRecoCredPracticaDocente,
         };
 
         // Estrategias para Recomendación de Créditos por Pasantía
         this.estrategiasPorSolicitud['RE_CRED_PAS'] = {
             'carta-solicitud': StRePa.SolicitudRecoCredPasantia,
             'respuesta-comite': StRePa.RespuestaComiteRecoCredPasantia,
-            'oficio-concejo': StRePa.OficioConcejoRecoCredPasantia,
-            'respuesta-concejo': StRePa.RespuestaComiteRecoCredPasantia,
+            'oficio-consejo': StRePa.OficioConcejoRecoCredPasantia,
+            'respuesta-consejo': StRePa.RespuestaComiteRecoCredPasantia,
         };
 
         // Estrategias para Recomendación de Créditos por Publicación
         this.estrategiasPorSolicitud['RE_CRED_PUB'] = {
             'carta-solicitud': StRePu.SolicitudRecoCredPublicacion,
             'respuesta-comite': StRePu.RespuestaComiteRecoCredPublicacion,
-            'oficio-concejo': StRePu.OficioConcejoRecoCredPublicacion,
-            'respuesta-concejo': StRePu.RespuestaConcejoRecoCredPublicacion,
+            'oficio-consejo': StRePu.OficioConcejoRecoCredPublicacion,
+            'respuesta-consejo': StRePu.RespuestaConcejoRecoCredPublicacion,
         };
 
         // Estrategias para Solicitud de Beca
         this.estrategiasPorSolicitud['SO_BECA'] = {
             'carta-solicitud': StBeca.SolicitudDeBeca,
             'respuesta-comite': StBeca.RespuestaComiteSolicitudDeBeca,
-            'oficio-concejo': StBeca.OficioConcejoSolicitudDeBeca,
-            'respuesta-concejo': StBeca.RespuestaConcejoSolicitudDeBeca,
+            'oficio-consejo': StBeca.OficioConcejoSolicitudDeBeca,
+            'respuesta-consejo': StBeca.RespuestaConcejoSolicitudDeBeca,
         };
 
         // Añadir otras solicitudes...
@@ -162,10 +162,7 @@ export class DocumentoPDFFactory {
         // Añadir otros documentos sin solicitud...
     }
 
-    crearEstrategia(
-        codigoSolicitud: string | null,
-        tipoDocumento: string
-    ): DocumentoPDFStrategy | null {
+    crearEstrategia(codigoSolicitud: string | null, tipoDocumento: string): DocumentoPDFStrategy | null {
         if (codigoSolicitud) {
             // Para documentos que tienen código de solicitud
             const estrategias = this.estrategiasPorSolicitud[codigoSolicitud];
@@ -173,7 +170,8 @@ export class DocumentoPDFFactory {
                 return new estrategias[tipoDocumento](
                     this.servicioRadicar,
                     this.servicioPDF,
-                    this.servicioGestor
+                    this.servicioGestor,
+                    this.servicioUtilidades
                 );
             }
         } else {
@@ -183,7 +181,8 @@ export class DocumentoPDFFactory {
                 return new estrategia(
                     this.servicioRadicar,
                     this.servicioPDF,
-                    this.servicioGestor
+                    this.servicioGestor,
+                    this.servicioUtilidades
                 );
             }
         }

@@ -14,6 +14,7 @@ import {
     EventoHistorial,
     NumeroRadicado,
     DetallesRechazo,
+    SolicitudEnComiteResponse,
 } from '../models/indiceModelos';
 import { InfoPersonalResponse } from '../models/solicitante/infoPersonalResponse';
 import { DatosSolicitudRequest } from '../models/solicitudes/datosSolicitudRequest';
@@ -123,6 +124,20 @@ export class HttpService {
             map((respuesta) => respuesta),
             catchError(this.manejarError)
         );
+    }
+
+    consultarConceptoComite(idSolicitud: number) {
+        const url = `${this.apiUrl}${httpConfig.obtenerConceptoComite}${idSolicitud}`;
+        console.log(url);
+        return this.http.get<SolicitudEnComiteResponse>(url).pipe(
+            map((respuesta) => respuesta),
+            catchError(this.manejarError)
+        );
+    }
+
+    guardarConceptoComite(objeto: SolicitudEnComiteResponse): Observable<any> {
+        const url = `${this.apiUrl}${httpConfig.guardarConceptoComite}`;
+        return this.http.post(url, objeto).pipe(catchError(this.manejarError));
     }
 
     rechazarSolicitud(objeto: DetallesRechazo): Observable<any> {

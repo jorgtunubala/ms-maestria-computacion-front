@@ -1,10 +1,7 @@
 import { Injectable } from '@angular/core';
 import jsPDF from 'jspdf';
 import { RadicarService } from './radicar.service';
-import {
-    openSansRegularBase64,
-    openSansBoldBase64,
-} from '../../../../assets/fonts/open-sans.js';
+import { openSansRegularBase64, openSansBoldBase64 } from '../../../../assets/fonts/open-sans.js';
 import { GestorService } from './gestor.service';
 
 interface AgregarTextoOptions {
@@ -53,10 +50,7 @@ export class PdfService {
         'Noviembre',
         'Diciembre',
     ];
-    constructor(
-        private servicioRadicar: RadicarService,
-        private servicioGestor: GestorService
-    ) {}
+    constructor(private servicioRadicar: RadicarService, private servicioGestor: GestorService) {}
 
     // METODOS RELACIONADAS CON LA ESTRUCTURA DEL DOCUMENTO
 
@@ -111,11 +105,7 @@ export class PdfService {
         doc.text('Popayán - Cauca - Colombia', 99, 258);
         doc.text('Teléfono (602) 8209800 Exts. 2103 - 2145', 91, 262);
         doc.setFont('OpenSans', 'bold');
-        doc.text(
-            'maestriacomputacion@unicauca.edu.co | www.unicauca.edu.co',
-            72,
-            266
-        );
+        doc.text('maestriacomputacion@unicauca.edu.co | www.unicauca.edu.co', 72, 266);
 
         // Logos de certificaciones
         doc.addImage(imgISO90001, 'JPEG', 170, 251, 12, 16);
@@ -173,24 +163,17 @@ export class PdfService {
                 let textX = startX;
 
                 // Verificar si la línea es la última de un párrafo
-                const isLastLineOfParagraph =
-                    lineIndex === textLines.length - 1;
+                const isLastLineOfParagraph = lineIndex === textLines.length - 1;
 
                 if (alignment === 'center') {
-                    textX =
-                        (doc.internal.pageSize.width - doc.getTextWidth(line)) /
-                        2;
+                    textX = (doc.internal.pageSize.width - doc.getTextWidth(line)) / 2;
                 } else if (alignment === 'right') {
                     textX = maxWidth + startX - doc.getTextWidth(line);
                 } else if (alignment === 'justify' && !isLastLineOfParagraph) {
                     // Justificación de la línea (excepto si es la última línea del párrafo)
                     const words = line.split(' ');
-                    const totalWordsWidth = words.reduce(
-                        (acc, word) => acc + doc.getTextWidth(word),
-                        0
-                    );
-                    const spaceWidth =
-                        (maxWidth - totalWordsWidth) / (words.length - 1);
+                    const totalWordsWidth = words.reduce((acc, word) => acc + doc.getTextWidth(word), 0);
+                    const spaceWidth = (maxWidth - totalWordsWidth) / (words.length - 1);
                     let justifiedTextX = startX;
 
                     words.forEach((word, index) => {
@@ -233,12 +216,7 @@ export class PdfService {
         let cursorY = currentY; // Usar la posición actual del cursor
 
         // Calcular el ancho de las columnas basado en el contenido más largo
-        const columnWidths = this.calculateColumnWidths(
-            doc,
-            headers,
-            data,
-            maxWidth
-        );
+        const columnWidths = this.calculateColumnWidths(doc, headers, data, maxWidth);
         const tableWidth = columnWidths.reduce((acc, width) => acc + width, 0);
 
         // Función para calcular la altura máxima de una fila
@@ -253,11 +231,7 @@ export class PdfService {
         };
 
         // Función para dibujar una fila de la tabla
-        const drawRow = (
-            row: string[],
-            y: number,
-            isHeader: boolean = false
-        ) => {
+        const drawRow = (row: string[], y: number, isHeader: boolean = false) => {
             const rowHeight = calculateRowHeight(row); // Calcula la altura de la fila
             let currentX = startX;
 
@@ -277,24 +251,18 @@ export class PdfService {
                 const cellWidth = columnWidths[index];
                 const cellHeight = calculateRowHeight([cell]);
                 const lines = doc.splitTextToSize(cell, cellWidth);
-                const verticalAlignY =
-                    y + (rowHeight - lines.length * lineHeight) / 2;
+                const verticalAlignY = y + (rowHeight - lines.length * lineHeight) / 2;
 
                 // Dibujar el texto dentro de la celda
                 lines.forEach((line, lineIndex) => {
                     let textX = currentX;
                     if (alignment === 'center') {
-                        textX =
-                            currentX + (cellWidth - doc.getTextWidth(line)) / 2;
+                        textX = currentX + (cellWidth - doc.getTextWidth(line)) / 2;
                     } else if (alignment === 'right') {
                         textX = currentX + cellWidth - doc.getTextWidth(line);
                     }
                     // Alineación vertical corregida
-                    doc.text(
-                        line,
-                        textX,
-                        verticalAlignY + lineIndex * lineHeight + lineHeight
-                    );
+                    doc.text(line, textX, verticalAlignY + lineIndex * lineHeight + lineHeight);
                 });
 
                 // Dibujar el borde de la celda
@@ -343,16 +311,9 @@ export class PdfService {
         return cursorY + 7;
     }
 
-    private calculateColumnWidths(
-        doc,
-        headers: string[],
-        data: string[][],
-        maxWidth: number
-    ): number[] {
+    private calculateColumnWidths(doc, headers: string[], data: string[][], maxWidth: number): number[] {
         // Calcular anchos de columna basados en encabezados y contenido
-        const columnWidths = headers.map(
-            (header) => doc.getTextWidth(header) + 10
-        ); // Ancho inicial basado en encabezados
+        const columnWidths = headers.map((header) => doc.getTextWidth(header) + 10); // Ancho inicial basado en encabezados
         data.forEach((row) => {
             row.forEach((cell, index) => {
                 const cellWidth = doc.getTextWidth(cell) + 10; // Ancho adicional para cada celda
@@ -368,12 +329,9 @@ export class PdfService {
         if (totalWidth < maxWidth) {
             // Si el ancho total es menor que maxWidth, redistribuir el espacio restante
             const remainingWidth = maxWidth - totalWidth;
-            const additionalWidthPerColumn =
-                remainingWidth / columnWidths.length;
+            const additionalWidthPerColumn = remainingWidth / columnWidths.length;
 
-            return columnWidths.map(
-                (width) => width + additionalWidthPerColumn
-            );
+            return columnWidths.map((width) => width + additionalWidthPerColumn);
         } else if (totalWidth > maxWidth) {
             // Si el ancho total excede el maxWidth, reducir proporcionalmente
             const scaleFactor = maxWidth / totalWidth;
@@ -446,16 +404,10 @@ export class PdfService {
         const pageNumber = doc.internal.pages.length; // Obtener el número de páginas actuales
 
         // Calcular la posición X basada en la alineación
-        let positionX =
-            position === 'left'
-                ? marginLeft
-                : pageWidth - signatureWidth - marginRight;
+        let positionX = position === 'left' ? marginLeft : pageWidth - signatureWidth - marginRight;
 
         // Comprobar si cabe en la página actual
-        if (
-            cursorY + signatureHeight + lineHeight + signatureBottomMargin >
-            doc.internal.pageSize.height - 30
-        ) {
+        if (cursorY + signatureHeight + lineHeight + signatureBottomMargin > doc.internal.pageSize.height - 30) {
             doc.addPage();
             this.agregarMembretes(doc, waterMark); // Añadir plantilla si es necesario
             cursorY = 65; // Restablecer cursorY a la parte superior del área de contenido
@@ -465,23 +417,11 @@ export class PdfService {
         const adjustedImageY = cursorY + signatureHeight - imageOffset;
 
         // Agregar imagen de la firma
-        doc.addImage(
-            signatureImage,
-            'PNG',
-            positionX,
-            adjustedImageY,
-            signatureWidth,
-            signatureHeight
-        );
+        doc.addImage(signatureImage, 'PNG', positionX, adjustedImageY, signatureWidth, signatureHeight);
 
         // Línea de firma
         doc.setDrawColor(79, 79, 79);
-        doc.line(
-            positionX,
-            cursorY + signatureHeight + 10,
-            positionX + signatureWidth,
-            cursorY + signatureHeight + 10
-        );
+        doc.line(positionX, cursorY + signatureHeight + 10, positionX + signatureWidth, cursorY + signatureHeight + 10);
 
         // Datos del firmante
         doc.setFont('OpenSans', 'regular');
@@ -491,50 +431,18 @@ export class PdfService {
 
         if (signatureType === 'Solicitante') {
             doc.text(`${signatureData.name.toUpperCase()}`, positionX, textY);
-            doc.text(
-                `Identificación: ${signatureData.identification}`,
-                positionX,
-                textY + lineHeight
-            );
-            doc.text(
-                `Email: ${signatureData.email}`,
-                positionX,
-                textY + lineHeight * 2
-            );
-            doc.text(
-                `Celular: ${signatureData.cell}`,
-                positionX,
-                textY + lineHeight * 3
-            );
+            doc.text(`Identificación: ${signatureData.identification}`, positionX, textY + lineHeight);
+            doc.text(`Email: ${signatureData.email}`, positionX, textY + lineHeight * 2);
+            doc.text(`Celular: ${signatureData.cell}`, positionX, textY + lineHeight * 3);
         } else if (signatureType === 'Tutor') {
-            doc.text(
-                `VoBo. ${signatureData.name.toUpperCase()}`,
-                positionX,
-                textY
-            );
+            doc.text(`VoBo. ${signatureData.name.toUpperCase()}`, positionX, textY);
             doc.text(`Tutor(a) de Solicitante`, positionX, textY + lineHeight);
         } else if (signatureType === 'Director') {
-            doc.text(
-                `VoBo: ${signatureData.name.toUpperCase()}`,
-                positionX,
-                textY
-            );
-            doc.text(
-                `Director(a) grupo de Investigación`,
-                positionX,
-                textY + lineHeight
-            );
+            doc.text(`VoBo: ${signatureData.name.toUpperCase()}`, positionX, textY);
+            doc.text(`Director(a) grupo de Investigación`, positionX, textY + lineHeight);
         } else if (signatureType === 'Coordinador') {
-            doc.text(
-                `VoBo. ${signatureData.name.toUpperCase()}`,
-                positionX,
-                textY
-            );
-            doc.text(
-                `Coordinador(a) del programa`,
-                positionX,
-                textY + lineHeight
-            );
+            doc.text(`VoBo. ${signatureData.name.toUpperCase()}`, positionX, textY);
+            doc.text(`Coordinador(a) del programa`, positionX, textY + lineHeight);
         }
 
         // Retornar las coordenadas de la firma, número de página y la nueva posición Y después de agregar la firma
@@ -594,16 +502,10 @@ export class PdfService {
             let textX = bulletX + doc.getTextWidth(bullet) + bulletSpacing;
 
             if (alignment === 'center') {
-                bulletX =
-                    (doc.internal.pageSize.width - doc.getTextWidth(line)) / 2;
+                bulletX = (doc.internal.pageSize.width - doc.getTextWidth(line)) / 2;
                 textX = bulletX + doc.getTextWidth(bullet) + bulletSpacing;
             } else if (alignment === 'right') {
-                textX =
-                    maxWidth +
-                    startX -
-                    doc.getTextWidth(line) +
-                    doc.getTextWidth(bullet) +
-                    bulletSpacing;
+                textX = maxWidth + startX - doc.getTextWidth(line) + doc.getTextWidth(bullet) + bulletSpacing;
                 bulletX = textX - doc.getTextWidth(bullet) - bulletSpacing;
             }
 
@@ -621,11 +523,7 @@ export class PdfService {
 
     // METODOS RELACIONADAS CON EL CONTENIDO DEL DOCUMENTO
 
-    agregarContenidoComun(
-        doc: jsPDF,
-        marcaDeAgua: boolean,
-        destinatario?: string
-    ) {
+    agregarContenidoComun(doc: jsPDF, marcaDeAgua: boolean, destinatario?: string) {
         // Añadir estilos institucionales
         this.agregarMembretes(doc, marcaDeAgua);
         this.setDefaultTextStyle(doc); // Aplicar estilo de texto al contenido
@@ -640,7 +538,7 @@ export class PdfService {
 
         if (destinatario === 'solicitante') {
             textDestinatario = `Señor(a)\n${this.servicioGestor.infoSolicitud.datosComunSolicitud.nombreSolicitante.toUpperCase()} ${this.servicioGestor.infoSolicitud.datosComunSolicitud.apellidoSolicitante.toUpperCase()}\nPrograma de Maestría en Computación\n`;
-        } else if (destinatario === 'concejo') {
+        } else if (destinatario === 'consejo') {
             textDestinatario = `Título\nNOMBRE DEL PRESIDENTE\nPresidente Consejo\nFacultad de Ingeniería Electrónica y Telecomunicaciones\nUniversidad del Cauca\n`;
         }
         // Agregar el primer bloque de texto dinámico
@@ -659,13 +557,7 @@ export class PdfService {
         return cursorY;
     }
 
-    agregarAsuntoYSolicitud(
-        doc: jsPDF,
-        posicionY: number,
-        asunto: string,
-        solicitud: string,
-        marcaDeAgua: boolean
-    ) {
+    agregarAsuntoYSolicitud(doc: jsPDF, posicionY: number, asunto: string, solicitud: string, marcaDeAgua: boolean) {
         // Agregar otro bloque de texto dinámico
         let nuevaPosicionY = this.agregarTexto(doc, {
             text: asunto,
@@ -684,8 +576,11 @@ export class PdfService {
         return nuevaPosicionY;
     }
 
-    agregarDespedida(doc: jsPDF, posicionY: number, marcaDeAgua: boolean) {
-        const textDespedida = `Sin ningún otro motivo en particular, agradezco la atención brindada y quedo a la espera de su respuesta.\n\nUniversitariamente,`;
+    agregarDespedida(doc: jsPDF, posicionY: number, marcaDeAgua: boolean, estilo?: string) {
+        const textDespedida =
+            estilo === 'respuesta'
+                ? 'Si otro motivo en particular, agradezco la atención prestada.\n\nUniversitariamente,'
+                : 'Sin ningún otro motivo en particular, agradezco la atención brindada y quedo a la espera de su respuesta.\n\nUniversitariamente,';
 
         let nuevaPosicionY = this.agregarTexto(doc, {
             text: textDespedida,
@@ -721,12 +616,7 @@ export class PdfService {
         return nuevaPosicionY;
     }
 
-    agregarEspaciosDeFirmas(
-        doc: jsPDF,
-        posicionY: number,
-        incluirDirector: boolean,
-        marcaDeAgua: boolean
-    ) {
+    agregarEspaciosDeFirmas(doc: jsPDF, posicionY: number, incluirDirector: boolean, marcaDeAgua: boolean) {
         // Definir datos de la firma
         let firmaSolicitante = '../assets/layout/images/FirmaEnBlanco.png';
         let firmaTutor = '../assets/layout/images/FirmaEnBlanco.png';
@@ -739,9 +629,7 @@ export class PdfService {
                 this.servicioRadicar.formInfoPersonal.get('nombres').value +
                 ' ' +
                 this.servicioRadicar.formInfoPersonal.get('apellidos').value,
-            identification:
-                this.servicioRadicar.formInfoPersonal.get('numeroDocumento')
-                    .value,
+            identification: this.servicioRadicar.formInfoPersonal.get('numeroDocumento').value,
             email: this.servicioRadicar.formInfoPersonal.get('correo').value,
             cell: this.servicioRadicar.formInfoPersonal.get('celular').value,
         };
@@ -751,8 +639,7 @@ export class PdfService {
         };
 
         if (this.servicioRadicar.firmaSolicitante) {
-            firmaSolicitante =
-                this.servicioRadicar.firmaSolicitanteUrl.toString();
+            firmaSolicitante = this.servicioRadicar.firmaSolicitanteUrl.toString();
         }
 
         console.log(nuevaPosicionY);
@@ -787,10 +674,8 @@ export class PdfService {
         nuevaPosicionY = resultadoTutor.cursorY;
 
         this.servicioRadicar.firmaTutorPag = resultadoTutor.pageNumber - 1;
-        this.servicioRadicar.firmaTutorX =
-            resultadoTutor.signatureCoordinates.x;
-        this.servicioRadicar.firmaTutorY =
-            resultadoTutor.signatureCoordinates.y;
+        this.servicioRadicar.firmaTutorX = resultadoTutor.signatureCoordinates.x;
+        this.servicioRadicar.firmaTutorY = resultadoTutor.signatureCoordinates.y;
 
         if (incluirDirector) {
             const directorData = {
@@ -810,23 +695,15 @@ export class PdfService {
 
             nuevaPosicionY = resultadoDirector.cursorY;
 
-            this.servicioRadicar.firmaDirectorPag =
-                resultadoDirector.pageNumber - 1;
-            this.servicioRadicar.firmaDirectorX =
-                resultadoDirector.signatureCoordinates.x;
-            this.servicioRadicar.firmaDirectorY =
-                resultadoDirector.signatureCoordinates.y;
+            this.servicioRadicar.firmaDirectorPag = resultadoDirector.pageNumber - 1;
+            this.servicioRadicar.firmaDirectorX = resultadoDirector.signatureCoordinates.x;
+            this.servicioRadicar.firmaDirectorY = resultadoDirector.signatureCoordinates.y;
         }
 
         return nuevaPosicionY;
     }
 
-    agregarListadoAdjuntos(
-        doc: jsPDF,
-        posicionY: number,
-        adjuntos: string,
-        marcaDeAgua: boolean
-    ) {
+    agregarListadoAdjuntos(doc: jsPDF, posicionY: number, adjuntos: string, marcaDeAgua: boolean) {
         let nuevaPosicionY = this.agregarTexto(doc, {
             text: 'Documentos Adjuntos:',
             startY: posicionY,

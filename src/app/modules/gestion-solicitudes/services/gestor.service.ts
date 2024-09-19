@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpService } from './http.service';
 import { Observable, of, Subject, tap } from 'rxjs';
-import { SolicitudRecibida } from '../models/indiceModelos';
+import {
+    SolicitudEnComiteResponse,
+    SolicitudRecibida,
+} from '../models/indiceModelos';
 import { DatosSolicitudRequest } from '../models/solicitudes/datosSolicitudRequest';
 
 @Injectable({
@@ -14,6 +17,7 @@ export class GestorService {
     solicitudSeleccionada: SolicitudRecibida;
     infoSolicitud: DatosSolicitudRequest;
     estadoSolicitud: string;
+    conceptoComite: SolicitudEnComiteResponse;
 
     solicitudesTutorDirectorCache: SolicitudRecibida[] = [];
     solicitudesCoordinadorCache: SolicitudRecibida[] = [];
