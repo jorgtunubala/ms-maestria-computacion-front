@@ -25,11 +25,11 @@ export class TramiteComponent implements OnInit {
     fechaSeleccionada: Date;
     avalComite: SolicitudEnComiteResponse = {
         idSolicitud: null,
-        solicitudEnComite: false,
-        aval: '',
-        concepto: '',
-        numActa: '',
-        fecha: '',
+        enComite: false,
+        avaladoComite: '',
+        conceptoComite: '',
+        numeroActa: '',
+        fechaAval: '',
     };
 
     respuestaConsejo: RespuestaConcejo = {
@@ -82,34 +82,22 @@ export class TramiteComponent implements OnInit {
     ngOnInit(): void {
         this.http.consultarConceptoComite(this.gestor.solicitudSeleccionada.idSolicitud).subscribe(
             async (infoComite: SolicitudEnComiteResponse) => {
+                console.log(infoComite);
                 this.avalComite = infoComite;
+                this.gestor.conceptoComite = infoComite;
+
+                if (infoComite.fechaAval) {
+                    this.fechaSeleccionada = this.convertirCadenaAFecha(infoComite.fechaAval);
+                    this.formatearFecha(this.fechaSeleccionada);
+                }
+
+                //Esta linea se debe llamar despues de haber consultado toda la info de comite/concejo en la BD
+                this.restringirAcciones(this.gestor.solicitudSeleccionada.codigoSolicitud);
             },
             (error) => {
                 console.error('Error al cargar la información del comité:', error);
             }
         );
-
-        this.restringirAcciones(this.gestor.solicitudSeleccionada.codigoSolicitud);
-        switch (this.gestor.estadoSolicitud) {
-            case 'Avalada':
-                this.mostrarBtnRechazar = true;
-                this.habilitarComite = true;
-
-                break;
-
-            case 'RECHAZADA':
-                break;
-            case 'EN_COMITE':
-                this.enviadaAComite = true;
-                this.mostrarBtnRechazar = false;
-
-                break;
-
-            case 'EN_CONSEJO':
-                this.enviadaAConsejo = true;
-                this.deshabilitarEnvioAConsejo = true;
-                break;
-        }
     }
 
     // Método enviar orden de dascargar archivos al componente padre
@@ -156,7 +144,7 @@ export class TramiteComponent implements OnInit {
                     this.deshabilitarEnvioAComite = true;
                 },
                 reject: () => {
-                    this.avalComite.solicitudEnComite = false;
+                    this.avalComite.enComite = false;
                 },
             });
         }
@@ -192,6 +180,7 @@ export class TramiteComponent implements OnInit {
                             this.habilitarComite = false;
                             this.rechazoEnProceso = false;
                             this.gestor.estadoSolicitud = 'Rechazada';
+                            this.gestor.moverSolicitud(this.gestor.solicitudSeleccionada, 'AVALADA', 'RECHAZADA');
                             this.confirmationService.confirm({
                                 message: 'La solicitud se ha sido rechazada y se ha notificado al solicitante',
                                 header: 'Solicitud no avalada',
@@ -232,11 +221,14 @@ export class TramiteComponent implements OnInit {
     }
 
     enviarSolicitudAComite() {
-        this.avalComite.solicitudEnComite = true;
+        this.avalComite.enComite = true;
+
+        this.avalComite.idSolicitud = this.gestor.solicitudSeleccionada.idSolicitud;
+        console.log(this.avalComite);
         this.http.guardarConceptoComite(this.avalComite).subscribe(
             (response) => {},
             (error) => {
-                console.error('Error al guardar el concepto:', error);
+                console.error('Error al cambiar el estado de la solicitud:', error);
             }
         );
 
@@ -257,8 +249,10 @@ export class TramiteComponent implements OnInit {
             this.conceptoComiteGuardado = true;
 
             // Lógica para guardar
+            this.formatearFecha(this.fechaSeleccionada);
             this.gestor.conceptoComite = this.avalComite;
 
+            console.log(this.avalComite);
             this.http.guardarConceptoComite(this.avalComite).subscribe(
                 (response) => {},
                 (error) => {
@@ -268,12 +262,12 @@ export class TramiteComponent implements OnInit {
 
             //Si no va al concejo o no fue aprobada por el comite
             //habilitar respuestas tutor y solicitante y deshabilitar concejo
-            if (!this.vaAlConcejo || this.avalComite.aval === 'No') {
+            if (!this.vaAlConcejo || this.avalComite.avaladoComite === 'No') {
                 this.habilitarRespuestaSolicitantes = true;
             }
 
             //Si va al concejo y fue aprobada por el comite habilitar el apartado del concejo
-            if (this.vaAlConcejo && this.avalComite.aval === 'Si') {
+            if (this.vaAlConcejo && this.avalComite.avaladoComite === 'Si') {
                 this.habilitarConcejo = true;
             }
         }
@@ -303,7 +297,7 @@ export class TramiteComponent implements OnInit {
             */
 
             //habilitar respuestas tutor y solicitante
-            if (this.avalComite.aval != '') {
+            if (this.avalComite.avaladoComite != '') {
                 this.habilitarRespuestaSolicitantesConsejo = true;
             }
         }
@@ -316,6 +310,27 @@ export class TramiteComponent implements OnInit {
     }
 
     restringirAcciones(tipoSolicitud: string) {
+        // Cuando la solicitud ya este en comite mostrar los campos para ingresar la respuesta
+        if (this.avalComite.enComite) {
+            this.deshabilitarEnvioAComite = true;
+
+            //Bloquear la edicion si ya se han llenado los campos
+            if (this.avalComite.avaladoComite != null) {
+                this.conceptoComiteGuardado = true;
+                this.bloquearConceptoComite = true;
+            }
+        }
+
+        // Mostrar seccion de respuestas cuando la solicitud es rechazada por comite o solo requiere de su aval
+        if (this.avalComite.avaladoComite === 'No' || (this.avalComite.avaladoComite === 'Si' && !this.vaAlConcejo)) {
+            this.habilitarRespuestaSolicitantes = true;
+        }
+
+        // Habilitar envio al consejo si la solicitud fue avalada por el comité
+        if (this.avalComite.avaladoComite === 'Si' && this.vaAlConcejo) {
+            this.habilitarConcejo = true;
+        }
+
         switch (tipoSolicitud) {
             case 'RE_CRED_PUB':
             case 'RE_CRED_PAS':
@@ -325,6 +340,28 @@ export class TramiteComponent implements OnInit {
                 break;
 
             default:
+                break;
+        }
+
+        switch (this.gestor.estadoSolicitud) {
+            case 'Avalada':
+                this.mostrarBtnRechazar = true;
+                this.habilitarComite = true;
+
+                break;
+
+            case 'RECHAZADA':
+                break;
+            case 'En comité':
+                this.enviadaAComite = true;
+                this.habilitarComite = true;
+                this.mostrarBtnRechazar = false;
+
+                break;
+
+            case 'EN_CONSEJO':
+                this.enviadaAConsejo = true;
+                this.deshabilitarEnvioAConsejo = true;
                 break;
         }
     }
@@ -374,9 +411,17 @@ export class TramiteComponent implements OnInit {
         if (fecha) {
             const dia = ('0' + fecha.getDate()).slice(-2); // Asegura que tenga dos dígitos
             const mes = ('0' + (fecha.getMonth() + 1)).slice(-2); // getMonth() es 0-11
-            const año = fecha.getFullYear();
-            this.avalComite.fecha = `${dia}/${mes}/${año}`; // Formato dd/mm/yyyy
+            const anio = fecha.getFullYear();
+            this.avalComite.fechaAval = `${dia}/${mes}/${anio}`; // Formato dd/mm/yyyy
+
+            console.log('fecha guardada: ' + this.avalComite.fechaAval);
         }
+    }
+
+    convertirCadenaAFecha(fechaStr: string): Date {
+        const [dia, mes, anio] = fechaStr.split('/').map(Number);
+        // Crea la fecha sin considerar la hora, ajustando la zona horaria si es necesario
+        return new Date(Date.UTC(anio, mes - 1, dia));
     }
 
     cambiarestadoSolicitud(estado: string) {}

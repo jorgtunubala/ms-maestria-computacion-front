@@ -48,9 +48,9 @@
                         ></button>
                         <div class="flex align-items-center ml-4">
                             <p-inputSwitch
-                                [(ngModel)]="avalComite.solicitudEnComite"
+                                [(ngModel)]="avalComite.enComite"
                                 (onChange)="validarCambioEstadoComite()"
-                                [disabled]="deshabilitarEnvioAComite"
+                                [disabled]="deshabilitarEnvioAComite || avalComite.enComite"
                             ></p-inputSwitch>
                         </div>
                         <div class="flex align-items-center justify-content-center ml-2" style="padding-bottom: 3px">
@@ -74,7 +74,7 @@
                                 <p-radioButton
                                     name="conceptoSi"
                                     value="Si"
-                                    [(ngModel)]="avalComite.aval"
+                                    [(ngModel)]="avalComite.avaladoComite"
                                     inputId="conceptoComite1"
                                     [disabled]="bloquearConceptoComite"
                                 ></p-radioButton>
@@ -84,7 +84,7 @@
                                 <p-radioButton
                                     name="conceptoNo"
                                     value="No"
-                                    [(ngModel)]="avalComite.aval"
+                                    [(ngModel)]="avalComite.avaladoComite"
                                     inputId="conceptoComite2"
                                     [disabled]="bloquearConceptoComite"
                                 ></p-radioButton>
@@ -96,7 +96,7 @@
                             <textarea
                                 rows="4"
                                 pInputTextarea
-                                [(ngModel)]="avalComite.concepto"
+                                [(ngModel)]="avalComite.conceptoComite"
                                 [disabled]="bloquearConceptoComite"
                                 style="width: 100%; box-sizing: border-box"
                             ></textarea>
@@ -109,12 +109,11 @@
                                 placeholder="Número"
                                 pInputText
                                 [disabled]="bloquearConceptoComite"
-                                [(ngModel)]="avalComite.numActa"
+                                [(ngModel)]="avalComite.numeroActa"
                             />
                             <p-calendar
                                 inputId="basic"
                                 [(ngModel)]="fechaSeleccionada"
-                                (ngModelChange)="formatearFecha($event)"
                                 placeholder="Fecha"
                                 [disabled]="bloquearConceptoComite"
                                 appendTo="body"
@@ -125,7 +124,7 @@
                         <div
                             class="mt-2"
                             *ngIf="
-                                avalComite.aval == 'Si' &&
+                                avalComite.avaladoComite == 'Si' &&
                                 ['AD_ASIG', 'CA_ASIG'].includes(gestor.solicitudSeleccionada.codigoSolicitud)
                             "
                         >
@@ -164,52 +163,6 @@
                                 (click)="guardarRespuestaComite()"
                             ></p-button>
                         </div>
-                    </div>
-                </div>
-
-                <p-divider align="left" *ngIf="habilitarRespuestaSolicitantes">
-                    <div class="inline-flex align-items-center">
-                        <i class="pi pi-envelope mr-2"></i>
-                        <b>Respuesta para solicitantes</b>
-                    </div>
-                </p-divider>
-
-                <div class="flex justify-content-center flex-wrap">
-                    <div class="flex gap-2 mt-1 mb-4" *ngIf="habilitarRespuestaSolicitantes" style="width: 96%">
-                        <button
-                            pButton
-                            pRipple
-                            type="button"
-                            label="Documento de respuesta"
-                            class="p-button-outlined p-button-secondary"
-                            icon="pi pi-file-pdf"
-                            iconPos="left"
-                            (click)="
-                                previsualizarDocuementoPDF(
-                                    gestor.solicitudSeleccionada.codigoSolicitud,
-                                    'respuesta-comite',
-                                    false
-                                )
-                            "
-                        ></button>
-                        <button
-                            pButton
-                            pRipple
-                            type="button"
-                            label="Enviar respuesta por correo"
-                            icon="pi pi-send"
-                            iconPos="right"
-                            (click)="descargarDocumentoPDF('Oficio de solicitud ', 'oficioParaConcejo')"
-                        ></button>
-                    </div>
-                    <div class="w-full mt-2" *ngIf="urlRespuestaComitePdf && habilitarRespuestaSolicitantes">
-                        <embed
-                            id="embedElement"
-                            [src]="urlRespuestaComitePdf"
-                            type="application/pdf"
-                            width="100%"
-                            height="600px"
-                        />
                     </div>
                 </div>
             </p-accordionTab>
@@ -348,13 +301,56 @@
                         </div>
                     </div>
                 </div>
-
-                <p-divider align="left" *ngIf="habilitarRespuestaSolicitantesConsejo">
+            </p-accordionTab>
+            <p-accordionTab
+                header="Respuesta a Solicitantes"
+                *ngIf="habilitarRespuestaSolicitantes || habilitarRespuestaSolicitantesConsejo"
+            >
+                <p-divider align="left">
                     <div class="inline-flex align-items-center">
                         <i class="pi pi-envelope mr-2"></i>
-                        <b>Respuesta para solicitantes</b>
+                        <b>Respuesta para solicitante y su tutor/director</b>
                     </div>
                 </p-divider>
+
+                <div class="flex justify-content-center flex-wrap">
+                    <div class="flex gap-2 mt-1 mb-4" *ngIf="habilitarRespuestaSolicitantes" style="width: 96%">
+                        <button
+                            pButton
+                            pRipple
+                            type="button"
+                            label="Documento de respuesta"
+                            class="p-button-outlined p-button-secondary"
+                            icon="pi pi-file-pdf"
+                            iconPos="left"
+                            (click)="
+                                previsualizarDocuementoPDF(
+                                    gestor.solicitudSeleccionada.codigoSolicitud,
+                                    'respuesta-comite',
+                                    false
+                                )
+                            "
+                        ></button>
+                        <button
+                            pButton
+                            pRipple
+                            type="button"
+                            label="Enviar respuesta por correo"
+                            icon="pi pi-send"
+                            iconPos="right"
+                            (click)="descargarDocumentoPDF('Oficio de solicitud ', 'oficioParaConcejo')"
+                        ></button>
+                    </div>
+                    <div class="w-full mt-2" *ngIf="urlRespuestaComitePdf && habilitarRespuestaSolicitantes">
+                        <embed
+                            id="embedElement"
+                            [src]="urlRespuestaComitePdf"
+                            type="application/pdf"
+                            width="100%"
+                            height="600px"
+                        />
+                    </div>
+                </div>
 
                 <div class="flex justify-content-center flex-wrap">
                     <div class="flex gap-2 mt-1 mb-4" *ngIf="habilitarRespuestaSolicitantesConsejo" style="width: 96%">

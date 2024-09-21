@@ -46,12 +46,12 @@ export class RespuestaComiteAdicionAsignaturas implements DocumentoPDFStrategy {
         const documento = new jsPDF({ format: 'letter' });
 
         const { radicado } = this.servicioGestor.infoSolicitud.datosComunSolicitud;
-        const fechaComite = this.servicioGestor.conceptoComite.fecha.split('/');
+        const fechaComite = this.servicioGestor.conceptoComite.fechaAval.split('/');
         const mesEnLetras = this.servicioUtilidades.obtenerMesEnLetras(Number(fechaComite[1]));
 
         const txtAsunto = `Asunto: Respuesta a Solicitud ${radicado} de Adición de Asignaturas\n`;
         const txtCuerpo = `Reciba un cordial saludo. Por medio de la presente me dirijo a usted con el fin de informar que en sesión del día ${fechaComite[0]} de ${mesEnLetras} de ${fechaComite[2]} el Comité de Programa revisó su solicitud con radicado ${radicado} referente a la Adición de Asignaturas, decidiendo NO AVALAR la solicitud y emite el siguiente concepto:`;
-        const txtConcepto = `\n${this.servicioGestor.conceptoComite.concepto}`;
+        const txtConcepto = `\n${this.servicioGestor.conceptoComite.conceptoComite}`;
         const txtRemitente = `NOMBRE COORDINADOR DEL PROGRAMA\nCoordinador(a) Maestría en Computación`;
 
         let posicionY = this.servicioPDF.agregarContenidoComun(documento, marcaDeAgua, 'solicitante');

@@ -12,10 +12,10 @@ export class SolicitudEnComiteResponse {
 
     constructor(
         public idSolicitud: number,
-        public solicitudEnComite: boolean,
-        public aval: string,
-        public concepto: string,
-        public numActa: string,
-        public fecha: string
+        public enComite: boolean,
+        public avaladoComite: string,
+        public conceptoComite: string,
+        public numeroActa: string,
+        public fechaAval: string
     ) {}
 }
