@@ -4,6 +4,16 @@ import { Observable, of, Subject, tap } from 'rxjs';
 import { SolicitudEnComiteResponse, SolicitudRecibida } from '../models/indiceModelos';
 import { DatosSolicitudRequest } from '../models/solicitudes/datosSolicitudRequest';
 
+interface InfoDecano {
+    nombre: string;
+    titulo: string;
+}
+
+interface InfoCoordinador {
+    nombre: string;
+    titulo: string;
+}
+
 @Injectable({
     providedIn: 'root',
 })
@@ -15,6 +25,11 @@ export class GestorService {
     infoSolicitud: DatosSolicitudRequest;
     estadoSolicitud: string;
     conceptoComite: SolicitudEnComiteResponse;
+    respuestaConsejo: any;
+    asignaturasAceptadas: any[];
+
+    decano: InfoDecano = { nombre: 'Alejandro Toledo Tovar', titulo: 'Magister' };
+    coordinador: InfoCoordinador = { nombre: 'Hugo Armando Ordoñez Erazo', titulo: 'Doctor' };
 
     solicitudesTutorDirectorCache: SolicitudRecibida[] = [];
     solicitudesCoordinadorCache: SolicitudRecibida[] = [];

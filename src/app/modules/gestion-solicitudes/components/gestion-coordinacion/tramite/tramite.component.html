@@ -151,7 +151,10 @@
                                     [inputId]="asingnatura.nombreAsignatura"
                                     [disabled]="bloquearConceptoComite"
                                 ></p-checkbox>
-                                <label [for]="asingnatura.nombreAsignatura">{{ asingnatura.nombreAsignatura }}</label>
+                                <label [for]="asingnatura.nombreAsignatura"
+                                    >{{ asingnatura.nombreAsignatura }} - Docente:
+                                    {{ asingnatura.docenteAsignatura }}</label
+                                >
                             </div>
                         </div>
 
@@ -180,7 +183,7 @@
                             pButton
                             pRipple
                             type="button"
-                            label="Oficio para concejo"
+                            label="Oficio para consejo"
                             class="p-button-outlined p-button-secondary"
                             icon="pi pi-file-pdf"
                             iconPos="left"

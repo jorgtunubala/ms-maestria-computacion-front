@@ -251,6 +251,8 @@ export class TramiteComponent implements OnInit {
             // Lógica para guardar
             this.formatearFecha(this.fechaSeleccionada);
             this.gestor.conceptoComite = this.avalComite;
+            this.gestor.asignaturasAceptadas = this.asignaturasAprobadas;
+            this.gestor.respuestaConsejo = this.respuestaConsejo;
 
             console.log(this.avalComite);
             this.http.guardarConceptoComite(this.avalComite).subscribe(

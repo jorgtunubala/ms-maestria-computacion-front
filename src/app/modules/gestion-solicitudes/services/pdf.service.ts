@@ -81,9 +81,9 @@ export class PdfService {
         doc.setFont('OpenSans', 'bold');
         doc.setFontSize(12);
         doc.setTextColor(0, 18, 130);
-        doc.text('Facultad de Ingeniería', 46, 24);
-        doc.text('Electrónica y', 46, 29);
-        doc.text('Telecomunicaciones', 46, 34);
+        doc.text('Facultad de', 46, 24);
+        doc.text('Ingeniería Electrónica', 46, 29);
+        doc.text('y Telecomunicaciones', 46, 34);
 
         doc.setDrawColor(0, 18, 130);
         doc.line(96, 16, 96, 39);
@@ -539,7 +539,9 @@ export class PdfService {
         if (destinatario === 'solicitante') {
             textDestinatario = `Señor(a)\n${this.servicioGestor.infoSolicitud.datosComunSolicitud.nombreSolicitante.toUpperCase()} ${this.servicioGestor.infoSolicitud.datosComunSolicitud.apellidoSolicitante.toUpperCase()}\nPrograma de Maestría en Computación\n`;
         } else if (destinatario === 'consejo') {
-            textDestinatario = `Título\nNOMBRE DEL PRESIDENTE\nPresidente Consejo\nFacultad de Ingeniería Electrónica y Telecomunicaciones\nUniversidad del Cauca\n`;
+            textDestinatario = `${
+                this.servicioGestor.decano.titulo
+            }\n${this.servicioGestor.decano.nombre.toUpperCase()}\nPresidente Consejo\nFacultad de Ingeniería Electrónica y Telecomunicaciones\nUniversidad del Cauca\n`;
         }
         // Agregar el primer bloque de texto dinámico
         let cursorY = this.agregarTexto(doc, {
