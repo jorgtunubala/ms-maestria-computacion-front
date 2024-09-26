@@ -17,26 +17,26 @@ export class MatriculaEvaluacionService {
                 id: 1,
                 anio: 2024,
                 periodo: 2,
-                nombreCuestionario: "Cuestionario de evaluación docente",
+                nombreCuestionario: 'Cuestionario de evaluación docente',
                 cantidadAsignaturas: 7,
-                estado: "ACTIVO"
+                estado: 'ACTIVO',
             },
             {
                 id: 2,
                 anio: 2023,
                 periodo: 1,
-                nombreCuestionario: "Cuestionario de evaluación docente",
+                nombreCuestionario: 'Cuestionario de evaluación docente',
                 cantidadAsignaturas: 5,
-                estado: "CERRADO"
+                estado: 'CERRADO',
             },
             {
                 id: 3,
                 anio: 2022,
                 periodo: 2,
-                nombreCuestionario: "Cuestionario de evaluación docente",
+                nombreCuestionario: 'Cuestionario de evaluación docente',
                 cantidadAsignaturas: 6,
-                estado: "CERRADO"
-            }
+                estado: 'CERRADO',
+            },
         ];
 
         // Retorna los datos simulados como un Observable
@@ -47,4 +47,40 @@ export class MatriculaEvaluacionService {
         //     headers: getHeaders(),
         // });
     }
+
+    obtenerEvaluacionMetadata(id: number): Observable<any> {
+        const datosSimulados = {
+            evaluacionActiva: true,
+            periodo: 1,
+            anio: 2021,
+            areasFormacion: [
+                {
+                    idArea: 1,
+                    nombre: 'Area de Fundamentación',
+                    cursos: [
+                        {
+                            asignatura: 'Seminario de Matemáticas',
+                            docentes: [
+                                { nombre: 'Carlos Alberto', apellido: 'Ardila' },
+                            ],
+                        },
+                        {
+                            asignatura: 'Seminario de Investigación',
+                            docentes: [
+                                { nombre: 'Carlos Alberto', apellido: 'Cobos' },
+                                { nombre: 'Sandra Milena', apellido: 'Roa' },
+                            ],
+                        },
+                        {
+                            asignatura: 'Optimización de Redes Neuronales',
+                            docentes: [{ nombre: 'Néstor', apellido: 'Díaz' }],
+                        },
+                    ],
+                },
+            ],
+        };
+    
+        return of(datosSimulados);
+    }
+    
 }

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { MatriculaEvaluacionService } from '../../services/matricula-evaluacion.service'; // Asegúrate de importar correctamente el servicio
+import { MatriculaEvaluacionService } from '../../services/matricula-evaluacion.service';
 
 @Component({
     selector: 'app-bandeja-evaluacion-docente',
@@ -15,18 +15,11 @@ export class BandejaEvaluacionDocenteComponent implements OnInit {
 
     constructor(
         private router: Router,
-        private matriculaEvaluacionService: MatriculaEvaluacionService // Inyectar el servicio
+        private matriculaEvaluacionService: MatriculaEvaluacionService
     ) {}
 
     ngOnInit() {
-        // Inicialización de datos
         this.loadEvaluations({ first: 0, rows: 5 });
-    }
-
-    onAddEvaluation() {
-        this.router.navigate(['gestion-matricula-evaluacion/agregar-evaluacion']);
-        //imprimir la ruta 
-        console.log('Ruta:', this.router.url);
     }
 
     loadEvaluations(event: any) {
@@ -34,26 +27,18 @@ export class BandejaEvaluacionDocenteComponent implements OnInit {
 
         this.matriculaEvaluacionService.listarEvaluciones().subscribe(
             (data: any[]) => {
-                // Mapear los datos para que coincidan con la estructura esperada en la tabla
                 this.evaluaciones = data.map((evaluacion) => ({
+                    id: evaluacion.id,
                     periodo: evaluacion.periodo,
                     anio: evaluacion.anio,
                     nombre: evaluacion.nombreCuestionario,
                     asignaturasEvaluadas: evaluacion.cantidadAsignaturas,
-                    estado: evaluacion.estado
+                    estado: evaluacion.estado,
                 }));
-
-                // Ordenar datos por el campo especificado
-                this.evaluaciones.sort((a, b) => {
-                    const fieldA = a[event.sortField];
-                    const fieldB = b[event.sortField];
-                    return (fieldA < fieldB ? -1 : 1) * event.sortOrder;
-                });
 
                 this.totalRecords = this.evaluaciones.length;
                 this.loading = false;
 
-                // Verificar si hay evaluaciones activas
                 this.hasActiveEvaluations = this.evaluaciones.some(
                     (e) => e.estado === 'ACTIVO'
                 );
@@ -65,8 +50,11 @@ export class BandejaEvaluacionDocenteComponent implements OnInit {
         );
     }
 
-    viewStatistics(evaluacion: any) {
-        // Lógica para ver estadísticas de la evaluación
-        console.log('Ver estadísticas de', evaluacion);
+    // Método para navegar a la página de agregar evaluación
+    onAddEvaluation() {
+        console.log('Navegando a la página de agregar evaluación');
+        this.router.navigate([
+            '/gestion-matricula-evaluacion/agregar-evaluacion',
+        ]);
     }
 }

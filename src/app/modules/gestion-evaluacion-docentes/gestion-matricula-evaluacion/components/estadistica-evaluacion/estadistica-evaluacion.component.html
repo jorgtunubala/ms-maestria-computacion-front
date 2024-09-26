@@ -1,0 +1,72 @@
+<p-panel header="Estadísticas de la evaluación docente">
+    <!-- Información de periodo y año -->
+    <div class="info-evaluacion mb-3">
+        <p>Periodo: {{ evaluacion.periodo }} Año: {{ evaluacion.anio }}</p>
+    </div>
+
+    <!-- Estado de la evaluación -->
+    <div class="estado-evaluacion mb-3">
+        <!-- Cambiar p-toggleButton a p-inputSwitch para evitar problemas -->
+        <p-inputSwitch [(ngModel)]="evaluacion.evaluacionActiva" disabled="true"></p-inputSwitch>
+    </div>
+
+    <!-- Filtros para ver resultados -->
+    <div class="filtros mb-3">
+        <label for="ver-por">Ver resultados para:</label>
+        <p-dropdown 
+            [options]="docentesOptions" 
+            [(ngModel)]="filtroDocentes"
+            placeholder="Seleccione un filtro"
+        ></p-dropdown>
+
+        <p-inputText
+            *ngIf="filtroDocentes === 'particular'"
+            [(ngModel)]="docenteFiltro"
+            placeholder="Docente en particular"
+        ></p-inputText>
+    </div>
+
+    <!-- Mensaje condicional basado en la cantidad de resultados -->
+    <p-message
+        *ngIf="resultadosFiltrados().length === 0"
+        severity="error"
+        text="No se encontraron resultados"
+    ></p-message>
+
+    <!-- Tabla de estadísticas de los docentes -->
+    <p-table
+        #tableEstadisticas
+        [value]="resultadosFiltrados()"
+        [paginator]="true"
+        [rows]="5"
+        [totalRecords]="resultadosFiltrados().length"
+        [style]="{ 'margin-top': '1em' }"
+    >
+        <ng-template pTemplate="header">
+            <tr>
+                <th>Docente</th>
+                <th>Asignatura</th>
+                <th>No de evaluaciones</th>
+                <th>Nota final</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-resultado>
+            <tr>
+                <td>{{ resultado.docente }}</td>
+                <td>{{ resultado.asignatura }}</td>
+                <td>{{ resultado.evaluacionesRealizadas }} de {{ resultado.evaluacionesTotales }}</td>
+                <td>{{ resultado.notaFinal }}</td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td colspan="4">No se encontraron resultados</td>
+            </tr>
+        </ng-template>
+    </p-table>
+
+    <!-- Botón para generar reporte -->
+    <div class="text-right mt-3">
+        <button pButton icon="pi pi-file" label="Generar reporte"></button>
+    </div>
+</p-panel>
