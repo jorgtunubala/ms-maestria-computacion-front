@@ -98,6 +98,7 @@ export class VisorComponent implements OnInit, OnDestroy {
         switch (estadoSolicitud) {
             case 'Avalada':
             case 'En comité':
+            case 'En concejo':
                 this.mostrarGestor = true;
                 break;
 

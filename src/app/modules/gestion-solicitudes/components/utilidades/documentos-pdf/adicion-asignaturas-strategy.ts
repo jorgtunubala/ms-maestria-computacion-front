@@ -52,7 +52,7 @@ export class RespuestaComiteAdicionAsignaturas implements DocumentoPDFStrategy {
         const txtAsunto = `Asunto: Respuesta a Solicitud ${radicado} de Adición de Asignaturas\n`;
         const txtCuerpo = `Reciba un cordial saludo. Por medio de la presente me dirijo a usted con el fin de informar que en sesión del día ${fechaComite[0]} de ${mesEnLetras} de ${fechaComite[2]} el Comité de Programa revisó su solicitud con radicado ${radicado} referente a la Adición de Asignaturas, decidiendo NO AVALAR la solicitud y emite el siguiente concepto:`;
         const txtConcepto = `\n${this.servicioGestor.conceptoComite.conceptoComite}`;
-        const txtRemitente = `NOMBRE COORDINADOR DEL PROGRAMA\nCoordinador(a) Maestría en Computación`;
+        const txtRemitente = `${this.servicioGestor.coordinador.nombre.toUpperCase()}\nCoordinador(a) Maestría en Computación`;
 
         let posicionY = this.servicioPDF.agregarContenidoComun(documento, marcaDeAgua, 'solicitante');
         posicionY = this.servicioPDF.agregarAsuntoYSolicitud(documento, posicionY, txtAsunto, txtCuerpo, marcaDeAgua);
@@ -78,19 +78,40 @@ export class OficioConcejoAdicionAsignaturas implements DocumentoPDFStrategy {
     constructor(
         private servicioRadicar: RadicarService,
         private servicioPDF: PdfService,
-        private servicioGestor: GestorService
+        private servicioGestor: GestorService,
+        private servicioUtilidades: UtilidadesService
     ) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
         const documento = new jsPDF({ format: 'letter' });
 
-        const textAsunto = `Asunto: Solicitud de Adicion de Asignaturas para la estudiante ${this.servicioGestor.infoSolicitud.datosComunSolicitud.nombreSolicitante} ${this.servicioGestor.infoSolicitud.datosComunSolicitud.apellidoSolicitante} \n`;
-        const textCuerpo = `Me permito remitir al Concejo la solicitud de adición de asignaturas...`;
-        const txtRemitente = `NOMBRE COORDINADOR DEL PROGRAMA\nCoordinador(a) Maestría en Computación`;
+        const fechaComite = this.servicioGestor.conceptoComite.fechaAval.split('/');
+        const mesEnLetras = this.servicioUtilidades.obtenerMesEnLetras(Number(fechaComite[1]));
+
+        const textAsunto = `Asunto: Solicitud de Adición de Asignaturas para el/la estudiante ${this.servicioGestor.infoSolicitud.datosComunSolicitud.nombreSolicitante} ${this.servicioGestor.infoSolicitud.datosComunSolicitud.apellidoSolicitante} \n`;
+        const textCuerpo = `Estimado ${
+            this.servicioGestor.decano.nombre.split(' ')[0]
+        }, reciba cordial saludo. Comedidamente me dirijo a usted con el fin informar que en sesión del día ${
+            fechaComite[0]
+        } de ${mesEnLetras} de ${
+            fechaComite[2]
+        } el Comité de Programa avaló la adicion de las asignaturas relacionadas en este documento para el/la estudiante ${this.servicioGestor.infoSolicitud.datosComunSolicitud.nombreSolicitante.toUpperCase()} ${this.servicioGestor.infoSolicitud.datosComunSolicitud.apellidoSolicitante.toUpperCase()}. Por lo tanto, muy formalmente solicito su colaboración para realizar las gestiones necesarias para el registro de las adiciones mencionadas.`;
+        const txtRemitente = `${this.servicioGestor.coordinador.nombre.toUpperCase()}\nCoordinador(a) Maestría en Computación`;
 
         let posicionY = this.servicioPDF.agregarContenidoComun(documento, marcaDeAgua, 'consejo');
         posicionY = this.servicioPDF.agregarAsuntoYSolicitud(documento, posicionY, textAsunto, textCuerpo, marcaDeAgua);
 
+        const headers = ['No.', 'Asignatura', 'Grupo', 'Docente'];
+
+        const data = this.servicioGestor.conceptoComite.asignaturasAprobadas
+            .filter((item) => item.aprobado) // Filtra solo las asignaturas aprobadas
+            .map((item, index) => [
+                (index + 1).toString(), // Número secuencial
+                item.nombre, // Nombre de la asignatura
+                // Aquí puedes agregar más columnas si lo necesitas, como 'Grupo' o 'Docente'
+            ]);
+
+        posicionY = this.servicioPDF.agregarTablaPersonalizada(documento, posicionY, headers, data, marcaDeAgua);
         posicionY = this.servicioPDF.agregarDespedida(documento, posicionY + 5, marcaDeAgua);
         posicionY = this.servicioPDF.agregarTexto(documento, {
             text: txtRemitente,
@@ -115,9 +136,19 @@ export class RespuestaConcejoAdicionAsignaturas implements DocumentoPDFStrategy 
         const documento = new jsPDF({ format: 'letter' });
 
         const { radicado } = this.servicioGestor.infoSolicitud.datosComunSolicitud;
+        const fechaComite = this.servicioGestor.conceptoComite.fechaAval.split('/');
+        const mesEnLetras = this.servicioUtilidades.obtenerMesEnLetras(Number(fechaComite[1]));
 
         const txtAsunto = `Asunto: Respuesta a Solicitud ${radicado} de Adición de Asignaturas\n`;
-        const txtCuerpo = `Reciba un cordial saludo. Por medio de la presente me dirijo a usted con el fin de informar que su solicitud con radicado ${radicado} referente a la Adición de Asignaturas, fue revisada por el Consejo de Facultad decidiendo... `;
+        const txtCuerpo = `Reciba un cordial saludo. Por medio de la presente me dirijo a usted con el fin de informar que el día ${
+            fechaComite[0]
+        } de ${mesEnLetras} de ${
+            fechaComite[2]
+        } se recibio despuesta del Concejo de Facultad referente a su solicitud ${radicado} de Adición de Asignaturas, ${
+            this.servicioGestor.conceptoConsejo.avaladoConcejo === 'Si'
+                ? 'El Consejo decide aprobar su solicitud bajo el siguiente concepto'
+                : 'El Consejo decide no aprobar su solicitud bajo el siguiente concepto'
+        }.`;
         const txtRemitente = `NOMBRE COORDINADOR DEL PROGRAMA\nCoordinador(a) Maestría en Computación`;
 
         let posicionY = this.servicioPDF.agregarContenidoComun(documento, marcaDeAgua, 'solicitante');

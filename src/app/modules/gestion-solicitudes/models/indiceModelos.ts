@@ -41,3 +41,6 @@ export { DocumentoRequerido } from './requisitos/documentoRequerido';
 export { DatosSolicitudBecaDescuento } from './solicitudes/solicitud-beca-descuento/datosSolicitudBecaDescuento';
 export { DetallesRechazo } from './gestion/detallesRechazo';
 export { SolicitudEnComiteResponse } from './gestion/solicitudEnComite';
+export { SolicitudEnConcejoResponse } from './gestion/solicitudEnConcejo';
+export { AprobarAsignaturas } from './gestion/aprobarAsignaturas';
+export { EnvioCorreoRequest } from './gestion/envioCorreo';

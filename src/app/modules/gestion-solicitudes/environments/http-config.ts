@@ -1,6 +1,7 @@
 export const httpConfig = {
     apiUrl: 'http://localhost:8095/msmaestriac/gestionSolicitud',
     apiUrlSub: 'http://localhost:8095/msmaestriac/gestionSubtipos',
+    apiCorreo: 'http://localhost:8095/msmaestriac',
     obtenerTiposDeSolicitudUrl: '/tiposSolicitud',
     obtenerRequisitosDeSolicitudUrl: '/requisitoSolicitud/',
     obtenerInfoPersonalSolicitanteUrl: '/obtenerInfoPersonal/',
@@ -11,9 +12,11 @@ export const httpConfig = {
     obtenerInfoSolGuardadaUrl: '/obtener-datos-solicitud/',
     obtenerActividadesReCreditosUrl: '/subTiposSolicitud',
     obtenerHistorialDeSolicitudUrl: '/historial/solicitud/',
-    obtenerSolicitudesCoordinacion:
-        '/obtener-solicitudes-pendientes-coordinador/',
+    obtenerSolicitudesCoordinacion: '/obtener-solicitudes-pendientes-coordinador/',
     obtenerConceptoComite: '/obtener-solicitudes-en-comite/',
+    obtenerConceptoConsejo: '/obtener-solicitudes-en-concejo/',
     guardarConceptoComite: '/save-solicitud-en-comite',
+    guardarConceptoConsejo: '/save-solicitud-en-concejo',
     rechazarSolicitud: '/rechazar-solicitud',
+    enviarCorreo: '/gestionEnvioCorreo/send-email',
 };
