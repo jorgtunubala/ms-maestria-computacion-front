@@ -87,6 +87,7 @@ export class TramiteComponent implements OnInit {
         public gestor: GestorService,
         public http: HttpService,
         private dialogService: DialogService,
+        private messageService: MessageService,
         private servicioPDF: PdfService,
         private factory: DocumentoPDFFactory,
         private servicioUtilidades: UtilidadesService
@@ -260,11 +261,16 @@ export class TramiteComponent implements OnInit {
 
     enviarSolicitudAComite() {
         this.avalComite.enComite = true;
-
         this.avalComite.idSolicitud = this.gestor.solicitudSeleccionada.idSolicitud;
+
         console.log(this.avalComite);
         this.http.guardarConceptoComite(this.avalComite).subscribe(
-            (response) => {},
+            (response) => {
+                if (response) {
+                    this.gestor.estadoSolicitud = 'En comité';
+                    this.gestor.moverSolicitud(this.gestor.solicitudSeleccionada, 'AVALADA', 'EN_COMITE');
+                }
+            },
             (error) => {
                 console.error('Error al cambiar el estado de la solicitud:', error);
             }
@@ -278,7 +284,12 @@ export class TramiteComponent implements OnInit {
         this.respuestaConsejo.idSolicitud = this.gestor.solicitudSeleccionada.idSolicitud;
 
         this.http.guardarConceptoConsejo(this.respuestaConsejo).subscribe(
-            (response) => {},
+            (response) => {
+                if (response) {
+                    this.gestor.estadoSolicitud = 'En concejo';
+                    this.gestor.moverSolicitud(this.gestor.solicitudSeleccionada, 'EN_COMITE', 'EN_CONCEJO');
+                }
+            },
             (error) => {
                 console.error('Error al cambiar el estado de la solicitud:', error);
             }
@@ -296,8 +307,13 @@ export class TramiteComponent implements OnInit {
         };
 
         this.http.enviarCorreo(contenidoCorreo).subscribe((response) => {
+            if (response) {
+                this.mostrarAlertaFormulario('enviado');
+            }
             if (response && destinatario === 'concejo') {
+                this.cambiarestadoSolicitud('EN_CONSEJO');
                 this.enviarSolicitudAConsejo();
+                this.deshabilitarEnvioAConsejo = true;
             }
         });
     }
@@ -348,42 +364,50 @@ export class TramiteComponent implements OnInit {
     }
 
     guardarRespuestaComite() {
-        this.habilitarRespuestaSolicitantes = false;
-        this.habilitarConcejo = false;
+        if (this.validarFormularioComite()) {
+            this.habilitarRespuestaSolicitantes = false;
+            this.habilitarConcejo = false;
 
-        if (this.conceptoComiteGuardado) {
-            this.bloquearConceptoComite = false;
-            this.conceptoComiteGuardado = false;
+            if (this.conceptoComiteGuardado) {
+                this.bloquearConceptoComite = false;
+                this.conceptoComiteGuardado = false;
 
-            // Lógica para editar
-        } else {
-            this.bloquearConceptoComite = true;
-            this.conceptoComiteGuardado = true;
+                // Lógica para editar
+            } else {
+                this.bloquearConceptoComite = true;
+                this.conceptoComiteGuardado = true;
 
-            // Lógica para guardar
-            this.avalComite.fechaAval = this.formatearFecha(this.fechaSeleccionada);
-            this.gestor.conceptoComite = this.avalComite;
-            this.gestor.asignaturasAceptadas = this.asignaturasAprobadas;
-            //this.gestor.respuestaConsejo = this.respuestaConsejo;
+                // Lógica para guardar
+                this.avalComite.fechaAval = this.formatearFecha(this.fechaSeleccionada);
+                this.gestor.conceptoComite = this.avalComite;
+                this.gestor.asignaturasAceptadas = this.asignaturasAprobadas;
+                //this.gestor.respuestaConsejo = this.respuestaConsejo;
 
-            console.log(this.avalComite);
-            this.http.guardarConceptoComite(this.avalComite).subscribe(
-                (response) => {},
-                (error) => {
-                    console.error('Error al guardar el concepto:', error);
+                console.log(this.avalComite);
+                this.http.guardarConceptoComite(this.avalComite).subscribe(
+                    (response) => {
+                        if (response) {
+                            this.mostrarAlertaFormulario('guardado');
+                        }
+                    },
+                    (error) => {
+                        console.error('Error al guardar el concepto:', error);
+                    }
+                );
+
+                //Si no va al concejo o no fue aprobada por el comite
+                //habilitar respuestas tutor y solicitante y deshabilitar concejo
+                if (!this.vaAlConcejo || this.avalComite.avaladoComite === 'No') {
+                    this.habilitarRespuestaSolicitantes = true;
                 }
-            );
 
-            //Si no va al concejo o no fue aprobada por el comite
-            //habilitar respuestas tutor y solicitante y deshabilitar concejo
-            if (!this.vaAlConcejo || this.avalComite.avaladoComite === 'No') {
-                this.habilitarRespuestaSolicitantes = true;
+                //Si va al concejo y fue aprobada por el comite habilitar el apartado del concejo
+                if (this.vaAlConcejo && this.avalComite.avaladoComite === 'Si') {
+                    this.habilitarConcejo = true;
+                }
             }
-
-            //Si va al concejo y fue aprobada por el comite habilitar el apartado del concejo
-            if (this.vaAlConcejo && this.avalComite.avaladoComite === 'Si') {
-                this.habilitarConcejo = true;
-            }
+        } else {
+            this.mostrarAlertaFormulario('incompleto');
         }
     }
 
@@ -414,12 +438,6 @@ export class TramiteComponent implements OnInit {
                 }
             );
         }
-    }
-
-    enviarOficoAConcejo() {
-        this.validarCambioEstadoConcejo();
-
-        //Logica para enviar oficio por correo pendiente BACKEND
     }
 
     restringirAcciones(tipoSolicitud: string) {
@@ -553,6 +571,51 @@ export class TramiteComponent implements OnInit {
         const fecha = new Date(anio, mes - 1, dia);
         console.log('Salio: ' + fecha);
         return fecha;
+    }
+
+    private validarFormularioComite(): boolean {
+        const hayAsignaturasAprobadas =
+            this.avalComite.asignaturasAprobadas.length > 0 &&
+            this.avalComite.asignaturasAprobadas.some((asignatura) => asignatura.aprobado);
+
+        return (
+            (this.avalComite.avaladoComite === 'Si' || this.avalComite.avaladoComite === 'No') &&
+            this.avalComite.conceptoComite !== '' &&
+            this.fechaSeleccionada !== null &&
+            this.avalComite.numeroActa !== '' &&
+            (this.avalComite.asignaturasAprobadas.length === 0 || hayAsignaturasAprobadas)
+        );
+    }
+
+    mostrarAlertaFormulario(tipoAlerta: string) {
+        switch (tipoAlerta) {
+            case 'incompleto':
+                this.messageService.add({
+                    severity: 'warn',
+                    summary: 'Datos Incompletos',
+                    detail: 'Igrese toda la información requerida',
+                });
+                break;
+
+            case 'guardado':
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Datos Registrados',
+                    detail: 'Se ha guardado la información',
+                });
+                break;
+
+            case 'enviado':
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Correo Enviado',
+                    detail: 'Envio exitoso via correo',
+                });
+                break;
+
+            default:
+                break;
+        }
     }
 
     cambiarestadoSolicitud(estado: string) {}
