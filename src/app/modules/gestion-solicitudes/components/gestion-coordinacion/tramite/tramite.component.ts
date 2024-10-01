@@ -1,7 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { GestorService } from '../../../services/gestor.service';
-import { DetallesRechazo, SolicitudEnComiteResponse } from '../../../models/indiceModelos';
+import {
+    AprobarAsignaturas,
+    DetallesRechazo,
+    EnvioCorreoRequest,
+    SolicitudEnComiteResponse,
+    SolicitudEnConcejoResponse,
+} from '../../../models/indiceModelos';
 import { HttpService } from '../../../services/http.service';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { FormulariorechazoComponent } from '../complementos/formulariorechazo/formulariorechazo.component';
@@ -9,6 +15,7 @@ import { PdfService } from '../../../services/pdf.service';
 import { SafeResourceUrl } from '@angular/platform-browser';
 import { DocumentoPDFFactory } from '../../utilidades/documentos-pdf/documento-pdf-factory';
 import { UtilidadesService } from '../../../services/utilidades.service';
+import { el } from 'date-fns/locale';
 
 interface RespuestaConcejo {
     aval: string;
@@ -23,6 +30,7 @@ interface RespuestaConcejo {
 })
 export class TramiteComponent implements OnInit {
     fechaSeleccionada: Date;
+    fechaConsejo: Date;
     avalComite: SolicitudEnComiteResponse = {
         idSolicitud: null,
         enComite: false,
@@ -30,12 +38,17 @@ export class TramiteComponent implements OnInit {
         conceptoComite: '',
         numeroActa: '',
         fechaAval: '',
+        asignaturasAprobadas: [],
     };
 
-    respuestaConsejo: RespuestaConcejo = {
-        aval: '',
-        concepto: '',
-        fecha: '',
+    respuestaConsejo: SolicitudEnConcejoResponse = {
+        idSolicitud: null,
+        enConcejo: false,
+        avaladoConcejo: '',
+        conceptoConcejo: '',
+        numeroActa: '',
+        fechaAval: '',
+        documentosConcejo: [],
     };
 
     bloquearConceptoComite: boolean = false;
@@ -88,7 +101,26 @@ export class TramiteComponent implements OnInit {
 
                 if (infoComite.fechaAval) {
                     this.fechaSeleccionada = this.convertirCadenaAFecha(infoComite.fechaAval);
-                    this.formatearFecha(this.fechaSeleccionada);
+                    this.avalComite.fechaAval = this.formatearFecha(this.fechaSeleccionada);
+                }
+
+                //Esta linea se debe llamar despues de haber consultado toda la info de comite/concejo en la BD
+                this.restringirAcciones(this.gestor.solicitudSeleccionada.codigoSolicitud);
+            },
+            (error) => {
+                console.error('Error al cargar la información del comité:', error);
+            }
+        );
+
+        this.http.consultarConceptoConsejo(this.gestor.solicitudSeleccionada.idSolicitud).subscribe(
+            async (infoConsejo: SolicitudEnConcejoResponse) => {
+                console.log(infoConsejo);
+                this.respuestaConsejo = infoConsejo;
+                this.gestor.conceptoConsejo = infoConsejo;
+
+                if (infoConsejo.fechaAval) {
+                    this.fechaConsejo = this.convertirCadenaAFecha(infoConsejo.fechaAval);
+                    this.respuestaConsejo.fechaAval = this.formatearFecha(this.fechaConsejo);
                 }
 
                 //Esta linea se debe llamar despues de haber consultado toda la info de comite/concejo en la BD
@@ -105,6 +137,10 @@ export class TramiteComponent implements OnInit {
         this.gestor.emitirDescargarArchivos();
     }
 
+    onCheckboxChange() {
+        this.gestor.conceptoComite = this.avalComite;
+    }
+
     validarCambioEstadoConcejo() {
         if (this.deshabilitarEnvioAConsejo == false) {
             this.confirmationService.confirm({
@@ -117,11 +153,13 @@ export class TramiteComponent implements OnInit {
                 rejectLabel: 'No',
                 accept: () => {
                     this.cambiarestadoSolicitud('EN_CONSEJO');
-                    this.enviadaAConsejo = true;
+                    this.enviarSolicitudAConsejo();
+                    //this.enviadaAConsejo = true;
                     this.deshabilitarEnvioAConsejo = true;
                 },
                 reject: () => {
-                    this.enviadaAConsejo = false;
+                    //this.enviadaAConsejo = false;
+                    this.respuestaConsejo.enConcejo = false;
                 },
             });
         }
@@ -235,6 +273,80 @@ export class TramiteComponent implements OnInit {
         this.mostrarBtnRechazar = false;
     }
 
+    enviarSolicitudAConsejo() {
+        this.respuestaConsejo.enConcejo = true;
+        this.respuestaConsejo.idSolicitud = this.gestor.solicitudSeleccionada.idSolicitud;
+
+        this.http.guardarConceptoConsejo(this.respuestaConsejo).subscribe(
+            (response) => {},
+            (error) => {
+                console.error('Error al cambiar el estado de la solicitud:', error);
+            }
+        );
+    }
+
+    async enviarCorreo(destinatario: string, tipoDocumento: string) {
+        const contenidoCorreo: EnvioCorreoRequest = {
+            destinatario: destinatario,
+            oficio: await this.obtenerDocumentoPDFEnBase64(
+                this.gestor.solicitudSeleccionada.codigoSolicitud,
+                tipoDocumento,
+                false
+            ),
+        };
+
+        this.http.enviarCorreo(contenidoCorreo).subscribe((response) => {
+            if (response && destinatario === 'concejo') {
+                this.enviarSolicitudAConsejo();
+            }
+        });
+    }
+
+    obtenerDocumentoPDFEnBase64(
+        codigoSolicitud: string | null,
+        tipoDocumento: string,
+        agregarMarcaDeAgua: boolean
+    ): Promise<string> | null {
+        // Utiliza la fábrica para obtener la estrategia basada en el código de solicitud y tipo de documento
+        const estrategia = this.factory.crearEstrategia(codigoSolicitud, tipoDocumento);
+
+        // Verifica si se encontró una estrategia válida
+        if (!estrategia) {
+            console.error(
+                `No se encontró una estrategia para el código de solicitud: ${codigoSolicitud} y tipo de documento: ${tipoDocumento}`
+            );
+            return null;
+        }
+
+        // Genera el documento PDF usando la estrategia
+        const pdfDocConMarca = estrategia.generarDocumento(agregarMarcaDeAgua);
+
+        // Función para crear un archivo PDF
+        const crearArchivoPDF = (pdfDoc: any, nombreArchivo: string): File => {
+            const pdfBlob = pdfDoc.output('blob');
+            return new File([pdfBlob], nombreArchivo, { type: 'application/pdf' });
+        };
+
+        // Genera y retorna el PDF según el tipo de documento
+        switch (tipoDocumento) {
+            case 'respuesta-comite':
+                return this.servicioUtilidades.convertirFileABase64(
+                    crearArchivoPDF(pdfDocConMarca, 'respuesta-comite.pdf')
+                );
+            case 'respuesta-consejo':
+                return this.servicioUtilidades.convertirFileABase64(
+                    crearArchivoPDF(pdfDocConMarca, 'respuesta-consejo.pdf')
+                );
+            case 'oficio-consejo':
+                return this.servicioUtilidades.convertirFileABase64(
+                    crearArchivoPDF(pdfDocConMarca, 'oficio-consejo.pdf')
+                );
+            default:
+                console.warn(`Tipo de documento no manejado: ${tipoDocumento}`);
+                return null;
+        }
+    }
+
     guardarRespuestaComite() {
         this.habilitarRespuestaSolicitantes = false;
         this.habilitarConcejo = false;
@@ -249,10 +361,10 @@ export class TramiteComponent implements OnInit {
             this.conceptoComiteGuardado = true;
 
             // Lógica para guardar
-            this.formatearFecha(this.fechaSeleccionada);
+            this.avalComite.fechaAval = this.formatearFecha(this.fechaSeleccionada);
             this.gestor.conceptoComite = this.avalComite;
             this.gestor.asignaturasAceptadas = this.asignaturasAprobadas;
-            this.gestor.respuestaConsejo = this.respuestaConsejo;
+            //this.gestor.respuestaConsejo = this.respuestaConsejo;
 
             console.log(this.avalComite);
             this.http.guardarConceptoComite(this.avalComite).subscribe(
@@ -288,20 +400,19 @@ export class TramiteComponent implements OnInit {
             this.conceptoConsejoGuardado = true;
 
             // Lógica para guardar
-            //this.gestor.conceptoConsejo = this.respuestaConsejo;
-            /*
-            this.http.guardarConceptoComite(this.avalComite).subscribe(
-                (response) => {},
+            this.respuestaConsejo.fechaAval = this.formatearFecha(this.fechaConsejo);
+            this.gestor.conceptoConsejo = this.respuestaConsejo;
+            this.respuestaConsejo.documentosConcejo = ['DOC1', 'DOC2'];
+
+            console.log(this.respuestaConsejo);
+            this.http.guardarConceptoConsejo(this.respuestaConsejo).subscribe(
+                (response) => {
+                    this.habilitarRespuestaSolicitantesConsejo = true;
+                },
                 (error) => {
                     console.error('Error al guardar el concepto:', error);
                 }
             );
-            */
-
-            //habilitar respuestas tutor y solicitante
-            if (this.avalComite.avaladoComite != '') {
-                this.habilitarRespuestaSolicitantesConsejo = true;
-            }
         }
     }
 
@@ -333,6 +444,22 @@ export class TramiteComponent implements OnInit {
             this.habilitarConcejo = true;
         }
 
+        // Cuando la solicitud ya este en consejo mostrar los campos para ingresar la respuesta
+        if (this.respuestaConsejo.enConcejo) {
+            this.deshabilitarEnvioAConsejo = true;
+
+            //Bloquear la edicion si ya se han llenado los campos
+            if (this.respuestaConsejo.avaladoConcejo != null) {
+                this.conceptoConsejoGuardado = true;
+                this.bloquearConceptoConsejo = true;
+            }
+        }
+
+        // Mostrar seccion de respuestas cuando la solicitud ha sido respondida por el consejo
+        if (this.respuestaConsejo.avaladoConcejo === 'Si' || this.respuestaConsejo.avaladoConcejo === 'No') {
+            this.habilitarRespuestaSolicitantesConsejo = true;
+        }
+
         switch (tipoSolicitud) {
             case 'RE_CRED_PUB':
             case 'RE_CRED_PAS':
@@ -361,9 +488,10 @@ export class TramiteComponent implements OnInit {
 
                 break;
 
-            case 'EN_CONSEJO':
+            case 'En concejo':
                 this.enviadaAConsejo = true;
-                this.deshabilitarEnvioAConsejo = true;
+                this.habilitarComite = true;
+                this.mostrarBtnRechazar = false;
                 break;
         }
     }
@@ -414,16 +542,17 @@ export class TramiteComponent implements OnInit {
             const dia = ('0' + fecha.getDate()).slice(-2); // Asegura que tenga dos dígitos
             const mes = ('0' + (fecha.getMonth() + 1)).slice(-2); // getMonth() es 0-11
             const anio = fecha.getFullYear();
-            this.avalComite.fechaAval = `${dia}/${mes}/${anio}`; // Formato dd/mm/yyyy
-
-            console.log('fecha guardada: ' + this.avalComite.fechaAval);
+            return `${dia}/${mes}/${anio}`;
+        } else {
+            return null;
         }
     }
 
     convertirCadenaAFecha(fechaStr: string): Date {
         const [dia, mes, anio] = fechaStr.split('/').map(Number);
-        // Crea la fecha sin considerar la hora, ajustando la zona horaria si es necesario
-        return new Date(Date.UTC(anio, mes - 1, dia));
+        const fecha = new Date(anio, mes - 1, dia);
+        console.log('Salio: ' + fecha);
+        return fecha;
     }
 
     cambiarestadoSolicitud(estado: string) {}

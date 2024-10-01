@@ -1,3 +1,5 @@
+import { AprobarAsignaturas } from './aprobarAsignaturas';
+
 export class SolicitudEnComiteResponse {
     static nuevoSolicitudEnComiteResponse(obj: Object) {
         return new SolicitudEnComiteResponse(
@@ -6,7 +8,8 @@ export class SolicitudEnComiteResponse {
             obj['avaladoComite'],
             obj['conceptoComite'],
             obj['numeroActa'],
-            obj['fechaAval']
+            obj['fechaAval'],
+            obj['asignaturasAprobadas']
         );
     }
 
@@ -16,6 +19,7 @@ export class SolicitudEnComiteResponse {
         public avaladoComite: string,
         public conceptoComite: string,
         public numeroActa: string,
-        public fechaAval: string
+        public fechaAval: string,
+        public asignaturasAprobadas: AprobarAsignaturas[]
     ) {}
 }

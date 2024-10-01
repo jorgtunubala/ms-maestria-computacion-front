@@ -68,6 +68,8 @@ export class BuzonComponent implements OnInit {
     ngOnInit(): void {
         const filtro = this.extraerFiltroDeRuta() || 'nuevas';
 
+        console.log(filtro);
+
         this.setConfiguracion(filtro);
         this.cargarSolicitudes(this.obtenerEstadoAsociado(filtro));
         this.restablecerValoresEnServicios();
@@ -75,13 +77,13 @@ export class BuzonComponent implements OnInit {
 
     // Extrae el filtro de la ruta actual
     extraerFiltroDeRuta(): string {
+        console.log(this.route.snapshot.url);
         return this.route.snapshot.url.join('/').split('/').pop();
     }
 
     // Personaliza la vista del buzón según el filtro
     setConfiguracion(filtro: string): void {
-        const config =
-            this.configuraciones[filtro] || this.configuraciones.nuevas;
+        const config = this.configuraciones[filtro] || this.configuraciones.nuevas;
         this.tituloBuzon = config.titulo;
         this.iconoBuzon = config.icono;
         this.columnaFecha = config.columnaFecha;
@@ -110,7 +112,7 @@ export class BuzonComponent implements OnInit {
             nuevas: 'AVALADA',
             rechazadas: 'RECHAZADA',
             comite: 'EN_COMITE',
-            consejo: 'EN_CONSEJO',
+            consejo: 'EN_CONCEJO',
             resueltas: 'RESUELTA',
         };
 
@@ -125,10 +127,7 @@ export class BuzonComponent implements OnInit {
 
     // Muestra los detalles de la solicitud seleccionada
     mostrarDetalles(): void {
-        localStorage.setItem(
-            'solicitudSeleccionada',
-            JSON.stringify(this.seleccionada)
-        );
+        localStorage.setItem('solicitudSeleccionada', JSON.stringify(this.seleccionada));
         this.router.navigate(['/gestionsolicitudes/visor']);
     }
 

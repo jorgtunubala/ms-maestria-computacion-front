@@ -124,7 +124,7 @@
                         <div
                             class="mt-2"
                             *ngIf="
-                                avalComite.avaladoComite == 'Si' &&
+                                avalComite.avaladoComite === 'Si' &&
                                 ['AD_ASIG', 'CA_ASIG'].includes(gestor.solicitudSeleccionada.codigoSolicitud)
                             "
                         >
@@ -136,25 +136,14 @@
                                 }}
                             </p>
 
-                            <div
-                                *ngFor="
-                                    let asingnatura of gestor.infoSolicitud.dadicionCancelacionAsignatura
-                                        .listaAsignaturas
-                                "
-                                class="field-checkbox"
-                            >
+                            <div *ngFor="let asignatura of avalComite.asignaturasAprobadas" class="field-checkbox">
                                 <p-checkbox
-                                    name="group1"
-                                    value="asingnatura"
-                                    [value]="asingnatura"
-                                    [(ngModel)]="asignaturasAprobadas"
-                                    [inputId]="asingnatura.nombreAsignatura"
+                                    [(ngModel)]="asignatura.aprobado"
                                     [disabled]="bloquearConceptoComite"
+                                    (onChange)="onCheckboxChange()"
+                                    binary="true"
                                 ></p-checkbox>
-                                <label [for]="asingnatura.nombreAsignatura"
-                                    >{{ asingnatura.nombreAsignatura }} - Docente:
-                                    {{ asingnatura.docenteAsignatura }}</label
-                                >
+                                <label>{{ asignatura.nombre }}</label>
                             </div>
                         </div>
 
@@ -202,14 +191,14 @@
                             label="Enviar oficio por correo"
                             icon="pi pi-send"
                             iconPos="right"
-                            (click)="enviarOficoAConcejo()"
+                            (click)="enviarCorreo('concejo', 'oficio-consejo')"
                             [disabled]="deshabilitarEnvioAConsejo"
                         ></button>
                         <div class="flex align-items-center justify-content-center ml-3">
                             <p-inputSwitch
-                                [(ngModel)]="enviadaAConsejo"
+                                [(ngModel)]="respuestaConsejo.enConcejo"
                                 (onChange)="validarCambioEstadoConcejo()"
-                                [disabled]="deshabilitarEnvioAConsejo"
+                                [disabled]="deshabilitarEnvioAConsejo || respuestaConsejo.enConcejo"
                             ></p-inputSwitch>
                             <div
                                 class="flex align-items-center justify-content-center ml-2"
@@ -245,7 +234,7 @@
                                 <p-radioButton
                                     name="conceptoSi"
                                     value="Si"
-                                    [(ngModel)]="respuestaConsejo.aval"
+                                    [(ngModel)]="respuestaConsejo.avaladoConcejo"
                                     inputId="conceptoConsejo1"
                                     [disabled]="bloquearConceptoConsejo"
                                 ></p-radioButton>
@@ -255,7 +244,7 @@
                                 <p-radioButton
                                     name="conceptoNo"
                                     value="No"
-                                    [(ngModel)]="respuestaConsejo.aval"
+                                    [(ngModel)]="respuestaConsejo.avaladoConcejo"
                                     inputId="conceptoConsejo2"
                                     [disabled]="bloquearConceptoConsejo"
                                 ></p-radioButton>
@@ -267,7 +256,7 @@
                             <textarea
                                 rows="4"
                                 pInputTextarea
-                                [(ngModel)]="respuestaConsejo.concepto"
+                                [(ngModel)]="respuestaConsejo.conceptoConcejo"
                                 [disabled]="bloquearConceptoConsejo"
                                 style="width: 100%; box-sizing: border-box"
                             ></textarea>
@@ -276,8 +265,7 @@
                             <p class="font-semibold">Acta</p>
                             <p-calendar
                                 inputId="basic"
-                                [(ngModel)]="respuestaConsejo.fecha"
-                                (ngModelChange)="formatearFecha($event)"
+                                [(ngModel)]="fechaConsejo"
                                 placeholder="Fecha"
                                 [disabled]="bloquearConceptoConsejo"
                                 appendTo="body"
@@ -341,7 +329,7 @@
                             label="Enviar respuesta por correo"
                             icon="pi pi-send"
                             iconPos="right"
-                            (click)="descargarDocumentoPDF('Oficio de solicitud ', 'oficioParaConcejo')"
+                            (click)="enviarCorreo('solicitante', 'respuesta-comite')"
                         ></button>
                     </div>
                     <div class="w-full mt-2" *ngIf="urlRespuestaComitePdf && habilitarRespuestaSolicitantes">
@@ -380,7 +368,7 @@
                             label="Enviar respuesta por correo"
                             icon="pi pi-send"
                             iconPos="right"
-                            (click)="descargarDocumentoPDF('Oficio de solicitud ', 'oficioParaConcejo')"
+                            (click)="enviarCorreo('solicitante', 'respuesta-consejo')"
                         ></button>
                     </div>
                     <div class="w-full mt-2" *ngIf="urlRespuestaConcejoPdf">

@@ -101,12 +101,15 @@ export class OficioConcejoAdicionAsignaturas implements DocumentoPDFStrategy {
         let posicionY = this.servicioPDF.agregarContenidoComun(documento, marcaDeAgua, 'consejo');
         posicionY = this.servicioPDF.agregarAsuntoYSolicitud(documento, posicionY, textAsunto, textCuerpo, marcaDeAgua);
 
-        const headers = ['No.', 'Asignatura', 'Docente'];
-        const data = this.servicioGestor.asignaturasAceptadas.map((item, index) => [
-            (index + 1).toString(),
-            item.nombreAsignatura,
-            item.docenteAsignatura,
-        ]);
+        const headers = ['No.', 'Asignatura', 'Grupo', 'Docente'];
+
+        const data = this.servicioGestor.conceptoComite.asignaturasAprobadas
+            .filter((item) => item.aprobado) // Filtra solo las asignaturas aprobadas
+            .map((item, index) => [
+                (index + 1).toString(), // Número secuencial
+                item.nombre, // Nombre de la asignatura
+                // Aquí puedes agregar más columnas si lo necesitas, como 'Grupo' o 'Docente'
+            ]);
 
         posicionY = this.servicioPDF.agregarTablaPersonalizada(documento, posicionY, headers, data, marcaDeAgua);
         posicionY = this.servicioPDF.agregarDespedida(documento, posicionY + 5, marcaDeAgua);
@@ -142,7 +145,7 @@ export class RespuestaConcejoAdicionAsignaturas implements DocumentoPDFStrategy 
         } de ${mesEnLetras} de ${
             fechaComite[2]
         } se recibio despuesta del Concejo de Facultad referente a su solicitud ${radicado} de Adición de Asignaturas, ${
-            this.servicioGestor.respuestaConsejo.aval === 'Si'
+            this.servicioGestor.conceptoConsejo.avaladoConcejo === 'Si'
                 ? 'El Consejo decide aprobar su solicitud bajo el siguiente concepto'
                 : 'El Consejo decide no aprobar su solicitud bajo el siguiente concepto'
         }.`;

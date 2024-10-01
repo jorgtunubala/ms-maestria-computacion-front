@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpService } from './http.service';
 import { Observable, of, Subject, tap } from 'rxjs';
-import { SolicitudEnComiteResponse, SolicitudRecibida } from '../models/indiceModelos';
+import { SolicitudEnComiteResponse, SolicitudEnConcejoResponse, SolicitudRecibida } from '../models/indiceModelos';
 import { DatosSolicitudRequest } from '../models/solicitudes/datosSolicitudRequest';
 
 interface InfoDecano {
@@ -25,7 +25,7 @@ export class GestorService {
     infoSolicitud: DatosSolicitudRequest;
     estadoSolicitud: string;
     conceptoComite: SolicitudEnComiteResponse;
-    respuestaConsejo: any;
+    conceptoConsejo: SolicitudEnConcejoResponse;
     asignaturasAceptadas: any[];
 
     decano: InfoDecano = { nombre: 'Alejandro Toledo Tovar', titulo: 'Magister' };

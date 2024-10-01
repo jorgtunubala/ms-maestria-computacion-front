@@ -25,13 +25,11 @@ export class HistorialComponent implements OnInit {
         'No Avalada Tutor': { color: '#AF0000', icon: 'pi pi-ban' },
         'No Avalada Director': { color: '#AF0000', icon: 'pi pi-ban' },
         'Rechazada Coordinador': { color: '#AF0000', icon: 'pi pi-ban' },
+        'En comité': { color: '#0F2041', icon: 'pi pi-check-circle' },
+        'En concejo': { color: '#0F2041', icon: 'pi pi-check-circle' },
     };
 
-    constructor(
-        public seguimiento: SeguimientoService,
-        private datePipe: DatePipe,
-        private router: Router
-    ) {}
+    constructor(public seguimiento: SeguimientoService, private datePipe: DatePipe, private router: Router) {}
 
     ngOnInit(): void {
         if (this.seguimiento.historial.length > 0) {
