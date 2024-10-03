@@ -412,31 +412,38 @@ export class TramiteComponent implements OnInit {
     }
 
     guardarRespuestaConsejo() {
-        this.habilitarRespuestaSolicitantesConsejo = false;
+        if (this.validarFormularioConcejo()) {
+            this.habilitarRespuestaSolicitantesConsejo = false;
 
-        if (this.conceptoConsejoGuardado) {
-            this.bloquearConceptoConsejo = false;
-            this.conceptoConsejoGuardado = false;
+            if (this.conceptoConsejoGuardado) {
+                this.bloquearConceptoConsejo = false;
+                this.conceptoConsejoGuardado = false;
 
-            // Lógica para editar
+                // Lógica para editar
+            } else {
+                this.bloquearConceptoConsejo = true;
+                this.conceptoConsejoGuardado = true;
+
+                // Lógica para guardar
+                this.respuestaConsejo.fechaAval = this.formatearFecha(this.fechaConsejo);
+                this.gestor.conceptoConsejo = this.respuestaConsejo;
+                this.respuestaConsejo.documentosConcejo = ['DOC1', 'DOC2'];
+
+                console.log(this.respuestaConsejo);
+                this.http.guardarConceptoConsejo(this.respuestaConsejo).subscribe(
+                    (response) => {
+                        if (response) {
+                            this.mostrarAlertaFormulario('guardado');
+                        }
+                        this.habilitarRespuestaSolicitantesConsejo = true;
+                    },
+                    (error) => {
+                        console.error('Error al guardar el concepto:', error);
+                    }
+                );
+            }
         } else {
-            this.bloquearConceptoConsejo = true;
-            this.conceptoConsejoGuardado = true;
-
-            // Lógica para guardar
-            this.respuestaConsejo.fechaAval = this.formatearFecha(this.fechaConsejo);
-            this.gestor.conceptoConsejo = this.respuestaConsejo;
-            this.respuestaConsejo.documentosConcejo = ['DOC1', 'DOC2'];
-
-            console.log(this.respuestaConsejo);
-            this.http.guardarConceptoConsejo(this.respuestaConsejo).subscribe(
-                (response) => {
-                    this.habilitarRespuestaSolicitantesConsejo = true;
-                },
-                (error) => {
-                    console.error('Error al guardar el concepto:', error);
-                }
-            );
+            this.mostrarAlertaFormulario('incompleto');
         }
     }
 
@@ -584,6 +591,14 @@ export class TramiteComponent implements OnInit {
             this.fechaSeleccionada !== null &&
             this.avalComite.numeroActa !== '' &&
             (this.avalComite.asignaturasAprobadas.length === 0 || hayAsignaturasAprobadas)
+        );
+    }
+
+    private validarFormularioConcejo(): boolean {
+        return (
+            (this.respuestaConsejo.avaladoConcejo === 'Si' || this.respuestaConsejo.avaladoConcejo === 'No') &&
+            this.respuestaConsejo.conceptoConcejo !== '' &&
+            this.fechaConsejo !== null
         );
     }
 
