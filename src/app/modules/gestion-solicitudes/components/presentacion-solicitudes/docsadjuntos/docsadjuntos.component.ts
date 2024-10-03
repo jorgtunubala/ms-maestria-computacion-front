@@ -16,11 +16,7 @@ export class DocsAdjuntosComponent implements OnInit {
         return '¿Estás seguro de que quieres salir de la página?';
     }
 
-    constructor(
-        public radicar: RadicarService,
-        private router: Router,
-        private messageService: MessageService
-    ) {}
+    constructor(public radicar: RadicarService, private router: Router, private messageService: MessageService) {}
 
     ngOnInit(): void {
         try {
@@ -29,14 +25,9 @@ export class DocsAdjuntosComponent implements OnInit {
             console.error('Se produjo un error:', error);
 
             // Verificar si el error es del tipo TypeError y si contiene la cadena 'documentosRequeridos'
-            if (
-                error instanceof TypeError &&
-                error.message.includes('documentosRequeridos')
-            ) {
+            if (error instanceof TypeError && error.message.includes('documentosRequeridos')) {
                 // Redirigir al usuario a una ruta específica
-                this.router.navigate([
-                    '/gestionsolicitudes/portafolio/radicar/selector',
-                ]);
+                this.router.navigate(['/gestionsolicitudes/portafolio/radicar/selector']);
             } else {
                 // Manejar otros errores de manera apropiada
                 console.error('Error no esperado:', error);
@@ -65,10 +56,7 @@ export class DocsAdjuntosComponent implements OnInit {
             const fileExtension = originalName.split('.').pop();
 
             // Obtener el nuevo nombre del archivo
-            const nuevoNombre =
-                this.radicar.requisitosSolicitudEscogida.documentosRequeridos[
-                    indice
-                ].nombre;
+            const nuevoNombre = this.radicar.requisitosSolicitudEscogida.documentosRequeridos[indice].nombre;
             const nuevoNombreConExtension = `${nuevoNombre}.${fileExtension}`;
 
             const renamedFile = new File([doc], nuevoNombreConExtension, {
@@ -87,20 +75,14 @@ export class DocsAdjuntosComponent implements OnInit {
     }
 
     validarDocsCompletos(): boolean {
-        /*
         if (
-            [
-                'RE_CRED_PAS',
-                'RE_CRED_DIS',
-                'PR_CURS_TEO',
-                'AS_CRED_MAT',
-            ].includes(this.radicar.tipoSolicitudEscogida.codigoSolicitud)
+            ['RE_CRED_PAS', 'RE_CRED_DIS', 'PR_CURS_TEO', 'AS_CRED_MAT'].includes(
+                this.radicar.tipoSolicitudEscogida.codigoSolicitud
+            )
         ) {
             if (
                 this.radicar.documentosAdjuntos.length !==
-                this.radicar.requisitosSolicitudEscogida.documentosRequeridos
-                    .length -
-                    1
+                this.radicar.requisitosSolicitudEscogida.documentosRequeridos.length - 1
             ) {
                 return false;
             }
@@ -112,8 +94,7 @@ export class DocsAdjuntosComponent implements OnInit {
             // Verifica si los tamaños son iguales
             if (
                 this.radicar.documentosAdjuntos.length !==
-                this.radicar.requisitosSolicitudEscogida.documentosRequeridos
-                    .length
+                this.radicar.requisitosSolicitudEscogida.documentosRequeridos.length
             ) {
                 return false;
             }
@@ -125,7 +106,7 @@ export class DocsAdjuntosComponent implements OnInit {
                 return false;
             }
         }
-*/
+
         return true; // Si pasa ambas verificaciones, devuelve true
     }
 
@@ -139,17 +120,13 @@ export class DocsAdjuntosComponent implements OnInit {
 
     navigateToNext() {
         if (this.validarDocsCompletos()) {
-            this.router.navigate([
-                '/gestionsolicitudes/portafolio/radicar/resumen',
-            ]);
+            this.router.navigate(['/gestionsolicitudes/portafolio/radicar/resumen']);
         } else {
             this.showWarn();
         }
     }
 
     navigateToBack() {
-        this.router.navigate([
-            '/gestionsolicitudes/portafolio/radicar/formulario',
-        ]);
+        this.router.navigate(['/gestionsolicitudes/portafolio/radicar/formulario']);
     }
 }

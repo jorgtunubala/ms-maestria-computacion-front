@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { RadicarService } from 'src/app/modules/gestion-solicitudes/services/radicar.service';
+import { UtilidadesService } from 'src/app/modules/gestion-solicitudes/services/utilidades.service';
 
 interface AdjuntosActividad {
     archivos: File[];
@@ -14,7 +15,7 @@ interface AdjuntosDeActividades {
     styleUrls: ['./creditos.component.scss'],
 })
 export class CreditosComponent implements OnInit {
-    constructor(public radicar: RadicarService) {}
+    constructor(public radicar: RadicarService, public utilidades: UtilidadesService) {}
 
     ngOnInit(): void {}
 
@@ -30,8 +31,7 @@ export class CreditosComponent implements OnInit {
         }
 
         if (event.value.peso == null) {
-            this.radicar.horasAsignables[actividadId] =
-                event.value.horasAsignadas;
+            this.radicar.horasAsignables[actividadId] = event.value.horasAsignadas;
         }
     }
 
@@ -62,22 +62,12 @@ export class CreditosComponent implements OnInit {
         this.radicar.adjuntosDeActividades = newActividades;
     }
 
-    onValueChange(
-        value: number,
-        index: number,
-        pesoActividad: number,
-        horasAsignadas: number
-    ): void {
+    onValueChange(value: number, index: number, pesoActividad: number, horasAsignadas: number): void {
         this.radicar.horasIngresadas[index] = value;
         this.radicar.horasAsignables[index] = value * pesoActividad;
     }
 
-    onUpload(
-        event: any,
-        fileUpload: any,
-        actividadId: number,
-        docIndex: number
-    ) {
+    onUpload(event: any, fileUpload: any, actividadId: number, docIndex: number) {
         if (!this.radicar.adjuntosDeActividades[actividadId]) {
             this.radicar.adjuntosDeActividades[actividadId] = {
                 archivos: [],
@@ -85,11 +75,7 @@ export class CreditosComponent implements OnInit {
             };
         }
 
-        this.radicar.adjuntosDeActividades[actividadId].archivos.splice(
-            docIndex,
-            0,
-            event.files[0]
-        );
+        this.radicar.adjuntosDeActividades[actividadId].archivos.splice(docIndex, 0, event.files[0]);
         fileUpload.clear();
     }
 
@@ -101,62 +87,57 @@ export class CreditosComponent implements OnInit {
             };
         }
 
-        this.radicar.adjuntosDeActividades[actividadId].enlaces.splice(
-            posicion,
-            0,
-            enlace
-        );
+        this.radicar.adjuntosDeActividades[actividadId].enlaces.splice(posicion, 0, enlace);
     }
 
     validarFormulario(): boolean {
         let formularioValido = true;
 
         if (this.radicar.actividadesSeleccionadas.length > 0) {
-            this.radicar.actividadesSeleccionadas.forEach(
-                (actividad, indiceActividad) => {
-                    if (actividad.peso) {
-                        if (this.radicar.horasIngresadas[indiceActividad] < 0) {
-                            formularioValido = false;
-                        }
-                    }
-
-                    if (actividad.documentos.length > 0) {
-                        actividad.documentos.forEach((documento, indiceDoc) => {
-                            const documentoOpcional =
-                                /(\(si aplica\))|(\(opcional\))/i.test(
-                                    documento
-                                );
-
-                            console.log('Doc Opcional: ' + documentoOpcional);
-                            if (
-                                !documentoOpcional &&
-                                !this.radicar.adjuntosDeActividades[
-                                    indiceActividad
-                                ].archivos[indiceDoc]
-                            ) {
-                                formularioValido = false;
-                            }
-                        });
-                    }
-
-                    if (actividad.enlaces.length > 0) {
-                        actividad.enlaces.forEach((enlace, indiceEnlace) => {
-                            const enlaceOpcional =
-                                /(\(si aplica\))|(\(opcional\))/i.test(enlace);
-
-                            console.log('Enlace Opcional: ' + enlaceOpcional);
-                            if (
-                                !enlaceOpcional &&
-                                !this.radicar.adjuntosDeActividades[
-                                    indiceActividad
-                                ].enlaces[indiceEnlace]
-                            ) {
-                                formularioValido = false;
-                            }
-                        });
+            this.radicar.actividadesSeleccionadas.forEach((actividad, indiceActividad) => {
+                if (actividad.peso) {
+                    if (this.radicar.horasIngresadas[indiceActividad] < 0) {
+                        formularioValido = false;
                     }
                 }
-            );
+
+                if (actividad.documentos.length > 0) {
+                    actividad.documentos.forEach((documento, indiceDoc) => {
+                        const documentoOpcional = /(\(si aplica\))|(\(opcional\))/i.test(documento);
+
+                        console.log('Doc Opcional: ' + documentoOpcional);
+                        if (
+                            !documentoOpcional &&
+                            !this.radicar.adjuntosDeActividades[indiceActividad].archivos[indiceDoc]
+                        ) {
+                            formularioValido = false;
+                        }
+                    });
+                }
+
+                if (actividad.enlaces.length > 0) {
+                    actividad.enlaces.forEach((enlace, indiceEnlace) => {
+                        const enlaceOpcional = /(\(si aplica\))|(\(opcional\))/i.test(enlace);
+
+                        console.log('Enlace Opcional: ' + enlaceOpcional);
+                        if (
+                            !enlaceOpcional &&
+                            !this.radicar.adjuntosDeActividades[indiceActividad].enlaces[indiceEnlace]
+                        ) {
+                            formularioValido = false;
+                        }
+
+                        if (
+                            this.radicar.adjuntosDeActividades[indiceActividad].enlaces[indiceEnlace] &&
+                            !this.utilidades.validarUrlSegura(
+                                this.radicar.adjuntosDeActividades[indiceActividad].enlaces[indiceEnlace]
+                            )
+                        ) {
+                            formularioValido = false;
+                        }
+                    });
+                }
+            });
         } else {
             formularioValido = false;
         }

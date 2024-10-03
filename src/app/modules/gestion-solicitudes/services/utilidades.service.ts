@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { DomSanitizer, SafeResourceUrl, SafeUrl } from '@angular/platform-browser';
 
 @Injectable({
     providedIn: 'root',
@@ -72,24 +72,13 @@ export class UtilidadesService {
     // Abre un enlace en una nueva pestaña
     abrirEnlaceExterno(enlace: string): void {
         if (enlace) {
-            const enlaceCompleto = enlace.startsWith('http')
-                ? enlace
-                : `http://${enlace}`;
+            const enlaceCompleto = enlace.startsWith('http') ? enlace : `http://${enlace}`;
             window.open(enlaceCompleto, '_blank');
         }
     }
 
-    extraerFechaDeRange(
-        campoFechas: Date[],
-        posicionFecha: number,
-        separador: string,
-        orden: number
-    ): string {
-        if (
-            posicionFecha < 0 ||
-            posicionFecha >= campoFechas.length ||
-            (orden !== 0 && orden !== 1)
-        ) {
+    extraerFechaDeRange(campoFechas: Date[], posicionFecha: number, separador: string, orden: number): string {
+        if (posicionFecha < 0 || posicionFecha >= campoFechas.length || (orden !== 0 && orden !== 1)) {
             throw new Error('Parámetros inválidos');
         }
 
@@ -141,5 +130,41 @@ export class UtilidadesService {
             'diciembre',
         ];
         return mesesEnLetras[mes - 1]; // Ajuste porque getMonth() devuelve 0-11
+    }
+
+    // Método para validar la seguridad de un enlace
+    validarUrlSegura(enlace: string): boolean {
+        // Expresión regular para validar el formato de la URL
+        const URL_REGEX = /^https:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,}(\/[^\s]*)?$/;
+
+        // Validar el formato de la URL
+        const urlValida = URL_REGEX.test(enlace);
+        if (!urlValida) {
+            return false;
+        }
+
+        // Intentar analizar la URL
+        let parsedUrl: URL;
+        try {
+            parsedUrl = new URL(enlace);
+        } catch (error) {
+            return false;
+        }
+
+        // Patrones sospechosos
+        const SUSPICIOUS_PATTERNS = [
+            /.*(\/redirect|\/click).*/, // URLs de redirección
+            /.*(malicious|phishing|scam).*/i, // Palabras clave sospechosas
+            /.*\?.*=(.*)&.*=.*[^\w]/, // Parámetros inusuales
+        ];
+
+        // Verificar si la URL coincide con patrones sospechosos
+        const isSuspicious = SUSPICIOUS_PATTERNS.some((pattern) => pattern.test(enlace));
+        if (isSuspicious) {
+            return false;
+        }
+
+        // Si todas las validaciones son exitosas
+        return true;
     }
 }

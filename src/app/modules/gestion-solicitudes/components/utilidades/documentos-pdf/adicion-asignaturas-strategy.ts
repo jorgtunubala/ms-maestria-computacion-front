@@ -136,24 +136,30 @@ export class RespuestaConcejoAdicionAsignaturas implements DocumentoPDFStrategy 
         const documento = new jsPDF({ format: 'letter' });
 
         const { radicado } = this.servicioGestor.infoSolicitud.datosComunSolicitud;
-        const fechaComite = this.servicioGestor.conceptoComite.fechaAval.split('/');
-        const mesEnLetras = this.servicioUtilidades.obtenerMesEnLetras(Number(fechaComite[1]));
+        const fechaConcejo = this.servicioGestor.conceptoConsejo.fechaAval.split('/');
+        const mesEnLetras = this.servicioUtilidades.obtenerMesEnLetras(Number(fechaConcejo[1]));
 
         const txtAsunto = `Asunto: Respuesta a Solicitud ${radicado} de Adición de Asignaturas\n`;
         const txtCuerpo = `Reciba un cordial saludo. Por medio de la presente me dirijo a usted con el fin de informar que el día ${
-            fechaComite[0]
+            fechaConcejo[0]
         } de ${mesEnLetras} de ${
-            fechaComite[2]
+            fechaConcejo[2]
         } se recibio despuesta del Concejo de Facultad referente a su solicitud ${radicado} de Adición de Asignaturas, ${
             this.servicioGestor.conceptoConsejo.avaladoConcejo === 'Si'
                 ? 'El Consejo decide aprobar su solicitud bajo el siguiente concepto'
                 : 'El Consejo decide no aprobar su solicitud bajo el siguiente concepto'
         }.`;
-        const txtRemitente = `NOMBRE COORDINADOR DEL PROGRAMA\nCoordinador(a) Maestría en Computación`;
+        const txtConcepto = `${this.servicioGestor.conceptoConsejo.conceptoConcejo}`;
+        const txtRemitente = `${this.servicioGestor.coordinador.nombre.toUpperCase()}\nCoordinador(a) Maestría en Computación`;
 
         let posicionY = this.servicioPDF.agregarContenidoComun(documento, marcaDeAgua, 'solicitante');
         posicionY = this.servicioPDF.agregarAsuntoYSolicitud(documento, posicionY, txtAsunto, txtCuerpo, marcaDeAgua);
-
+        posicionY = this.servicioPDF.agregarTexto(documento, {
+            text: txtConcepto,
+            startY: posicionY + 5,
+            alignment: 'justify',
+            watermark: marcaDeAgua,
+        });
         posicionY = this.servicioPDF.agregarDespedida(documento, posicionY + 5, marcaDeAgua, 'respuesta');
         posicionY = this.servicioPDF.agregarTexto(documento, {
             text: txtRemitente,
