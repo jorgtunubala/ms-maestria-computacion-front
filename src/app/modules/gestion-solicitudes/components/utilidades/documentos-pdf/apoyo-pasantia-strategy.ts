@@ -3,11 +3,13 @@ import { DocumentoPDFStrategy } from '../../../models/documentos/documento-pdf-s
 import { RadicarService } from '../../../services/radicar.service';
 import { PdfService } from '../../../services/pdf.service';
 import { UtilidadesService } from '../../../services/utilidades.service';
+import { GestorService } from '../../../services/gestor.service';
 
 export class SolicitudApoyoEconomicoPasantia implements DocumentoPDFStrategy {
     constructor(
         private servicioRadicar: RadicarService,
-        private pdfService: PdfService,
+        private servicioPDF: PdfService,
+        private servicioGestor: GestorService,
         private servicioUtilidades: UtilidadesService
     ) {}
 
@@ -33,91 +35,58 @@ export class SolicitudApoyoEconomicoPasantia implements DocumentoPDFStrategy {
             this.servicioRadicar.tipoCuenta
         }\nNúmero de Cuenta: ${this.servicioRadicar.numeroCuenta}\nTitular: ${
             this.servicioRadicar.formInfoPersonal.get('nombres').value
-        } ${
-            this.servicioRadicar.formInfoPersonal.get('apellidos').value
-        }\nCédula: ${this.servicioRadicar.cedulaCuentaBanco}\nDirección: ${
-            this.servicioRadicar.direccion
-        }\n`;
+        } ${this.servicioRadicar.formInfoPersonal.get('apellidos').value}\nCédula: ${
+            this.servicioRadicar.cedulaCuentaBanco
+        }\nDirección: ${this.servicioRadicar.direccion}\n`;
 
         // Adjuntar archivos
         const textAdjuntos = `${this.servicioRadicar.obtenerNombreArchivosAdjuntos()}`;
 
         // Añadir contenido común al documento
-        let cursorY = this.pdfService.agregarContenidoComun(doc, marcaDeAgua);
+        let cursorY = this.servicioPDF.agregarContenidoComun(doc, marcaDeAgua);
 
         // Añadir asunto y solicitud
-        cursorY = this.pdfService.agregarAsuntoYSolicitud(
-            doc,
-            cursorY,
-            textAsunto,
-            textSolicitud,
-            marcaDeAgua
-        );
+        cursorY = this.servicioPDF.agregarAsuntoYSolicitud(doc, cursorY, textAsunto, textSolicitud, marcaDeAgua);
 
         // Añadir los datos del apoyo económico
-        cursorY = this.pdfService.agregarTexto(doc, {
+        cursorY = this.servicioPDF.agregarTexto(doc, {
             text: textDatosApoyo,
             startY: cursorY,
             watermark: marcaDeAgua,
         });
 
         // Añadir despedida
-        cursorY = this.pdfService.agregarDespedida(doc, cursorY, marcaDeAgua);
+        cursorY = this.servicioPDF.agregarDespedida(doc, cursorY, marcaDeAgua);
 
         // Añadir espacios de firmas
-        cursorY = this.pdfService.agregarEspaciosDeFirmas(
-            doc,
-            cursorY,
-            true,
-            marcaDeAgua
-        );
+        cursorY = this.servicioPDF.agregarEspaciosDeFirmas(doc, cursorY, true, marcaDeAgua);
 
         // Añadir adjuntos
-        this.pdfService.agregarListadoAdjuntos(
-            doc,
-            cursorY,
-            textAdjuntos,
-            marcaDeAgua
-        );
+        this.servicioPDF.agregarListadoAdjuntos(doc, cursorY, textAdjuntos, marcaDeAgua);
 
         // Retornar el documento generado
         return doc;
     }
 }
 
-export class RespuestaComiteApoyoEconomicoPasantia
-    implements DocumentoPDFStrategy
-{
-    constructor(
-        private servicioRadicar: RadicarService,
-        private servicioPDF: PdfService
-    ) {}
+export class RespuestaComiteApoyoEconomicoPasantia implements DocumentoPDFStrategy {
+    constructor(private servicioRadicar: RadicarService, private servicioPDF: PdfService) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
         throw new Error('Method not implemented.');
     }
 }
 
-export class OficioConcejoApoyoEconomicoPasantia
-    implements DocumentoPDFStrategy
-{
-    constructor(
-        private servicioRadicar: RadicarService,
-        private servicioPDF: PdfService
-    ) {}
+export class OficioConcejoApoyoEconomicoPasantia implements DocumentoPDFStrategy {
+    constructor(private servicioRadicar: RadicarService, private servicioPDF: PdfService) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
         throw new Error('Method not implemented.');
     }
 }
 
-export class RespuestaConcejoApoyoEconomicoPasantia
-    implements DocumentoPDFStrategy
-{
-    constructor(
-        private servicioRadicar: RadicarService,
-        private servicioPDF: PdfService
-    ) {}
+export class RespuestaConcejoApoyoEconomicoPasantia implements DocumentoPDFStrategy {
+    constructor(private servicioRadicar: RadicarService, private servicioPDF: PdfService) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
         throw new Error('Method not implemented.');

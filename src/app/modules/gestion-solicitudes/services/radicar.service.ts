@@ -103,6 +103,7 @@ export class RadicarService {
     instanciasAsignAdiCancel: any[] = [{}];
     datosAsignAdiCancel: {
         nombreAsignatura: string;
+        grupoAsignatura: string;
         docente: TutorYDirector;
     }[] = [];
 
@@ -215,14 +216,10 @@ export class RadicarService {
         return this.clickSubject.asObservable();
     }
 
-    async poblarConDatosSolicitudGuardada(
-        infoSolicitud: DatosSolicitudRequest
-    ) {
+    async poblarConDatosSolicitudGuardada(infoSolicitud: DatosSolicitudRequest) {
         console.log(infoSolicitud);
         //Datos del Solicitante
-        const datosSolicitante = DatosComunSolicitud.toDatosSolicitante(
-            infoSolicitud.datosComunSolicitud
-        );
+        const datosSolicitante = DatosComunSolicitud.toDatosSolicitante(infoSolicitud.datosComunSolicitud);
 
         this.formInfoPersonal = this.fb.group({
             id: [null],
@@ -245,8 +242,7 @@ export class RadicarService {
         */
 
         //Estado de solicitud
-        this.estadoSolicitud =
-            infoSolicitud.datosComunSolicitud.estadoSolicitud;
+        this.estadoSolicitud = infoSolicitud.datosComunSolicitud.estadoSolicitud;
 
         //Fecha de radicado
         this.fechaEnvio = infoSolicitud.datosComunSolicitud.fechaEnvioSolicitud;
@@ -330,22 +326,18 @@ export class RadicarService {
                 };
 */
                 //Datos asignaturas a homologar
-                infoSolicitud.datosSolicitudHomologacion.datosAsignatura.forEach(
-                    (asignatura: any) => {
-                        //console.log(asignatura.contenidoProgramatico);
-                        let asignaturaAHomologar = {
-                            asignatura: asignatura.nombreAsignatura,
-                            creditos: asignatura.creditos,
-                            intensidad: asignatura.intensidadHoraria,
-                            calificacion: asignatura.calificacion,
-                            contenidos: asignatura.contenidoProgramatico,
-                        };
+                infoSolicitud.datosSolicitudHomologacion.datosAsignatura.forEach((asignatura: any) => {
+                    //console.log(asignatura.contenidoProgramatico);
+                    let asignaturaAHomologar = {
+                        asignatura: asignatura.nombreAsignatura,
+                        creditos: asignatura.creditos,
+                        intensidad: asignatura.intensidadHoraria,
+                        calificacion: asignatura.calificacion,
+                        contenidos: asignatura.contenidoProgramatico,
+                    };
 
-                        this.datosAsignaturasAHomologar.push(
-                            asignaturaAHomologar
-                        );
-                    }
-                );
+                    this.datosAsignaturasAHomologar.push(asignaturaAHomologar);
+                });
 
                 /*
                 console.log(
@@ -354,9 +346,7 @@ export class RadicarService {
                 */
 
                 //Docs Adjuntos
-                await this.asignarDocumentosAdjuntos(
-                    infoSolicitud.datosSolicitudHomologacion.documentosAdjuntos
-                );
+                await this.asignarDocumentosAdjuntos(infoSolicitud.datosSolicitudHomologacion.documentosAdjuntos);
 
                 break;
 
@@ -379,21 +369,19 @@ export class RadicarService {
                     infoSolicitud.datosSolicitudCursarAsignaturas.motivo;
 */
                 this.datosAsignaturasExternas =
-                    infoSolicitud.datosSolicitudCursarAsignaturas.datosAsignaturaOtroProgramas.map(
-                        (asignatura) => ({
-                            nombre: asignatura.nombre,
-                            programa: asignatura.nombrePrograma,
-                            institucion: 'FALTA',
-                            creditos: asignatura.creditos,
-                            intensidad: asignatura.intensidadHoraria,
-                            codigo: asignatura.codigo,
-                            grupo: asignatura.grupo,
-                            docente: asignatura.nombreDocente,
-                            tituloDocente: 'FALTA',
-                            contenidos: null,
-                            cartaAceptacion: null,
-                        })
-                    );
+                    infoSolicitud.datosSolicitudCursarAsignaturas.datosAsignaturaOtroProgramas.map((asignatura) => ({
+                        nombre: asignatura.nombre,
+                        programa: asignatura.nombrePrograma,
+                        institucion: 'FALTA',
+                        creditos: asignatura.creditos,
+                        intensidad: asignatura.intensidadHoraria,
+                        codigo: asignatura.codigo,
+                        grupo: asignatura.grupo,
+                        docente: asignatura.nombreDocente,
+                        tituloDocente: 'FALTA',
+                        contenidos: null,
+                        cartaAceptacion: null,
+                    }));
 
                 break;
 
@@ -408,9 +396,7 @@ export class RadicarService {
                     infoSolicitud.datoAvalPasantiaInv.fechaFin
                 );
                 */
-                await this.asignarDocumentosAdjuntos(
-                    infoSolicitud.datoAvalPasantiaInv.documentosAdjuntos
-                );
+                await this.asignarDocumentosAdjuntos(infoSolicitud.datoAvalPasantiaInv.documentosAdjuntos);
 
                 break;
 
@@ -445,9 +431,7 @@ export class RadicarService {
                     infoSolicitud.datosApoyoEconomico.direccionResidencia;
 
                     */
-                await this.asignarDocumentosAdjuntos(
-                    infoSolicitud.datosApoyoEconomico.documentosAdjuntos
-                );
+                await this.asignarDocumentosAdjuntos(infoSolicitud.datosApoyoEconomico.documentosAdjuntos);
 
                 break;
 
@@ -491,9 +475,7 @@ export class RadicarService {
                             .nombreDirectorGrupo,
                 };
 */
-                await this.asignarDocumentosAdjuntos(
-                    infoSolicitud.datosApoyoEconomicoCongreso.documentosAdjuntos
-                );
+                await this.asignarDocumentosAdjuntos(infoSolicitud.datosApoyoEconomicoCongreso.documentosAdjuntos);
 
                 break;
             }
@@ -534,10 +516,7 @@ export class RadicarService {
                 this.direccion =
                     infoSolicitud.datosApoyoEconomicoPublicacion.direccionResidencia;
 */
-                await this.asignarDocumentosAdjuntos(
-                    infoSolicitud.datosApoyoEconomicoPublicacion
-                        .documentosAdjuntos
-                );
+                await this.asignarDocumentosAdjuntos(infoSolicitud.datosApoyoEconomicoPublicacion.documentosAdjuntos);
 
                 break;
 
@@ -648,18 +627,15 @@ export class RadicarService {
 
                 // Verificación y conversión de documento adjunto
                 if (infoSolicitud.datoSolicitudBeca.formatoSolicitudBeca) {
-                    this.documentosAdjuntos[0] =
-                        await this.utilidades.convertirBase64AFile(
-                            infoSolicitud.datoSolicitudBeca.formatoSolicitudBeca
-                        );
+                    this.documentosAdjuntos[0] = await this.utilidades.convertirBase64AFile(
+                        infoSolicitud.datoSolicitudBeca.formatoSolicitudBeca
+                    );
                 }
                 break;
             }
 
             case 'AV_SEMI_ACT':
-                this.asignarDocumentosAdjuntos(
-                    infoSolicitud.datosAvalSeminario.documentosAdjuntos
-                );
+                this.asignarDocumentosAdjuntos(infoSolicitud.datosAvalSeminario.documentosAdjuntos);
                 break;
 
             default:
@@ -671,14 +647,11 @@ export class RadicarService {
         console.log(docs);
         this.documentosAdjuntos = await Promise.all(
             docs.map(async (cadenaBase64) => {
-                const archivo =
-                    this.utilidades.convertirBase64AFile(cadenaBase64);
+                const archivo = this.utilidades.convertirBase64AFile(cadenaBase64);
                 if (archivo) {
                     return archivo;
                 } else {
-                    throw new Error(
-                        'Error al convertir la cadena base64 a archivo.'
-                    );
+                    throw new Error('Error al convertir la cadena base64 a archivo.');
                 }
             })
         );
@@ -714,8 +687,7 @@ export class RadicarService {
         // Procesar adjuntosDeActividades
         if (this.adjuntosDeActividades) {
             Object.keys(this.adjuntosDeActividades).forEach((actividadId) => {
-                const adjuntosActividad =
-                    this.adjuntosDeActividades[Number(actividadId)];
+                const adjuntosActividad = this.adjuntosDeActividades[Number(actividadId)];
                 if (adjuntosActividad) {
                     adjuntos.push(`Actividad ${Number(actividadId) + 1}`);
                     adjuntosActividad.archivos?.forEach((archivo) => {

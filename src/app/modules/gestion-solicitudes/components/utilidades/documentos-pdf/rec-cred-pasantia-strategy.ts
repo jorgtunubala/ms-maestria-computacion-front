@@ -3,11 +3,13 @@ import { DocumentoPDFStrategy } from '../../../models/documentos/documento-pdf-s
 import { RadicarService } from '../../../services/radicar.service';
 import { PdfService } from '../../../services/pdf.service';
 import { UtilidadesService } from '../../../services/utilidades.service';
+import { GestorService } from '../../../services/gestor.service';
 
 export class SolicitudRecoCredPasantia implements DocumentoPDFStrategy {
     constructor(
         private servicioRadicar: RadicarService,
         private pdfService: PdfService,
+        private servicioGestor: GestorService,
         private servicioUtilidades: UtilidadesService
     ) {}
 
@@ -30,13 +32,7 @@ export class SolicitudRecoCredPasantia implements DocumentoPDFStrategy {
         let cursorY = this.pdfService.agregarContenidoComun(doc, marcaDeAgua);
 
         // Añadir asunto y solicitud
-        cursorY = this.pdfService.agregarAsuntoYSolicitud(
-            doc,
-            cursorY,
-            textAsunto,
-            textSolicitud,
-            marcaDeAgua
-        );
+        cursorY = this.pdfService.agregarAsuntoYSolicitud(doc, cursorY, textAsunto, textSolicitud, marcaDeAgua);
 
         // Añadir enlace al video de socialización
         cursorY = this.pdfService.agregarTexto(doc, {
@@ -54,20 +50,10 @@ export class SolicitudRecoCredPasantia implements DocumentoPDFStrategy {
         cursorY = this.pdfService.agregarDespedida(doc, cursorY, marcaDeAgua);
 
         // Añadir espacios para firmas
-        cursorY = this.pdfService.agregarEspaciosDeFirmas(
-            doc,
-            cursorY,
-            false,
-            marcaDeAgua
-        );
+        cursorY = this.pdfService.agregarEspaciosDeFirmas(doc, cursorY, false, marcaDeAgua);
 
         // Añadir listado de adjuntos
-        this.pdfService.agregarListadoAdjuntos(
-            doc,
-            cursorY,
-            textAdjuntos,
-            marcaDeAgua
-        );
+        this.pdfService.agregarListadoAdjuntos(doc, cursorY, textAdjuntos, marcaDeAgua);
 
         // Retornar el documento generado
         return doc;
@@ -75,10 +61,7 @@ export class SolicitudRecoCredPasantia implements DocumentoPDFStrategy {
 }
 
 export class RespuestaComiteRecoCredPasantia implements DocumentoPDFStrategy {
-    constructor(
-        private servicioRadicar: RadicarService,
-        private servicioPDF: PdfService
-    ) {}
+    constructor(private servicioRadicar: RadicarService, private servicioPDF: PdfService) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
         throw new Error('Method not implemented.');
@@ -86,10 +69,7 @@ export class RespuestaComiteRecoCredPasantia implements DocumentoPDFStrategy {
 }
 
 export class OficioConcejoRecoCredPasantia implements DocumentoPDFStrategy {
-    constructor(
-        private servicioRadicar: RadicarService,
-        private servicioPDF: PdfService
-    ) {}
+    constructor(private servicioRadicar: RadicarService, private servicioPDF: PdfService) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
         throw new Error('Method not implemented.');
@@ -97,10 +77,7 @@ export class OficioConcejoRecoCredPasantia implements DocumentoPDFStrategy {
 }
 
 export class RespuestaConcejoRecoCredPasantia implements DocumentoPDFStrategy {
-    constructor(
-        private servicioRadicar: RadicarService,
-        private servicioPDF: PdfService
-    ) {}
+    constructor(private servicioRadicar: RadicarService, private servicioPDF: PdfService) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
         throw new Error('Method not implemented.');

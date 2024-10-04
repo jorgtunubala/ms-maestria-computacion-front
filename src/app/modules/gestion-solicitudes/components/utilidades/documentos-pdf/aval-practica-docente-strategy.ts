@@ -3,11 +3,13 @@ import { DocumentoPDFStrategy } from '../../../models/documentos/documento-pdf-s
 import { RadicarService } from '../../../services/radicar.service';
 import { PdfService } from '../../../services/pdf.service';
 import { UtilidadesService } from '../../../services/utilidades.service';
+import { GestorService } from '../../../services/gestor.service';
 
 export class SolicitudAvalPracticaDocente implements DocumentoPDFStrategy {
     constructor(
         private servicioRadicar: RadicarService,
         private pdfService: PdfService,
+        private servicioGestor: GestorService,
         private servicioUtilidades: UtilidadesService
     ) {}
 
@@ -27,27 +29,17 @@ export class SolicitudAvalPracticaDocente implements DocumentoPDFStrategy {
         let cursorY = this.pdfService.agregarContenidoComun(doc, marcaDeAgua);
 
         // Añadir asunto y solicitud
-        cursorY = this.pdfService.agregarAsuntoYSolicitud(
-            doc,
-            cursorY,
-            textAsunto,
-            textSolicitud,
-            marcaDeAgua
-        );
+        cursorY = this.pdfService.agregarAsuntoYSolicitud(doc, cursorY, textAsunto, textSolicitud, marcaDeAgua);
 
         // Salto de línea
         doc.text('', 5, cursorY);
         cursorY += 5;
 
         // Añadir actividades seleccionadas
-        for (
-            let index = 0;
-            index < this.servicioRadicar.actividadesSeleccionadas.length;
-            index++
-        ) {
-            const titulo = `${index + 1}. ${
-                this.servicioRadicar.actividadesSeleccionadas[index].nombre
-            } - ${this.servicioRadicar.horasAsignables[index]}h`;
+        for (let index = 0; index < this.servicioRadicar.actividadesSeleccionadas.length; index++) {
+            const titulo = `${index + 1}. ${this.servicioRadicar.actividadesSeleccionadas[index].nombre} - ${
+                this.servicioRadicar.horasAsignables[index]
+            }h`;
             const descripcion = `${this.servicioRadicar.descripcionesActividades[index]}`;
 
             // Añadir título de la actividad
@@ -76,25 +68,15 @@ export class SolicitudAvalPracticaDocente implements DocumentoPDFStrategy {
         cursorY = this.pdfService.agregarDespedida(doc, cursorY, marcaDeAgua);
 
         // Añadir espacios para firmas
-        cursorY = this.pdfService.agregarEspaciosDeFirmas(
-            doc,
-            cursorY,
-            false,
-            marcaDeAgua
-        );
+        cursorY = this.pdfService.agregarEspaciosDeFirmas(doc, cursorY, false, marcaDeAgua);
 
         // Retornar el documento generado
         return doc;
     }
 }
 
-export class RespuestaComiteAvalPracticaDocente
-    implements DocumentoPDFStrategy
-{
-    constructor(
-        private servicioRadicar: RadicarService,
-        private servicioPDF: PdfService
-    ) {}
+export class RespuestaComiteAvalPracticaDocente implements DocumentoPDFStrategy {
+    constructor(private servicioRadicar: RadicarService, private servicioPDF: PdfService) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
         throw new Error('Method not implemented.');
@@ -102,23 +84,15 @@ export class RespuestaComiteAvalPracticaDocente
 }
 
 export class OficioConcejoAvalPracticaDocente implements DocumentoPDFStrategy {
-    constructor(
-        private servicioRadicar: RadicarService,
-        private servicioPDF: PdfService
-    ) {}
+    constructor(private servicioRadicar: RadicarService, private servicioPDF: PdfService) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
         throw new Error('Method not implemented.');
     }
 }
 
-export class RespuestaConcejoAvalPracticaDocente
-    implements DocumentoPDFStrategy
-{
-    constructor(
-        private servicioRadicar: RadicarService,
-        private servicioPDF: PdfService
-    ) {}
+export class RespuestaConcejoAvalPracticaDocente implements DocumentoPDFStrategy {
+    constructor(private servicioRadicar: RadicarService, private servicioPDF: PdfService) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
         throw new Error('Method not implemented.');

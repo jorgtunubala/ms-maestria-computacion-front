@@ -67,9 +67,6 @@ export class BuzonComponent implements OnInit {
 
     ngOnInit(): void {
         const filtro = this.extraerFiltroDeRuta() || 'nuevas';
-
-        console.log(filtro);
-
         this.setConfiguracion(filtro);
         this.cargarSolicitudes(this.obtenerEstadoAsociado(filtro));
         this.restablecerValoresEnServicios();

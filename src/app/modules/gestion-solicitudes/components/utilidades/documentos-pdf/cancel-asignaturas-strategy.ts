@@ -3,11 +3,13 @@ import { DocumentoPDFStrategy } from '../../../models/documentos/documento-pdf-s
 import { RadicarService } from '../../../services/radicar.service';
 import { PdfService } from '../../../services/pdf.service';
 import { UtilidadesService } from '../../../services/utilidades.service';
+import { GestorService } from '../../../services/gestor.service';
 
 export class SolicitudCancelacionAsignaturas implements DocumentoPDFStrategy {
     constructor(
         private servicioRadicar: RadicarService,
         private pdfService: PdfService,
+        private servicioGestor: GestorService,
         private servicioUtilidades: UtilidadesService
     ) {}
 
@@ -27,32 +29,19 @@ export class SolicitudCancelacionAsignaturas implements DocumentoPDFStrategy {
         let cursorY = this.pdfService.agregarContenidoComun(doc, marcaDeAgua);
 
         // Añadir asunto y solicitud
-        cursorY = this.pdfService.agregarAsuntoYSolicitud(
-            doc,
-            cursorY,
-            textAsunto,
-            textSolicitud,
-            marcaDeAgua
-        );
+        cursorY = this.pdfService.agregarAsuntoYSolicitud(doc, cursorY, textAsunto, textSolicitud, marcaDeAgua);
 
         // Datos para la tabla
-        const headers = ['No.', 'Asignatura', 'Docente'];
-        const data = this.servicioRadicar.datosAsignAdiCancel.map(
-            (item, index) => [
-                (index + 1).toString(),
-                item.nombreAsignatura,
-                item.docente.nombreTutor,
-            ]
-        );
+        const headers = ['No.', 'Asignatura', 'Grupo', 'Docente'];
+        const data = this.servicioRadicar.datosAsignAdiCancel.map((item, index) => [
+            (index + 1).toString(),
+            item.nombreAsignatura,
+            item.grupoAsignatura,
+            item.docente.nombreTutor,
+        ]);
 
         // Añadir tabla
-        cursorY = this.pdfService.agregarTablaPersonalizada(
-            doc,
-            cursorY,
-            headers,
-            data,
-            marcaDeAgua
-        );
+        cursorY = this.pdfService.agregarTablaPersonalizada(doc, cursorY, headers, data, marcaDeAgua);
 
         // Añadir motivo
         cursorY = this.pdfService.agregarTexto(doc, {
@@ -70,51 +59,31 @@ export class SolicitudCancelacionAsignaturas implements DocumentoPDFStrategy {
         cursorY = this.pdfService.agregarDespedida(doc, cursorY, marcaDeAgua);
 
         // Añadir espacios para firmas
-        cursorY = this.pdfService.agregarEspaciosDeFirmas(
-            doc,
-            cursorY,
-            false,
-            marcaDeAgua
-        );
+        cursorY = this.pdfService.agregarEspaciosDeFirmas(doc, cursorY, false, marcaDeAgua);
 
         // Retornar el documento generado
         return doc;
     }
 }
 
-export class RespuestaComiteCancelacionAsignaturas
-    implements DocumentoPDFStrategy
-{
-    constructor(
-        private servicioRadicar: RadicarService,
-        private servicioPDF: PdfService
-    ) {}
+export class RespuestaComiteCancelacionAsignaturas implements DocumentoPDFStrategy {
+    constructor(private servicioRadicar: RadicarService, private servicioPDF: PdfService) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
         throw new Error('Method not implemented.');
     }
 }
 
-export class OficioConcejoCancelacionAsignaturas
-    implements DocumentoPDFStrategy
-{
-    constructor(
-        private servicioRadicar: RadicarService,
-        private servicioPDF: PdfService
-    ) {}
+export class OficioConcejoCancelacionAsignaturas implements DocumentoPDFStrategy {
+    constructor(private servicioRadicar: RadicarService, private servicioPDF: PdfService) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
         throw new Error('Method not implemented.');
     }
 }
 
-export class RespuestaConcejoCancelacionAsignaturas
-    implements DocumentoPDFStrategy
-{
-    constructor(
-        private servicioRadicar: RadicarService,
-        private servicioPDF: PdfService
-    ) {}
+export class RespuestaConcejoCancelacionAsignaturas implements DocumentoPDFStrategy {
+    constructor(private servicioRadicar: RadicarService, private servicioPDF: PdfService) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
         throw new Error('Method not implemented.');

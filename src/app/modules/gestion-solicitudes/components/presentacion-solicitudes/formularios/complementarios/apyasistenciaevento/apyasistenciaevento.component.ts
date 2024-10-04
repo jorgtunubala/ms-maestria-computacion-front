@@ -1,11 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import {
-    AbstractControl,
-    FormBuilder,
-    FormGroup,
-    Validators,
-} from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RadicarService } from 'src/app/modules/gestion-solicitudes/services/radicar.service';
+import { UtilidadesService } from 'src/app/modules/gestion-solicitudes/services/utilidades.service';
 
 @Component({
     selector: 'app-apyasistenciaevento',
@@ -17,16 +13,18 @@ export class ApyasistenciaeventoComponent implements OnInit {
     tiposCuentaBancaria: string[];
     tiposCongreso: string[];
 
-    constructor(public radicar: RadicarService, private fb: FormBuilder) {
-        this.tiposCuentaBancaria = [
-            'Seleccione una opción',
-            'Ahorros',
-            'Corriente',
-        ];
+    constructor(
+        public radicar: RadicarService,
+        private fb: FormBuilder,
+        private servicioUtilidades: UtilidadesService
+    ) {
+        this.tiposCuentaBancaria = ['Seleccione una opción', 'Ahorros', 'Corriente'];
         this.tiposCongreso = ['Seleccione una opción', 'Opcion 1', 'Opcion 2'];
     }
 
     ngOnInit(): void {
+        this.servicioUtilidades.configurarIdiomaCalendario();
+
         this.formApoyoAsistEvento = this.fb.group({
             nombreCongreso: ['', Validators.required],
             tipoCongreso: ['', this.customValidator()],
@@ -42,9 +40,7 @@ export class ApyasistenciaeventoComponent implements OnInit {
 
         // Verificar si ya hay datos en el servicio
         const formData = this.radicar.formApoyoAsistEvento.value;
-        const hasData = Object.values(formData).some(
-            (value) => value !== null && value !== ''
-        );
+        const hasData = Object.values(formData).some((value) => value !== null && value !== '');
 
         if (hasData) {
             // Cargar datos en el formulario desde el servicio
@@ -58,10 +54,7 @@ export class ApyasistenciaeventoComponent implements OnInit {
     customValidator() {
         return (control: AbstractControl) => {
             const tipoSeleccionado: string = control.value;
-            if (
-                !tipoSeleccionado ||
-                tipoSeleccionado === 'Seleccione una opción'
-            ) {
+            if (!tipoSeleccionado || tipoSeleccionado === 'Seleccione una opción') {
                 return { tipoInvalido: true };
             }
             return null;

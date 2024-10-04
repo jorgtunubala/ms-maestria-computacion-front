@@ -3,11 +3,13 @@ import { DocumentoPDFStrategy } from '../../../models/documentos/documento-pdf-s
 import { RadicarService } from '../../../services/radicar.service';
 import { PdfService } from '../../../services/pdf.service';
 import { UtilidadesService } from '../../../services/utilidades.service';
+import { GestorService } from '../../../services/gestor.service';
 
 export class SolicitudAvalPasantia implements DocumentoPDFStrategy {
     constructor(
         private servicioRadicar: RadicarService,
         private pdfService: PdfService,
+        private servicioGestor: GestorService,
         private servicioUtilidades: UtilidadesService
     ) {}
 
@@ -31,13 +33,7 @@ export class SolicitudAvalPasantia implements DocumentoPDFStrategy {
         let cursorY = this.pdfService.agregarContenidoComun(doc, marcaDeAgua);
 
         // Añadir asunto y solicitud
-        cursorY = this.pdfService.agregarAsuntoYSolicitud(
-            doc,
-            cursorY,
-            textAsunto,
-            textSolicitud,
-            marcaDeAgua
-        );
+        cursorY = this.pdfService.agregarAsuntoYSolicitud(doc, cursorY, textAsunto, textSolicitud, marcaDeAgua);
 
         // Salto de línea
         doc.text('', 5, cursorY);
@@ -47,20 +43,10 @@ export class SolicitudAvalPasantia implements DocumentoPDFStrategy {
         cursorY = this.pdfService.agregarDespedida(doc, cursorY, marcaDeAgua);
 
         // Añadir espacios para firmas
-        cursorY = this.pdfService.agregarEspaciosDeFirmas(
-            doc,
-            cursorY,
-            false,
-            marcaDeAgua
-        );
+        cursorY = this.pdfService.agregarEspaciosDeFirmas(doc, cursorY, false, marcaDeAgua);
 
         // Añadir listado de adjuntos
-        this.pdfService.agregarListadoAdjuntos(
-            doc,
-            cursorY,
-            textAdjuntos,
-            marcaDeAgua
-        );
+        this.pdfService.agregarListadoAdjuntos(doc, cursorY, textAdjuntos, marcaDeAgua);
 
         // Retornar el documento generado
         return doc;
@@ -68,10 +54,7 @@ export class SolicitudAvalPasantia implements DocumentoPDFStrategy {
 }
 
 export class RespuestaComiteAvalPasantia implements DocumentoPDFStrategy {
-    constructor(
-        private servicioRadicar: RadicarService,
-        private servicioPDF: PdfService
-    ) {}
+    constructor(private servicioRadicar: RadicarService, private servicioPDF: PdfService) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
         throw new Error('Method not implemented.');
@@ -79,10 +62,7 @@ export class RespuestaComiteAvalPasantia implements DocumentoPDFStrategy {
 }
 
 export class OficioConcejoAvalPasantia implements DocumentoPDFStrategy {
-    constructor(
-        private servicioRadicar: RadicarService,
-        private servicioPDF: PdfService
-    ) {}
+    constructor(private servicioRadicar: RadicarService, private servicioPDF: PdfService) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
         throw new Error('Method not implemented.');
@@ -90,10 +70,7 @@ export class OficioConcejoAvalPasantia implements DocumentoPDFStrategy {
 }
 
 export class RespuestaConcejoAvalPasantia implements DocumentoPDFStrategy {
-    constructor(
-        private servicioRadicar: RadicarService,
-        private servicioPDF: PdfService
-    ) {}
+    constructor(private servicioRadicar: RadicarService, private servicioPDF: PdfService) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
         throw new Error('Method not implemented.');

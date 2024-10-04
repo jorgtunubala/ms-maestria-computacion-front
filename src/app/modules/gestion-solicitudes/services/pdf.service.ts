@@ -57,7 +57,8 @@ export class PdfService {
     agregarMembretes(doc, watermark: Boolean) {
         const imgBannerSup = '../assets/layout/images/motivoencabezado.png';
         const imgEscudo = '../assets/layout/images/escudo-unicauca.png';
-        const imgISO90001 = '../assets/layout/images/Logo_ISO_9001.png';
+        const imgAcreditacion = '../assets/layout/images/acreditacion.png';
+        const imgISO9001 = '../assets/layout/images/Logo_ISO_9001.png';
         const imgIQNET = '../assets/layout/images/IQNET-Azul-2.png';
 
         // Fuentes de texto personalizadas
@@ -101,14 +102,15 @@ export class PdfService {
         doc.setFont('OpenSans', 'regular');
         doc.setFontSize(8);
         doc.setTextColor(0, 18, 130);
-        doc.text('Carrera 2 No, 3N-100 Segundo Piso, Sector Tulcán', 85, 254);
-        doc.text('Popayán - Cauca - Colombia', 99, 258);
-        doc.text('Teléfono (602) 8209800 Exts. 2103 - 2145', 91, 262);
+        doc.text('Carrera 2 No, 3N-100 Segundo Piso, Sector Tulcán', 83, 254);
+        doc.text('Popayán - Cauca - Colombia', 97, 258);
+        doc.text('Teléfono (602) 8209800 Exts. 2103 - 2145', 89, 262);
         doc.setFont('OpenSans', 'bold');
-        doc.text('maestriacomputacion@unicauca.edu.co | www.unicauca.edu.co', 72, 266);
+        doc.text('maestriacomputacion@unicauca.edu.co | www.unicauca.edu.co', 70, 266);
 
         // Logos de certificaciones
-        doc.addImage(imgISO90001, 'JPEG', 170, 251, 12, 16);
+        doc.addImage(imgAcreditacion, 'JPEG', 14, 241, 45.05, 35);
+        doc.addImage(imgISO9001, 'JPEG', 170, 251, 12, 16);
         doc.addImage(imgIQNET, 'JPEG', 183, 253, 12, 12);
 
         // Agregar marca de agua si es necesario

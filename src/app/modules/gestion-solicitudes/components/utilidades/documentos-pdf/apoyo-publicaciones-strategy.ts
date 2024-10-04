@@ -3,16 +3,22 @@ import { DocumentoPDFStrategy } from '../../../models/documentos/documento-pdf-s
 import { RadicarService } from '../../../services/radicar.service';
 import { PdfService } from '../../../services/pdf.service';
 import { UtilidadesService } from '../../../services/utilidades.service';
+import { Console } from 'console';
+import { GestorService } from '../../../services/gestor.service';
 
 export class SolicitudApoyoPublicOInscrip implements DocumentoPDFStrategy {
+    // Se deben incluir todos los servicios que define la fabrica asi no se usen
     constructor(
         private servicioRadicar: RadicarService,
         private pdfService: PdfService,
+        private servicioGestor: GestorService,
         private servicioUtilidades: UtilidadesService
     ) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
         const doc = new jsPDF({ format: 'letter' });
+
+        console.log(this.servicioUtilidades);
 
         // Obtener el rango de fechas
         const rangoFechas = this.servicioUtilidades.describirRangoFechas(
@@ -36,11 +42,9 @@ export class SolicitudApoyoPublicOInscrip implements DocumentoPDFStrategy {
             this.servicioRadicar.tipoCuenta
         }\nNúmero de Cuenta: ${this.servicioRadicar.numeroCuenta}\nTitular: ${
             this.servicioRadicar.formInfoPersonal.get('nombres').value
-        } ${
-            this.servicioRadicar.formInfoPersonal.get('apellidos').value
-        }\nCédula: ${this.servicioRadicar.cedulaCuentaBanco}\nDirección: ${
-            this.servicioRadicar.direccion
-        }\n`;
+        } ${this.servicioRadicar.formInfoPersonal.get('apellidos').value}\nCédula: ${
+            this.servicioRadicar.cedulaCuentaBanco
+        }\nDirección: ${this.servicioRadicar.direccion}\n`;
 
         // Adjuntos
         const textAdjuntos = `${this.servicioRadicar.obtenerNombreArchivosAdjuntos()}`;
@@ -68,32 +72,23 @@ export class SolicitudApoyoPublicOInscrip implements DocumentoPDFStrategy {
         cursorY = this.pdfService.agregarDespedida(doc, cursorY, marcaDeAgua);
 
         // Añadir espacios de firmas
-        cursorY = this.pdfService.agregarEspaciosDeFirmas(
-            doc,
-            cursorY,
-            true,
-            marcaDeAgua
-        );
+        cursorY = this.pdfService.agregarEspaciosDeFirmas(doc, cursorY, true, marcaDeAgua);
 
         // Añadir adjuntos
-        this.pdfService.agregarListadoAdjuntos(
-            doc,
-            cursorY,
-            textAdjuntos,
-            marcaDeAgua
-        );
+        this.pdfService.agregarListadoAdjuntos(doc, cursorY, textAdjuntos, marcaDeAgua);
 
         // Retornar el documento generado
         return doc;
     }
 }
 
-export class RespuestaComiteApoyoPublicOInscrip
-    implements DocumentoPDFStrategy
-{
+export class RespuestaComiteApoyoPublicOInscrip implements DocumentoPDFStrategy {
+    // Se deben incluir todos los servicios que define la fabrica asi no se usen
     constructor(
         private servicioRadicar: RadicarService,
-        private servicioPDF: PdfService
+        private pdfService: PdfService,
+        private servicioGestor: GestorService,
+        private servicioUtilidades: UtilidadesService
     ) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
@@ -102,9 +97,12 @@ export class RespuestaComiteApoyoPublicOInscrip
 }
 
 export class OficioConcejoApoyoPublicOInscrip implements DocumentoPDFStrategy {
+    // Se deben incluir todos los servicios que define la fabrica asi no se usen
     constructor(
         private servicioRadicar: RadicarService,
-        private servicioPDF: PdfService
+        private pdfService: PdfService,
+        private servicioGestor: GestorService,
+        private servicioUtilidades: UtilidadesService
     ) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
@@ -112,12 +110,13 @@ export class OficioConcejoApoyoPublicOInscrip implements DocumentoPDFStrategy {
     }
 }
 
-export class RespuestaConcejoApoyoPublicOInscrip
-    implements DocumentoPDFStrategy
-{
+export class RespuestaConcejoApoyoPublicOInscrip implements DocumentoPDFStrategy {
+    // Se deben incluir todos los servicios que define la fabrica asi no se usen
     constructor(
         private servicioRadicar: RadicarService,
-        private servicioPDF: PdfService
+        private pdfService: PdfService,
+        private servicioGestor: GestorService,
+        private servicioUtilidades: UtilidadesService
     ) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {

@@ -94,6 +94,8 @@ export class TramiteComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
+        this.servicioUtilidades.configurarIdiomaCalendario();
+
         this.http.consultarConceptoComite(this.gestor.solicitudSeleccionada.idSolicitud).subscribe(
             async (infoComite: SolicitudEnComiteResponse) => {
                 console.log(infoComite);
