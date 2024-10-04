@@ -1,11 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import {
-    AbstractControl,
-    FormBuilder,
-    FormGroup,
-    Validators,
-} from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RadicarService } from 'src/app/modules/gestion-solicitudes/services/radicar.service';
+import { UtilidadesService } from 'src/app/modules/gestion-solicitudes/services/utilidades.service';
 
 @Component({
     selector: 'app-apypublicacion',
@@ -17,12 +13,12 @@ export class ApypublicacionComponent implements OnInit {
     tiposCuentaBancaria: string[];
     tiposCongreso: string[];
 
-    constructor(public radicar: RadicarService, private fb: FormBuilder) {
-        this.tiposCuentaBancaria = [
-            'Seleccione una opción',
-            'Ahorros',
-            'Corriente',
-        ];
+    constructor(
+        public radicar: RadicarService,
+        private fb: FormBuilder,
+        private servicioUtilidades: UtilidadesService
+    ) {
+        this.tiposCuentaBancaria = ['Seleccione una opción', 'Ahorros', 'Corriente'];
         this.tiposCongreso = [
             'Seleccione una opción',
             'Articulo en revista indexada categoría A1 o A2 de Publindex',
@@ -48,6 +44,8 @@ export class ApypublicacionComponent implements OnInit {
     }
 
     ngOnInit(): void {
+        this.servicioUtilidades.configurarIdiomaCalendario();
+
         if (this.radicar.fechasEstancia.length > 0) {
             this.formApoyoPagoPublic.patchValue({
                 fechas: this.radicar.fechasEstancia,
@@ -103,9 +101,7 @@ export class ApypublicacionComponent implements OnInit {
             // Verificar si value.fechas es una cadena de texto
             if (typeof value.fechas === 'string') {
                 // Dividir el string de fechas en fechaInicio y fechaFin
-                const fechas = value.fechas
-                    .split(' - ')
-                    .map((dateString) => new Date(dateString.trim()));
+                const fechas = value.fechas.split(' - ').map((dateString) => new Date(dateString.trim()));
                 this.radicar.fechasEstancia = fechas;
             } else if (Array.isArray(value.fechas)) {
                 // Verificar si value.fechas es un arreglo de objetos Date
@@ -128,10 +124,7 @@ export class ApypublicacionComponent implements OnInit {
     customValidator() {
         return (control: AbstractControl) => {
             const tipoSeleccionado: string = control.value;
-            if (
-                !tipoSeleccionado ||
-                tipoSeleccionado === 'Seleccione una opción'
-            ) {
+            if (!tipoSeleccionado || tipoSeleccionado === 'Seleccione una opción') {
                 return { tipoInvalido: true };
             }
             return null;

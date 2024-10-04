@@ -1,10 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import {
-    AbstractControl,
-    FormBuilder,
-    FormGroup,
-    Validators,
-} from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TutorYDirector } from 'src/app/modules/gestion-solicitudes/models/tutores/tutorYDirector';
 import { HttpService } from 'src/app/modules/gestion-solicitudes/services/http.service';
 import { RadicarService } from 'src/app/modules/gestion-solicitudes/services/radicar.service';
@@ -21,6 +16,7 @@ export class AsignaturadicioncancelComponent implements OnInit {
     constructor(public radicar: RadicarService, private fb: FormBuilder) {
         this.formAsigAdiCancel = this.fb.group({
             nombreAsignatura: ['', Validators.required],
+            grupoAsignatura: ['', Validators.required],
             docenteAsig: ['', this.customValidator()],
         });
     }
@@ -28,11 +24,9 @@ export class AsignaturadicioncancelComponent implements OnInit {
     ngOnInit(): void {
         if (this.radicar.datosAsignAdiCancel[this.indice]) {
             this.formAsigAdiCancel.patchValue({
-                nombreAsignatura:
-                    this.radicar.datosAsignAdiCancel[this.indice]
-                        .nombreAsignatura,
-                docenteAsig:
-                    this.radicar.datosAsignAdiCancel[this.indice].docente,
+                nombreAsignatura: this.radicar.datosAsignAdiCancel[this.indice].nombreAsignatura,
+                grupoAsignatura: this.radicar.datosAsignAdiCancel[this.indice].grupoAsignatura,
+                docenteAsig: this.radicar.datosAsignAdiCancel[this.indice].docente,
             });
         }
 
@@ -52,9 +46,11 @@ export class AsignaturadicioncancelComponent implements OnInit {
     actualizarDatos() {
         const datos: {
             nombreAsignatura: string;
+            grupoAsignatura: string;
             docente: TutorYDirector;
         } = {
             nombreAsignatura: this.formAsigAdiCancel.value.nombreAsignatura,
+            grupoAsignatura: this.formAsigAdiCancel.value.grupoAsignatura,
             docente: this.formAsigAdiCancel.value.docenteAsig,
         };
 
@@ -64,10 +60,7 @@ export class AsignaturadicioncancelComponent implements OnInit {
     customValidator() {
         return (control: AbstractControl) => {
             const docenteSeleccionado: TutorYDirector = control.value;
-            if (
-                !docenteSeleccionado ||
-                docenteSeleccionado.nombreTutor === 'Seleccione un docente'
-            ) {
+            if (!docenteSeleccionado || docenteSeleccionado.nombreTutor === 'Seleccione un docente') {
                 return { invalidTutor: true };
             }
             return null;

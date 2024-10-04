@@ -3,11 +3,13 @@ import { DocumentoPDFStrategy } from '../../../models/documentos/documento-pdf-s
 import { RadicarService } from '../../../services/radicar.service';
 import { PdfService } from '../../../services/pdf.service';
 import { UtilidadesService } from '../../../services/utilidades.service';
+import { GestorService } from '../../../services/gestor.service';
 
 export class SolicitudDeBeca implements DocumentoPDFStrategy {
     constructor(
         private servicioRadicar: RadicarService,
         private pdfService: PdfService,
+        private servicioGestor: GestorService,
         private servicioUtilidades: UtilidadesService
     ) {}
 
@@ -15,13 +17,8 @@ export class SolicitudDeBeca implements DocumentoPDFStrategy {
         const doc = new jsPDF({ format: 'letter' });
 
         // Obtener datos del formulario
-        const tipoBeca =
-            this.servicioRadicar.formSolicitudBecaDescuento.get(
-                'tipoBeca'
-            ).value;
-        const justificacion = this.servicioRadicar.formSolicitudBecaDescuento
-            .get('justificacion')
-            .value.toLowerCase();
+        const tipoBeca = this.servicioRadicar.formSolicitudBecaDescuento.get('tipoBeca').value;
+        const justificacion = this.servicioRadicar.formSolicitudBecaDescuento.get('justificacion').value.toLowerCase();
 
         // Texto para el asunto
         const textAsunto = `Asunto: Solicitud de ${tipoBeca}\n`;
@@ -48,10 +45,7 @@ export class SolicitudDeBeca implements DocumentoPDFStrategy {
                 textSolicitud + textMotivoBeca,
                 marcaDeAgua
             );
-        } else if (
-            tipoBeca === 'Beca - Convenio (cidesco)' ||
-            tipoBeca === 'Beca - Mejor promedio en pregrado'
-        ) {
+        } else if (tipoBeca === 'Beca - Convenio (cidesco)' || tipoBeca === 'Beca - Mejor promedio en pregrado') {
             cursorY = this.pdfService.agregarAsuntoYSolicitud(
                 doc,
                 cursorY,
@@ -69,24 +63,11 @@ export class SolicitudDeBeca implements DocumentoPDFStrategy {
         cursorY = this.pdfService.agregarDespedida(doc, cursorY, marcaDeAgua);
 
         // Añadir espacios para firmas
-        cursorY = this.pdfService.agregarEspaciosDeFirmas(
-            doc,
-            cursorY,
-            false,
-            marcaDeAgua
-        );
+        cursorY = this.pdfService.agregarEspaciosDeFirmas(doc, cursorY, false, marcaDeAgua);
 
         // Añadir listado de adjuntos si es necesario
-        if (
-            tipoBeca === 'Beca - Convenio (cidesco)' ||
-            tipoBeca === 'Beca - Mejor promedio en pregrado'
-        ) {
-            this.pdfService.agregarListadoAdjuntos(
-                doc,
-                cursorY,
-                textAdjuntos,
-                marcaDeAgua
-            );
+        if (tipoBeca === 'Beca - Convenio (cidesco)' || tipoBeca === 'Beca - Mejor promedio en pregrado') {
+            this.pdfService.agregarListadoAdjuntos(doc, cursorY, textAdjuntos, marcaDeAgua);
         }
 
         // Retornar el documento generado
@@ -95,10 +76,7 @@ export class SolicitudDeBeca implements DocumentoPDFStrategy {
 }
 
 export class RespuestaComiteSolicitudDeBeca implements DocumentoPDFStrategy {
-    constructor(
-        private servicioRadicar: RadicarService,
-        private servicioPDF: PdfService
-    ) {}
+    constructor(private servicioRadicar: RadicarService, private servicioPDF: PdfService) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
         throw new Error('Method not implemented.');
@@ -106,10 +84,7 @@ export class RespuestaComiteSolicitudDeBeca implements DocumentoPDFStrategy {
 }
 
 export class OficioConcejoSolicitudDeBeca implements DocumentoPDFStrategy {
-    constructor(
-        private servicioRadicar: RadicarService,
-        private servicioPDF: PdfService
-    ) {}
+    constructor(private servicioRadicar: RadicarService, private servicioPDF: PdfService) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
         throw new Error('Method not implemented.');
@@ -117,10 +92,7 @@ export class OficioConcejoSolicitudDeBeca implements DocumentoPDFStrategy {
 }
 
 export class RespuestaConcejoSolicitudDeBeca implements DocumentoPDFStrategy {
-    constructor(
-        private servicioRadicar: RadicarService,
-        private servicioPDF: PdfService
-    ) {}
+    constructor(private servicioRadicar: RadicarService, private servicioPDF: PdfService) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
         throw new Error('Method not implemented.');

@@ -1,11 +1,40 @@
 import { Injectable } from '@angular/core';
+import { PrimeNGConfig } from 'primeng/api';
 import { DomSanitizer, SafeResourceUrl, SafeUrl } from '@angular/platform-browser';
 
 @Injectable({
     providedIn: 'root',
 })
 export class UtilidadesService {
-    constructor(private sanitizer: DomSanitizer) {}
+    constructor(private sanitizer: DomSanitizer, private primengConfig: PrimeNGConfig) {}
+
+    // Método para establecer la traducción del calendario al español
+    configurarIdiomaCalendario(): void {
+        this.primengConfig.setTranslation({
+            dayNames: ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'],
+            dayNamesShort: ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'],
+            dayNamesMin: ['D', 'L', 'M', 'M', 'J', 'V', 'S'],
+            monthNames: [
+                'enero',
+                'febrero',
+                'marzo',
+                'abril',
+                'mayo',
+                'junio',
+                'julio',
+                'agosto',
+                'septiembre',
+                'octubre',
+                'noviembre',
+                'diciembre',
+            ],
+            monthNamesShort: ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'],
+            today: 'Hoy',
+            clear: 'Limpiar',
+            dateFormat: 'dd/mm/yy',
+            weekHeader: 'Sm',
+        });
+    }
 
     async convertirFileABase64(archivo: File | null): Promise<string | null> {
         return new Promise((resolve, reject) => {

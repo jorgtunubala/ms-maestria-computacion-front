@@ -18,10 +18,11 @@ export class SolicitudAdicionAsignaturas implements DocumentoPDFStrategy {
         let cursorY = this.servicioPDF.agregarContenidoComun(doc, marcaDeAgua);
         cursorY = this.servicioPDF.agregarAsuntoYSolicitud(doc, cursorY, textAsunto, textSolicitud, marcaDeAgua);
 
-        const headers = ['No.', 'Asignatura', 'Docente'];
+        const headers = ['No.', 'Asignatura', 'Grupo', 'Docente'];
         const data = this.servicioRadicar.datosAsignAdiCancel.map((item, index) => [
             (index + 1).toString(),
             item.nombreAsignatura,
+            item.grupoAsignatura,
             item.docente.nombreTutor,
         ]);
 
@@ -35,8 +36,9 @@ export class SolicitudAdicionAsignaturas implements DocumentoPDFStrategy {
 
 // Subestrategia para la respuesta del comité
 export class RespuestaComiteAdicionAsignaturas implements DocumentoPDFStrategy {
+    // Se deben incluir todos los servicios que define la fabrica asi no se usen
     constructor(
-        private servicioRadicar: RadicarService, // NO ELIMINAR
+        private servicioRadicar: RadicarService,
         private servicioPDF: PdfService,
         private servicioGestor: GestorService,
         private servicioUtilidades: UtilidadesService
@@ -75,6 +77,7 @@ export class RespuestaComiteAdicionAsignaturas implements DocumentoPDFStrategy {
 
 // Subestrategia para el oficio para el concejo
 export class OficioConcejoAdicionAsignaturas implements DocumentoPDFStrategy {
+    // Se deben incluir todos los servicios que define la fabrica asi no se usen
     constructor(
         private servicioRadicar: RadicarService,
         private servicioPDF: PdfService,
@@ -125,6 +128,7 @@ export class OficioConcejoAdicionAsignaturas implements DocumentoPDFStrategy {
 
 // Subestrategia para el oficio para el concejo
 export class RespuestaConcejoAdicionAsignaturas implements DocumentoPDFStrategy {
+    // Se deben incluir todos los servicios que define la fabrica asi no se usen
     constructor(
         private servicioRadicar: RadicarService,
         private servicioPDF: PdfService,
