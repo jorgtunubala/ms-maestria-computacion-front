@@ -299,6 +299,7 @@ export class TramiteComponent implements OnInit {
     }
 
     async enviarCorreo(destinatario: string, tipoDocumento: string) {
+        console.log('Hola');
         const contenidoCorreo: EnvioCorreoRequest = {
             destinatario: destinatario,
             oficio: await this.obtenerDocumentoPDFEnBase64(
@@ -316,6 +317,12 @@ export class TramiteComponent implements OnInit {
                 this.cambiarestadoSolicitud('EN_CONSEJO');
                 this.enviarSolicitudAConsejo();
                 this.deshabilitarEnvioAConsejo = true;
+            }
+            if (response && destinatario === 'solicitante') {
+                console.log('HOLA ENTRE');
+                this.http
+                    .cambiarEstadoSolicitud(this.gestor.solicitudSeleccionada.idSolicitud, 'Resuelta')
+                    .subscribe((response) => {});
             }
         });
     }

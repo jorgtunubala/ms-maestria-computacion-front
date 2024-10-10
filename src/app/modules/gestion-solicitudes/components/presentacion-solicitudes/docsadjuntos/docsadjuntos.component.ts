@@ -21,6 +21,7 @@ export class DocsAdjuntosComponent implements OnInit {
     ngOnInit(): void {
         try {
             this.radicar.requisitosSolicitudEscogida.documentosRequeridos;
+            console.log(this.radicar.requisitosSolicitudEscogida);
         } catch (error) {
             console.error('Se produjo un error:', error);
 
@@ -56,7 +57,7 @@ export class DocsAdjuntosComponent implements OnInit {
             const fileExtension = originalName.split('.').pop();
 
             // Obtener el nuevo nombre del archivo
-            const nuevoNombre = this.radicar.requisitosSolicitudEscogida.documentosRequeridos[indice].nombre;
+            const nuevoNombre = this.radicar.requisitosSolicitudEscogida.documentosRequeridos[indice].nombreAcortado;
             const nuevoNombreConExtension = `${nuevoNombre}.${fileExtension}`;
 
             const renamedFile = new File([doc], nuevoNombreConExtension, {

@@ -11,9 +11,7 @@
                     pInputText
                     (change)="actualizarDatos()"
                 />
-                <label for="nomasigna"
-                    >Nombre de la Asignatura {{ indice + 1 }}</label
-                >
+                <label for="nomasigna">Nombre de la Asignatura {{ indice + 1 }}</label>
             </span>
         </div>
 
@@ -139,7 +137,7 @@
                 name="file[]"
                 [auto]="true"
                 [customUpload]="true"
-                (uploadHandler)="onUploadConten($event, fubautocont)"
+                (uploadHandler)="onUploadConten($event, fubautocont, indice + 1)"
                 accept=".pdf"
                 chooseIcon="pi pi-upload"
                 maxFileSize="5000000"
@@ -157,11 +155,11 @@
                 name="file[]"
                 [auto]="true"
                 [customUpload]="true"
-                (uploadHandler)="onUploadCarta($event, fubautocarta)"
+                (uploadHandler)="onUploadCarta($event, fubautocarta, indice + 1)"
                 multiple="multiple"
-                accept=".pdf, .png"
+                accept=".pdf"
                 chooseIcon="pi pi-upload"
-                maxFileSize="1000000"
+                maxFileSize="5000000"
                 [auto]="true"
                 chooseLabel="Carta de Aceptación"
                 [style]="{ width: '100%' }"
@@ -170,29 +168,18 @@
         </div>
         <div class="col-6 pt-0 mb-2">
             <ng-container *ngIf="radicar.datosAsignaturasExternas[indice]">
-                <ng-container
-                    *ngIf="radicar.datosAsignaturasExternas[indice].contenidos"
-                >
+                <ng-container *ngIf="radicar.datosAsignaturasExternas[indice].contenidos">
                     <i class="pi pi-paperclip mr-1 text-xs"></i>
-                    {{
-                        radicar.datosAsignaturasExternas[indice].contenidos.name
-                    }}
+                    {{ radicar.datosAsignaturasExternas[indice].contenidos.name }}
                 </ng-container>
             </ng-container>
         </div>
         <div class="col-6 pt-0 mb-2">
             <ng-container *ngIf="radicar.datosAsignaturasExternas[indice]">
-                <ng-container
-                    *ngIf="
-                        radicar.datosAsignaturasExternas[indice].cartaAceptacion
-                    "
-                >
+                <ng-container *ngIf="radicar.datosAsignaturasExternas[indice].cartaAceptacion">
                     <i class="pi pi-paperclip mr-1 text-xs"></i>
 
-                    {{
-                        radicar.datosAsignaturasExternas[indice].cartaAceptacion
-                            .name
-                    }}
+                    {{ radicar.datosAsignaturasExternas[indice].cartaAceptacion.name }}
                 </ng-container>
             </ng-container>
         </div>

@@ -1,13 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { DialogService } from 'primeng/dynamicdialog';
 import { GestorService } from '../../../services/gestor.service';
-import {
-    SolicitudRecibida,
-    TipoSolicitud,
-} from '../../../models/indiceModelos';
+import { SolicitudRecibida, TipoSolicitud } from '../../../models/indiceModelos';
 import { HttpService } from '../../../services/http.service';
 import { RadicarService } from '../../../services/radicar.service';
 import { Router } from '@angular/router';
+import { UtilidadesService } from '../../../services/utilidades.service';
+import { DatePipe } from '@angular/common';
 
 @Component({
     selector: 'app-pendientesaval',
@@ -29,12 +28,15 @@ export class PendientesavalComponent implements OnInit {
         nombreTipoSolicitud: '',
         abreviatura: '',
         fecha: undefined,
+        identificacionSolicitante: '',
     };
 
     constructor(
         public gestor: GestorService,
         public radicar: RadicarService,
         private router: Router,
+        private datePipe: DatePipe,
+        public utilidades: UtilidadesService,
         public dialogService: DialogService,
         public http: HttpService
     ) {}
@@ -52,18 +54,34 @@ export class PendientesavalComponent implements OnInit {
     }
 
     cargarSolicitudes() {
-        this.gestor
-            .obtenerSolicitudesTutorDirector(this.correoUsuario)
-            .subscribe(
-                (solicitudes: SolicitudRecibida[]) => {
-                    //this.solicitudes = solicitudes;
-                    this.cargando = false;
-                    this.buzonVacio = solicitudes.length === 0;
-                },
-                (error) => {
-                    console.error('Error al cargar las solicitudes:', error);
-                }
-            );
+        this.gestor.obtenerSolicitudesTutorDirector(this.correoUsuario).subscribe(
+            (solicitudes: SolicitudRecibida[]) => {
+                //this.solicitudes = solicitudes;
+                this.cargando = false;
+                this.buzonVacio = solicitudes.length === 0;
+            },
+            (error) => {
+                console.error('Error al cargar las solicitudes:', error);
+            }
+        );
+    }
+
+    formatearFechaConHora(fecha: string): string {
+        const fechaDate = new Date(fecha);
+        const fechaActual = new Date();
+        const esHoy = this.isSameDay(fechaDate, fechaActual);
+        const esAyer = this.isSameDay(fechaDate, new Date(fechaActual.setDate(fechaActual.getDate() - 1)));
+
+        const formatoHora = this.datePipe.transform(fecha, 'h:mm a');
+        return esHoy
+            ? `Hoy ${formatoHora}`
+            : esAyer
+            ? `Ayer ${formatoHora}`
+            : this.datePipe.transform(fecha, 'dd-MM-yyyy h:mm a') || '';
+    }
+
+    private isSameDay(date1: Date, date2: Date): boolean {
+        return date1.toDateString() === date2.toDateString();
     }
 
     // Limpia los filtros de la tabla
@@ -73,14 +91,9 @@ export class PendientesavalComponent implements OnInit {
 
     mostrarDetalles() {
         console.log(this.seleccionada);
-        localStorage.setItem(
-            'solicitudSeleccionadaTutorDirector',
-            JSON.stringify(this.seleccionada)
-        );
+        localStorage.setItem('solicitudSeleccionadaTutorDirector', JSON.stringify(this.seleccionada));
 
         // Navega a VistaComponent pasando la ID de la solicitud seleccionada como parámetro de ruta
-        this.router.navigate([
-            '/gestionsolicitudes/avales/pendientes/detalles',
-        ]);
+        this.router.navigate(['/gestionsolicitudes/avales/pendientes/detalles']);
     }
 }

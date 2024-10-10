@@ -7,6 +7,7 @@ export class InfoAsingSimple {
         public listaAsignaturas: {
             nombreAsignatura: string;
             docenteAsignatura: string;
+            grupo: string;
         }[],
         public motivo: string
     ) {}

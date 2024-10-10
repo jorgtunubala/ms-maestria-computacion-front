@@ -41,35 +41,19 @@ export class AsignaturaexternaComponent implements OnInit {
     ngOnInit(): void {
         if (this.radicar.datosAsignaturasExternas[this.indice]) {
             this.formAsigExterna.patchValue({
-                nombreAsignatura:
-                    this.radicar.datosAsignaturasExternas[this.indice].nombre,
-                programa:
-                    this.radicar.datosAsignaturasExternas[this.indice].programa,
-                institucion:
-                    this.radicar.datosAsignaturasExternas[this.indice]
-                        .institucion,
-                numCreditos:
-                    this.radicar.datosAsignaturasExternas[this.indice].creditos,
-                intensidadHoraria:
-                    this.radicar.datosAsignaturasExternas[this.indice]
-                        .intensidad,
-                codigoAsignatura:
-                    this.radicar.datosAsignaturasExternas[this.indice].codigo,
-                grupoAsignatura:
-                    this.radicar.datosAsignaturasExternas[this.indice].grupo,
-                nombreDocente:
-                    this.radicar.datosAsignaturasExternas[this.indice].docente,
-                tituloDocente:
-                    this.radicar.datosAsignaturasExternas[this.indice]
-                        .tituloDocente,
+                nombreAsignatura: this.radicar.datosAsignaturasExternas[this.indice].nombre,
+                programa: this.radicar.datosAsignaturasExternas[this.indice].programa,
+                institucion: this.radicar.datosAsignaturasExternas[this.indice].institucion,
+                numCreditos: this.radicar.datosAsignaturasExternas[this.indice].creditos,
+                intensidadHoraria: this.radicar.datosAsignaturasExternas[this.indice].intensidad,
+                codigoAsignatura: this.radicar.datosAsignaturasExternas[this.indice].codigo,
+                grupoAsignatura: this.radicar.datosAsignaturasExternas[this.indice].grupo,
+                nombreDocente: this.radicar.datosAsignaturasExternas[this.indice].docente,
+                tituloDocente: this.radicar.datosAsignaturasExternas[this.indice].tituloDocente,
             });
 
-            this.contenidos =
-                this.radicar.datosAsignaturasExternas[this.indice].contenidos;
-            this.cartaAceptacion =
-                this.radicar.datosAsignaturasExternas[
-                    this.indice
-                ].cartaAceptacion;
+            this.contenidos = this.radicar.datosAsignaturasExternas[this.indice].contenidos;
+            this.cartaAceptacion = this.radicar.datosAsignaturasExternas[this.indice].cartaAceptacion;
         }
     }
 
@@ -103,18 +87,22 @@ export class AsignaturaexternaComponent implements OnInit {
         this.radicar.datosAsignaturasExternas[this.indice] = datos;
     }
 
-    onUploadConten(event, fubautocont) {
+    onUploadConten(event, fubautocont, indiceDoc) {
         for (let contenido of event.files) {
-            this.contenidos = contenido;
+            const nuevoNombre = 'Contenido programático Asignatura ' + indiceDoc + '.pdf';
+            const nuevoArchivo = new File([contenido], nuevoNombre, { type: 'application/pdf' });
+            this.contenidos = nuevoArchivo;
         }
 
         this.actualizarDatos();
         fubautocont.clear();
     }
 
-    onUploadCarta(event, fubautocarta) {
+    onUploadCarta(event, fubautocarta, indiceDoc) {
         for (let carta of event.files) {
-            this.cartaAceptacion = carta;
+            const nuevoNombre = 'Carta de aceptación Asignatura ' + indiceDoc + '.pdf';
+            const nuevoArchivo = new File([carta], nuevoNombre, { type: 'application/pdf' });
+            this.cartaAceptacion = nuevoArchivo;
         }
 
         this.actualizarDatos();

@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HttpService } from '../../../services/http.service';
 import { SolicitudRecibida } from '../../../models/indiceModelos';
 import { SeguimientoService } from '../../../services/seguimiento.service';
+import { DatePipe } from '@angular/common';
 
 interface ConfiguracionBuzon {
     titulo: string;
@@ -60,6 +61,7 @@ export class BuzonComponent implements OnInit {
         public gestor: GestorService,
         private router: Router,
         private route: ActivatedRoute,
+        private datePipe: DatePipe,
         public seguimiento: SeguimientoService,
         public http: HttpService,
         public dialogService: DialogService
@@ -131,5 +133,23 @@ export class BuzonComponent implements OnInit {
     // Limpia los filtros de la tabla
     limpiarFiltros(table: any): void {
         table.clear();
+    }
+
+    formatearFechaConHora(fecha: string): string {
+        const fechaDate = new Date(fecha);
+        const fechaActual = new Date();
+        const esHoy = this.isSameDay(fechaDate, fechaActual);
+        const esAyer = this.isSameDay(fechaDate, new Date(fechaActual.setDate(fechaActual.getDate() - 1)));
+
+        const formatoHora = this.datePipe.transform(fecha, 'h:mm a');
+        return esHoy
+            ? `Hoy ${formatoHora}`
+            : esAyer
+            ? `Ayer ${formatoHora}`
+            : this.datePipe.transform(fecha, 'dd-MM-yyyy h:mm a') || '';
+    }
+
+    private isSameDay(date1: Date, date2: Date): boolean {
+        return date1.toDateString() === date2.toDateString();
     }
 }

@@ -97,8 +97,8 @@ export class HttpService {
         return this.http.get<DatosSolicitudRequest>(url).pipe(catchError(this.manejarError));
     }
 
-    obtenerActividadesDePracticaDocente() {
-        const url = `${this.apiUrlSub}${httpConfig.obtenerActividadesReCreditosUrl}`;
+    obtenerActividadesDePracticaDocente(proceso: string) {
+        const url = `${this.apiUrlSub}${httpConfig.obtenerActividadesPracticaDocente}${proceso}`;
         return this.http.get<InfoActividadesReCreditos[]>(url).pipe(
             map((respuesta) => respuesta),
             catchError(this.manejarError)
@@ -153,5 +153,10 @@ export class HttpService {
     enviarCorreo(objeto: EnvioCorreoRequest): Observable<any> {
         const url = `${httpConfig.apiCorreo}${httpConfig.enviarCorreo}`;
         return this.http.post(url, objeto).pipe(catchError(this.manejarError));
+    }
+
+    cambiarEstadoSolicitud(id: number, nuevoEstado: string): Observable<any> {
+        const url = `${this.apiUrl}${httpConfig.cambiarEstado}${id}/${nuevoEstado}`;
+        return this.http.post(url, null).pipe(catchError(this.manejarError));
     }
 }
