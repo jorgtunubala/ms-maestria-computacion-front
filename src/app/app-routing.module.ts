@@ -71,6 +71,13 @@ import { DynamicloginComponent } from './modules/gestion-autenticacion/component
                                     './modules/gestion-egresados/gestion-egresados.module'
                                 ).then((m) => m.SeguimientoAEgresadosModule),
                         },
+                        {
+                            path: 'certificado-votacion',
+                            loadChildren: () =>
+                                import(
+                                    './modules/gestion-certificado-votacion/gestion-certificado-votacion.module'
+                                ).then((m) => m.GestionCertificadoVotacionModule),
+                        },
                     ],
                 },
 
