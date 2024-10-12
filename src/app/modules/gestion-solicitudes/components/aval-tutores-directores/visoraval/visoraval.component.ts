@@ -32,8 +32,8 @@ export class VisoravalComponent implements OnInit {
     solicitudSeleccionada: SolicitudRecibida;
     datosSolicitud: DatosSolicitudRequest;
 
-    rol: any = 'Tutor';
-    //rol: any = 'Director';
+    //rol: any = 'Tutor';
+    rol: any = 'Director';
 
     mostrarOficio: boolean = false;
     mostrarBtnFirmar: boolean = false;
@@ -249,11 +249,11 @@ export class VisoravalComponent implements OnInit {
 
     // Abre el PDF del oficio
     abrirOficioPdf(): void {
-        const oficioPdf = this.datosSolicitud.datosComunSolicitud?.oficioPdf;
+        const oficioPdfBase64 = this.datosSolicitud.datosComunSolicitud?.oficioPdf;
 
-        if (oficioPdf) {
-            const documento = this.utilidades.convertirBase64AFile(oficioPdf);
-            this.urlOficioPdf = this.utilidades.crearUrlSeguroParaPDF(documento);
+        if (oficioPdfBase64) {
+            this.pdfSolicitud = this.utilidades.convertirBase64AFile(oficioPdfBase64);
+            this.urlOficioPdf = this.utilidades.crearUrlSeguroParaPDF(this.pdfSolicitud);
         }
     }
 
@@ -306,7 +306,7 @@ export class VisoravalComponent implements OnInit {
                 break;
             case 'Director':
                 this.agregarImagenAPDF(
-                    this.radicar.firmaTutorUrl.toString(), // Imagen en Base64
+                    this.radicar.firmaDirectorUrl.toString(), // Imagen en Base64
                     this.datosSolicitud.datosComunSolicitud.numPaginaDirector, // Número de página (por ejemplo, la primera página)
                     this.datosSolicitud.datosComunSolicitud.posXDirector, // Coordenada X
                     this.datosSolicitud.datosComunSolicitud.posYDirector - 0.2, // Coordenada Y
@@ -403,12 +403,11 @@ export class VisoravalComponent implements OnInit {
                 type: 'application/pdf',
             });
 
-            const pdfFile = new File([pdfModificadoBlob], 'Solicitud.pdf', {
+            this.pdfSolicitud = new File([pdfModificadoBlob], 'Carta de Solicitud.pdf', {
                 type: 'application/pdf',
             });
-            this.urlOficioPdf = this.utilidades.crearUrlSeguroParaPDF(pdfFile);
 
-            this.radicar.oficioDeSolicitud = pdfFile;
+            this.urlOficioPdf = this.utilidades.crearUrlSeguroParaPDF(this.pdfSolicitud);
         } catch (error) {
             console.error('Error al agregar la imagen al PDF:', error);
         }
@@ -449,7 +448,7 @@ export class VisoravalComponent implements OnInit {
                 idSolicitud: this.solicitudSeleccionada.idSolicitud,
                 firmaTutor: firmoTutor,
                 firmaDirector: firmoDirector,
-                documentoPdfSolicitud: await convertirFileABase64(this.radicar.oficioDeSolicitud),
+                documentoPdfSolicitud: await convertirFileABase64(this.pdfSolicitud),
             };
 
             console.log(aval);

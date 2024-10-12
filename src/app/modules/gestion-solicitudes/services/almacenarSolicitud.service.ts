@@ -448,7 +448,8 @@ export class AlmacenarSolicitudService {
             datosActividadDocenteRequest: tipo === 'RE_CRED_PAS' ? infoEspecifica : null,
             datosAvalComite: tipo === 'AV_COMI_PR' ? infoEspecifica : null,
             datosSolicitudBeca: tipo === 'SO_BECA' ? infoEspecifica : null,
-            requiereFirmaDirector: tipo === 'AP_ECON_INV' || tipo === 'ApoyoEconomico' ? true : false,
+            requiereFirmaDirector:
+                tipo === 'AP_ECON_INV' || tipo === 'AP_ECON_ASI' || tipo === 'PA_PUBL_EVE' ? true : false,
             idDirector:
                 tipo === 'AP_ECON_ASI' || tipo === 'AP_ECON_INV' || tipo === 'PA_PUBL_EVE'
                     ? this.radicar.director.id
