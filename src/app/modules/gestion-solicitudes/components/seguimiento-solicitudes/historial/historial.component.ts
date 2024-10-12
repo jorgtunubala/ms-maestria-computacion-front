@@ -17,7 +17,7 @@ export class HistorialComponent implements OnInit {
     personalizacion: {
         [estadoSolicitud: string]: { color: string; icon: string };
     } = {
-        Radicada: { color: '#0F2041', icon: 'pi pi-check-circle' },
+        Creada: { color: '#0F2041', icon: 'pi pi-check-circle' },
         Avalada: { color: '#0F2041', icon: 'pi pi-check-circle' },
         'Avalada Tutor': { color: '#0F2041', icon: 'pi pi-check-circle' },
         'Avalada Director': { color: '#0F2041', icon: 'pi pi-check-circle' },

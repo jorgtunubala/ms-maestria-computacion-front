@@ -105,7 +105,7 @@ export class BuzonComponent implements OnInit {
         );
     }
 
-    // Proporciona el estado asociado al filtro
+    // Proporciona el estado en BD asociado al filtro
     obtenerEstadoAsociado(filtro: string): string {
         const estados: Record<string, string> = {
             nuevas: 'AVALADA',

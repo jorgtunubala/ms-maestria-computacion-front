@@ -20,6 +20,7 @@ import {
 } from '../models/indiceModelos';
 import { InfoPersonalResponse } from '../models/solicitante/infoPersonalResponse';
 import { DatosSolicitudRequest } from '../models/solicitudes/datosSolicitudRequest';
+import { UrlResolver } from '@angular/compiler';
 
 @Injectable({
     providedIn: 'root',
@@ -112,6 +113,7 @@ export class HttpService {
 
     consultarSolicitudesCoordinacion(estado: string) {
         const url = `${this.apiUrl}${httpConfig.obtenerSolicitudesCoordinacion}${estado}`;
+        console.log(url);
         return this.http.get<SolicitudRecibida[]>(url).pipe(
             map((respuesta) => respuesta),
             catchError(this.manejarError)
@@ -152,6 +154,8 @@ export class HttpService {
 
     enviarCorreo(objeto: EnvioCorreoRequest): Observable<any> {
         const url = `${httpConfig.apiCorreo}${httpConfig.enviarCorreo}`;
+
+        console.log(url);
         return this.http.post(url, objeto).pipe(catchError(this.manejarError));
     }
 
