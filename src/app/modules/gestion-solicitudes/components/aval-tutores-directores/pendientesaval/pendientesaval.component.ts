@@ -15,8 +15,8 @@ import { DatePipe } from '@angular/common';
     providers: [DialogService],
 })
 export class PendientesavalComponent implements OnInit {
-    correoUsuario: string = 'lsierra@unicauca.edu.co';
-    //correoUsuario: string = 'luz123@unicauca.edu.co';
+    //correoUsuario: string = 'lsierra@unicauca.edu.co';
+    correoUsuario: string = 'luz123@unicauca.edu.co';
     solicitudes: SolicitudRecibida[] = [];
     seleccionada: SolicitudRecibida;
     cargando: boolean = true;
