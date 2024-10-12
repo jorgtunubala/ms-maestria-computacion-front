@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { PrimeNGConfig } from 'primeng/api';
 import { DomSanitizer, SafeResourceUrl, SafeUrl } from '@angular/platform-browser';
+import { DatePipe } from '@angular/common';
 
 @Injectable({
     providedIn: 'root',

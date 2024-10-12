@@ -30,9 +30,10 @@ export class SolicitudCursarEnOtrosProgramas implements DocumentoPDFStrategy {
 
         // Añadir asunto y solicitud
         cursorY = this.pdfService.agregarAsuntoYSolicitud(doc, cursorY, textAsunto, textSolicitud, marcaDeAgua);
+        const textAdjuntos = `${this.servicioRadicar.obtenerNombreArchivosAdjuntos()}`;
 
         // Datos para la tabla
-        const headers = ['Asignatura', 'Código', 'Créd.', 'Intens. Horaria', 'Grupo', 'Programa', 'Docente'];
+        const headers = ['Asignatura', 'Cód.', 'Créd.', 'Horas sem.', 'Grupo', 'Institución', 'Programa', 'Docente'];
 
         const data = this.servicioRadicar.datosAsignaturasExternas.map((item) => [
             item.nombre,
@@ -40,8 +41,9 @@ export class SolicitudCursarEnOtrosProgramas implements DocumentoPDFStrategy {
             item.creditos.toString(),
             item.intensidad.toString(),
             item.grupo,
+            item.institucion,
             item.programa,
-            item.docente,
+            item.tituloDocente + ' ' + item.docente,
         ]);
 
         // Añadir tabla
@@ -64,6 +66,8 @@ export class SolicitudCursarEnOtrosProgramas implements DocumentoPDFStrategy {
 
         // Añadir espacios para firmas
         cursorY = this.pdfService.agregarEspaciosDeFirmas(doc, cursorY, false, marcaDeAgua);
+
+        cursorY = this.pdfService.agregarListadoAdjuntos(doc, cursorY, textAdjuntos, marcaDeAgua);
 
         // Retornar el documento generado
         return doc;

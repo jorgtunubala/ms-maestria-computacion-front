@@ -16,6 +16,7 @@ import { SafeResourceUrl } from '@angular/platform-browser';
 import { DocumentoPDFFactory } from '../../utilidades/documentos-pdf/documento-pdf-factory';
 import { UtilidadesService } from '../../../services/utilidades.service';
 import { el } from 'date-fns/locale';
+import { forEach } from 'jszip';
 
 interface RespuestaConcejo {
     aval: string;
@@ -79,6 +80,9 @@ export class TramiteComponent implements OnInit {
     urlRespuestaComitePdf: SafeResourceUrl;
     urlOficioConcejoPdf: SafeResourceUrl;
     urlRespuestaConcejoPdf: SafeResourceUrl;
+    urlDocumentoCargaConsejoPdf: SafeResourceUrl;
+
+    archivosCargados: any[] = [];
 
     ref: DynamicDialogRef;
 
@@ -95,6 +99,8 @@ export class TramiteComponent implements OnInit {
 
     ngOnInit(): void {
         this.servicioUtilidades.configurarIdiomaCalendario();
+
+        console.log(this.gestor.infoSolicitud);
 
         this.http.consultarConceptoComite(this.gestor.solicitudSeleccionada.idSolicitud).subscribe(
             async (infoComite: SolicitudEnComiteResponse) => {
@@ -118,12 +124,27 @@ export class TramiteComponent implements OnInit {
         this.http.consultarConceptoConsejo(this.gestor.solicitudSeleccionada.idSolicitud).subscribe(
             async (infoConsejo: SolicitudEnConcejoResponse) => {
                 console.log(infoConsejo);
+                console.log(this.archivosCargados);
                 this.respuestaConsejo = infoConsejo;
                 this.gestor.conceptoConsejo = infoConsejo;
 
                 if (infoConsejo.fechaAval) {
                     this.fechaConsejo = this.convertirCadenaAFecha(infoConsejo.fechaAval);
                     this.respuestaConsejo.fechaAval = this.formatearFecha(this.fechaConsejo);
+                }
+
+                console.log('TAMAÑO DOCUMENTOS ' + infoConsejo.documentosConcejo.length);
+
+                if (infoConsejo.documentosConcejo.length > 0) {
+                    this.archivosCargados = [];
+
+                    for (let index = 0; index < infoConsejo.documentosConcejo.length; index++) {
+                        this.archivosCargados.push(
+                            this.servicioUtilidades.convertirBase64AFile(infoConsejo.documentosConcejo[index])
+                        );
+                    }
+
+                    console.log(this.archivosCargados);
                 }
 
                 //Esta linea se debe llamar despues de haber consultado toda la info de comite/concejo en la BD
@@ -155,7 +176,6 @@ export class TramiteComponent implements OnInit {
                 rejectVisible: true,
                 rejectLabel: 'No',
                 accept: () => {
-                    this.cambiarestadoSolicitud('EN_CONSEJO');
                     this.enviarSolicitudAConsejo();
                     //this.enviadaAConsejo = true;
                     this.deshabilitarEnvioAConsejo = true;
@@ -179,8 +199,6 @@ export class TramiteComponent implements OnInit {
                 rejectVisible: true,
                 rejectLabel: 'No',
                 accept: () => {
-                    this.cambiarestadoSolicitud('EN_COMITE');
-
                     this.enviarSolicitudAComite();
                     this.deshabilitarEnvioAComite = true;
                 },
@@ -299,6 +317,7 @@ export class TramiteComponent implements OnInit {
     }
 
     async enviarCorreo(destinatario: string, tipoDocumento: string) {
+        console.log('Hola');
         const contenidoCorreo: EnvioCorreoRequest = {
             destinatario: destinatario,
             oficio: await this.obtenerDocumentoPDFEnBase64(
@@ -308,16 +327,33 @@ export class TramiteComponent implements OnInit {
             ),
         };
 
-        this.http.enviarCorreo(contenidoCorreo).subscribe((response) => {
-            if (response) {
-                this.mostrarAlertaFormulario('enviado');
-            }
-            if (response && destinatario === 'concejo') {
-                this.cambiarestadoSolicitud('EN_CONSEJO');
-                this.enviarSolicitudAConsejo();
-                this.deshabilitarEnvioAConsejo = true;
-            }
-        });
+        this.http.enviarCorreo(contenidoCorreo).subscribe((response) => {});
+
+        this.mostrarAlertaFormulario('enviado');
+
+        if (destinatario === 'concejo') {
+            this.enviarSolicitudAConsejo();
+            this.deshabilitarEnvioAConsejo = true;
+        }
+        if (destinatario === 'solicitante') {
+            console.log('HOLA ENTRE');
+            this.http
+                .cambiarEstadoSolicitud(this.gestor.solicitudSeleccionada.idSolicitud, 'Resuelta')
+                .subscribe((response) => {
+                    if (response) {
+                        this.gestor.estadoSolicitud = 'Resuelta';
+                        switch (tipoDocumento) {
+                            case 'respuesta-comite':
+                                this.gestor.moverSolicitud(this.gestor.solicitudSeleccionada, 'EN_COMITE', 'Resuelta');
+                                break;
+
+                            case 'respuesta-consejo':
+                                this.gestor.moverSolicitud(this.gestor.solicitudSeleccionada, 'EN_CONCEJO', 'Resuelta');
+                                break;
+                        }
+                    }
+                });
+        }
     }
 
     obtenerDocumentoPDFEnBase64(
@@ -366,6 +402,11 @@ export class TramiteComponent implements OnInit {
     }
 
     guardarRespuestaComite() {
+        // Ocultar versiones obsoletas de los documentos PDF en vista
+        this.urlOficioConcejoPdf = null;
+        this.urlRespuestaComitePdf = null;
+        this.urlRespuestaConcejoPdf = null;
+
         if (this.validarFormularioComite()) {
             this.habilitarRespuestaSolicitantes = false;
             this.habilitarConcejo = false;
@@ -413,7 +454,11 @@ export class TramiteComponent implements OnInit {
         }
     }
 
-    guardarRespuestaConsejo() {
+    async guardarRespuestaConsejo() {
+        // Ocultar versiones obsoletas de los documentos PDF en vista
+        this.urlRespuestaConcejoPdf = null;
+        this.urlDocumentoCargaConsejoPdf = null;
+
         if (this.validarFormularioConcejo()) {
             this.habilitarRespuestaSolicitantesConsejo = false;
 
@@ -429,7 +474,13 @@ export class TramiteComponent implements OnInit {
                 // Lógica para guardar
                 this.respuestaConsejo.fechaAval = this.formatearFecha(this.fechaConsejo);
                 this.gestor.conceptoConsejo = this.respuestaConsejo;
-                this.respuestaConsejo.documentosConcejo = ['DOC1', 'DOC2'];
+
+                this.respuestaConsejo.documentosConcejo = [];
+                for (let index = 0; index < this.archivosCargados.length; index++) {
+                    this.respuestaConsejo.documentosConcejo.push(
+                        await this.servicioUtilidades.convertirFileABase64(this.archivosCargados[index])
+                    );
+                }
 
                 console.log(this.respuestaConsejo);
                 this.http.guardarConceptoConsejo(this.respuestaConsejo).subscribe(
@@ -635,5 +686,23 @@ export class TramiteComponent implements OnInit {
         }
     }
 
-    cambiarestadoSolicitud(estado: string) {}
+    onUpload(event, fubauto) {
+        for (let doc of event.files) {
+            const archivoPDF = new File([doc], doc.name, {
+                type: 'application/pdf',
+            });
+
+            this.archivosCargados.push(archivoPDF);
+        }
+
+        fubauto.clear();
+    }
+
+    visualizarDocumentoConsejo(indice: number) {
+        this.urlDocumentoCargaConsejoPdf = this.servicioUtilidades.crearUrlSeguroParaPDF(this.archivosCargados[indice]);
+    }
+
+    eliminarDocuementoConcejo(index: number) {
+        this.archivosCargados.splice(index, 1);
+    }
 }

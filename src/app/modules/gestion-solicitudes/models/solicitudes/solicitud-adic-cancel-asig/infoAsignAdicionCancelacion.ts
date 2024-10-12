@@ -1,10 +1,7 @@
 export class InfoAsingAdicionCancelacion {
     static nuevoInfoAsignAdicionCancelacion(obj: Object) {
-        return new InfoAsingAdicionCancelacion(
-            obj['nombreAsignatura'],
-            obj['idDocente']
-        );
+        return new InfoAsingAdicionCancelacion(obj['nombreAsignatura'], obj['grupo'], obj['idDocente']);
     }
 
-    constructor(public nombreAsignatura: string, public idDocente: string) {}
+    constructor(public nombreAsignatura: string, public grupo: string, public idDocente: string) {}
 }

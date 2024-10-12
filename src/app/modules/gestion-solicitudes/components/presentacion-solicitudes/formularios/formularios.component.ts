@@ -1,18 +1,8 @@
-import {
-    Component,
-    OnInit,
-    QueryList,
-    ViewChild,
-    ViewChildren,
-} from '@angular/core';
+import { Component, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 
 import { Router } from '@angular/router';
 import { RadicarService } from '../../../services/radicar.service';
-import {
-    DatosAsignaturaAdicion,
-    InfoPersonal,
-    TutorYDirector,
-} from '../../../models/indiceModelos';
+import { DatosAsignaturaAdicion, InfoPersonal, TutorYDirector } from '../../../models/indiceModelos';
 import { HostListener } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
@@ -92,67 +82,50 @@ export class FormulariosComponent implements OnInit {
         try {
             this.tipoSolicitudEscogida = this.radicar.tipoSolicitudEscogida;
 
-            if (
-                this.radicar.tipoSolicitudEscogida.codigoSolicitud ===
-                'HO_ASIG_ESP'
-            ) {
+            if (this.radicar.tipoSolicitudEscogida.codigoSolicitud === 'HO_ASIG_ESP') {
                 this.radicar.datosInstitucionHomologar = {
                     institucion: 'Universidad del Cauca',
-                    programa:
-                        'Especialización en Desarrollo de Soluciones Informáticas',
+                    programa: 'Especialización en Desarrollo de Soluciones Informáticas',
                 };
             }
 
-            if (
-                ['HO_ASIG_POS', 'HO_ASIG_ESP'].includes(
-                    this.radicar.tipoSolicitudEscogida.codigoSolicitud
-                )
-            ) {
+            if (['HO_ASIG_POS', 'HO_ASIG_ESP'].includes(this.radicar.tipoSolicitudEscogida.codigoSolicitud)) {
                 this.formAsigHomologarCont = this.fb.group({
                     nombrePrograma: [
                         {
                             value: '',
-                            disabled:
-                                radicar.tipoSolicitudEscogida
-                                    .codigoSolicitud === 'HO_ASIG_ESP',
+                            disabled: radicar.tipoSolicitudEscogida.codigoSolicitud === 'HO_ASIG_ESP',
                         },
                         Validators.required,
                     ],
                     nombreInstitucion: [
                         {
                             value: '',
-                            disabled:
-                                radicar.tipoSolicitudEscogida
-                                    .codigoSolicitud === 'HO_ASIG_ESP',
+                            disabled: radicar.tipoSolicitudEscogida.codigoSolicitud === 'HO_ASIG_ESP',
                         },
                         Validators.required,
                     ],
                 });
             }
 
-            if (
-                ['RE_CRED_PR_DOC', 'AV_COMI_PR'].includes(
-                    this.radicar.tipoSolicitudEscogida.codigoSolicitud
-                )
-            ) {
-                this.gestorHttp
-                    .obtenerActividadesDePracticaDocente()
-                    .subscribe((respuesta) => {
-                        this.radicar.actividadesReCreditos = respuesta;
-                    });
+            if (['AV_COMI_PR'].includes(this.radicar.tipoSolicitudEscogida.codigoSolicitud)) {
+                this.gestorHttp.obtenerActividadesDePracticaDocente('aval').subscribe((respuesta) => {
+                    this.radicar.actividadesReCreditos = respuesta;
+                });
+            }
+
+            if (['RE_CRED_PR_DOC'].includes(this.radicar.tipoSolicitudEscogida.codigoSolicitud)) {
+                this.gestorHttp.obtenerActividadesDePracticaDocente('creditos').subscribe((respuesta) => {
+                    this.radicar.actividadesReCreditos = respuesta;
+                });
             }
         } catch (error) {
             console.error('Se produjo un error:', error);
 
             // Verificar si el error es del tipo TypeError y si contiene la cadena 'codigoSolicitud'
-            if (
-                error instanceof TypeError &&
-                error.message.includes('codigoSolicitud')
-            ) {
+            if (error instanceof TypeError && error.message.includes('codigoSolicitud')) {
                 // Redirigir al usuario a una ruta específica
-                this.router.navigate([
-                    '/gestionsolicitudes/portafolio/radicar/selector',
-                ]);
+                this.router.navigate(['/gestionsolicitudes/portafolio/radicar/selector']);
             } else {
                 // Manejar otros errores de manera apropiada
                 console.error('Error no esperado:', error);
@@ -177,32 +150,24 @@ export class FormulariosComponent implements OnInit {
 
         if (
             this.radicar.tipoSolicitudEscogida &&
-            ['HO_ASIG_POS', 'HO_ASIG_ESP'].includes(
-                this.radicar.tipoSolicitudEscogida.codigoSolicitud
-            )
+            ['HO_ASIG_POS', 'HO_ASIG_ESP'].includes(this.radicar.tipoSolicitudEscogida.codigoSolicitud)
         ) {
             // Verificar si hay texto en las variables del servicio radicar y llenar el formulario
-            if (
-                this.radicar.datosInstitucionHomologar.institucion.trim() !== ''
-            ) {
+            if (this.radicar.datosInstitucionHomologar.institucion.trim() !== '') {
                 this.formAsigHomologarCont.patchValue({
-                    nombreInstitucion:
-                        this.radicar.datosInstitucionHomologar.institucion,
+                    nombreInstitucion: this.radicar.datosInstitucionHomologar.institucion,
                 });
             }
             if (this.radicar.datosInstitucionHomologar.programa.trim() !== '') {
                 this.formAsigHomologarCont.patchValue({
-                    nombrePrograma:
-                        this.radicar.datosInstitucionHomologar.programa,
+                    nombrePrograma: this.radicar.datosInstitucionHomologar.programa,
                 });
             }
 
             // Escuchar cambios en el formulario y actualizar las variables en radicar
             this.formAsigHomologarCont.valueChanges.subscribe((value) => {
-                this.radicar.datosInstitucionHomologar.institucion =
-                    value.nombreInstitucion;
-                this.radicar.datosInstitucionHomologar.programa =
-                    value.nombrePrograma;
+                this.radicar.datosInstitucionHomologar.institucion = value.nombreInstitucion;
+                this.radicar.datosInstitucionHomologar.programa = value.nombrePrograma;
             });
         }
 
@@ -218,9 +183,7 @@ export class FormulariosComponent implements OnInit {
                     this.formsAsignaturadicioncancel.length > 0 &&
                     this.formsAsignaturadicioncancel
                         .toArray()
-                        .every((formulario) =>
-                            formulario.obtenerEstadoFormulario()
-                        ) &&
+                        .every((formulario) => formulario.obtenerEstadoFormulario()) &&
                     this.formListaTutores.obtenerEstadoFormulario();
                 break;
 
@@ -229,16 +192,13 @@ export class FormulariosComponent implements OnInit {
                     this.formsAsignaturadicioncancel.length > 0 &&
                     this.formsAsignaturadicioncancel
                         .toArray()
-                        .every((formulario) =>
-                            formulario.obtenerEstadoFormulario()
-                        ) &&
+                        .every((formulario) => formulario.obtenerEstadoFormulario()) &&
                     this.formMotivo.obtenerEstadoFormulario() &&
                     this.formListaTutores.obtenerEstadoFormulario();
                 break;
             case 'AP_SEME':
                 estadoGeneral =
-                    this.formAplzSemestre.obtenerEstadoFormulario() &&
-                    this.formListaTutores.obtenerEstadoFormulario();
+                    this.formAplzSemestre.obtenerEstadoFormulario() && this.formListaTutores.obtenerEstadoFormulario();
                 break;
             case 'CU_ASIG':
                 estadoGeneral =
@@ -247,8 +207,7 @@ export class FormulariosComponent implements OnInit {
                         .toArray()
                         .every(
                             (formulario) =>
-                                formulario.obtenerEstadoFormulario() &&
-                                formulario.validarDocumentosCargados()
+                                formulario.obtenerEstadoFormulario() && formulario.validarDocumentosCargados()
                         ) &&
                     this.formListaTutores.obtenerEstadoFormulario() &&
                     this.formMotivo.obtenerEstadoFormulario();
@@ -259,9 +218,7 @@ export class FormulariosComponent implements OnInit {
                     this.formsAsigHomolog
                         .toArray()
                         .every(
-                            (formulario) =>
-                                formulario.obtenerEstadoFormulario() &&
-                                formulario.validarDocumentoCargado()
+                            (formulario) => formulario.obtenerEstadoFormulario() && formulario.validarDocumentoCargado()
                         ) &&
                     this.formListaTutores.obtenerEstadoFormulario() &&
                     this.obtenerEstadoFormularioHomAsig();
@@ -269,11 +226,7 @@ export class FormulariosComponent implements OnInit {
             case 'HO_ASIG_ESP':
                 estadoGeneral =
                     this.formsAsigHomolog.length > 0 &&
-                    this.formsAsigHomolog
-                        .toArray()
-                        .every((formulario) =>
-                            formulario.obtenerEstadoFormulario()
-                        ) &&
+                    this.formsAsigHomolog.toArray().every((formulario) => formulario.obtenerEstadoFormulario()) &&
                     this.formListaTutores.obtenerEstadoFormulario();
 
                 break;
@@ -308,8 +261,7 @@ export class FormulariosComponent implements OnInit {
                 let totalHoras: number = 0;
 
                 estadoGeneral =
-                    this.formReCredPracDocente.validarFormulario() &&
-                    this.formListaTutores.obtenerEstadoFormulario();
+                    this.formReCredPracDocente.validarFormulario() && this.formListaTutores.obtenerEstadoFormulario();
 
                 this.radicar.horasAsignables.forEach((horas) => {
                     totalHoras += horas;
@@ -324,8 +276,7 @@ export class FormulariosComponent implements OnInit {
 
             case 'AV_COMI_PR':
                 estadoGeneral =
-                    this.formAvalPracDocente.validarFormulario() &&
-                    this.formListaTutores.obtenerEstadoFormulario();
+                    this.formAvalPracDocente.validarFormulario() && this.formListaTutores.obtenerEstadoFormulario();
 
                 break;
             default:
@@ -416,23 +367,13 @@ export class FormulariosComponent implements OnInit {
     navigateToNext() {
         if (this.validarDatosFormulario()) {
             if (
-                [
-                    'AD_ASIG',
-                    'CA_ASIG',
-                    'AP_SEME',
-                    'CU_ASIG',
-                    'AV_COMI_PR',
-                    'RE_CRED_PR_DOC',
-                    'SO_BECA',
-                ].includes(this.radicar.tipoSolicitudEscogida.codigoSolicitud)
+                ['AD_ASIG', 'CA_ASIG', 'AP_SEME', 'CU_ASIG', 'AV_COMI_PR', 'RE_CRED_PR_DOC', 'SO_BECA'].includes(
+                    this.radicar.tipoSolicitudEscogida.codigoSolicitud
+                )
             ) {
-                this.router.navigate([
-                    '/gestionsolicitudes/portafolio/radicar/resumen',
-                ]);
+                this.router.navigate(['/gestionsolicitudes/portafolio/radicar/resumen']);
             } else {
-                this.router.navigate([
-                    '/gestionsolicitudes/portafolio/radicar/adjuntos',
-                ]);
+                this.router.navigate(['/gestionsolicitudes/portafolio/radicar/adjuntos']);
             }
         } else {
             this.showWarn();
@@ -444,8 +385,6 @@ export class FormulariosComponent implements OnInit {
         this.radicar.setDatosSolicitante(this.datosSolicitante);
         this.radicar.setMaterias(this.materiasSeleccionadas);
         */
-        this.router.navigate([
-            '/gestionsolicitudes/portafolio/radicar/selector',
-        ]);
+        this.router.navigate(['/gestionsolicitudes/portafolio/radicar/selector']);
     }
 }

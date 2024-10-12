@@ -271,16 +271,59 @@
                                 appendTo="body"
                                 dateFormat="dd/mm/yy"
                             ></p-calendar>
+
+                            <div class="mt-2" *ngIf="deshabilitarEnvioAConsejo">
+                                <p-fileUpload
+                                    #fubauto
+                                    mode="basic"
+                                    name="file[]"
+                                    [auto]="true"
+                                    [customUpload]="true"
+                                    (uploadHandler)="onUpload($event, fubauto)"
+                                    [disabled]="bloquearConceptoConsejo"
+                                    accept=".pdf"
+                                    multiple="true"
+                                    chooseIcon="pi pi-upload"
+                                    maxFileSize="10000000"
+                                    chooseLabel="Cargar Documentos"
+                                    [style]="{ width: '100%' }"
+                                    invalidFileSizeMessageDetail="Maximo 10MB"
+                                ></p-fileUpload>
+                            </div>
                         </div>
 
-                        <div class="col-12 mt-3" *ngIf="deshabilitarEnvioAConsejo">
-                            <button
-                                pButton
-                                pRipple
-                                label="Cargar resolución o comunicación"
-                                icon="pi pi-upload"
-                            ></button>
+                        <div class="w-full mt-3 mb-3" *ngIf="archivosCargados.length > 0">
+                            <p class="font-semibold">Docuementos de respuesta enviados por el Consejo</p>
                         </div>
+                        <ng-container *ngIf="archivosCargados.length > 0">
+                            <div *ngFor="let archivo of archivosCargados; let i = index">
+                                <button
+                                    pButton
+                                    pRipple
+                                    type="button"
+                                    [icon]="bloquearConceptoConsejo ? 'pi pi-file-pdf' : 'pi pi-trash'"
+                                    label="{{ archivo.name }}"
+                                    (click)="
+                                        bloquearConceptoConsejo
+                                            ? visualizarDocumentoConsejo(i)
+                                            : eliminarDocuementoConcejo(i)
+                                    "
+                                    class="p-button-rounded p-button-secondary mr-2 mb-2 text-sm"
+                                ></button>
+                            </div>
+                        </ng-container>
+
+                        <ng-container *ngIf="urlDocumentoCargaConsejoPdf">
+                            <div class="col-12 mt-2">
+                                <embed
+                                    id="embedElement"
+                                    [src]="urlDocumentoCargaConsejoPdf"
+                                    type="application/pdf"
+                                    width="100%"
+                                    height="600px"
+                                />
+                            </div>
+                        </ng-container>
 
                         <div class="grid grid-nogutter justify-content-end w-full">
                             <p-button

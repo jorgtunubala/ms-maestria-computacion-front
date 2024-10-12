@@ -33,9 +33,7 @@
                     <input
                         pInputText
                         type="text"
-                        (input)="
-                            dt1.filterGlobal($event.target.value, 'contains')
-                        "
+                        (input)="dt1.filterGlobal($event.target.value, 'contains')"
                         placeholder="Buscar..."
                     />
                 </span>
@@ -45,6 +43,7 @@
         <ng-template pTemplate="header">
             <tr>
                 <th>Nombre del remitente</th>
+                <th>ID remitente</th>
                 <th>Tipo de solicitud</th>
                 <th>{{ columnaFecha }}</th>
             </tr>
@@ -53,12 +52,11 @@
         <ng-template pTemplate="body" let-solicitud>
             <tr [pSelectableRow]="solicitud">
                 <td>
-                    <p-avatar
-                        icon="pi pi-user"
-                        styleClass="mr-2"
-                        shape="circle"
-                    ></p-avatar>
+                    <p-avatar icon="pi pi-user" styleClass="mr-2" shape="circle"></p-avatar>
                     {{ solicitud.nombreEstudiante }}
+                </td>
+                <td>
+                    {{ solicitud.identificacionSolicitante }}
                 </td>
                 <td>
                     <p-tag value="{{ solicitud.abreviatura }}"></p-tag>
@@ -71,9 +69,6 @@
     </p-table>
 
     <div class="mt-2" *ngIf="cargandoSolicitudes">
-        <p-progressBar
-            mode="indeterminate"
-            [style]="{ height: '6px' }"
-        ></p-progressBar>
+        <p-progressBar mode="indeterminate" [style]="{ height: '6px' }"></p-progressBar>
     </div>
 </div>

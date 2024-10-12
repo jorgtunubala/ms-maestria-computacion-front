@@ -1,10 +1,4 @@
-import {
-    Component,
-    ElementRef,
-    HostListener,
-    OnInit,
-    ViewChild,
-} from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import jsPDF from 'jspdf';
 import { PDFDocument, rgb } from 'pdf-lib';
 import { GestorService } from '../../../services/gestor.service';
@@ -13,11 +7,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { HttpService } from '../../../services/http.service';
 import { DatosSolicitudRequest } from '../../../models/solicitudes/datosSolicitudRequest';
 
-import {
-    DatosAvalSolicitud,
-    DetallesRechazo,
-    SolicitudRecibida,
-} from '../../../models/indiceModelos';
+import { DatosAvalSolicitud, DetallesRechazo, SolicitudRecibida } from '../../../models/indiceModelos';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { UtilidadesService } from '../../../services/utilidades.service';
 import { Router } from '@angular/router';
@@ -105,14 +95,10 @@ export class VisoravalComponent implements OnInit {
 
     // Recupera la solicitud seleccionada del localStorage y carga los datos
     recuperarSolicitudSeleccionada(): void {
-        const solicitudSeleccionadaJson = localStorage.getItem(
-            'solicitudSeleccionadaTutorDirector'
-        );
+        const solicitudSeleccionadaJson = localStorage.getItem('solicitudSeleccionadaTutorDirector');
 
         if (solicitudSeleccionadaJson) {
-            this.solicitudSeleccionada = JSON.parse(
-                solicitudSeleccionadaJson
-            ) as SolicitudRecibida;
+            this.solicitudSeleccionada = JSON.parse(solicitudSeleccionadaJson) as SolicitudRecibida;
             this.gestor.solicitudSeleccionada = this.solicitudSeleccionada;
             this.cargarDatosSolicitud();
         }
@@ -168,13 +154,9 @@ export class VisoravalComponent implements OnInit {
 
     // Extrae los archivos adjuntos según el tipo de solicitud
     extraerAdjuntos(tipoSolicitud: string): void {
-        const procesarDocumentosAdjuntos = (
-            documentosAdjuntos: any[]
-        ): void => {
+        const procesarDocumentosAdjuntos = (documentosAdjuntos: any[]): void => {
             documentosAdjuntos?.forEach((docAdjunto) => {
-                this.docsAdjuntos.push(
-                    this.utilidades.convertirBase64AFile(docAdjunto)
-                );
+                this.docsAdjuntos.push(this.utilidades.convertirBase64AFile(docAdjunto));
             });
         };
 
@@ -184,48 +166,28 @@ export class VisoravalComponent implements OnInit {
                 this.extraerAdjuntosHomologacion(procesarDocumentosAdjuntos);
                 break;
             case 'CU_ASIG':
-                procesarDocumentosAdjuntos(
-                    this.datosSolicitud.datosSolicitudCursarAsignaturas
-                        .documentosAdjuntos
-                );
+                procesarDocumentosAdjuntos(this.datosSolicitud.datosSolicitudCursarAsignaturas.documentosAdjuntos);
                 break;
             case 'AV_PASA_INV':
-                procesarDocumentosAdjuntos(
-                    this.datosSolicitud.datoAvalPasantiaInv.documentosAdjuntos
-                );
+                procesarDocumentosAdjuntos(this.datosSolicitud.datoAvalPasantiaInv.documentosAdjuntos);
                 break;
             case 'AP_ECON_INV':
-                procesarDocumentosAdjuntos(
-                    this.datosSolicitud.datosApoyoEconomico.documentosAdjuntos
-                );
+                procesarDocumentosAdjuntos(this.datosSolicitud.datosApoyoEconomico.documentosAdjuntos);
                 break;
             case 'RE_CRED_PAS':
-                this.extraerAdjuntosActividadDocente(
-                    procesarDocumentosAdjuntos
-                );
+                this.extraerAdjuntosActividadDocente(procesarDocumentosAdjuntos);
                 break;
             case 'RE_CRED_PUB':
-                procesarDocumentosAdjuntos(
-                    this.datosSolicitud.datosReconocimientoCreditos
-                        .documentosAdjuntos
-                );
+                procesarDocumentosAdjuntos(this.datosSolicitud.datosReconocimientoCreditos.documentosAdjuntos);
                 break;
             case 'AP_ECON_ASI':
-                procesarDocumentosAdjuntos(
-                    this.datosSolicitud.datosApoyoEconomicoCongreso
-                        .documentosAdjuntos
-                );
+                procesarDocumentosAdjuntos(this.datosSolicitud.datosApoyoEconomicoCongreso.documentosAdjuntos);
                 break;
             case 'PA_PUBL_EVE':
-                procesarDocumentosAdjuntos(
-                    this.datosSolicitud.datosApoyoEconomicoPublicacion
-                        .documentosAdjuntos
-                );
+                procesarDocumentosAdjuntos(this.datosSolicitud.datosApoyoEconomicoPublicacion.documentosAdjuntos);
                 break;
             case 'SO_BECA':
-                procesarDocumentosAdjuntos([
-                    this.datosSolicitud.datoSolicitudBeca.formatoSolicitudBeca,
-                ]);
+                procesarDocumentosAdjuntos([this.datosSolicitud.datoSolicitudBeca.formatoSolicitudBeca]);
                 break;
             case 'SO_DESC':
             default:
@@ -235,43 +197,26 @@ export class VisoravalComponent implements OnInit {
     }
 
     // Extrae los adjuntos de homologación
-    extraerAdjuntosHomologacion(
-        procesarDocumentosAdjuntos: (documentosAdjuntos: any[]) => void
-    ): void {
-        procesarDocumentosAdjuntos(
-            this.datosSolicitud.datosSolicitudHomologacion.documentosAdjuntos
-        );
+    extraerAdjuntosHomologacion(procesarDocumentosAdjuntos: (documentosAdjuntos: any[]) => void): void {
+        procesarDocumentosAdjuntos(this.datosSolicitud.datosSolicitudHomologacion.documentosAdjuntos);
 
-        this.datosSolicitud.datosSolicitudHomologacion.datosAsignatura.forEach(
-            (asignatura) => {
-                if (asignatura.contenidoProgramatico) {
-                    this.docsAdjuntos.push(
-                        this.utilidades.convertirBase64AFile(
-                            asignatura.contenidoProgramatico
-                        )
-                    );
-                }
+        this.datosSolicitud.datosSolicitudHomologacion.datosAsignatura.forEach((asignatura) => {
+            if (asignatura.contenidoProgramatico) {
+                this.docsAdjuntos.push(this.utilidades.convertirBase64AFile(asignatura.contenidoProgramatico));
             }
-        );
+        });
     }
 
     // Extrae los adjuntos de la actividad docente
-    extraerAdjuntosActividadDocente(
-        procesarDocumentosAdjuntos: (documentosAdjuntos: any[]) => void
-    ): void {
+    extraerAdjuntosActividadDocente(procesarDocumentosAdjuntos: (documentosAdjuntos: any[]) => void): void {
         this.datosSolicitud.datosActividadDocente?.forEach((actividad) => {
             procesarDocumentosAdjuntos(actividad.documentos);
-            actividad.enlaces?.forEach((enlace) =>
-                this.enlacesAdjuntos.push(enlace)
-            );
+            actividad.enlaces?.forEach((enlace) => this.enlacesAdjuntos.push(enlace));
         });
     }
 
     private verificarRestricciones() {
-        if (
-            this.datosSolicitud.datosComunSolicitud.estadoSolicitud !=
-            'Radicada'
-        ) {
+        if (this.datosSolicitud.datosComunSolicitud.estadoSolicitud != 'Radicada') {
             this.mostrarPFSet = false;
             this.mostrarBtnAvalar = false;
             this.mostrarBtnRechazar = false;
@@ -282,31 +227,24 @@ export class VisoravalComponent implements OnInit {
     }
 
     cargarDatosSolicitud() {
-        this.http
-            .obtenerInfoSolGuardada(this.solicitudSeleccionada.idSolicitud)
-            .subscribe(
-                async (infoSolicitud: DatosSolicitudRequest) => {
-                    this.datosSolicitud = infoSolicitud;
-                    this.abrirOficioPdf();
+        this.http.obtenerInfoSolGuardada(this.solicitudSeleccionada.idSolicitud).subscribe(
+            async (infoSolicitud: DatosSolicitudRequest) => {
+                console.log(infoSolicitud);
+                this.datosSolicitud = infoSolicitud;
+                this.abrirOficioPdf();
 
-                    this.extraerAdjuntos(
-                        this.solicitudSeleccionada.codigoSolicitud
-                    );
+                this.extraerAdjuntos(this.solicitudSeleccionada.codigoSolicitud);
 
-                    this.gestor.estadoSolicitud =
-                        infoSolicitud.datosComunSolicitud.estadoSolicitud;
+                this.gestor.estadoSolicitud = infoSolicitud.datosComunSolicitud.estadoSolicitud;
 
-                    this.verificarRestricciones();
+                this.verificarRestricciones();
 
-                    this.cargandoDatos = false;
-                },
-                (error) => {
-                    console.error(
-                        'Error al cargar la informacion de la solicitud:',
-                        error
-                    );
-                }
-            );
+                this.cargandoDatos = false;
+            },
+            (error) => {
+                console.error('Error al cargar la informacion de la solicitud:', error);
+            }
+        );
     }
 
     // Abre el PDF del oficio
@@ -315,8 +253,7 @@ export class VisoravalComponent implements OnInit {
 
         if (oficioPdf) {
             const documento = this.utilidades.convertirBase64AFile(oficioPdf);
-            this.urlOficioPdf =
-                this.utilidades.crearUrlSeguroParaPDF(documento);
+            this.urlOficioPdf = this.utilidades.crearUrlSeguroParaPDF(documento);
         }
     }
 
@@ -411,9 +348,7 @@ export class VisoravalComponent implements OnInit {
             }
 
             // Decodificar PDF desde base64
-            const pdfBytes = Uint8Array.from(atob(pdfBase64), (c) =>
-                c.charCodeAt(0)
-            );
+            const pdfBytes = Uint8Array.from(atob(pdfBase64), (c) => c.charCodeAt(0));
 
             // Cargar el documento PDF con pdf-lib
             const pdfDoc = await PDFDocument.load(pdfBytes);
@@ -423,13 +358,8 @@ export class VisoravalComponent implements OnInit {
 
             // Decodificar la imagen en base64
             const tipoImagen = imagenBase64.split(';')[0].split('/')[1]; // Obtener el tipo de imagen (png, jpeg, etc.)
-            const imagenSinEncabezado = imagenBase64.includes(',')
-                ? imagenBase64.split(',')[1]
-                : imagenBase64;
-            const imagenBytes = Uint8Array.from(
-                atob(imagenSinEncabezado),
-                (c) => c.charCodeAt(0)
-            );
+            const imagenSinEncabezado = imagenBase64.includes(',') ? imagenBase64.split(',')[1] : imagenBase64;
+            const imagenBytes = Uint8Array.from(atob(imagenSinEncabezado), (c) => c.charCodeAt(0));
 
             // Incorporar la imagen en el PDF
             let imagen;
@@ -438,9 +368,7 @@ export class VisoravalComponent implements OnInit {
             } else if (tipoImagen === 'jpeg' || tipoImagen === 'jpg') {
                 imagen = await pdfDoc.embedJpg(imagenBytes);
             } else {
-                throw new Error(
-                    'Tipo de imagen no soportado. Solo se admiten PNG y JPEG.'
-                );
+                throw new Error('Tipo de imagen no soportado. Solo se admiten PNG y JPEG.');
             }
 
             // Convertir las dimensiones y coordenadas de mm a puntos
@@ -468,9 +396,7 @@ export class VisoravalComponent implements OnInit {
             const pdfModificadoBytes = await pdfDoc.save();
 
             // Convertir el PDF modificado a Base64 sin desbordar la pila
-            const pdfModificadoBase64 = await this.arrayBufferToBase64(
-                pdfModificadoBytes
-            );
+            const pdfModificadoBase64 = await this.arrayBufferToBase64(pdfModificadoBytes);
 
             // Si deseas mostrar o descargar el PDF modificado en el navegador
             const pdfModificadoBlob = new Blob([pdfModificadoBytes], {
@@ -502,11 +428,7 @@ export class VisoravalComponent implements OnInit {
     }
 
     async enviarOficioAvalado() {
-        if (
-            this.avalEnProceso ||
-            this.firmaEnProceso ||
-            this.rechazoEnProceso
-        ) {
+        if (this.avalEnProceso || this.firmaEnProceso || this.rechazoEnProceso) {
             return;
         }
 
@@ -519,22 +441,15 @@ export class VisoravalComponent implements OnInit {
             const convertirFileABase64 = async (file: File | null) =>
                 file ? await this.utilidades.convertirFileABase64(file) : null;
 
-            const firmoTutor =
-                this.rol === 'Tutor'
-                    ? true
-                    : this.datosSolicitud.datosComunSolicitud.firmaTutor;
+            const firmoTutor = this.rol === 'Tutor' ? true : this.datosSolicitud.datosComunSolicitud.firmaTutor;
             const firmoDirector =
-                this.rol === 'Director'
-                    ? true
-                    : this.datosSolicitud.datosComunSolicitud.firmaDirector;
+                this.rol === 'Director' ? true : this.datosSolicitud.datosComunSolicitud.firmaDirector;
 
             const aval: DatosAvalSolicitud = {
                 idSolicitud: this.solicitudSeleccionada.idSolicitud,
                 firmaTutor: firmoTutor,
                 firmaDirector: firmoDirector,
-                documentoPdfSolicitud: await convertirFileABase64(
-                    this.radicar.oficioDeSolicitud
-                ),
+                documentoPdfSolicitud: await convertirFileABase64(this.radicar.oficioDeSolicitud),
             };
 
             console.log(aval);
@@ -545,13 +460,9 @@ export class VisoravalComponent implements OnInit {
                         //this.gestor.ejecutarCargarSolicitudes();
 
                         // Remover la solicitud de la lista local
-                        this.gestor.solicitudesTutorDirectorCache =
-                            this.gestor.solicitudesTutorDirectorCache.filter(
-                                (solicitud) =>
-                                    solicitud.idSolicitud !==
-                                    this.gestor.solicitudSeleccionada
-                                        .idSolicitud
-                            );
+                        this.gestor.solicitudesTutorDirectorCache = this.gestor.solicitudesTutorDirectorCache.filter(
+                            (solicitud) => solicitud.idSolicitud !== this.gestor.solicitudSeleccionada.idSolicitud
+                        );
 
                         this.avalEnProceso = false;
                         this.confirmationService.confirm({
@@ -574,8 +485,7 @@ export class VisoravalComponent implements OnInit {
                     } else {
                         this.avalEnProceso = false;
                         this.confirmationService.confirm({
-                            message:
-                                'Ha ocurrido un error inesperado al avalar la solicitud, intentelo nuevamente.',
+                            message: 'Ha ocurrido un error inesperado al avalar la solicitud, intentelo nuevamente.',
                             header: 'Error de aval',
                             icon: 'pi pi-exclamation-triangle',
                             acceptLabel: 'Aceptar',
@@ -625,16 +535,13 @@ export class VisoravalComponent implements OnInit {
                             this.gestor.solicitudesTutorDirectorCache =
                                 this.gestor.solicitudesTutorDirectorCache.filter(
                                     (solicitud) =>
-                                        solicitud.idSolicitud !==
-                                        this.gestor.solicitudSeleccionada
-                                            .idSolicitud
+                                        solicitud.idSolicitud !== this.gestor.solicitudSeleccionada.idSolicitud
                                 );
 
                             this.rechazoEnProceso = false;
                             this.gestor.estadoSolicitud = 'No Avalada';
                             this.confirmationService.confirm({
-                                message:
-                                    'La solicitud se ha sido rechazada y se ha notificado al solicitante',
+                                message: 'La solicitud se ha sido rechazada y se ha notificado al solicitante',
                                 header: 'Solicitud no avalada',
                                 icon: 'pi pi-exclamation-circle',
                                 acceptLabel: 'Aceptar',
@@ -712,9 +619,7 @@ export class VisoravalComponent implements OnInit {
 */
     abrirArchivo(nombreDocumento: string) {
         // Buscar el archivo por su nombre
-        const documento = this.docsAdjuntos.find(
-            (doc) => doc.name === nombreDocumento
-        );
+        const documento = this.docsAdjuntos.find((doc) => doc.name === nombreDocumento);
 
         if (documento) {
             const tipoMIME = 'application/pdf';
@@ -731,9 +636,7 @@ export class VisoravalComponent implements OnInit {
 
     abrirEnlace(enlace: string): void {
         if (enlace) {
-            const enlaceCompleto = enlace.startsWith('http')
-                ? enlace
-                : 'http://' + enlace;
+            const enlaceCompleto = enlace.startsWith('http') ? enlace : 'http://' + enlace;
             window.open(enlaceCompleto, '_blank');
         }
     }

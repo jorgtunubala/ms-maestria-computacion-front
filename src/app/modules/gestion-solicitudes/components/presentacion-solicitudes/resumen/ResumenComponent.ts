@@ -1,10 +1,4 @@
-import {
-    Component,
-    ElementRef,
-    HostListener,
-    OnInit,
-    ViewChild,
-} from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { ConfirmationService, MessageService } from 'primeng/api';
 
 import { Router } from '@angular/router';
@@ -51,22 +45,12 @@ export class ResumenComponent implements OnInit {
         private factory: DocumentoPDFFactory
     ) {
         try {
-            this.codTipoSolicitudEscogida =
-                this.radicar.tipoSolicitudEscogida.codigoSolicitud;
+            this.codTipoSolicitudEscogida = this.radicar.tipoSolicitudEscogida.codigoSolicitud;
 
-            this.cargarVistaPreviaPDF(
-                this.codTipoSolicitudEscogida,
-                'carta-solicitud',
-                true
-            );
+            this.cargarVistaPreviaPDF(this.codTipoSolicitudEscogida, 'carta-solicitud', true);
         } catch (error) {
-            if (
-                error instanceof TypeError &&
-                error.message.includes('codigoSolicitud')
-            ) {
-                this.router.navigate([
-                    '/gestionsolicitudes/portafolio/radicar/selector',
-                ]);
+            if (error instanceof TypeError && error.message.includes('codigoSolicitud')) {
+                this.router.navigate(['/gestionsolicitudes/portafolio/radicar/selector']);
             } else {
                 console.error('Error no esperado:', error);
             }
@@ -75,16 +59,9 @@ export class ResumenComponent implements OnInit {
 
     ngOnInit() {}
 
-    cargarVistaPreviaPDF(
-        codigoSolicitud: string | null,
-        tipoDocumento: string,
-        agregarMarcaDeAgua: boolean
-    ) {
+    cargarVistaPreviaPDF(codigoSolicitud: string | null, tipoDocumento: string, agregarMarcaDeAgua: boolean) {
         // Utiliza la fábrica para obtener la estrategia basada en el código de solicitud y tipo de documento
-        const estrategia = this.factory.crearEstrategia(
-            codigoSolicitud,
-            tipoDocumento
-        );
+        const estrategia = this.factory.crearEstrategia(codigoSolicitud, tipoDocumento);
 
         // Verifica si se encontró una estrategia válida
         if (!estrategia) {
@@ -107,18 +84,13 @@ export class ResumenComponent implements OnInit {
         };
 
         // Genera y asigna el PDF con marca de agua
-        this.urlVistaPreviaSolicitudPDF = crearArchivoPDF(
-            pdfDocConMarca,
-            `${tipoDocumento}.pdf`
-        );
+        this.urlVistaPreviaSolicitudPDF = crearArchivoPDF(pdfDocConMarca, `${tipoDocumento}.pdf`);
 
         // Genera el PDF sin marca de agua
         const pdfDocSinMarca = estrategia.generarDocumento(false);
-        const pdfFileSinMarca = new File(
-            [pdfDocSinMarca.output('blob')],
-            `${tipoDocumento}.pdf`,
-            { type: 'application/pdf' }
-        );
+        const pdfFileSinMarca = new File([pdfDocSinMarca.output('blob')], `${tipoDocumento}.pdf`, {
+            type: 'application/pdf',
+        });
 
         // Asigna el documento generado
         this.radicar.oficioDeSolicitud = pdfFileSinMarca;
@@ -182,11 +154,7 @@ export class ResumenComponent implements OnInit {
 
     firmarSolicitud() {
         this.firmaEnProceso = true;
-        this.cargarVistaPreviaPDF(
-            this.codTipoSolicitudEscogida,
-            'carta-solicitud',
-            true
-        );
+        this.cargarVistaPreviaPDF(this.codTipoSolicitudEscogida, 'carta-solicitud', true);
 
         setTimeout(() => {
             this.mostrarOficio = false;
@@ -235,24 +203,20 @@ export class ResumenComponent implements OnInit {
                     this.guardadoEnProceso = false;
                     this.confirmationService.confirm({
                         message:
-                            'IMPORTANTE: Conserve este número de radicado ' +
+                            'IMPORTANTE: Conserve este número de seguimiento ' +
                             resultado +
-                            ' para que pueda hacer seguimiento posterior del estado de su solicitud.',
-                        header: 'Solicitud Radicada: ' + resultado,
+                            ' para que pueda consultar en cualquier momento el estado de su solicitud.',
+                        header: 'Solicitud Creada: ' + resultado,
                         icon: 'pi pi-exclamation-circle',
                         acceptLabel: 'Aceptar',
                         rejectVisible: false,
                         accept: () => {
                             this.radicar.restrablecerValores();
-                            this.router.navigate([
-                                '/gestionsolicitudes/portafolio/opciones',
-                            ]);
+                            this.router.navigate(['/gestionsolicitudes/portafolio/opciones']);
                         },
                         reject: () => {
                             this.radicar.restrablecerValores();
-                            this.router.navigate([
-                                '/gestionsolicitudes/portafolio/opciones',
-                            ]);
+                            this.router.navigate(['/gestionsolicitudes/portafolio/opciones']);
                         },
                     });
                 } else {
@@ -302,23 +266,13 @@ export class ResumenComponent implements OnInit {
         console.log(this.radicar.tipoSolicitudEscogida.codigoSolicitud);
 
         if (
-            [
-                'AD_ASIG',
-                'CA_ASIG',
-                'AP_SEME',
-                'CU_ASIG',
-                'RE_CRED_PR_DOC',
-                'AV_COMI_PR',
-                'SO_BECA',
-            ].includes(this.radicar.tipoSolicitudEscogida.codigoSolicitud)
+            ['AD_ASIG', 'CA_ASIG', 'AP_SEME', 'CU_ASIG', 'RE_CRED_PR_DOC', 'AV_COMI_PR', 'SO_BECA'].includes(
+                this.radicar.tipoSolicitudEscogida.codigoSolicitud
+            )
         ) {
-            this.router.navigate([
-                '/gestionsolicitudes/portafolio/radicar/formulario',
-            ]);
+            this.router.navigate(['/gestionsolicitudes/portafolio/radicar/formulario']);
         } else {
-            this.router.navigate([
-                '/gestionsolicitudes/portafolio/radicar/adjuntos',
-            ]);
+            this.router.navigate(['/gestionsolicitudes/portafolio/radicar/adjuntos']);
         }
     }
 }
