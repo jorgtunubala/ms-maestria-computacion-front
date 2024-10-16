@@ -62,21 +62,23 @@ export class RadicarService {
     firmaDirectorX: number = 0;
     firmaDirectorY: number = 0;
 
+    tipoApoyo: string = null;
+
     fechasEstancia: Date[] = [];
     lugarEstancia: string = '';
 
     nombreCongreso: string = '';
-    tipoCongreso: string = 'Seleccione una opción';
+    tipoCongreso: string = '';
     tituloPublicacion: string = '';
 
     horasIngresadas: number[] = [];
     horasAsignables: number[] = [];
     adjuntosDeActividades: AdjuntosDeActividades = {};
 
-    grupoInvestigacion: string = 'Seleccione una opción';
+    grupoInvestigacion: string = '';
     valorApoyoEcon: number = 0;
     banco: string = '';
-    tipoCuenta: string = 'Seleccione una opción';
+    tipoCuenta: string = '';
     numeroCuenta: string = '';
     cedulaCuentaBanco: string = null;
     direccion: string = '';
@@ -128,7 +130,7 @@ export class RadicarService {
 
     descripcionesActividades: string[] = [];
 
-    tipoBeca: string = 'Seleccione una opción';
+    tipoBeca: string = '';
 
     constructor(
         private gestorHttp: HttpService,
@@ -165,17 +167,18 @@ export class RadicarService {
         this.numeroInstanciasAsignAdiCancel = 1;
         this.instanciasAsignAdiCancel = [{}];
         this.datosAsignAdiCancel = [];
+        this.tipoApoyo = null;
         this.fechasEstancia = [];
         this.lugarEstancia = '';
-        this.grupoInvestigacion = 'Seleccione una opción';
+        this.grupoInvestigacion = '';
         this.valorApoyoEcon = 0;
         this.banco = '';
-        this.tipoCuenta = 'Seleccione una opción';
+        this.tipoCuenta = '';
         this.numeroCuenta = '';
         this.cedulaCuentaBanco = '';
         this.direccion = '';
         this.nombreCongreso = '';
-        this.tipoCongreso = 'Seleccione una opción';
+        this.tipoCongreso = '';
         this.tituloPublicacion = '';
         this.firmaSolicitante = null;
         this.firmaSolicitanteUrl = '';
@@ -189,7 +192,7 @@ export class RadicarService {
         this.horasIngresadas = [];
         this.horasAsignables = [];
         this.adjuntosDeActividades = {};
-        this.tipoBeca = 'Seleccione una opción';
+        this.tipoBeca = '';
         this.descripcionesActividades = [];
         this.firmaTutorPag = 0;
         this.firmaTutorX = 0;
@@ -680,9 +683,11 @@ export class RadicarService {
         });
 
         // Procesar documentosAdjuntos
-        this.documentosAdjuntos?.forEach((doc) => {
-            agregarNombre(doc.name);
-        });
+        this.documentosAdjuntos
+            ?.filter((doc) => doc !== null)
+            .forEach((doc) => {
+                agregarNombre(doc.name);
+            });
 
         // Procesar adjuntosDeActividades
         if (this.adjuntosDeActividades) {

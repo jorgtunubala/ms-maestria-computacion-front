@@ -1,18 +1,9 @@
 <form [formGroup]="formApoyoEconEstancia">
-    <p-fieldset
-        legend="Información para apoyo económico"
-        styleClass="bg-bluegray-50"
-    >
+    <p-fieldset legend="Información para apoyo económico" styleClass="bg-bluegray-50">
         <div class="grid p-fluid">
             <div class="col-12 md:col-6">
                 <span class="p-float-label mt-3">
-                    <input
-                        formControlName="lugar"
-                        class="w-full"
-                        id="lugpasantia"
-                        type="text"
-                        pInputText
-                    />
+                    <input formControlName="lugar" class="w-full" id="lugpasantia" type="text" pInputText />
                     <label for="lugpasantia">Lugar de Estancia</label>
                 </span>
             </div>
@@ -27,9 +18,7 @@
                         dateFormat="dd/mm/yy"
                         [style]="{ width: '100%' }"
                     ></p-calendar>
-                    <label for="fpasantia"
-                        >Periodo de Estancia (fecha inicio - fecha fin)</label
-                    >
+                    <label for="fpasantia">Periodo de Estancia (fecha inicio - fecha fin)</label>
                 </span>
             </div>
             <!--
@@ -65,7 +54,8 @@
                         formControlName="valorApoyo"
                         inputId="valorapoyo"
                         [minFractionDigits]="2"
-                        prefix="COP "
+                        prefix="COP $"
+                        [min]="1"
                         [style]="{ width: '100%' }"
                     >
                     </p-inputNumber>
@@ -76,13 +66,7 @@
 
             <div class="col-12 md:col-6 lg:col-3">
                 <span class="p-float-label mt-3">
-                    <input
-                        formControlName="nombreBanco"
-                        class="w-full"
-                        id="banco"
-                        type="text"
-                        pInputText
-                    />
+                    <input formControlName="nombreBanco" class="w-full" id="banco" type="text" pInputText />
                     <label for="banco">Entidad Bancaria</label>
                 </span>
             </div>
@@ -102,39 +86,21 @@
 
             <div class="col-12 md:col-6 lg:col-3">
                 <span class="p-float-label mt-3">
-                    <input
-                        formControlName="numeroCuenta"
-                        class="w-full"
-                        id="cuentabanco"
-                        type="text"
-                        pInputText
-                    />
+                    <input formControlName="numeroCuenta" class="w-full" id="cuentabanco" type="text" pInputText />
                     <label for="cuentabanco">Número de Cuenta</label>
                 </span>
             </div>
 
             <div class="col-12 md:col-4">
                 <span class="p-float-label mt-3">
-                    <input
-                        formControlName="cedulaEnBanco"
-                        class="w-full"
-                        id="cedubanco"
-                        type="text"
-                        pInputText
-                    />
+                    <input formControlName="cedulaEnBanco" class="w-full" id="cedubanco" type="text" pInputText />
                     <label for="cedubanco">Número de Cédula Asociada</label>
                 </span>
             </div>
 
             <div class="col-12 md:col-8">
                 <span class="p-float-label mt-3">
-                    <input
-                        formControlName="direccionRecidencia"
-                        class="w-full"
-                        id="direccion"
-                        type="text"
-                        pInputText
-                    />
+                    <input formControlName="direccionRecidencia" class="w-full" id="direccion" type="text" pInputText />
                     <label for="direccion">Dirección de Residencia</label>
                 </span>
             </div>

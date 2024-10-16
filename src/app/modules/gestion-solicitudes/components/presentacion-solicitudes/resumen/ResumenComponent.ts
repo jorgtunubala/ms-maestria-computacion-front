@@ -153,26 +153,30 @@ export class ResumenComponent implements OnInit {
     }
 
     firmarSolicitud() {
-        this.firmaEnProceso = true;
-        this.cargarVistaPreviaPDF(this.codTipoSolicitudEscogida, 'carta-solicitud', true);
-
-        setTimeout(() => {
-            this.mostrarOficio = false;
+        if (this.firmaEnProceso) {
+            return;
+        } else {
+            this.firmaEnProceso = true;
+            this.cargarVistaPreviaPDF(this.codTipoSolicitudEscogida, 'carta-solicitud', true);
 
             setTimeout(() => {
-                this.mostrarOficio = true;
-                this.firmaEnProceso = false;
-                this.mostrarBtnFirmar = false;
-                this.habilitarEnvio = true;
-            }, 1000);
-        }, 100);
+                this.mostrarOficio = false;
+
+                setTimeout(() => {
+                    this.mostrarOficio = true;
+                    this.firmaEnProceso = false;
+                    this.mostrarBtnFirmar = false;
+                    this.habilitarEnvio = true;
+                }, 1000);
+            }, 100);
+        }
     }
 
     showWarn() {
         this.messageService.add({
             severity: 'warn',
-            summary: 'Oficio no firmado',
-            detail: 'Firme el oficio de la solicitud',
+            summary: 'Documento no firmado',
+            detail: 'Firme la carta de su solicitud',
         });
     }
 

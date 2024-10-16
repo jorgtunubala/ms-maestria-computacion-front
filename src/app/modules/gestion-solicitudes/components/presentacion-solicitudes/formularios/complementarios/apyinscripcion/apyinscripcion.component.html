@@ -1,28 +1,23 @@
 <form [formGroup]="formApoyoPagoPublic">
     <div class="grid p-fluid">
-        <div class="col-12 lg:col-8">
+        <div class="col-12 md:col-9">
             <span class="p-float-label mt-3">
-                <input
-                    formControlName="tituloPublicacion"
-                    class="w-full"
-                    id="tituloPublicacion"
-                    type="text"
-                    pInputText
-                />
-                <label for="tituloPublicacion">Título de la publicación</label>
+                <input formControlName="nombreCongreso" class="w-full" id="nomCongreso" type="text" pInputText />
+                <label for="nomCongreso">Nombre del evento</label>
             </span>
         </div>
 
-        <div class="col-12 lg:col-4">
+        <div class="col-12 md:col-3">
             <span class="p-float-label mt-3">
-                <p-dropdown
-                    formControlName="tipoCongreso"
-                    inputId="tipoCongreso"
-                    [autoDisplayFirst]="false"
-                    [options]="tiposCongreso"
+                <p-calendar
+                    formControlName="fechas"
+                    selectionMode="range"
+                    [readonlyInput]="true"
+                    inputId="fcongreso"
+                    dateFormat="dd/mm/yy"
                     [style]="{ width: '100%' }"
-                ></p-dropdown>
-                <label for="tipoCongreso">Tipo de publicación</label>
+                ></p-calendar>
+                <label for="fcongreso">Fechas del evento (inicio - fin)</label>
             </span>
         </div>
 

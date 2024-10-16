@@ -29,9 +29,9 @@ export class SolicitudApoyoEconomicoPasantia implements DocumentoPDFStrategy {
         const textSolicitud = `Reciban cordial saludo, comedidamente me dirijo a ustedes con el fin de solicitar un apoyo económico para la realización de una estancia de investigación en ${this.servicioRadicar.lugarEstancia}, en el periodo comprendido entre las fechas: ${rangoFechas}. La presente solicitud está avalada por la dirección del ${this.servicioRadicar.grupoInvestigacion}, adicionalmente anexo la documentación e información requerida para su estudio.`;
 
         // Texto para los datos del apoyo económico
-        const textDatosApoyo = `\nValor apoyo económico: COP $${
+        const textDatosApoyo = `\nValor apoyo económico: COP $${this.servicioUtilidades.numeroAMoneda(
             this.servicioRadicar.valorApoyoEcon
-        }\nEntidad Bancaria: ${this.servicioRadicar.banco}\nTipo de Cuenta: ${
+        )}\nEntidad Bancaria: ${this.servicioRadicar.banco}\nTipo de Cuenta: ${
             this.servicioRadicar.tipoCuenta
         }\nNúmero de Cuenta: ${this.servicioRadicar.numeroCuenta}\nTitular: ${
             this.servicioRadicar.formInfoPersonal.get('nombres').value

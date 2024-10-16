@@ -4,11 +4,11 @@ import { RadicarService } from 'src/app/modules/gestion-solicitudes/services/rad
 import { UtilidadesService } from 'src/app/modules/gestion-solicitudes/services/utilidades.service';
 
 @Component({
-    selector: 'app-apypublicacion',
-    templateUrl: './apypublicacion.component.html',
-    styleUrls: ['./apypublicacion.component.scss'],
+    selector: 'app-apyinscripcion',
+    templateUrl: './apyinscripcion.component.html',
+    styleUrls: ['./apyinscripcion.component.scss'],
 })
-export class ApypublicacionComponent implements OnInit {
+export class ApyinscripcionComponent implements OnInit {
     formApoyoPagoPublic: FormGroup;
     tiposCuentaBancaria: string[];
     tiposCongreso: string[];
@@ -36,8 +36,8 @@ export class ApypublicacionComponent implements OnInit {
         ];
 
         this.formApoyoPagoPublic = this.fb.group({
-            tipoCongreso: ['', this.customValidator()],
-            tituloPublicacion: ['', Validators.required],
+            nombreCongreso: ['', Validators.required],
+            fechas: ['', Validators.required],
             grupoInvestigacion: ['', this.customValidator],
             valorApoyo: ['', Validators.required],
             nombreBanco: ['', Validators.required],
@@ -51,14 +51,14 @@ export class ApypublicacionComponent implements OnInit {
     ngOnInit(): void {
         this.servicioUtilidades.configurarIdiomaCalendario();
 
-        if (this.radicar.tipoCongreso.trim() !== '') {
+        if (this.radicar.fechasEstancia.length > 0) {
             this.formApoyoPagoPublic.patchValue({
-                tipoCongreso: this.radicar.tipoCongreso,
+                fechas: this.radicar.fechasEstancia,
             });
         }
-        if (this.radicar.tituloPublicacion.trim() !== '') {
+        if (this.radicar.nombreCongreso.trim() !== '') {
             this.formApoyoPagoPublic.patchValue({
-                tituloPublicacion: this.radicar.tituloPublicacion,
+                nombreCongreso: this.radicar.nombreCongreso,
             });
         }
         if (this.radicar.grupoInvestigacion.trim() !== '') {
@@ -66,6 +66,7 @@ export class ApypublicacionComponent implements OnInit {
                 grupoInvestigacion: this.radicar.grupoInvestigacion,
             });
         }
+
         if (this.radicar.valorApoyoEcon !== null) {
             this.formApoyoPagoPublic.patchValue({
                 valorApoyo: this.radicar.valorApoyoEcon,
@@ -98,8 +99,18 @@ export class ApypublicacionComponent implements OnInit {
         }
 
         this.formApoyoPagoPublic.valueChanges.subscribe((value) => {
-            this.radicar.tipoCongreso = value.tipoCongreso;
-            this.radicar.tituloPublicacion = value.tituloPublicacion;
+            // Verificar si value.fechas es una cadena de texto
+            if (typeof value.fechas === 'string') {
+                // Dividir el string de fechas en fechaInicio y fechaFin
+                const fechas = value.fechas.split(' - ').map((dateString) => new Date(dateString.trim()));
+                this.radicar.fechasEstancia = fechas;
+            } else if (Array.isArray(value.fechas)) {
+                // Verificar si value.fechas es un arreglo de objetos Date
+                // Asignar el valor directamente
+                this.radicar.fechasEstancia = value.fechas;
+            }
+
+            this.radicar.nombreCongreso = value.nombreCongreso;
             this.radicar.grupoInvestigacion = value.grupoInvestigacion;
             this.radicar.valorApoyoEcon = value.valorApoyo;
             this.radicar.banco = value.nombreBanco;
@@ -118,6 +129,14 @@ export class ApypublicacionComponent implements OnInit {
             }
             return null;
         };
+    }
+
+    validarFechas(): boolean {
+        return (
+            this.radicar.fechasEstancia.length === 2 &&
+            !!this.radicar.fechasEstancia[0] &&
+            !!this.radicar.fechasEstancia[1]
+        );
     }
 
     obtenerEstadoFormulario(): boolean {

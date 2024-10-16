@@ -70,6 +70,8 @@ export class SolicitudAvalPracticaDocente implements DocumentoPDFStrategy {
         // Añadir espacios para firmas
         cursorY = this.pdfService.agregarEspaciosDeFirmas(doc, cursorY, false, marcaDeAgua);
 
+        cursorY = this.pdfService.agregarListadoAdjuntos(doc, cursorY, textAdjuntos, marcaDeAgua);
+
         // Retornar el documento generado
         return doc;
     }

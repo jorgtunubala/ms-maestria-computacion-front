@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { RadicarService } from 'src/app/modules/gestion-solicitudes/services/radicar.service';
 import { UtilidadesService } from 'src/app/modules/gestion-solicitudes/services/utilidades.service';
 
@@ -12,14 +12,20 @@ export class ApyasistenciaeventoComponent implements OnInit {
     formApoyoAsistEvento: FormGroup;
     tiposCuentaBancaria: string[];
     tiposCongreso: string[];
+    listaGruposInvestigacion: string[];
 
     constructor(
         public radicar: RadicarService,
         private fb: FormBuilder,
         private servicioUtilidades: UtilidadesService
     ) {
-        this.tiposCuentaBancaria = ['Seleccione una opción', 'Ahorros', 'Corriente'];
-        this.tiposCongreso = ['Seleccione una opción', 'Opcion 1', 'Opcion 2'];
+        this.tiposCuentaBancaria = ['Ahorros', 'Corriente'];
+        this.tiposCongreso = ['Nacional', 'Internacional'];
+        this.listaGruposInvestigacion = [
+            'Grupo de Investigación y Desarrollo en Ingeniería de Software - IDIS',
+            'Grupo de Investigación en Tecnologías de la Información - GTI',
+            'Grupo de Investigación en Inteligencia Computacional - GICO',
+        ];
     }
 
     ngOnInit(): void {
@@ -29,6 +35,7 @@ export class ApyasistenciaeventoComponent implements OnInit {
             nombreCongreso: ['', Validators.required],
             tipoCongreso: ['', this.customValidator()],
             tituloPublicacion: ['', Validators.required],
+            grupoInvestigacion: ['', Validators.required],
             fechas: ['', Validators.required],
             valorApoyo: ['', Validators.required],
             entidadBancaria: ['', Validators.required],
@@ -54,7 +61,7 @@ export class ApyasistenciaeventoComponent implements OnInit {
     customValidator() {
         return (control: AbstractControl) => {
             const tipoSeleccionado: string = control.value;
-            if (!tipoSeleccionado || tipoSeleccionado === 'Seleccione una opción') {
+            if (!tipoSeleccionado || tipoSeleccionado === '') {
                 return { tipoInvalido: true };
             }
             return null;
@@ -62,10 +69,14 @@ export class ApyasistenciaeventoComponent implements OnInit {
     }
 
     validarFechas(): boolean {
+        const fechas = this.formApoyoAsistEvento.get('fechas')?.value;
+
+        // Verificar que fechas tenga exactamente 2 elementos y que ambos no sean null
         return (
-            this.radicar.fechasEstancia.length === 2 &&
-            !!this.radicar.fechasEstancia[0] &&
-            !!this.radicar.fechasEstancia[1]
+            Array.isArray(fechas) &&
+            fechas.length === 2 &&
+            !!fechas[0] && // Verifica que la primera fecha no sea null
+            !!fechas[1] // Verifica que la segunda fecha no sea null
         );
     }
 
