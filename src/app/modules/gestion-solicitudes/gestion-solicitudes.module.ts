@@ -41,6 +41,7 @@ import { SkelinfosolicitudComponent } from './components/utilidades/skeleton/ske
 import { SkeltablaComponent } from './components/utilidades/skeleton/skeltabla/skeltabla.component';
 import { PruebaComponent } from './components/presentacion-solicitudes/formularios/complementarios/prueba/prueba.component';
 import { FormulariorechazoComponent } from './components/gestion-coordinacion/complementos/formulariorechazo/formulariorechazo.component';
+import { ApyinscripcionComponent } from './components/presentacion-solicitudes/formularios/complementarios/apyinscripcion/apyinscripcion.component';
 
 @NgModule({
     declarations: [
@@ -79,6 +80,7 @@ import { FormulariorechazoComponent } from './components/gestion-coordinacion/co
         SkeltablaComponent,
         PruebaComponent,
         FormulariorechazoComponent,
+        ApyinscripcionComponent,
     ],
     imports: [
         CommonModule,

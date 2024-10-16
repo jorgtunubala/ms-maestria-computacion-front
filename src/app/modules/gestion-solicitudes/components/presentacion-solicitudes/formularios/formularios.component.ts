@@ -21,6 +21,7 @@ import { ApypublicacionComponent } from './complementarios/apypublicacion/apypub
 import { TipoBeca } from 'src/app/core/enums/domain-enum';
 import { CreditosComponent } from './complementarios/creditos/creditos.component';
 import { AvalpracticadocenteComponent } from './complementarios/avalpracticadocente/avalpracticadocente.component';
+import { ApyinscripcionComponent } from './complementarios/apyinscripcion/apyinscripcion.component';
 
 @Component({
     selector: 'app-formularios',
@@ -54,6 +55,8 @@ export class FormulariosComponent implements OnInit {
     formApyAsistEvnt: ApyasistenciaeventoComponent;
     @ViewChild(ApypublicacionComponent)
     formApyPagoPublic: ApypublicacionComponent;
+    @ViewChild(ApyinscripcionComponent)
+    formApyPagoIncrip: ApyinscripcionComponent;
     @ViewChild(CreditosComponent)
     formReCredPracDocente: CreditosComponent;
     @ViewChild(AvalpracticadocenteComponent)
@@ -246,15 +249,28 @@ export class FormulariosComponent implements OnInit {
             case 'AP_ECON_ASI':
                 estadoGeneral =
                     this.formApyAsistEvnt.obtenerEstadoFormulario() &&
+                    this.formApyAsistEvnt.validarFechas() &&
                     this.formListaTutores.obtenerEstadoFormulario() &&
                     this.formDirectores.obtenerEstadoFormulario();
                 break;
             case 'PA_PUBL_EVE':
-                estadoGeneral =
-                    this.formApyPagoPublic.obtenerEstadoFormulario() &&
-                    this.formApyPagoPublic.validarFechas() &&
-                    this.formListaTutores.obtenerEstadoFormulario() &&
-                    this.formDirectores.obtenerEstadoFormulario();
+                if (this.radicar.tipoApoyo === 'inscripcion') {
+                    const fechasValidas = this.formApyPagoIncrip.validarFechas();
+
+                    estadoGeneral =
+                        this.formApyPagoIncrip.obtenerEstadoFormulario() &&
+                        fechasValidas &&
+                        this.formListaTutores.obtenerEstadoFormulario() &&
+                        this.formDirectores.obtenerEstadoFormulario();
+                }
+
+                if (this.radicar.tipoApoyo === 'publicacion') {
+                    estadoGeneral =
+                        this.formApyPagoPublic.obtenerEstadoFormulario() &&
+                        this.formListaTutores.obtenerEstadoFormulario() &&
+                        this.formDirectores.obtenerEstadoFormulario();
+                }
+
                 break;
 
             case 'RE_CRED_PR_DOC':

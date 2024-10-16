@@ -620,6 +620,7 @@ export class PdfService {
         return nuevaPosicionY;
     }
 
+    /*
     agregarEspaciosDeFirmas(doc: jsPDF, posicionY: number, incluirDirector: boolean, marcaDeAgua: boolean) {
         // Definir datos de la firma
         let firmaSolicitante = '../assets/layout/images/FirmaEnBlanco.png';
@@ -677,6 +678,7 @@ export class PdfService {
 
         nuevaPosicionY = resultadoTutor.cursorY;
 
+        console.log('PAGINA FIRMA TUTOR: ' + resultadoTutor.pageNumber);
         this.servicioRadicar.firmaTutorPag = resultadoTutor.pageNumber - 1;
         this.servicioRadicar.firmaTutorX = resultadoTutor.signatureCoordinates.x;
         this.servicioRadicar.firmaTutorY = resultadoTutor.signatureCoordinates.y;
@@ -699,7 +701,122 @@ export class PdfService {
 
             nuevaPosicionY = resultadoDirector.cursorY;
 
+            console.log('PAGINA FIRMA DIRECTOR: ' + resultadoDirector.pageNumber);
             this.servicioRadicar.firmaDirectorPag = resultadoDirector.pageNumber - 1;
+            this.servicioRadicar.firmaDirectorX = resultadoDirector.signatureCoordinates.x;
+            this.servicioRadicar.firmaDirectorY = resultadoDirector.signatureCoordinates.y;
+        }
+
+        return nuevaPosicionY;
+    }
+        */
+
+    agregarEspaciosDeFirmas(doc: jsPDF, posicionY: number, incluirDirector: boolean, marcaDeAgua: boolean) {
+        // Definir datos de la firma
+        let firmaSolicitante = '../assets/layout/images/FirmaEnBlanco.png';
+        let firmaTutor = '../assets/layout/images/FirmaEnBlanco.png';
+        let firmaDirector = '../assets/layout/images/FirmaEnBlanco.png';
+
+        let nuevaPosicionY = posicionY;
+
+        const solicitanteData = {
+            name:
+                this.servicioRadicar.formInfoPersonal.get('nombres').value +
+                ' ' +
+                this.servicioRadicar.formInfoPersonal.get('apellidos').value,
+            identification: this.servicioRadicar.formInfoPersonal.get('numeroDocumento').value,
+            email: this.servicioRadicar.formInfoPersonal.get('correo').value,
+            cell: this.servicioRadicar.formInfoPersonal.get('celular').value,
+        };
+
+        const tutorData = {
+            name: this.servicioRadicar.tutor.nombreTutor,
+        };
+
+        if (this.servicioRadicar.firmaSolicitante) {
+            firmaSolicitante = this.servicioRadicar.firmaSolicitanteUrl.toString();
+        }
+
+        console.log(nuevaPosicionY);
+
+        // Agregar la firma del solicitante
+        let resultadoSolicitante = this.agregarFirma(
+            doc,
+            'Solicitante',
+            firmaSolicitante,
+            'left',
+            solicitanteData,
+            nuevaPosicionY,
+            marcaDeAgua
+        );
+
+        // Si la firma del solicitante provoca un salto de página, alinea la firma del tutor en la misma nueva página
+        if (resultadoSolicitante.pageNumber !== doc.internal.pages.length) {
+            nuevaPosicionY = 65; // Reinicia cursorY para alinear ambas firmas en la nueva página
+        }
+
+        console.log(nuevaPosicionY);
+
+        // Agregar la firma del tutor
+        const resultadoTutor = this.agregarFirma(
+            doc,
+            'Tutor',
+            firmaTutor,
+            'right',
+            tutorData,
+            nuevaPosicionY,
+            marcaDeAgua
+        );
+
+        nuevaPosicionY = resultadoTutor.cursorY;
+
+        console.log('PAGINA FIRMA TUTOR: ' + resultadoTutor.pageNumber);
+        this.servicioRadicar.firmaTutorPag = resultadoTutor.pageNumber - 1;
+        this.servicioRadicar.firmaTutorX = resultadoTutor.signatureCoordinates.x;
+        this.servicioRadicar.firmaTutorY = resultadoTutor.signatureCoordinates.y;
+
+        if (incluirDirector) {
+            const directorData = {
+                name: this.servicioRadicar.director.nombreTutor,
+            };
+
+            // Verificar si hay suficiente espacio en la página actual
+            let espacioRestante = doc.internal.pageSize.height - nuevaPosicionY;
+
+            // Si el espacio disponible es menor al necesario para la firma, forzamos un salto de página
+            if (espacioRestante < 20 /* signatureHeight */ + 4 /* lineHeight */ + 30 /* signatureBottomMargin */) {
+                doc.addPage();
+                this.agregarMembretes(doc, marcaDeAgua); // Añadir plantilla si es necesario
+                nuevaPosicionY = 65; // Reiniciar la posición Y para la nueva página
+            }
+
+            // Guardar el número de página antes de agregar la firma
+            const numeroPaginaAntesDeFirma = doc.internal.pages.length;
+
+            // Agregar la firma del Director
+            const resultadoDirector = this.agregarFirma(
+                doc,
+                'Director',
+                firmaDirector,
+                'right',
+                directorData,
+                nuevaPosicionY,
+                marcaDeAgua
+            );
+
+            nuevaPosicionY = resultadoDirector.cursorY;
+
+            // Verificar si hubo un cambio en el número de página
+            const numeroPaginaDespuesDeFirma = doc.internal.pages.length;
+
+            // Si el número de página cambió, ajustar el valor a la nueva página
+            const paginaFirmaDirector =
+                numeroPaginaDespuesDeFirma > numeroPaginaAntesDeFirma
+                    ? numeroPaginaDespuesDeFirma
+                    : numeroPaginaAntesDeFirma;
+
+            console.log('PAGINA FIRMA DIRECTOR: ' + paginaFirmaDirector);
+            this.servicioRadicar.firmaDirectorPag = paginaFirmaDirector - 1; // Guardar correctamente el número de página
             this.servicioRadicar.firmaDirectorX = resultadoDirector.signatureCoordinates.x;
             this.servicioRadicar.firmaDirectorY = resultadoDirector.signatureCoordinates.y;
         }

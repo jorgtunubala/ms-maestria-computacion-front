@@ -17,7 +17,7 @@
         [showCurrentPageReport]="true"
         currentPageReportTemplate="Mostrando solicitudes {first} a {last} de {totalRecords}"
         [rowsPerPageOptions]="[10, 25, 50]"
-        [globalFilterFields]="['nombreEstudiante', 'abreviatura', 'fecha']"
+        [globalFilterFields]="['nombreEstudiante', 'identificacionSolicitante', 'abreviatura']"
     >
         <ng-template pTemplate="caption">
             <div class="flex">
@@ -62,7 +62,7 @@
                     <p-tag value="{{ solicitud.abreviatura }}"></p-tag>
                 </td>
                 <td>
-                    {{ solicitud.fecha }}
+                    {{ formatearFechaConHora(solicitud.fecha) }}
                 </td>
             </tr>
         </ng-template>

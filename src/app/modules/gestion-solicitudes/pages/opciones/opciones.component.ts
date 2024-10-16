@@ -36,44 +36,38 @@ export class OpcionesComponent implements OnInit {
     }
 
     cargarPagina() {
-        this.router.navigate([
-            '/gestionsolicitudes/portafolio/radicar/selector',
-        ]);
+        this.router.navigate(['/gestionsolicitudes/portafolio/radicar/selector']);
     }
 
     buscarSolicitud() {
         if (this.radicado != '') {
             this.buscandoSolicitud = true;
-            this.http
-                .consultarHistorialSolicitud(this.radicado)
-                .subscribe((data: EventoHistorial[]) => {
-                    if (data && data.length > 0) {
-                        this.seguimiento.historial = data;
-                        this.seguimiento.radicado = this.radicado.toUpperCase();
-                        this.buscandoSolicitud = false;
-                        this.router.navigate([
-                            '/gestionsolicitudes/portafolio/seguimiento/historial',
-                        ]);
-                    } else {
-                        this.buscandoSolicitud = false;
-                        this.confirmationService.confirm({
-                            message:
-                                'La solicitud con número de radicado ' +
-                                this.radicado.toUpperCase() +
-                                ' no fue encontrada.',
-                            header: 'Solicitud no encontrada',
-                            icon: 'pi pi-exclamation-circle',
-                            acceptLabel: 'Aceptar',
-                            rejectVisible: false,
-                            accept: () => {
-                                this.radicado = '';
-                            },
-                            reject: () => {
-                                this.radicado = '';
-                            },
-                        });
-                    }
-                });
+            this.http.consultarHistorialSolicitud(this.radicado.trim()).subscribe((data: EventoHistorial[]) => {
+                if (data && data.length > 0) {
+                    this.seguimiento.historial = data;
+                    this.seguimiento.radicado = this.radicado.toUpperCase();
+                    this.buscandoSolicitud = false;
+                    this.router.navigate(['/gestionsolicitudes/portafolio/seguimiento/historial']);
+                } else {
+                    this.buscandoSolicitud = false;
+                    this.confirmationService.confirm({
+                        message:
+                            'La solicitud con número de radicado ' +
+                            this.radicado.toUpperCase() +
+                            ' no fue encontrada.',
+                        header: 'Solicitud no encontrada',
+                        icon: 'pi pi-exclamation-circle',
+                        acceptLabel: 'Aceptar',
+                        rejectVisible: false,
+                        accept: () => {
+                            this.radicado = '';
+                        },
+                        reject: () => {
+                            this.radicado = '';
+                        },
+                    });
+                }
+            });
         } else {
             this.showWarn();
         }

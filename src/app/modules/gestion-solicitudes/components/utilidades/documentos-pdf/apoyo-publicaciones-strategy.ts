@@ -21,24 +21,33 @@ export class SolicitudApoyoPublicOInscrip implements DocumentoPDFStrategy {
         console.log(this.servicioUtilidades);
 
         // Obtener el rango de fechas
-        const rangoFechas = this.servicioUtilidades.describirRangoFechas(
-            this.servicioRadicar.fechasEstancia[0],
-            this.servicioRadicar.fechasEstancia[1]
-        );
+
+        let rangoFechas = '';
+
+        if (this.servicioRadicar.tipoApoyo === 'inscripcion') {
+            rangoFechas = this.servicioUtilidades.describirRangoFechas(
+                this.servicioRadicar.fechasEstancia[0],
+                this.servicioRadicar.fechasEstancia[1]
+            );
+        }
 
         // Texto para el asunto
-        const textAsunto = `Asunto: Solicitud de apoyo económico para asistencia a evento presentando artículo\n`;
+        let textAsunto = '';
+        let textSolicitud = '';
 
-        // Texto para la solicitud de inscripción
-        const textSolicitud1 = `Reciban cordial saludo, comedidamente me dirijo a ustedes con el fin de solicitar un apoyo económico para el pago de la inscripción al evento "${this.servicioRadicar.nombreCongreso}" que se llevará a cabo del ${rangoFechas}. La presente solicitud está avalada por la dirección del ${this.servicioRadicar.grupoInvestigacion}, adicionalmente anexo la documentación e información requerida para su estudio.`;
-
-        // Texto para la solicitud de publicación
-        const textSolicitud2 = `Reciban cordial saludo, comedidamente me dirijo a ustedes con el fin de solicitar un apoyo económico para el pago de la publicación del trabajo titulado "${this.servicioRadicar.tituloPublicacion}" que se llevará a cabo del ${rangoFechas}. La presente solicitud está avalada por la dirección del ${this.servicioRadicar.grupoInvestigacion}, adicionalmente anexo la documentación e información requerida para su estudio.`;
+        if (this.servicioRadicar.tipoApoyo === 'inscripcion') {
+            textAsunto = `Asunto: Solicitud de apoyo económico para el pago de inscripción a evento\n`;
+            textSolicitud = `Reciban cordial saludo, comedidamente me dirijo a ustedes con el fin de solicitar un apoyo económico para el pago de la inscripción al evento "${this.servicioRadicar.nombreCongreso}" que se llevará a cabo del ${rangoFechas}. La presente solicitud está avalada por la dirección del ${this.servicioRadicar.grupoInvestigacion}, adicionalmente anexo la documentación e información requerida para su estudio.`;
+        }
+        if (this.servicioRadicar.tipoApoyo === 'publicacion') {
+            textAsunto = `Asunto: Solicitud de apoyo económico para el pago de publicacion de ${this.servicioRadicar.tipoCongreso}\n`;
+            textSolicitud = `Reciban cordial saludo, comedidamente me dirijo a ustedes con el fin de solicitar un apoyo económico para el pago de la publicación del trabajo titulado "${this.servicioRadicar.tituloPublicacion}" como ${this.servicioRadicar.tipoCongreso}. La presente solicitud está avalada por la dirección del ${this.servicioRadicar.grupoInvestigacion}, adicionalmente anexo la documentación e información requerida para su estudio.`;
+        }
 
         // Texto para los datos del apoyo económico
-        const textDatosApoyo = `\nValor apoyo económico: COP $${
+        const textDatosApoyo = `\nValor apoyo económico: COP $${this.servicioUtilidades.numeroAMoneda(
             this.servicioRadicar.valorApoyoEcon
-        }\nEntidad Bancaria: ${this.servicioRadicar.banco}\nTipo de Cuenta: ${
+        )}\nEntidad Bancaria: ${this.servicioRadicar.banco}\nTipo de Cuenta: ${
             this.servicioRadicar.tipoCuenta
         }\nNúmero de Cuenta: ${this.servicioRadicar.numeroCuenta}\nTitular: ${
             this.servicioRadicar.formInfoPersonal.get('nombres').value
@@ -57,7 +66,7 @@ export class SolicitudApoyoPublicOInscrip implements DocumentoPDFStrategy {
             doc,
             cursorY,
             textAsunto,
-            textSolicitud1, // Aquí puedes cambiar a textSolicitud2 según el caso
+            textSolicitud, // Aquí puedes cambiar a textSolicitud2 según el caso
             marcaDeAgua
         );
 

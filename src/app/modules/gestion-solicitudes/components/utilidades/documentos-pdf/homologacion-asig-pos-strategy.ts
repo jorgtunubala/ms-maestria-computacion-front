@@ -19,6 +19,7 @@ export class SolicitudHomologAsignaturasPos implements DocumentoPDFStrategy {
         // Texto para el asunto
         const textAsunto = `Asunto: Solicitud de homologación de asignaturas en otros programas de posgrado\n`;
 
+        const textAdjuntos = `${this.servicioRadicar.obtenerNombreArchivosAdjuntos()}`;
         // Texto para la solicitud
         const textSolicitud = `Reciban cordial saludo, comedidamente me dirijo a ustedes con el fin de solicitar la homologación de las asignaturas relacionadas en la tabla a continuación, las cuales fueron cursadas en el programa de posgrado, ${this.servicioRadicar.datosInstitucionHomologar.programa} de la ${this.servicioRadicar.datosInstitucionHomologar.institucion}.`;
 
@@ -29,9 +30,10 @@ export class SolicitudHomologAsignaturasPos implements DocumentoPDFStrategy {
         cursorY = this.pdfService.agregarAsuntoYSolicitud(doc, cursorY, textAsunto, textSolicitud, marcaDeAgua);
 
         // Datos para la tabla
-        const headers = ['Asignatura', 'Créditos', 'Intensidad (h/semana)', 'Calificación'];
+        const headers = ['No.', 'Asignatura', 'Créditos', 'Intensidad (h/semana)', 'Calificación'];
 
-        const data = this.servicioRadicar.datosAsignaturasAHomologar.map((item) => [
+        const data = this.servicioRadicar.datosAsignaturasAHomologar.map((item, index) => [
+            (index + 1).toString(),
             item.asignatura,
             item.creditos.toString(),
             item.intensidad.toString(),
@@ -46,6 +48,8 @@ export class SolicitudHomologAsignaturasPos implements DocumentoPDFStrategy {
 
         // Añadir espacios para firmas
         cursorY = this.pdfService.agregarEspaciosDeFirmas(doc, cursorY, false, marcaDeAgua);
+
+        cursorY = this.pdfService.agregarListadoAdjuntos(doc, cursorY, textAdjuntos, marcaDeAgua);
 
         // Retornar el documento generado
         return doc;

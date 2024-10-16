@@ -197,4 +197,17 @@ export class UtilidadesService {
         // Si todas las validaciones son exitosas
         return true;
     }
+
+    numeroAMoneda(value) {
+        // Asegúrate de que el valor sea un número
+        const numberValue = parseFloat(value);
+
+        if (isNaN(numberValue)) return '0,00';
+
+        // Formatear el número
+        return numberValue.toLocaleString('es-CO', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        });
+    }
 }

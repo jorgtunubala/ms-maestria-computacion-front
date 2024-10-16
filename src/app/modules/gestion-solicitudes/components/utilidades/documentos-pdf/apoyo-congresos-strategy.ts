@@ -23,17 +23,19 @@ export class SolicitudApoyoEconomicoCongresos implements DocumentoPDFStrategy {
         );
 
         const textAsunto = `Asunto: Solicitud de apoyo económico para asistencia a evento presentando artículo\n`;
-        const textSolicitud = `Reciban cordial saludo, comedidamente me dirijo a ustedes con el fin de solicitar un apoyo económico para asistir al evento "${
+        const textSolicitud = `Reciban cordial saludo, comedidamente me dirijo a ustedes con el fin de solicitar un apoyo económico para asistir al evento de caracter ${
+            this.servicioRadicar.formApoyoAsistEvento.get('tipoCongreso').value
+        }: "${
             this.servicioRadicar.formApoyoAsistEvento.get('nombreCongreso').value
         }" que se llevará a cabo del ${rangoFechas}, y donde se hará la publicación del trabajo titulado "${
             this.servicioRadicar.formApoyoAsistEvento.get('tituloPublicacion').value
         }". La presente solicitud está avalada por la dirección del ${
-            this.servicioRadicar.grupoInvestigacion
+            this.servicioRadicar.formApoyoAsistEvento.get('grupoInvestigacion').value
         }, adicionalmente anexo la documentación e información requerida para su estudio.`;
 
-        const textDatosApoyo = `\nValor apoyo económico: COP $${
+        const textDatosApoyo = `\nValor apoyo económico: COP $${this.servicioUtilidades.numeroAMoneda(
             this.servicioRadicar.formApoyoAsistEvento.get('valorApoyo').value
-        }\nEntidad Bancaria: ${
+        )}\nEntidad Bancaria: ${
             this.servicioRadicar.formApoyoAsistEvento.get('entidadBancaria').value
         }\nTipo de Cuenta: ${this.servicioRadicar.formApoyoAsistEvento.get('tipoCuenta').value}\nNúmero de Cuenta: ${
             this.servicioRadicar.formApoyoAsistEvento.get('numeroCuenta').value

@@ -2,10 +2,7 @@
 
 <div class="card">
     <div class="mb-4">
-        <p class="text-xl font-bold mb-0">
-            <i class="pi pi-check-square mr-2"></i>Paso 2 - Datos de la
-            solicitud
-        </p>
+        <p class="text-xl font-bold mb-0"><i class="pi pi-check-square mr-2"></i>Paso 2 - Datos de la solicitud</p>
         <p>Complete los datos requeridos para presentar la solicitud</p>
     </div>
 
@@ -13,26 +10,11 @@
     <app-infopersonal></app-infopersonal>
 
     <!-- Formulario para agregar asignaturas para Adición o Cancelación -->
-    <div
-        class="mt-4"
-        *ngIf="
-            ['AD_ASIG', 'CA_ASIG'].includes(
-                radicar.tipoSolicitudEscogida.codigoSolicitud
-            )
-        "
-    >
+    <div class="mt-4" *ngIf="['AD_ASIG', 'CA_ASIG'].includes(radicar.tipoSolicitudEscogida.codigoSolicitud)">
         <p-fieldset legend="Asignaturas" styleClass="bg-bluegray-50">
-            <div
-                class="grid"
-                *ngFor="
-                    let instancia of radicar.instanciasAsignAdiCancel;
-                    let i = index
-                "
-            >
+            <div class="grid" *ngFor="let instancia of radicar.instanciasAsignAdiCancel; let i = index">
                 <div class="col-11">
-                    <app-asignaturadicioncancel
-                        [indice]="i"
-                    ></app-asignaturadicioncancel>
+                    <app-asignaturadicioncancel [indice]="i"></app-asignaturadicioncancel>
                 </div>
                 <div class="col-1 mt-3">
                     <button
@@ -58,15 +40,43 @@
         </p-fieldset>
     </div>
 
+    <!--Selector finalidad apoyo economico publicacion/inscripcion-->
+    <div class="mt-4" *ngIf="['PA_PUBL_EVE'].includes(radicar.tipoSolicitudEscogida.codigoSolicitud)">
+        <p-fieldset legend="Información para apoyo económico" styleClass="bg-bluegray-50">
+            <p class="font-semibold">Finalidad del apoyo económico</p>
+            <div class="flex flex-wrap gap-4 mb-4">
+                <div class="field-radiobutton">
+                    <p-radioButton
+                        name="tipoApoyoEconomico"
+                        value="publicacion"
+                        [(ngModel)]="radicar.tipoApoyo"
+                        inputId="apypub"
+                    ></p-radioButton>
+                    <label for="publicacion">Pago de publicación</label>
+                </div>
+                <div class="field-radiobutton">
+                    <p-radioButton
+                        name="tipoApoyoEconomico"
+                        value="inscripcion"
+                        [(ngModel)]="radicar.tipoApoyo"
+                        inputId="apyins"
+                    ></p-radioButton>
+                    <label for="inscripcion">Inscripción a evento</label>
+                </div>
+            </div>
+
+            <ng-container *ngIf="radicar.tipoApoyo === 'publicacion'"
+                ><app-apypublicacion></app-apypublicacion
+            ></ng-container>
+
+            <ng-container *ngIf="radicar.tipoApoyo === 'inscripcion'"
+                ><app-apyinscripcion></app-apyinscripcion
+            ></ng-container>
+        </p-fieldset>
+    </div>
+
     <!-- Formulario para agragar asignaturas homologación postgrados -->
-    <div
-        class="mt-4"
-        *ngIf="
-            ['HO_ASIG_POS', 'HO_ASIG_ESP'].includes(
-                radicar.tipoSolicitudEscogida.codigoSolicitud
-            )
-        "
-    >
+    <div class="mt-4" *ngIf="['HO_ASIG_POS', 'HO_ASIG_ESP'].includes(radicar.tipoSolicitudEscogida.codigoSolicitud)">
         <form [formGroup]="formAsigHomologarCont">
             <p-fieldset legend="Homologaciones" styleClass="bg-bluegray-50">
                 <div class="grid">
@@ -80,9 +90,7 @@
                                 spellcheck="true"
                                 pInputText
                             />
-                            <label for="programa"
-                                >Programa de Postgrado de Procedencia</label
-                            >
+                            <label for="programa">Programa de Postgrado de Procedencia</label>
                         </span>
                     </div>
                     <div class="col-12 lg:col-6">
@@ -95,9 +103,7 @@
                                 spellcheck="true"
                                 pInputText
                             />
-                            <label for="institucion"
-                                >Institución Educativa de Procedencia</label
-                            >
+                            <label for="institucion">Institución Educativa de Procedencia</label>
                         </span>
                     </div>
                 </div>
@@ -106,17 +112,9 @@
                     <p-divider type="dashed"></p-divider>
                 </div>
 
-                <div
-                    class="grid"
-                    *ngFor="
-                        let instancia of radicar.instanciasAsignHomologar;
-                        let i = index
-                    "
-                >
+                <div class="grid" *ngFor="let instancia of radicar.instanciasAsignHomologar; let i = index">
                     <div class="col-11">
-                        <app-asignaturahomologar
-                            [indice]="i"
-                        ></app-asignaturahomologar>
+                        <app-asignaturahomologar [indice]="i"></app-asignaturahomologar>
                     </div>
                     <div class="col-1 mt-3">
                         <button
@@ -144,20 +142,9 @@
     </div>
 
     <!-- Formulario para agragar asignaturas a cursar en otros programas -->
-    <div
-        class="mt-4"
-        *ngIf="
-            ['CU_ASIG'].includes(radicar.tipoSolicitudEscogida.codigoSolicitud)
-        "
-    >
+    <div class="mt-4" *ngIf="['CU_ASIG'].includes(radicar.tipoSolicitudEscogida.codigoSolicitud)">
         <p-fieldset legend="Asignaturas" styleClass="bg-bluegray-50">
-            <div
-                class="grid"
-                *ngFor="
-                    let instancia of radicar.instanciasAsignExterna;
-                    let i = index
-                "
-            >
+            <div class="grid" *ngFor="let instancia of radicar.instanciasAsignExterna; let i = index">
                 <div class="col-11">
                     <app-asignaturaexterna [indice]="i"></app-asignaturaexterna>
                 </div>
@@ -186,107 +173,43 @@
     </div>
 
     <!-- Formulario para agregar el semestre a aplazar -->
-    <div
-        class="mt-4"
-        *ngIf="
-            ['AP_SEME'].includes(radicar.tipoSolicitudEscogida.codigoSolicitud)
-        "
-    >
+    <div class="mt-4" *ngIf="['AP_SEME'].includes(radicar.tipoSolicitudEscogida.codigoSolicitud)">
         <app-semestreaplazar></app-semestreaplazar>
     </div>
 
     <!-- Formulario para incluir datos de la pasantia -->
-    <div
-        class="mt-4"
-        *ngIf="
-            ['AV_PASA_INV'].includes(
-                radicar.tipoSolicitudEscogida.codigoSolicitud
-            )
-        "
-    >
+    <div class="mt-4" *ngIf="['AV_PASA_INV'].includes(radicar.tipoSolicitudEscogida.codigoSolicitud)">
         <app-avalpasantiainvest></app-avalpasantiainvest>
     </div>
 
     <!-- Formulario para apoyo economico estancia de investigacion -->
 
-    <div
-        class="mt-4"
-        *ngIf="
-            ['AP_ECON_INV'].includes(
-                radicar.tipoSolicitudEscogida.codigoSolicitud
-            )
-        "
-    >
+    <div class="mt-4" *ngIf="['AP_ECON_INV'].includes(radicar.tipoSolicitudEscogida.codigoSolicitud)">
         <app-apyeconomicoestancia></app-apyeconomicoestancia>
     </div>
 
     <!-- Formulario para apoyo economico asistencia a congresos -->
-    <div
-        class="mt-4"
-        *ngIf="
-            ['AP_ECON_ASI'].includes(
-                radicar.tipoSolicitudEscogida.codigoSolicitud
-            )
-        "
-    >
+    <div class="mt-4" *ngIf="['AP_ECON_ASI'].includes(radicar.tipoSolicitudEscogida.codigoSolicitud)">
         <app-apyasistenciaevento></app-apyasistenciaevento>
     </div>
 
-    <!-- Formulario para apoyo economico pago publicacion inscripcion evento -->
-    <div
-        class="mt-4"
-        *ngIf="
-            ['PA_PUBL_EVE'].includes(
-                radicar.tipoSolicitudEscogida.codigoSolicitud
-            )
-        "
-    >
-        <app-apypublicacion></app-apypublicacion>
-    </div>
-
     <!-- Formulario para incluir el motivo de la solicitud -->
-    <div
-        class="mt-4"
-        *ngIf="
-            ['CA_ASIG', 'PR_EXAM', 'CU_ASIG'].includes(
-                radicar.tipoSolicitudEscogida.codigoSolicitud
-            )
-        "
-    >
+    <div class="mt-4" *ngIf="['CA_ASIG', 'PR_EXAM', 'CU_ASIG'].includes(radicar.tipoSolicitudEscogida.codigoSolicitud)">
         <app-motivosolicitud></app-motivosolicitud>
     </div>
 
     <!-- Selector actividades aval practica docente -->
-    <div
-        class="mt-4"
-        *ngIf="
-            ['AV_COMI_PR'].includes(
-                radicar.tipoSolicitudEscogida.codigoSolicitud
-            )
-        "
-    >
+    <div class="mt-4" *ngIf="['AV_COMI_PR'].includes(radicar.tipoSolicitudEscogida.codigoSolicitud)">
         <app-avalpracticadocente></app-avalpracticadocente>
     </div>
 
     <!-- Selector actividades reconocimiento de creditos practica docente-->
-    <div
-        class="mt-4"
-        *ngIf="
-            ['RE_CRED_PR_DOC'].includes(
-                radicar.tipoSolicitudEscogida.codigoSolicitud
-            )
-        "
-    >
+    <div class="mt-4" *ngIf="['RE_CRED_PR_DOC'].includes(radicar.tipoSolicitudEscogida.codigoSolicitud)">
         <app-creditos></app-creditos>
     </div>
 
     <!-- Formulario de solicitud de Becas -->
-    <div
-        class="mt-4"
-        *ngIf="
-            ['SO_BECA'].includes(radicar.tipoSolicitudEscogida.codigoSolicitud)
-        "
-    >
+    <div class="mt-4" *ngIf="['SO_BECA'].includes(radicar.tipoSolicitudEscogida.codigoSolicitud)">
         <app-becadescuento></app-becadescuento>
     </div>
 
@@ -296,27 +219,13 @@
     <!-- Formulario Seleccion de un Director -->
     <div
         class="mt-4"
-        *ngIf="
-            ['AP_ECON_INV', 'AP_ECON_ASI', 'PA_PUBL_EVE'].includes(
-                radicar.tipoSolicitudEscogida.codigoSolicitud
-            )
-        "
+        *ngIf="['AP_ECON_INV', 'AP_ECON_ASI', 'PA_PUBL_EVE'].includes(radicar.tipoSolicitudEscogida.codigoSolicitud)"
     >
         <app-listadirectores></app-listadirectores>
     </div>
 
     <div class="grid grid-nogutter mt-4 justify-content-end">
-        <p-button
-            class="mr-2"
-            label="Atras"
-            (click)="navigateToBack()"
-            icon="pi pi-angle-left"
-        ></p-button>
-        <p-button
-            label="Siguiente"
-            (click)="navigateToNext()"
-            icon="pi pi-angle-right"
-            iconPos="right"
-        ></p-button>
+        <p-button class="mr-2" label="Atras" (click)="navigateToBack()" icon="pi pi-angle-left"></p-button>
+        <p-button label="Siguiente" (click)="navigateToNext()" icon="pi pi-angle-right" iconPos="right"></p-button>
     </div>
 </div>
