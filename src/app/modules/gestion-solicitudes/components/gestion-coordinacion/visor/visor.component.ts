@@ -99,6 +99,7 @@ export class VisorComponent implements OnInit, OnDestroy {
             case 'Avalada':
             case 'En comité':
             case 'En concejo':
+            case 'Resuelta':
                 this.mostrarGestor = true;
                 break;
 
@@ -214,7 +215,7 @@ export class VisorComponent implements OnInit, OnDestroy {
                 try {
                     const response = await fetch(fileUrl);
                     const data = await response.blob();
-                    zip.file(`${index}_${file.name}`, data); // Usa índice para asegurar nombre único
+                    zip.file(`Anexo ${index + 1} ${file.name}`, data); // Usa índice para asegurar nombre único
                 } catch (error) {
                     console.error(`Error al descargar el archivo adjunto ${file.name}:`, error);
                 } finally {

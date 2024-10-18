@@ -32,8 +32,8 @@ export class VisoravalComponent implements OnInit {
     solicitudSeleccionada: SolicitudRecibida;
     datosSolicitud: DatosSolicitudRequest;
 
-    //rol: any = 'Tutor';
-    rol: any = 'Director';
+    rol: any = 'Tutor';
+    //rol: any = 'Director';
 
     mostrarOficio: boolean = false;
     mostrarBtnFirmar: boolean = false;
@@ -160,6 +160,10 @@ export class VisoravalComponent implements OnInit {
             });
         };
 
+        const procesarEnlacesAdjuntos = (enlascesAdjuntos: any[]): void => {
+            enlascesAdjuntos?.forEach((enlace) => this.enlacesAdjuntos.push(enlace));
+        };
+
         switch (tipoSolicitud) {
             case 'HO_ASIG_ESP':
             case 'HO_ASIG_POS':
@@ -174,8 +178,12 @@ export class VisoravalComponent implements OnInit {
             case 'AP_ECON_INV':
                 procesarDocumentosAdjuntos(this.datosSolicitud.datosApoyoEconomico.documentosAdjuntos);
                 break;
-            case 'RE_CRED_PAS':
+            case 'RE_CRED_PR_DOC':
                 this.extraerAdjuntosActividadDocente(procesarDocumentosAdjuntos);
+                break;
+            case 'RE_CRED_PAS':
+                procesarDocumentosAdjuntos(this.datosSolicitud.datosReconocimientoCreditos.documentosAdjuntos);
+                procesarEnlacesAdjuntos(this.datosSolicitud.datosReconocimientoCreditos.documentosAdjuntos); //REMPLAZAR LA LISTA DE ENLACES
                 break;
             case 'RE_CRED_PUB':
                 procesarDocumentosAdjuntos(this.datosSolicitud.datosReconocimientoCreditos.documentosAdjuntos);
@@ -291,44 +299,48 @@ export class VisoravalComponent implements OnInit {
     }
 
     firmarSolicitud() {
-        this.firmaEnProceso = true;
+        if (this.firmaEnProceso) {
+            return;
+        } else {
+            this.firmaEnProceso = true;
 
-        switch (this.rol) {
-            case 'Tutor':
-                this.agregarImagenAPDF(
-                    this.radicar.firmaTutorUrl.toString(), // Imagen en Base64
-                    this.datosSolicitud.datosComunSolicitud.numPaginaTutor, // Número de página (por ejemplo, la primera página)
-                    this.datosSolicitud.datosComunSolicitud.posXTutor, // Coordenada X
-                    this.datosSolicitud.datosComunSolicitud.posYTutor - 0.2, // Coordenada Y
-                    58.63, // Ancho
-                    20 // Alto
-                );
-                break;
-            case 'Director':
-                this.agregarImagenAPDF(
-                    this.radicar.firmaDirectorUrl.toString(), // Imagen en Base64
-                    this.datosSolicitud.datosComunSolicitud.numPaginaDirector, // Número de página (por ejemplo, la primera página)
-                    this.datosSolicitud.datosComunSolicitud.posXDirector, // Coordenada X
-                    this.datosSolicitud.datosComunSolicitud.posYDirector - 0.2, // Coordenada Y
-                    58.63, // Ancho
-                    20 // Alto
-                );
-                break;
+            switch (this.rol) {
+                case 'Tutor':
+                    this.agregarImagenAPDF(
+                        this.radicar.firmaTutorUrl.toString(), // Imagen en Base64
+                        this.datosSolicitud.datosComunSolicitud.numPaginaTutor, // Número de página (por ejemplo, la primera página)
+                        this.datosSolicitud.datosComunSolicitud.posXTutor, // Coordenada X
+                        this.datosSolicitud.datosComunSolicitud.posYTutor - 0.2, // Coordenada Y
+                        58.63, // Ancho
+                        20 // Alto
+                    );
+                    break;
+                case 'Director':
+                    this.agregarImagenAPDF(
+                        this.radicar.firmaDirectorUrl.toString(), // Imagen en Base64
+                        this.datosSolicitud.datosComunSolicitud.numPaginaDirector, // Número de página (por ejemplo, la primera página)
+                        this.datosSolicitud.datosComunSolicitud.posXDirector, // Coordenada X
+                        this.datosSolicitud.datosComunSolicitud.posYDirector - 0.2, // Coordenada Y
+                        58.63, // Ancho
+                        20 // Alto
+                    );
+                    break;
 
-            default:
-                break;
-        }
-
-        setTimeout(() => {
-            this.mostrarOficio = false;
+                default:
+                    break;
+            }
 
             setTimeout(() => {
-                this.mostrarOficio = true;
-                this.firmaEnProceso = false;
-                this.mostrarBtnFirmar = false;
-                this.habilitarAval = true;
+                this.mostrarOficio = false;
+
+                setTimeout(() => {
+                    this.mostrarOficio = true;
+                    this.firmaEnProceso = false;
+                    this.mostrarBtnFirmar = false;
+                    this.habilitarAval = true;
+                }, 100);
             }, 100);
-        }, 100);
+        }
     }
 
     async agregarImagenAPDF(

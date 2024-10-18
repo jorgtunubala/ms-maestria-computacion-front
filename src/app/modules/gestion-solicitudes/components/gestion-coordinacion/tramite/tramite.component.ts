@@ -66,6 +66,7 @@ export class TramiteComponent implements OnInit {
     vaAlConcejo: boolean = true;
     habilitarConcejo: boolean = false;
     habilitarComite: boolean = false;
+    enviandoCorreo: boolean = false;
 
     habilitarRespuestaSolicitantes: boolean = false;
 
@@ -133,9 +134,7 @@ export class TramiteComponent implements OnInit {
                     this.respuestaConsejo.fechaAval = this.formatearFecha(this.fechaConsejo);
                 }
 
-                console.log('TAMAÑO DOCUMENTOS ' + infoConsejo.documentosConcejo.length);
-
-                if (infoConsejo.documentosConcejo.length > 0) {
+                if (infoConsejo && infoConsejo.documentosConcejo && infoConsejo.documentosConcejo.length > 0) {
                     this.archivosCargados = [];
 
                     for (let index = 0; index < infoConsejo.documentosConcejo.length; index++) {
@@ -143,8 +142,6 @@ export class TramiteComponent implements OnInit {
                             this.servicioUtilidades.convertirBase64AFile(infoConsejo.documentosConcejo[index])
                         );
                     }
-
-                    console.log(this.archivosCargados);
                 }
 
                 //Esta linea se debe llamar despues de haber consultado toda la info de comite/concejo en la BD
@@ -217,7 +214,7 @@ export class TramiteComponent implements OnInit {
         this.rechazoEnProceso = true;
 
         this.ref = this.dialogService.open(FormulariorechazoComponent, {
-            header: 'No avalar solicitud',
+            header: 'Rechazar solicitud',
             width: '60%',
             contentStyle: { 'max-height': '600px', overflow: 'hidden' },
             baseZIndex: 10000,
@@ -242,7 +239,7 @@ export class TramiteComponent implements OnInit {
                             this.gestor.moverSolicitud(this.gestor.solicitudSeleccionada, 'AVALADA', 'RECHAZADA');
                             this.confirmationService.confirm({
                                 message: 'La solicitud se ha sido rechazada y se ha notificado al solicitante',
-                                header: 'Solicitud no avalada',
+                                header: 'Solicitud Rechazada',
                                 icon: 'pi pi-exclamation-circle',
                                 acceptLabel: 'Aceptar',
                                 rejectVisible: false,
@@ -317,42 +314,59 @@ export class TramiteComponent implements OnInit {
     }
 
     async enviarCorreo(destinatario: string, tipoDocumento: string) {
-        console.log('Hola');
-        const contenidoCorreo: EnvioCorreoRequest = {
-            destinatario: destinatario,
-            oficio: await this.obtenerDocumentoPDFEnBase64(
-                this.gestor.solicitudSeleccionada.codigoSolicitud,
-                tipoDocumento,
-                false
-            ),
-        };
+        if (this.enviandoCorreo) {
+            return;
+        } else {
+            this.enviandoCorreo = true;
+            const contenidoCorreo: EnvioCorreoRequest = {
+                destinatario: destinatario,
+                oficio: await this.obtenerDocumentoPDFEnBase64(
+                    this.gestor.solicitudSeleccionada.codigoSolicitud,
+                    tipoDocumento,
+                    false
+                ),
+            };
 
-        this.http.enviarCorreo(contenidoCorreo).subscribe((response) => {});
+            this.http.enviarCorreo(contenidoCorreo).subscribe((response) => {});
 
-        this.mostrarAlertaFormulario('enviado');
+            if (destinatario === 'concejo') {
+                this.enviarSolicitudAConsejo();
+                this.deshabilitarEnvioAConsejo = true;
+                this.urlOficioConcejoPdf = null;
+            }
+            if (destinatario === 'solicitante') {
+                this.http
+                    .cambiarEstadoSolicitud(this.gestor.solicitudSeleccionada.idSolicitud, 'Resuelta')
+                    .subscribe((response) => {
+                        if (response) {
+                            this.gestor.estadoSolicitud = 'Resuelta';
+                            switch (tipoDocumento) {
+                                case 'respuesta-comite':
+                                    this.gestor.moverSolicitud(
+                                        this.gestor.solicitudSeleccionada,
+                                        'EN_COMITE',
+                                        'Resuelta'
+                                    );
 
-        if (destinatario === 'concejo') {
-            this.enviarSolicitudAConsejo();
-            this.deshabilitarEnvioAConsejo = true;
-        }
-        if (destinatario === 'solicitante') {
-            console.log('HOLA ENTRE');
-            this.http
-                .cambiarEstadoSolicitud(this.gestor.solicitudSeleccionada.idSolicitud, 'Resuelta')
-                .subscribe((response) => {
-                    if (response) {
-                        this.gestor.estadoSolicitud = 'Resuelta';
-                        switch (tipoDocumento) {
-                            case 'respuesta-comite':
-                                this.gestor.moverSolicitud(this.gestor.solicitudSeleccionada, 'EN_COMITE', 'Resuelta');
-                                break;
+                                    this.urlRespuestaComitePdf = null;
+                                    break;
 
-                            case 'respuesta-consejo':
-                                this.gestor.moverSolicitud(this.gestor.solicitudSeleccionada, 'EN_CONCEJO', 'Resuelta');
-                                break;
+                                case 'respuesta-consejo':
+                                    this.gestor.moverSolicitud(
+                                        this.gestor.solicitudSeleccionada,
+                                        'EN_CONCEJO',
+                                        'Resuelta'
+                                    );
+
+                                    this.urlRespuestaConcejoPdf = null;
+                                    break;
+                            }
                         }
-                    }
-                });
+                    });
+            }
+
+            this.enviandoCorreo = false;
+            this.mostrarAlertaFormulario('enviado');
         }
     }
 
@@ -540,6 +554,7 @@ export class TramiteComponent implements OnInit {
 
         switch (tipoSolicitud) {
             case 'RE_CRED_PUB':
+            case 'AV_COMI_PR':
             case 'RE_CRED_PAS':
             case 'RE_CRED_PR_DOC':
             case 'CU_ASIG':
@@ -569,6 +584,16 @@ export class TramiteComponent implements OnInit {
             case 'En concejo':
                 this.enviadaAConsejo = true;
                 this.habilitarComite = true;
+                this.mostrarBtnRechazar = false;
+                break;
+
+            case 'Resuelta':
+                this.habilitarComite = true;
+                if (this.vaAlConcejo && this.avalComite.avaladoComite === 'Si') {
+                    this.habilitarConcejo = true;
+                    this.deshabilitarEnvioAConsejo = true;
+                }
+
                 this.mostrarBtnRechazar = false;
                 break;
         }
@@ -634,16 +659,21 @@ export class TramiteComponent implements OnInit {
     }
 
     private validarFormularioComite(): boolean {
+        const asignaturasAprobadas = this.avalComite.asignaturasAprobadas;
+
         const hayAsignaturasAprobadas =
-            this.avalComite.asignaturasAprobadas.length > 0 &&
-            this.avalComite.asignaturasAprobadas.some((asignatura) => asignatura.aprobado);
+            asignaturasAprobadas &&
+            asignaturasAprobadas.length > 0 &&
+            asignaturasAprobadas.some((asignatura) => asignatura.aprobado);
 
         return (
             (this.avalComite.avaladoComite === 'Si' || this.avalComite.avaladoComite === 'No') &&
             this.avalComite.conceptoComite !== '' &&
             this.fechaSeleccionada !== null &&
             this.avalComite.numeroActa !== '' &&
-            (this.avalComite.asignaturasAprobadas.length === 0 || hayAsignaturasAprobadas)
+            (this.avalComite.avaladoComite === 'No' ||
+                !asignaturasAprobadas || // Comprobación adicional aquí
+                hayAsignaturasAprobadas)
         );
     }
 
