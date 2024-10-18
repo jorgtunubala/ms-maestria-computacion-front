@@ -267,8 +267,6 @@ export class ResumenComponent implements OnInit {
             return;
         }
 
-        console.log(this.radicar.tipoSolicitudEscogida.codigoSolicitud);
-
         if (
             ['AD_ASIG', 'CA_ASIG', 'AP_SEME', 'CU_ASIG', 'RE_CRED_PR_DOC', 'AV_COMI_PR', 'SO_BECA'].includes(
                 this.radicar.tipoSolicitudEscogida.codigoSolicitud

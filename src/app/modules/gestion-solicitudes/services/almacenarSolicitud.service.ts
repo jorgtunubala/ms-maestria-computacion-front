@@ -72,9 +72,10 @@ export class AlmacenarSolicitudService {
                 AV_PASA_INV: this.reunirDatosSolAvalPasant,
                 AP_ECON_INV: this.reunirDatosSolApoyoPasantia,
                 AP_ECON_ASI: this.reunirDatosSolApoyoCongreso,
-                PA_PUBL_EVE: this.reunirDatosSolApoyoPublicacion,
-                RE_CRED_PAS: this.reunirDatosSolRecCredPracticaDocente,
-                RE_CRED_PUB: this.reunirDatosSolRecCreditosSinLink,
+                PA_PUBL_EVE: this.reunirDatosSolApoyoPublicacionInscripcion,
+                RE_CRED_PR_DOC: this.reunirDatosSolRecCredPracticaDocente,
+                RE_CRED_PAS: this.reunirDatosSolRecCreditosPasantia,
+                RE_CRED_PUB: this.reunirDatosSolRecCreditosPublicacion,
                 AV_COMI_PR: this.reunirDatosAvalPractDocente,
                 SO_BECA: this.reunirDatosSolBecaDescuento,
             };
@@ -260,25 +261,48 @@ export class AlmacenarSolicitudService {
         return this.construirObjAGuardar('AP_ECON_ASI', datos);
     }
 
-    async reunirDatosSolApoyoPublicacion() {
+    async reunirDatosSolApoyoPublicacionInscripcion() {
         const docsAdjuntos = await this.convertirDocumentosAdjuntos();
 
-        const datos: Modelos.DatosApoyoPublicacion = {
-            nombreEvento: this.radicar.nombreCongreso,
-            tipoEvento: this.radicar.tipoCongreso,
-            fechaInicio: this.formatearDate(this.radicar.fechasEstancia[0]),
-            fechaFin: this.formatearDate(this.radicar.fechasEstancia[1]),
-            idDirectorGrupo: this.radicar.director.id,
-            nombreDirectorGrupo: null,
-            tituloPublicacion: this.radicar.tituloPublicacion,
-            valorApoyo: this.radicar.valorApoyoEcon,
-            entidadBancaria: this.radicar.banco,
-            tipoCuenta: this.radicar.tipoCuenta,
-            numeroCuenta: this.radicar.numeroCuenta,
-            numeroCedulaAsociada: this.radicar.cedulaCuentaBanco,
-            direccionResidencia: this.radicar.direccion,
-            documentosAdjuntos: docsAdjuntos,
-        };
+        let datos: Modelos.DatosApoyoPublicacion;
+
+        if (this.radicar.tipoApoyo === 'publicacion') {
+            datos = {
+                nombreEvento: null,
+                tipoEvento: this.radicar.tipoCongreso,
+                fechaInicio: null,
+                fechaFin: null,
+                idDirectorGrupo: this.radicar.director.id,
+                nombreDirectorGrupo: null,
+                tituloPublicacion: this.radicar.tituloPublicacion,
+                valorApoyo: this.radicar.valorApoyoEcon,
+                entidadBancaria: this.radicar.banco,
+                tipoCuenta: this.radicar.tipoCuenta,
+                numeroCuenta: this.radicar.numeroCuenta,
+                numeroCedulaAsociada: this.radicar.cedulaCuentaBanco,
+                direccionResidencia: this.radicar.direccion,
+                documentosAdjuntos: docsAdjuntos,
+            };
+        }
+
+        if (this.radicar.tipoApoyo === 'inscripcion') {
+            datos = {
+                nombreEvento: this.radicar.nombreCongreso,
+                tipoEvento: null,
+                fechaInicio: this.formatearDate(this.radicar.fechasEstancia[0]),
+                fechaFin: this.formatearDate(this.radicar.fechasEstancia[1]),
+                idDirectorGrupo: this.radicar.director.id,
+                nombreDirectorGrupo: null,
+                tituloPublicacion: null,
+                valorApoyo: this.radicar.valorApoyoEcon,
+                entidadBancaria: this.radicar.banco,
+                tipoCuenta: this.radicar.tipoCuenta,
+                numeroCuenta: this.radicar.numeroCuenta,
+                numeroCedulaAsociada: this.radicar.cedulaCuentaBanco,
+                direccionResidencia: this.radicar.direccion,
+                documentosAdjuntos: docsAdjuntos,
+            };
+        }
 
         return this.construirObjAGuardar('PA_PUBL_EVE', datos);
     }
@@ -293,17 +317,17 @@ export class AlmacenarSolicitudService {
         return this.construirObjAGuardar('AV_SEMI_ACT', datos);
     }
 
-    async reunirDatosSolRecCreditosSinLink() {
+    async reunirDatosSolRecCreditosPublicacion() {
         const docsAdjuntos = await this.convertirDocumentosAdjuntos();
 
         const datos: Modelos.DatosReconoCreditos = {
             documentosAdjuntos: docsAdjuntos,
         };
 
-        return this.construirObjAGuardar('RE_CRED', datos);
+        return this.construirObjAGuardar('RE_CRED_PUB', datos);
     }
 
-    async reunirDatosSolRecCreditosConLink() {
+    async reunirDatosSolRecCreditosPasantia() {
         const documentos = await Promise.all(
             this.radicar.documentosAdjuntos.map(
                 async (documento: any) => await this.utilidades.convertirFileABase64(documento)
@@ -316,7 +340,7 @@ export class AlmacenarSolicitudService {
             documentosAdjuntos: documentos,
         };
 
-        return this.construirObjAGuardar('RE_CRED', datos);
+        return this.construirObjAGuardar('RE_CRED_PAS', datos);
     }
 
     async reunirDatosAvalPractDocente() {
@@ -354,7 +378,8 @@ export class AlmacenarSolicitudService {
             })
         );
 
-        return this.construirObjAGuardar('RE_CRED_PAS', datos);
+        console.log(datos);
+        return this.construirObjAGuardar('RE_CRED_PR_DOC', datos);
     }
 
     async reunirDatosSolHomolog(): Promise<Modelos.SolicitudSave> {
@@ -441,11 +466,12 @@ export class AlmacenarSolicitudService {
             datosCursarAsignatura: tipo === 'CU_ASIG' ? infoEspecifica : null,
             datosAvalPasantiaInv: tipo === 'AV_PASA_INV' ? infoEspecifica : null,
             datosApoyoEconomico: tipo === 'AP_ECON_INV' ? infoEspecifica : null,
-            datosReconocimientoCreditos: tipo === 'RE_CRED' ? infoEspecifica : null,
+            datosReconocimientoCreditos: tipo === 'RE_CRED_PAS' || tipo === 'RE_CRED_PUB' ? infoEspecifica : null,
             datosAvalSeminario: tipo === 'AV_SEMI_ACT' ? infoEspecifica : null,
             datosApoyoEconomicoCongreso: tipo === 'AP_ECON_ASI' ? infoEspecifica : null,
             datosApoyoEconomicoPublicacion: tipo === 'PA_PUBL_EVE' ? infoEspecifica : null,
-            datosActividadDocenteRequest: tipo === 'RE_CRED_PAS' ? infoEspecifica : null,
+            datosActividadDocenteRequest: tipo === 'RE_CRED_PR_DOC' ? infoEspecifica : null,
+
             datosAvalComite: tipo === 'AV_COMI_PR' ? infoEspecifica : null,
             datosSolicitudBeca: tipo === 'SO_BECA' ? infoEspecifica : null,
             requiereFirmaDirector:

@@ -70,7 +70,9 @@ export class SolicitudAvalPracticaDocente implements DocumentoPDFStrategy {
         // Añadir espacios para firmas
         cursorY = this.pdfService.agregarEspaciosDeFirmas(doc, cursorY, false, marcaDeAgua);
 
-        cursorY = this.pdfService.agregarListadoAdjuntos(doc, cursorY, textAdjuntos, marcaDeAgua);
+        if (textAdjuntos != '') {
+            cursorY = this.pdfService.agregarListadoAdjuntos(doc, cursorY, textAdjuntos, marcaDeAgua);
+        }
 
         // Retornar el documento generado
         return doc;
@@ -78,10 +80,50 @@ export class SolicitudAvalPracticaDocente implements DocumentoPDFStrategy {
 }
 
 export class RespuestaComiteAvalPracticaDocente implements DocumentoPDFStrategy {
-    constructor(private servicioRadicar: RadicarService, private servicioPDF: PdfService) {}
+    // Se deben incluir todos los servicios que define la fabrica asi no se usen
+    constructor(
+        private servicioRadicar: RadicarService,
+        private servicioPDF: PdfService,
+        private servicioGestor: GestorService,
+        private servicioUtilidades: UtilidadesService
+    ) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
-        throw new Error('Method not implemented.');
+        const documento = new jsPDF({ format: 'letter' });
+
+        const { radicado } = this.servicioGestor.infoSolicitud.datosComunSolicitud;
+        const fechaComite = this.servicioGestor.conceptoComite.fechaAval.split('/');
+        const mesEnLetras = this.servicioUtilidades.obtenerMesEnLetras(Number(fechaComite[1]));
+
+        const txtAsunto = `Asunto: Respuesta a Solicitud ${radicado} de Aval para la realización de actividades de práctica docente\n`;
+        const txtCuerpo = `Reciba un cordial saludo. Por medio de la presente me dirijo a usted con el fin de informar que en sesión del día ${
+            fechaComite[0]
+        } de ${mesEnLetras} de ${
+            fechaComite[2]
+        } el Comité de Programa revisó su solicitud con radicado ${radicado} referente al aval para la realización de actividades de práctica docente, ${
+            this.servicioGestor.conceptoComite.avaladoComite === 'Si'
+                ? 'decidiendo aprobar su solicitud bajo el siguiente concepto'
+                : 'decidiendo no aprobar su solicitud bajo el siguiente concepto'
+        }`;
+        const txtConcepto = `\n${this.servicioGestor.conceptoComite.conceptoComite}`;
+        const txtRemitente = `${this.servicioGestor.coordinador.nombre.toUpperCase()}\nCoordinador(a) Maestría en Computación`;
+
+        let posicionY = this.servicioPDF.agregarContenidoComun(documento, marcaDeAgua, 'solicitante');
+        posicionY = this.servicioPDF.agregarAsuntoYSolicitud(documento, posicionY, txtAsunto, txtCuerpo, marcaDeAgua);
+        posicionY = this.servicioPDF.agregarTexto(documento, {
+            text: txtConcepto,
+            startY: posicionY,
+            alignment: 'justify',
+        });
+
+        posicionY = this.servicioPDF.agregarDespedida(documento, posicionY + 5, marcaDeAgua, 'respuesta');
+        posicionY = this.servicioPDF.agregarTexto(documento, {
+            text: txtRemitente,
+            startY: posicionY + 10,
+            watermark: marcaDeAgua,
+        });
+
+        return documento;
     }
 }
 

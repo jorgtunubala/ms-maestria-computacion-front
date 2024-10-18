@@ -399,7 +399,7 @@ export class PdfService {
         const marginLeft = 20;
         const marginRight = 20;
         const signatureWidth = (pageWidth - marginLeft - marginRight) / 3; // Un tercio del ancho disponible
-        console.log(signatureWidth);
+
         const signatureHeight = 20; // Altura fija para la imagen de la firma
         const lineHeight = 4;
         const signatureBottomMargin = 30; // Espacio para pie de página
@@ -737,8 +737,6 @@ export class PdfService {
             firmaSolicitante = this.servicioRadicar.firmaSolicitanteUrl.toString();
         }
 
-        console.log(nuevaPosicionY);
-
         // Agregar la firma del solicitante
         let resultadoSolicitante = this.agregarFirma(
             doc,
@@ -755,8 +753,6 @@ export class PdfService {
             nuevaPosicionY = 65; // Reinicia cursorY para alinear ambas firmas en la nueva página
         }
 
-        console.log(nuevaPosicionY);
-
         // Agregar la firma del tutor
         const resultadoTutor = this.agregarFirma(
             doc,
@@ -770,7 +766,6 @@ export class PdfService {
 
         nuevaPosicionY = resultadoTutor.cursorY;
 
-        console.log('PAGINA FIRMA TUTOR: ' + resultadoTutor.pageNumber);
         this.servicioRadicar.firmaTutorPag = resultadoTutor.pageNumber - 1;
         this.servicioRadicar.firmaTutorX = resultadoTutor.signatureCoordinates.x;
         this.servicioRadicar.firmaTutorY = resultadoTutor.signatureCoordinates.y;
@@ -815,7 +810,6 @@ export class PdfService {
                     ? numeroPaginaDespuesDeFirma
                     : numeroPaginaAntesDeFirma;
 
-            console.log('PAGINA FIRMA DIRECTOR: ' + paginaFirmaDirector);
             this.servicioRadicar.firmaDirectorPag = paginaFirmaDirector - 1; // Guardar correctamente el número de página
             this.servicioRadicar.firmaDirectorX = resultadoDirector.signatureCoordinates.x;
             this.servicioRadicar.firmaDirectorY = resultadoDirector.signatureCoordinates.y;

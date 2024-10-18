@@ -18,8 +18,6 @@ export class SolicitudApoyoPublicOInscrip implements DocumentoPDFStrategy {
     generarDocumento(marcaDeAgua: boolean): jsPDF {
         const doc = new jsPDF({ format: 'letter' });
 
-        console.log(this.servicioUtilidades);
-
         // Obtener el rango de fechas
 
         let rangoFechas = '';
