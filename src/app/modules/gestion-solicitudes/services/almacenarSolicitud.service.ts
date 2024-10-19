@@ -282,6 +282,8 @@ export class AlmacenarSolicitudService {
                 numeroCedulaAsociada: this.radicar.cedulaCuentaBanco,
                 direccionResidencia: this.radicar.direccion,
                 documentosAdjuntos: docsAdjuntos,
+                grupoInvestigacion: this.radicar.grupoInvestigacion,
+                finalidadApoyo: this.radicar.tipoApoyo,
             };
         }
 
@@ -301,6 +303,8 @@ export class AlmacenarSolicitudService {
                 numeroCedulaAsociada: this.radicar.cedulaCuentaBanco,
                 direccionResidencia: this.radicar.direccion,
                 documentosAdjuntos: docsAdjuntos,
+                grupoInvestigacion: this.radicar.grupoInvestigacion,
+                finalidadApoyo: this.radicar.tipoApoyo,
             };
         }
 
@@ -344,16 +348,21 @@ export class AlmacenarSolicitudService {
     }
 
     async reunirDatosAvalPractDocente() {
-        const datos: Modelos.DatosAvalPracticaDocente[] = this.radicar.actividadesSeleccionadas.map(
-            (actividad, index) => {
+        const datos = await Promise.all(
+            this.radicar.actividadesSeleccionadas.map(async (actividad, index) => {
                 const intensidad = this.radicar.horasIngresadas[index] || 0;
 
                 return {
                     codigoSubtipo: actividad.codigo,
                     intensidadHoraria: intensidad,
                     horasReconocer: this.radicar.horasAsignables[index],
+                    descripcionActividad: this.radicar.descripcionesActividades[index],
+                    documentoAdjunto:
+                        actividad.codigo === 'CUR_COR_SEM'
+                            ? await this.utilidades.convertirFileABase64(this.radicar.documentosAdjuntos[index])
+                            : null,
                 };
-            }
+            })
         );
 
         return this.construirObjAGuardar('AV_COMI_PR', datos);

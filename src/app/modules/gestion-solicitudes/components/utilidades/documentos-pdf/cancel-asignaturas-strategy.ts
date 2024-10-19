@@ -67,25 +67,138 @@ export class SolicitudCancelacionAsignaturas implements DocumentoPDFStrategy {
 }
 
 export class RespuestaComiteCancelacionAsignaturas implements DocumentoPDFStrategy {
-    constructor(private servicioRadicar: RadicarService, private servicioPDF: PdfService) {}
+    // Se deben incluir todos los servicios que define la fabrica asi no se usen
+    constructor(
+        private servicioRadicar: RadicarService,
+        private servicioPDF: PdfService,
+        private servicioGestor: GestorService,
+        private servicioUtilidades: UtilidadesService
+    ) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
-        throw new Error('Method not implemented.');
+        const documento = new jsPDF({ format: 'letter' });
+
+        const { radicado } = this.servicioGestor.infoSolicitud.datosComunSolicitud;
+        const fechaComite = this.servicioGestor.conceptoComite.fechaAval.split('/');
+        const mesEnLetras = this.servicioUtilidades.obtenerMesEnLetras(Number(fechaComite[1]));
+
+        const txtAsunto = `Asunto: Respuesta a Solicitud ${radicado} de Cancelación de Asignaturas\n`;
+        const txtCuerpo = `Reciba un cordial saludo. Por medio de la presente me dirijo a usted con el fin de informar que en sesión del día ${fechaComite[0]} de ${mesEnLetras} de ${fechaComite[2]} el Comité de Programa revisó su solicitud con radicado ${radicado} referente a la Cancelación de Asignaturas, decidiendo NO AVALAR la solicitud y emite el siguiente concepto:`;
+        const txtConcepto = `\n${this.servicioGestor.conceptoComite.conceptoComite}`;
+        const txtRemitente = `${this.servicioGestor.coordinador.nombre.toUpperCase()}\nCoordinador(a) Maestría en Computación`;
+
+        let posicionY = this.servicioPDF.agregarContenidoComun(documento, marcaDeAgua, 'solicitante');
+        posicionY = this.servicioPDF.agregarAsuntoYSolicitud(documento, posicionY, txtAsunto, txtCuerpo, marcaDeAgua);
+        posicionY = this.servicioPDF.agregarTexto(documento, {
+            text: txtConcepto,
+            startY: posicionY,
+            alignment: 'justify',
+        });
+
+        posicionY = this.servicioPDF.agregarDespedida(documento, posicionY + 5, marcaDeAgua, 'respuesta');
+        posicionY = this.servicioPDF.agregarTexto(documento, {
+            text: txtRemitente,
+            startY: posicionY + 10,
+            watermark: marcaDeAgua,
+        });
+
+        return documento;
     }
 }
 
 export class OficioConcejoCancelacionAsignaturas implements DocumentoPDFStrategy {
-    constructor(private servicioRadicar: RadicarService, private servicioPDF: PdfService) {}
+    constructor(
+        private servicioRadicar: RadicarService,
+        private servicioPDF: PdfService,
+        private servicioGestor: GestorService,
+        private servicioUtilidades: UtilidadesService
+    ) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
-        throw new Error('Method not implemented.');
+        const documento = new jsPDF({ format: 'letter' });
+
+        const fechaComite = this.servicioGestor.conceptoComite.fechaAval.split('/');
+        const mesEnLetras = this.servicioUtilidades.obtenerMesEnLetras(Number(fechaComite[1]));
+
+        const textAsunto = `Asunto: Solicitud de Cancelación de Asignaturas para el/la estudiante ${this.servicioGestor.infoSolicitud.datosComunSolicitud.nombreSolicitante} ${this.servicioGestor.infoSolicitud.datosComunSolicitud.apellidoSolicitante} \n`;
+        const textCuerpo = `Estimado/a ${
+            this.servicioGestor.decano.nombre.split(' ')[0]
+        },\n\nReciba un cordial saludo. Me dirijo a usted de manera respetuosa para informarle que, en sesión del día ${
+            fechaComite[0]
+        } de ${mesEnLetras} de ${
+            fechaComite[2]
+        }, el Comité de Programa ha avalado la cancelación de las asignaturas relacionadas en este documento para el/la estudiante ${this.servicioGestor.infoSolicitud.datosComunSolicitud.nombreSolicitante.toUpperCase()} ${this.servicioGestor.infoSolicitud.datosComunSolicitud.apellidoSolicitante.toUpperCase()}. Por lo tanto, solicito su colaboración para llevar a cabo las gestiones necesarias para el registro de las cancelaciones mencionadas.`;
+
+        const txtRemitente = `${this.servicioGestor.coordinador.nombre.toUpperCase()}\nCoordinador/a de la Maestría en Computación`;
+
+        let posicionY = this.servicioPDF.agregarContenidoComun(documento, marcaDeAgua, 'consejo');
+        posicionY = this.servicioPDF.agregarAsuntoYSolicitud(documento, posicionY, textAsunto, textCuerpo, marcaDeAgua);
+
+        const headers = ['No.', 'Asignatura', 'Grupo', 'Docente'];
+
+        const data = this.servicioGestor.conceptoComite.asignaturasAprobadas
+            .filter((item) => item.aprobado) // Filtra solo las asignaturas aprobadas
+            .map((item, index) => [
+                (index + 1).toString(), // Número secuencial
+                item.nombre, // Nombre de la asignatura
+                // Aquí puedes agregar más columnas si lo necesitas, como 'Grupo' o 'Docente'
+            ]);
+
+        posicionY = this.servicioPDF.agregarTablaPersonalizada(documento, posicionY, headers, data, marcaDeAgua);
+        posicionY = this.servicioPDF.agregarDespedida(documento, posicionY + 5, marcaDeAgua);
+        posicionY = this.servicioPDF.agregarTexto(documento, {
+            text: txtRemitente,
+            startY: posicionY + 10,
+            watermark: marcaDeAgua,
+        });
+
+        return documento;
     }
 }
 
 export class RespuestaConcejoCancelacionAsignaturas implements DocumentoPDFStrategy {
-    constructor(private servicioRadicar: RadicarService, private servicioPDF: PdfService) {}
+    constructor(
+        private servicioRadicar: RadicarService,
+        private servicioPDF: PdfService,
+        private servicioGestor: GestorService,
+        private servicioUtilidades: UtilidadesService
+    ) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
-        throw new Error('Method not implemented.');
+        const documento = new jsPDF({ format: 'letter' });
+
+        const { radicado } = this.servicioGestor.infoSolicitud.datosComunSolicitud;
+        const fechaConcejo = this.servicioGestor.conceptoConsejo.fechaAval.split('/');
+        const mesEnLetras = this.servicioUtilidades.obtenerMesEnLetras(Number(fechaConcejo[1]));
+
+        const txtAsunto = `Asunto: Respuesta a Solicitud ${radicado} de Cancelación de Asignaturas\n`;
+        const txtCuerpo = `Reciba un cordial saludo. Por medio de la presente, me dirijo a usted para informarle que el día ${
+            fechaConcejo[0]
+        } de ${mesEnLetras} de ${
+            fechaConcejo[2]
+        } se recibió respuesta del Concejo de Facultad referente a su solicitud ${radicado} de Cancelación de Asignaturas. ${
+            this.servicioGestor.conceptoConsejo.avaladoConcejo === 'Si'
+                ? 'El Consejo decide aprobar su solicitud bajo el siguiente concepto:'
+                : 'El Consejo decide no aprobar su solicitud bajo el siguiente concepto:'
+        }`;
+        const txtConcepto = `${this.servicioGestor.conceptoConsejo.conceptoConcejo}`;
+        const txtRemitente = `${this.servicioGestor.coordinador.nombre.toUpperCase()}\nCoordinador/a de la Maestría en Computación`;
+
+        let posicionY = this.servicioPDF.agregarContenidoComun(documento, marcaDeAgua, 'solicitante');
+        posicionY = this.servicioPDF.agregarAsuntoYSolicitud(documento, posicionY, txtAsunto, txtCuerpo, marcaDeAgua);
+        posicionY = this.servicioPDF.agregarTexto(documento, {
+            text: txtConcepto,
+            startY: posicionY + 5,
+            alignment: 'justify',
+            watermark: marcaDeAgua,
+        });
+        posicionY = this.servicioPDF.agregarDespedida(documento, posicionY + 5, marcaDeAgua, 'respuesta');
+        posicionY = this.servicioPDF.agregarTexto(documento, {
+            text: txtRemitente,
+            startY: posicionY + 10,
+            watermark: marcaDeAgua,
+        });
+
+        return documento;
     }
 }

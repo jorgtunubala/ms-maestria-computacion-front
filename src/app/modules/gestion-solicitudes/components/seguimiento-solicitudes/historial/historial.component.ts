@@ -35,7 +35,6 @@ export class HistorialComponent implements OnInit {
     ngOnInit(): void {
         if (this.seguimiento.historial.length > 0) {
             this.eventos = this.seguimiento.historial;
-            console.log(this.seguimiento.historial);
         } else {
             this.router.navigate(['/gestionsolicitudes/portafolio/opciones']);
         }

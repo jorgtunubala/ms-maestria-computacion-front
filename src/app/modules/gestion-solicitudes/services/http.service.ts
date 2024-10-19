@@ -113,7 +113,6 @@ export class HttpService {
 
     consultarSolicitudesCoordinacion(estado: string) {
         const url = `${this.apiUrl}${httpConfig.obtenerSolicitudesCoordinacion}${estado}`;
-        console.log(url);
         return this.http.get<SolicitudRecibida[]>(url).pipe(
             map((respuesta) => respuesta),
             catchError(this.manejarError)
@@ -122,7 +121,6 @@ export class HttpService {
 
     consultarConceptoComite(idSolicitud: number) {
         const url = `${this.apiUrl}${httpConfig.obtenerConceptoComite}${idSolicitud}`;
-        console.log(url);
         return this.http.get<SolicitudEnComiteResponse>(url).pipe(
             map((respuesta) => respuesta),
             catchError(this.manejarError)
@@ -154,8 +152,6 @@ export class HttpService {
 
     enviarCorreo(objeto: EnvioCorreoRequest): Observable<any> {
         const url = `${httpConfig.apiCorreo}${httpConfig.enviarCorreo}`;
-
-        console.log(url);
         return this.http.post(url, objeto).pipe(catchError(this.manejarError));
     }
 
