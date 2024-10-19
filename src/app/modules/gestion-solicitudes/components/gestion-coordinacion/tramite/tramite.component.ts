@@ -125,7 +125,7 @@ export class TramiteComponent implements OnInit {
         this.http.consultarConceptoConsejo(this.gestor.solicitudSeleccionada.idSolicitud).subscribe(
             async (infoConsejo: SolicitudEnConcejoResponse) => {
                 console.log(infoConsejo);
-                console.log(this.archivosCargados);
+
                 this.respuestaConsejo = infoConsejo;
                 this.gestor.conceptoConsejo = infoConsejo;
 
@@ -280,7 +280,6 @@ export class TramiteComponent implements OnInit {
         this.avalComite.enComite = true;
         this.avalComite.idSolicitud = this.gestor.solicitudSeleccionada.idSolicitud;
 
-        console.log(this.avalComite);
         this.http.guardarConceptoComite(this.avalComite).subscribe(
             (response) => {
                 if (response) {
@@ -440,7 +439,6 @@ export class TramiteComponent implements OnInit {
                 this.gestor.asignaturasAceptadas = this.asignaturasAprobadas;
                 //this.gestor.respuestaConsejo = this.respuestaConsejo;
 
-                console.log(this.avalComite);
                 this.http.guardarConceptoComite(this.avalComite).subscribe(
                     (response) => {
                         if (response) {
@@ -496,7 +494,6 @@ export class TramiteComponent implements OnInit {
                     );
                 }
 
-                console.log(this.respuestaConsejo);
                 this.http.guardarConceptoConsejo(this.respuestaConsejo).subscribe(
                     (response) => {
                         if (response) {
@@ -654,7 +651,6 @@ export class TramiteComponent implements OnInit {
     convertirCadenaAFecha(fechaStr: string): Date {
         const [dia, mes, anio] = fechaStr.split('/').map(Number);
         const fecha = new Date(anio, mes - 1, dia);
-        console.log('Salio: ' + fecha);
         return fecha;
     }
 

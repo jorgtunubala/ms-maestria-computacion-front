@@ -76,7 +76,6 @@ export class BuzonComponent implements OnInit {
 
     // Extrae el filtro de la ruta actual
     extraerFiltroDeRuta(): string {
-        console.log(this.route.snapshot.url);
         return this.route.snapshot.url.join('/').split('/').pop();
     }
 

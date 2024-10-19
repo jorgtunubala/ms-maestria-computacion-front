@@ -36,6 +36,8 @@ export class RadicarService {
     formSemestreAplazar: FormGroup = new FormGroup({});
     formApoyoAsistEvento: FormGroup = new FormGroup({});
     formSolicitudBecaDescuento: FormGroup = new FormGroup({});
+    formInfoCoordinador: FormGroup = new FormGroup({});
+    formInfoPresidenteConsejo: FormGroup = new FormGroup({});
 
     fechaEnvio: Date = null;
     tipoSolicitudEscogida: TipoSolicitud;
@@ -145,6 +147,8 @@ export class RadicarService {
         this.formSemestreAplazar = new FormGroup({});
         this.formApoyoAsistEvento = new FormGroup({});
         this.formSolicitudBecaDescuento = new FormGroup({});
+        this.formInfoCoordinador = new FormGroup({});
+        this.formInfoPresidenteConsejo = new FormGroup({});
 
         this.tipoSolicitudEscogida = null;
         this.radicadoAsignado = '';

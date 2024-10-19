@@ -73,7 +73,7 @@ export class VisorComponent implements OnInit, OnDestroy {
                 this.abrirOficioPdf();
                 this.extraerAdjuntos(this.solicitudSeleccionada.codigoSolicitud);
                 this.gestor.estadoSolicitud = infoSolicitud.datosComunSolicitud.estadoSolicitud;
-                console.log(this.gestor.estadoSolicitud);
+
                 this.restringirLaVista(this.gestor.estadoSolicitud);
                 this.cargarHistorialDeSeguimiento();
                 this.cargandoDatos = false;

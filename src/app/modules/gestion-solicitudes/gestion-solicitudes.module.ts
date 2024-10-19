@@ -42,6 +42,8 @@ import { SkeltablaComponent } from './components/utilidades/skeleton/skeltabla/s
 import { PruebaComponent } from './components/presentacion-solicitudes/formularios/complementarios/prueba/prueba.component';
 import { FormulariorechazoComponent } from './components/gestion-coordinacion/complementos/formulariorechazo/formulariorechazo.component';
 import { ApyinscripcionComponent } from './components/presentacion-solicitudes/formularios/complementarios/apyinscripcion/apyinscripcion.component';
+import { InfoCoordinadorComponent } from './components/presentacion-solicitudes/formularios/complementarios/info-coordinador/info-coordinador.component';
+import { InfoPresidenteConsejoComponent } from './components/presentacion-solicitudes/formularios/complementarios/info-presidente-consejo/info-presidente-consejo.component';
 
 @NgModule({
     declarations: [
@@ -81,6 +83,8 @@ import { ApyinscripcionComponent } from './components/presentacion-solicitudes/f
         PruebaComponent,
         FormulariorechazoComponent,
         ApyinscripcionComponent,
+        InfoCoordinadorComponent,
+        InfoPresidenteConsejoComponent,
     ],
     imports: [
         CommonModule,
