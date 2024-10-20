@@ -2,6 +2,7 @@ import { Component, HostListener, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { RadicarService } from '../../../services/radicar.service';
 import { MessageService } from 'primeng/api';
+import { UtilidadesService } from '../../../services/utilidades.service';
 
 @Component({
     selector: 'app-docsadjuntos',
@@ -16,7 +17,12 @@ export class DocsAdjuntosComponent implements OnInit {
         return '¿Estás seguro de que quieres salir de la página?';
     }
 
-    constructor(public radicar: RadicarService, private router: Router, private messageService: MessageService) {}
+    constructor(
+        public radicar: RadicarService,
+        public utilidades: UtilidadesService,
+        private router: Router,
+        private messageService: MessageService
+    ) {}
 
     ngOnInit(): void {
         try {
@@ -75,40 +81,42 @@ export class DocsAdjuntosComponent implements OnInit {
         this.radicar.documentosAdjuntos[indice] = undefined;
     }
 
-    validarDocsCompletos(): boolean {
-        if (
-            ['RE_CRED_PAS', 'RE_CRED_DIS', 'PR_CURS_TEO', 'AS_CRED_MAT'].includes(
-                this.radicar.tipoSolicitudEscogida.codigoSolicitud
-            )
-        ) {
-            if (
-                this.radicar.documentosAdjuntos.length !==
-                this.radicar.requisitosSolicitudEscogida.documentosRequeridos.length - 1
-            ) {
-                return false;
-            }
+    validarDocsYEnlcesCompletos(): boolean {
+        let estadoValidacion = true;
 
-            if (this.radicar.enlaceMaterialAudiovisual == '') {
-                return false;
-            }
-        } else {
-            // Verifica si los tamaños son iguales
+        for (let index = 0; index < this.radicar.requisitosSolicitudEscogida.documentosRequeridos.length; index++) {
             if (
-                this.radicar.documentosAdjuntos.length !==
-                this.radicar.requisitosSolicitudEscogida.documentosRequeridos.length
+                this.radicar.requisitosSolicitudEscogida.documentosRequeridos[index].adjuntarDocumento &&
+                !this.radicar.requisitosSolicitudEscogida.documentosRequeridos[index].nombre.includes('(si aplica)') &&
+                !this.radicar.requisitosSolicitudEscogida.documentosRequeridos[index].nombre.includes('(opcional)')
             ) {
-                return false;
+                const nombreAcortado =
+                    this.radicar.requisitosSolicitudEscogida.documentosRequeridos[index].nombreAcortado;
+                const archivoEncontrado = this.radicar.documentosAdjuntos.some(
+                    (doc) => doc.name === `${nombreAcortado}.pdf`
+                );
+
+                if (!archivoEncontrado) {
+                    return false;
+                }
             }
         }
 
-        // Verifica si todas las casillas de documentosAdjuntos están llenas
-        for (const documento of this.radicar.documentosAdjuntos) {
-            if (!documento) {
-                return false;
+        for (let index = 0; index < this.radicar.requisitosSolicitudEscogida.enlacesRequeridos.length; index++) {
+            if (
+                !this.radicar.requisitosSolicitudEscogida.enlacesRequeridos[index].includes('(si aplica)') &&
+                !this.radicar.requisitosSolicitudEscogida.enlacesRequeridos[index].includes('(opcional)')
+            ) {
+                if (
+                    this.radicar.enlacesAdjuntos[index] == null ||
+                    !this.utilidades.validarUrlSegura(this.radicar.enlacesAdjuntos[index])
+                ) {
+                    return false;
+                }
             }
         }
 
-        return true; // Si pasa ambas verificaciones, devuelve true
+        return estadoValidacion;
     }
 
     showWarn() {
@@ -120,7 +128,7 @@ export class DocsAdjuntosComponent implements OnInit {
     }
 
     navigateToNext() {
-        if (this.validarDocsCompletos()) {
+        if (this.validarDocsYEnlcesCompletos()) {
             this.router.navigate(['/gestionsolicitudes/portafolio/radicar/resumen']);
         } else {
             this.showWarn();

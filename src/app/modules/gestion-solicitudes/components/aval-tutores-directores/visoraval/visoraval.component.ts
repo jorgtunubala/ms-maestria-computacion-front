@@ -223,6 +223,15 @@ export class VisoravalComponent implements OnInit {
         });
     }
 
+    /*
+    extraerAdjuntosAvalPracticaDocente(procesarDocumentosAdjuntos: (documentosAdjuntos: any[]) => void): void {
+        this.datosSolicitud.datosAvalComite?.forEach((actividad) => {
+            procesarDocumentosAdjuntos(actividad.);
+            actividad.enlaces?.forEach((enlace) => this.enlacesAdjuntos.push(enlace));
+        });
+    }
+        */
+
     private verificarRestricciones() {
         if (this.datosSolicitud.datosComunSolicitud.estadoSolicitud != 'Radicada') {
             this.mostrarPFSet = false;

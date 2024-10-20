@@ -48,6 +48,7 @@ export class RadicarService {
 
     oficioDeSolicitud: File = null;
     documentosAdjuntos: File[] = [];
+    enlacesAdjuntos: string[] = [];
     motivoDeSolicitud: string = '';
     tutor: TutorYDirector;
     director: TutorYDirector;
@@ -154,6 +155,7 @@ export class RadicarService {
         this.radicadoAsignado = '';
         this.asignaturasAdicCancel = [];
         this.documentosAdjuntos = [];
+        this.enlacesAdjuntos = [];
         this.tutor = null;
         this.director = null;
         this.oficioDeSolicitud = null;

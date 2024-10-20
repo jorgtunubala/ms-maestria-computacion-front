@@ -1,6 +1,6 @@
 export class InfoAsingSimple {
     static nuevoInfoAsingSimple(obj: Object) {
-        return new InfoAsingSimple(obj['listaAsignaturas'], obj['motivo']);
+        return new InfoAsingSimple(obj['listaAsignaturas'], obj['motivo'], obj['documentoAdjunto']);
     }
 
     constructor(
@@ -9,6 +9,7 @@ export class InfoAsingSimple {
             docenteAsignatura: string;
             grupo: string;
         }[],
-        public motivo: string
+        public motivo: string,
+        public documentoAdjunto: string
     ) {}
 }

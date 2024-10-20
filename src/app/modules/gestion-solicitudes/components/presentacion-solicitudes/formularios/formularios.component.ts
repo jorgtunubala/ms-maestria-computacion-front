@@ -383,7 +383,7 @@ export class FormulariosComponent implements OnInit {
     navigateToNext() {
         if (this.validarDatosFormulario()) {
             if (
-                ['AD_ASIG', 'CA_ASIG', 'AP_SEME', 'CU_ASIG', 'AV_COMI_PR', 'RE_CRED_PR_DOC', 'SO_BECA'].includes(
+                ['AD_ASIG', 'CU_ASIG', 'AV_COMI_PR', 'RE_CRED_PR_DOC', 'SO_BECA'].includes(
                     this.radicar.tipoSolicitudEscogida.codigoSolicitud
                 )
             ) {

@@ -135,6 +135,9 @@ export class AlmacenarSolicitudService {
         const infoCancelacion: Modelos.DatosSolicitudCancelacionAsignatura = {
             listaAsignaturas: asignaturas,
             motivo: this.radicar.motivoDeSolicitud,
+            documentoAdjunto: this.radicar.documentosAdjuntos[0]
+                ? await this.utilidades.convertirFileABase64(this.radicar.documentosAdjuntos[0])
+                : null,
         };
 
         return this.construirObjAGuardar('CA_ASIG', infoCancelacion);
@@ -180,7 +183,11 @@ export class AlmacenarSolicitudService {
     async reunirDatosSolAplazamiento(): Promise<Modelos.SolicitudSave> {
         const { semestre = '', motivo = '' } = this.radicar.formSemestreAplazar.getRawValue();
 
-        const datos: Modelos.DatosSolicitudAplazamiento = { semestre, motivo };
+        const documentoAdjunto = this.radicar.documentosAdjuntos[0]
+            ? await this.utilidades.convertirFileABase64(this.radicar.documentosAdjuntos[0])
+            : null;
+
+        const datos: Modelos.DatosSolicitudAplazamiento = { semestre, motivo, documentoAdjunto };
 
         return this.construirObjAGuardar('AP_SEME', datos);
     }

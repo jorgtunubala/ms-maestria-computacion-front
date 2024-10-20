@@ -105,7 +105,6 @@ export class CreditosComponent implements OnInit {
                     actividad.documentos.forEach((documento, indiceDoc) => {
                         const documentoOpcional = /(\(si aplica\))|(\(opcional\))/i.test(documento);
 
-                        console.log('Doc Opcional: ' + documentoOpcional);
                         if (
                             !documentoOpcional &&
                             !this.radicar.adjuntosDeActividades[indiceActividad].archivos[indiceDoc]
