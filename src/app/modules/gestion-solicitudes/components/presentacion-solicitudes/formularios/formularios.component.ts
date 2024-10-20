@@ -1,6 +1,5 @@
-import { Component, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
 
-import { Router } from '@angular/router';
 import { RadicarService } from '../../../services/radicar.service';
 import { DatosAsignaturaAdicion, InfoPersonal, TutorYDirector } from '../../../models/indiceModelos';
 import { HostListener } from '@angular/core';
@@ -30,6 +29,8 @@ import { ApyinscripcionComponent } from './complementarios/apyinscripcion/apyins
     providers: [MessageService],
 })
 export class FormulariosComponent implements OnInit {
+    @Output() cambioDePaso = new EventEmitter<number>();
+
     @HostListener('window:beforeunload', ['$event'])
     beforeUnloadHander(event: Event) {
         event.returnValue = true;
@@ -78,7 +79,7 @@ export class FormulariosComponent implements OnInit {
     constructor(
         public radicar: RadicarService,
         private gestorHttp: HttpService,
-        private router: Router,
+
         private messageService: MessageService,
         private fb: FormBuilder
     ) {
@@ -128,7 +129,7 @@ export class FormulariosComponent implements OnInit {
             // Verificar si el error es del tipo TypeError y si contiene la cadena 'codigoSolicitud'
             if (error instanceof TypeError && error.message.includes('codigoSolicitud')) {
                 // Redirigir al usuario a una ruta específica
-                this.router.navigate(['/gestionsolicitudes/portafolio/radicar/selector']);
+                //this.router.navigate(['/gestionsolicitudes/portafolio/radicar/selector']);
             } else {
                 // Manejar otros errores de manera apropiada
                 console.error('Error no esperado:', error);
@@ -387,9 +388,9 @@ export class FormulariosComponent implements OnInit {
                     this.radicar.tipoSolicitudEscogida.codigoSolicitud
                 )
             ) {
-                this.router.navigate(['/gestionsolicitudes/portafolio/radicar/resumen']);
+                this.cambioDePaso.emit(2); // Avanzar al ultimo paso
             } else {
-                this.router.navigate(['/gestionsolicitudes/portafolio/radicar/adjuntos']);
+                this.cambioDePaso.emit(1); // Avanzar al siguiente paso
             }
         } else {
             this.showWarn();
@@ -401,6 +402,6 @@ export class FormulariosComponent implements OnInit {
         this.radicar.setDatosSolicitante(this.datosSolicitante);
         this.radicar.setMaterias(this.materiasSeleccionadas);
         */
-        this.router.navigate(['/gestionsolicitudes/portafolio/radicar/selector']);
+        this.cambioDePaso.emit(-1); // Retroceder al paso anterior
     }
 }

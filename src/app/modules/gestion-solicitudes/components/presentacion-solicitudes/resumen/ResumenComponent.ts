@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, OnInit, Output, ViewChild } from '@angular/core';
 import { ConfirmationService, MessageService } from 'primeng/api';
 
 import { Router } from '@angular/router';
@@ -15,6 +15,8 @@ import { DocumentoPDFFactory } from '../../utilidades/documentos-pdf/documento-p
     providers: [ConfirmationService, MessageService],
 })
 export class ResumenComponent implements OnInit {
+    @Output() cambioDePaso = new EventEmitter<number>();
+
     @ViewChild('firmaImage') firmaImage: ElementRef;
 
     codTipoSolicitudEscogida: string;
@@ -272,9 +274,9 @@ export class ResumenComponent implements OnInit {
                 this.radicar.tipoSolicitudEscogida.codigoSolicitud
             )
         ) {
-            this.router.navigate(['/gestionsolicitudes/portafolio/radicar/formulario']);
+            this.cambioDePaso.emit(-2); // Retroceder 2 pasos
         } else {
-            this.router.navigate(['/gestionsolicitudes/portafolio/radicar/adjuntos']);
+            this.cambioDePaso.emit(-1); // Retroceder al paso anterior
         }
     }
 }

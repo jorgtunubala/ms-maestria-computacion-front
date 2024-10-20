@@ -1,5 +1,4 @@
-import { Component, HostListener, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, EventEmitter, HostListener, OnInit, Output } from '@angular/core';
 import { RadicarService } from '../../../services/radicar.service';
 import { MessageService } from 'primeng/api';
 import { UtilidadesService } from '../../../services/utilidades.service';
@@ -11,6 +10,8 @@ import { UtilidadesService } from '../../../services/utilidades.service';
     providers: [MessageService],
 })
 export class DocsAdjuntosComponent implements OnInit {
+    @Output() cambioDePaso = new EventEmitter<number>();
+
     @HostListener('window:beforeunload', ['$event'])
     beforeUnloadHander(event: Event) {
         event.returnValue = true;
@@ -20,11 +21,11 @@ export class DocsAdjuntosComponent implements OnInit {
     constructor(
         public radicar: RadicarService,
         public utilidades: UtilidadesService,
-        private router: Router,
         private messageService: MessageService
     ) {}
 
     ngOnInit(): void {
+        console.log('HOLA');
         try {
             this.radicar.requisitosSolicitudEscogida.documentosRequeridos;
             console.log(this.radicar.requisitosSolicitudEscogida);
@@ -34,7 +35,7 @@ export class DocsAdjuntosComponent implements OnInit {
             // Verificar si el error es del tipo TypeError y si contiene la cadena 'documentosRequeridos'
             if (error instanceof TypeError && error.message.includes('documentosRequeridos')) {
                 // Redirigir al usuario a una ruta específica
-                this.router.navigate(['/gestionsolicitudes/portafolio/radicar/selector']);
+                //this.router.navigate(['/gestionsolicitudes/portafolio/radicar/selector']);
             } else {
                 // Manejar otros errores de manera apropiada
                 console.error('Error no esperado:', error);
@@ -129,13 +130,13 @@ export class DocsAdjuntosComponent implements OnInit {
 
     navigateToNext() {
         if (this.validarDocsYEnlcesCompletos()) {
-            this.router.navigate(['/gestionsolicitudes/portafolio/radicar/resumen']);
+            this.cambioDePaso.emit(1); // Avanzar al siguiente paso
         } else {
             this.showWarn();
         }
     }
 
     navigateToBack() {
-        this.router.navigate(['/gestionsolicitudes/portafolio/radicar/formulario']);
+        this.cambioDePaso.emit(-1); // Retroceder al paso anterior
     }
 }

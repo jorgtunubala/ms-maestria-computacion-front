@@ -16,6 +16,7 @@ import { ContenedorComponent } from './components/gestion-coordinacion/contenedo
 import { VisoravalComponent } from './components/aval-tutores-directores/visoraval/visoraval.component';
 import { RoleGuard } from '../gestion-autenticacion/guards/role.guard';
 import { AuthGuard } from '../gestion-autenticacion/guards/auth.guard';
+import { RadicadorComponent } from './pages/radicador/radicador.component';
 
 const routes: Routes = [
     {
@@ -72,20 +73,9 @@ const routes: Routes = [
         children: [
             { path: 'opciones', component: OpcionesComponent },
             { path: 'seguimiento/historial', component: HistorialComponent },
-            { path: 'radicar/selector', component: SelectorComponent },
             {
-                path: 'radicar/formulario',
-                component: FormulariosComponent,
-                canActivate: [AuthGuard],
-            },
-            {
-                path: 'radicar/adjuntos',
-                component: DocsAdjuntosComponent,
-                canActivate: [AuthGuard],
-            },
-            {
-                path: 'radicar/resumen',
-                component: ResumenComponent,
+                path: 'radicar',
+                component: RadicadorComponent, // El componente que maneja el flujo de pasos
                 canActivate: [AuthGuard],
             },
         ],

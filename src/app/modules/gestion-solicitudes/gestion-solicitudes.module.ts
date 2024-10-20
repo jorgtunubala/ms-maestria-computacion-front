@@ -44,6 +44,7 @@ import { FormulariorechazoComponent } from './components/gestion-coordinacion/co
 import { ApyinscripcionComponent } from './components/presentacion-solicitudes/formularios/complementarios/apyinscripcion/apyinscripcion.component';
 import { InfoCoordinadorComponent } from './components/presentacion-solicitudes/formularios/complementarios/info-coordinador/info-coordinador.component';
 import { InfoPresidenteConsejoComponent } from './components/presentacion-solicitudes/formularios/complementarios/info-presidente-consejo/info-presidente-consejo.component';
+import { RadicadorComponent } from './pages/radicador/radicador.component';
 
 @NgModule({
     declarations: [
@@ -85,6 +86,7 @@ import { InfoPresidenteConsejoComponent } from './components/presentacion-solici
         ApyinscripcionComponent,
         InfoCoordinadorComponent,
         InfoPresidenteConsejoComponent,
+        RadicadorComponent,
     ],
     imports: [
         CommonModule,

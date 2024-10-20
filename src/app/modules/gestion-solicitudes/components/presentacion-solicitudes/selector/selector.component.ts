@@ -1,12 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { RadicarService } from '../../../services/radicar.service';
 import { HttpService } from '../../../services/http.service';
-import {
-    TipoSolicitud,
-    RequisitosSolicitud,
-    InfoPersonal,
-} from '../../../models/indiceModelos';
+import { TipoSolicitud, RequisitosSolicitud, InfoPersonal } from '../../../models/indiceModelos';
 
 @Component({
     selector: 'app-selector',
@@ -14,15 +9,13 @@ import {
     styleUrls: ['./selector.component.scss'],
 })
 export class SelectorComponent implements OnInit {
+    @Output() cambioDePaso = new EventEmitter<number>();
+
     tiposDeSolicitud: TipoSolicitud[];
     tipoSolicitudEscogida: TipoSolicitud;
     requisitosSolicitudEscogida: RequisitosSolicitud;
 
-    constructor(
-        public radicar: RadicarService,
-        private gestorHttp: HttpService,
-        private router: Router
-    ) {}
+    constructor(public radicar: RadicarService, private gestorHttp: HttpService) {}
 
     // Al iniciar el componente, se obtienen los tipos de solicitud
     ngOnInit(): void {
@@ -39,8 +32,7 @@ export class SelectorComponent implements OnInit {
 
     // Verifica en el servicio radicar si ya hay un tipo escogido y lo recupera
     recuperarTipoEscogido() {
-        this.tipoSolicitudEscogida =
-            this.radicar.tipoSolicitudEscogida || this.tiposDeSolicitud[0];
+        this.tipoSolicitudEscogida = this.radicar.tipoSolicitudEscogida || this.tiposDeSolicitud[0];
 
         this.obtenerRequisitosDeSolicitud();
     }
@@ -49,9 +41,7 @@ export class SelectorComponent implements OnInit {
     obtenerRequisitosDeSolicitud() {
         if (this.tipoSolicitudEscogida) {
             this.gestorHttp
-                .obtenerRequisitosDeSolicitud(
-                    this.tipoSolicitudEscogida.codigoSolicitud
-                )
+                .obtenerRequisitosDeSolicitud(this.tipoSolicitudEscogida.codigoSolicitud)
                 .subscribe((respuesta) => {
                     this.requisitosSolicitudEscogida = respuesta;
                 });
@@ -61,10 +51,7 @@ export class SelectorComponent implements OnInit {
     // Guarda en el servicio la información actual y navega al siguiente componente
     navigateToNext() {
         this.radicar.tipoSolicitudEscogida = this.tipoSolicitudEscogida;
-        this.radicar.requisitosSolicitudEscogida =
-            this.requisitosSolicitudEscogida;
-        this.router.navigate([
-            '/gestionsolicitudes/portafolio/radicar/formulario',
-        ]);
+        this.radicar.requisitosSolicitudEscogida = this.requisitosSolicitudEscogida;
+        this.cambioDePaso.emit(1); // Avanzar al siguiente paso
     }
 }

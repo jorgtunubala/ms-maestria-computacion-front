@@ -36,7 +36,7 @@ export class OpcionesComponent implements OnInit {
     }
 
     cargarPagina() {
-        this.router.navigate(['/gestionsolicitudes/portafolio/radicar/selector']);
+        this.router.navigate(['/gestionsolicitudes/portafolio/radicar']);
     }
 
     buscarSolicitud() {
