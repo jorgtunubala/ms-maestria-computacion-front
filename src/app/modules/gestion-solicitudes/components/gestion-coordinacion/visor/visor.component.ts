@@ -131,7 +131,9 @@ export class VisorComponent implements OnInit, OnDestroy {
     extraerAdjuntos(tipoSolicitud: string): void {
         const procesarDocumentosAdjuntos = (documentosAdjuntos: any[]): void => {
             documentosAdjuntos?.forEach((docAdjunto) => {
-                this.docsAdjuntos.push(this.utilidades.convertirBase64AFile(docAdjunto));
+                if (docAdjunto) {
+                    this.docsAdjuntos.push(this.utilidades.convertirBase64AFile(docAdjunto));
+                }
             });
         };
 
@@ -139,6 +141,24 @@ export class VisorComponent implements OnInit, OnDestroy {
             case 'HO_ASIG_ESP':
             case 'HO_ASIG_POS':
                 this.extraerAdjuntosHomologacion(procesarDocumentosAdjuntos);
+                break;
+            case 'AP_SEME':
+                if (this.datosSolicitud.datosSolicitudAplazarSemestre.documentoAdjunto) {
+                    this.docsAdjuntos.push(
+                        this.utilidades.convertirBase64AFile(
+                            this.datosSolicitud.datosSolicitudAplazarSemestre.documentoAdjunto
+                        )
+                    );
+                }
+                break;
+            case 'CA_ASIG':
+                if (this.datosSolicitud.dadicionCancelacionAsignatura.documentoAdjunto) {
+                    this.docsAdjuntos.push(
+                        this.utilidades.convertirBase64AFile(
+                            this.datosSolicitud.dadicionCancelacionAsignatura.documentoAdjunto
+                        )
+                    );
+                }
                 break;
             case 'CU_ASIG':
                 procesarDocumentosAdjuntos(this.datosSolicitud.datosSolicitudCursarAsignaturas.documentosAdjuntos);

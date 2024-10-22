@@ -27,7 +27,7 @@ export class SolicitudCancelacionAsignaturas implements DocumentoPDFStrategy {
 
         // Añadir contenido común
         let cursorY = this.pdfService.agregarContenidoComun(doc, marcaDeAgua);
-
+        const textAdjuntos = `${this.servicioRadicar.obtenerNombreArchivosAdjuntos()}`;
         // Añadir asunto y solicitud
         cursorY = this.pdfService.agregarAsuntoYSolicitud(doc, cursorY, textAsunto, textSolicitud, marcaDeAgua);
 
@@ -60,6 +60,10 @@ export class SolicitudCancelacionAsignaturas implements DocumentoPDFStrategy {
 
         // Añadir espacios para firmas
         cursorY = this.pdfService.agregarEspaciosDeFirmas(doc, cursorY, false, marcaDeAgua);
+
+        if (textAdjuntos) {
+            cursorY = this.pdfService.agregarListadoAdjuntos(doc, cursorY, textAdjuntos, marcaDeAgua);
+        }
 
         // Retornar el documento generado
         return doc;

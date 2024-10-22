@@ -689,11 +689,12 @@ export class RadicarService {
         });
 
         // Procesar documentosAdjuntos
-        this.documentosAdjuntos
-            ?.filter((doc) => doc !== null)
-            .forEach((doc) => {
+        this.documentosAdjuntos?.forEach((doc) => {
+            if (doc && doc.name) {
+                // Verificar que doc no sea null y que tenga la propiedad name
                 agregarNombre(doc.name);
-            });
+            }
+        });
 
         // Procesar adjuntosDeActividades
         if (this.adjuntosDeActividades) {
@@ -702,7 +703,10 @@ export class RadicarService {
                 if (adjuntosActividad) {
                     adjuntos.push(`Actividad ${Number(actividadId) + 1}`);
                     adjuntosActividad.archivos?.forEach((archivo) => {
-                        agregarNombre(`- ${archivo.name}`);
+                        if (archivo && archivo.name) {
+                            // Verificar que archivo tenga la propiedad name
+                            agregarNombre(`- ${archivo.name}`);
+                        }
                     });
                     adjuntosActividad.enlaces?.forEach((enlace) => {
                         agregarNombre(`- Enlace: ${enlace}`);

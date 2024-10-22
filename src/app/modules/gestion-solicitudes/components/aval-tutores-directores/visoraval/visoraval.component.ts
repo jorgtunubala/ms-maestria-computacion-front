@@ -156,7 +156,9 @@ export class VisoravalComponent implements OnInit {
     extraerAdjuntos(tipoSolicitud: string): void {
         const procesarDocumentosAdjuntos = (documentosAdjuntos: any[]): void => {
             documentosAdjuntos?.forEach((docAdjunto) => {
-                this.docsAdjuntos.push(this.utilidades.convertirBase64AFile(docAdjunto));
+                if (docAdjunto) {
+                    this.docsAdjuntos.push(this.utilidades.convertirBase64AFile(docAdjunto));
+                }
             });
         };
 
@@ -169,6 +171,16 @@ export class VisoravalComponent implements OnInit {
             case 'HO_ASIG_POS':
                 this.extraerAdjuntosHomologacion(procesarDocumentosAdjuntos);
                 break;
+
+            case 'CA_ASIG':
+                if (this.datosSolicitud.dadicionCancelacionAsignatura.documentoAdjunto) {
+                    this.docsAdjuntos.push(
+                        this.utilidades.convertirBase64AFile(
+                            this.datosSolicitud.dadicionCancelacionAsignatura.documentoAdjunto
+                        )
+                    );
+                }
+                break;
             case 'CU_ASIG':
                 procesarDocumentosAdjuntos(this.datosSolicitud.datosSolicitudCursarAsignaturas.documentosAdjuntos);
                 break;
@@ -180,6 +192,15 @@ export class VisoravalComponent implements OnInit {
                 break;
             case 'RE_CRED_PR_DOC':
                 this.extraerAdjuntosActividadDocente(procesarDocumentosAdjuntos);
+                break;
+            case 'AP_SEME':
+                if (this.datosSolicitud.datosSolicitudAplazarSemestre.documentoAdjunto) {
+                    this.docsAdjuntos.push(
+                        this.utilidades.convertirBase64AFile(
+                            this.datosSolicitud.datosSolicitudAplazarSemestre.documentoAdjunto
+                        )
+                    );
+                }
                 break;
             case 'RE_CRED_PAS':
                 procesarDocumentosAdjuntos(this.datosSolicitud.datosReconocimientoCreditos.documentosAdjuntos);
@@ -222,15 +243,6 @@ export class VisoravalComponent implements OnInit {
             actividad.enlaces?.forEach((enlace) => this.enlacesAdjuntos.push(enlace));
         });
     }
-
-    /*
-    extraerAdjuntosAvalPracticaDocente(procesarDocumentosAdjuntos: (documentosAdjuntos: any[]) => void): void {
-        this.datosSolicitud.datosAvalComite?.forEach((actividad) => {
-            procesarDocumentosAdjuntos(actividad.);
-            actividad.enlaces?.forEach((enlace) => this.enlacesAdjuntos.push(enlace));
-        });
-    }
-        */
 
     private verificarRestricciones() {
         if (this.datosSolicitud.datosComunSolicitud.estadoSolicitud != 'Radicada') {

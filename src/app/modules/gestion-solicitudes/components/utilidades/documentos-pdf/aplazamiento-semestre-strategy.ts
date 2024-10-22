@@ -12,6 +12,8 @@ export class SolicitudAplazamientoSemestre implements DocumentoPDFStrategy {
         const doc = new jsPDF({ format: 'letter' });
         const textAsunto = `Asunto: Solicitud de aplazamiento de semestre\n`;
 
+        const textAdjuntos = `${this.servicioRadicar.obtenerNombreArchivosAdjuntos()}`;
+
         const textSolicitud = `Reciban cordial saludo, comedidamente me dirijo a ustedes con el fin de solicitar el aplazamiento del ${
             this.servicioRadicar.formSemestreAplazar.get('semestre').value.split('-')[1] === '1' ? 'primer' : 'segundo'
         } semestre de ${
@@ -24,6 +26,10 @@ export class SolicitudAplazamientoSemestre implements DocumentoPDFStrategy {
         cursorY = this.servicioPDF.agregarAsuntoYSolicitud(doc, cursorY, textAsunto, textSolicitud, marcaDeAgua);
         cursorY = this.servicioPDF.agregarDespedida(doc, cursorY + 5, marcaDeAgua);
         cursorY = this.servicioPDF.agregarEspaciosDeFirmas(doc, cursorY, false, marcaDeAgua);
+
+        if (textAdjuntos) {
+            cursorY = this.servicioPDF.agregarListadoAdjuntos(doc, cursorY, textAdjuntos, marcaDeAgua);
+        }
 
         return doc;
     }

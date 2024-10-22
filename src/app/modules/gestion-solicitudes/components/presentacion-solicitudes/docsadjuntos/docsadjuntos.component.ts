@@ -85,16 +85,25 @@ export class DocsAdjuntosComponent implements OnInit {
     validarDocsYEnlcesCompletos(): boolean {
         let estadoValidacion = true;
 
+        // Verificar que los requisitos no sean undefined
+        if (
+            !this.radicar.requisitosSolicitudEscogida ||
+            !this.radicar.requisitosSolicitudEscogida.documentosRequeridos ||
+            !this.radicar.requisitosSolicitudEscogida.enlacesRequeridos
+        ) {
+            return false;
+        }
+
         for (let index = 0; index < this.radicar.requisitosSolicitudEscogida.documentosRequeridos.length; index++) {
+            const requisito = this.radicar.requisitosSolicitudEscogida.documentosRequeridos[index];
             if (
-                this.radicar.requisitosSolicitudEscogida.documentosRequeridos[index].adjuntarDocumento &&
-                !this.radicar.requisitosSolicitudEscogida.documentosRequeridos[index].nombre.includes('(si aplica)') &&
-                !this.radicar.requisitosSolicitudEscogida.documentosRequeridos[index].nombre.includes('(opcional)')
+                requisito.adjuntarDocumento &&
+                !requisito.nombre.includes('(si aplica)') &&
+                !requisito.nombre.includes('(opcional)')
             ) {
-                const nombreAcortado =
-                    this.radicar.requisitosSolicitudEscogida.documentosRequeridos[index].nombreAcortado;
+                const nombreAcortado = requisito.nombreAcortado;
                 const archivoEncontrado = this.radicar.documentosAdjuntos.some(
-                    (doc) => doc.name === `${nombreAcortado}.pdf`
+                    (doc) => doc && doc.name === `${nombreAcortado}.pdf`
                 );
 
                 if (!archivoEncontrado) {
