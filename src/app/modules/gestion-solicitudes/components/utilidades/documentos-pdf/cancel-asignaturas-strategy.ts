@@ -141,12 +141,8 @@ export class OficioConcejoCancelacionAsignaturas implements DocumentoPDFStrategy
         const headers = ['No.', 'Asignatura', 'Grupo', 'Docente'];
 
         const data = this.servicioGestor.conceptoComite.asignaturasAprobadas
-            .filter((item) => item.aprobado) // Filtra solo las asignaturas aprobadas
-            .map((item, index) => [
-                (index + 1).toString(), // Número secuencial
-                item.nombre, // Nombre de la asignatura
-                // Aquí puedes agregar más columnas si lo necesitas, como 'Grupo' o 'Docente'
-            ]);
+            .filter((item) => item.aprobado)
+            .map((item, index) => [(index + 1).toString(), item.nombre, item.grupo, item.nombreDocente]);
 
         posicionY = this.servicioPDF.agregarTablaPersonalizada(documento, posicionY, headers, data, marcaDeAgua);
         posicionY = this.servicioPDF.agregarDespedida(documento, posicionY + 5, marcaDeAgua);

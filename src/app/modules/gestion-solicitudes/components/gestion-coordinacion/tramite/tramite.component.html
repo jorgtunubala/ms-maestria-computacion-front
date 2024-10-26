@@ -143,7 +143,9 @@
                                     (onChange)="onCheckboxChange()"
                                     binary="true"
                                 ></p-checkbox>
-                                <label>{{ asignatura.nombre }}</label>
+                                <label>{{
+                                    asignatura.nombre + " GRUPO " + asignatura.grupo + " - " + asignatura.nombreDocente
+                                }}</label>
                             </div>
                         </div>
 
@@ -293,6 +295,37 @@
                                     [style]="{ width: '100%' }"
                                     invalidFileSizeMessageDetail="Maximo 10MB"
                                 ></p-fileUpload>
+                            </div>
+                        </div>
+
+                        <div
+                            class="mt-2"
+                            *ngIf="
+                                respuestaConsejo.avaladoConcejo === 'Si' &&
+                                ['AD_ASIG', 'CA_ASIG'].includes(gestor.solicitudSeleccionada.codigoSolicitud)
+                            "
+                        >
+                            <p class="font-semibold">
+                                {{
+                                    gestor.solicitudSeleccionada.codigoSolicitud === "AD_ASIG"
+                                        ? "Asignaturas aprobadas por el consejo para su adición"
+                                        : "Asignaturas aprobadas por el consejo para su cancelación"
+                                }}
+                            </p>
+
+                            <div
+                                *ngFor="let asignatura of respuestaConsejo.asignaturasAprobadas"
+                                class="field-checkbox"
+                            >
+                                <p-checkbox
+                                    [(ngModel)]="asignatura.aprobado"
+                                    [disabled]="bloquearConceptoConsejo"
+                                    (onChange)="onCheckboxChange()"
+                                    binary="true"
+                                ></p-checkbox>
+                                <label>{{
+                                    asignatura.nombre + " GRUPO " + asignatura.grupo + " - " + asignatura.nombreDocente
+                                }}</label>
                             </div>
                         </div>
 

@@ -26,7 +26,8 @@ export class GestorService {
     estadoSolicitud: string;
     conceptoComite: SolicitudEnComiteResponse;
     conceptoConsejo: SolicitudEnConcejoResponse;
-    asignaturasAceptadas: any[];
+    //asignaturasAceptadasComite: any[];
+    //asignaturasAceptadasConsejo: any[];
 
     decano: InfoDecano = { nombre: 'Alejandro Toledo Tovar', titulo: 'Magister' };
     coordinador: InfoCoordinador = { nombre: 'Hugo Armando Ordoñez Erazo', titulo: 'Doctor' };

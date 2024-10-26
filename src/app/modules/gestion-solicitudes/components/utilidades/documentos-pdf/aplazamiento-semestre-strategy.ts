@@ -5,8 +5,14 @@ import { PdfService } from '../../../services/pdf.service';
 import { GestorService } from '../../../services/gestor.service';
 import { UtilidadesService } from '../../../services/utilidades.service';
 
+// Subestrategia para la solicitud de aplazamiento de semestre
 export class SolicitudAplazamientoSemestre implements DocumentoPDFStrategy {
-    constructor(private servicioRadicar: RadicarService, private servicioPDF: PdfService) {}
+    constructor(
+        private servicioRadicar: RadicarService,
+        private servicioPDF: PdfService,
+        private servicioGestor: GestorService,
+        private servicioUtilidades: UtilidadesService
+    ) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
         const doc = new jsPDF({ format: 'letter' });
@@ -35,8 +41,8 @@ export class SolicitudAplazamientoSemestre implements DocumentoPDFStrategy {
     }
 }
 
+// Subestrategia para la respuesta del comité al aplazamiento de semestre
 export class RespuestaComiteAplazamientoSemestre implements DocumentoPDFStrategy {
-    // Se deben incluir todos los servicios que define la fabrica asi no se usen
     constructor(
         private servicioRadicar: RadicarService,
         private servicioPDF: PdfService,
@@ -53,7 +59,7 @@ export class RespuestaComiteAplazamientoSemestre implements DocumentoPDFStrategy
         const mesEnLetras = this.servicioUtilidades.obtenerMesEnLetras(Number(fechaComite[1]));
 
         const txtAsunto = `Asunto: Respuesta a Solicitud ${radicado} de Aplazamiento de Semestre\n`;
-        const txtCuerpo = `Reciba un cordial saludo. Por medio de la presente me dirijo a usted con el fin de informar que en sesión del día ${fechaComite[0]} de ${mesEnLetras} de ${fechaComite[2]} el Comité de Programa revisó su solicitud con radicado ${radicado} referente al Aplazamiento del semestre ${semestre}, decidiendo NO AVALAR la solicitud y emite el siguiente concepto:`;
+        const txtCuerpo = `Reciba un cordial saludo. Por medio de la presente me dirijo a usted con el fin de informar que en sesión del día ${fechaComite[0]} de ${mesEnLetras} de ${fechaComite[2]} el Comité de Programa revisó su solicitud con radicado ${radicado} referente al Aplazamiento del semestre ${semestre}, decidiendo **NO AVALAR** la solicitud y emite el siguiente concepto:`;
         const txtConcepto = `\n${this.servicioGestor.conceptoComite.conceptoComite}`;
         const txtRemitente = `${this.servicioGestor.coordinador.nombre.toUpperCase()}\nCoordinador(a) Maestría en Computación`;
 
@@ -76,8 +82,8 @@ export class RespuestaComiteAplazamientoSemestre implements DocumentoPDFStrategy
     }
 }
 
+// Subestrategia para el oficio al consejo sobre aplazamiento de semestre
 export class OficioConcejoAplazamientoSemestre implements DocumentoPDFStrategy {
-    // Se deben incluir todos los servicios que define la fabrica asi no se usen
     constructor(
         private servicioRadicar: RadicarService,
         private servicioPDF: PdfService,
@@ -91,15 +97,17 @@ export class OficioConcejoAplazamientoSemestre implements DocumentoPDFStrategy {
         const fechaComite = this.servicioGestor.conceptoComite.fechaAval.split('/');
         const mesEnLetras = this.servicioUtilidades.obtenerMesEnLetras(Number(fechaComite[1]));
         const { semestre } = this.servicioGestor.infoSolicitud.datosSolicitudAplazarSemestre;
+        const { nombreSolicitante, apellidoSolicitante, numeroIdentSolicitante, tipoIdentSolicitante } =
+            this.servicioGestor.infoSolicitud.datosComunSolicitud;
 
-        const textAsunto = `Asunto: Solicitud de Aplazamiento de Semestre para el/la estudiante ${this.servicioGestor.infoSolicitud.datosComunSolicitud.nombreSolicitante} ${this.servicioGestor.infoSolicitud.datosComunSolicitud.apellidoSolicitante} \n`;
+        const textAsunto = `Asunto: Solicitud de Aplazamiento de Semestre para el/la estudiante ${nombreSolicitante} ${apellidoSolicitante}\n`;
         const textCuerpo = `Estimado ${
             this.servicioGestor.decano.nombre.split(' ')[0]
-        }, reciba cordial saludo. Comedidamente me dirijo a usted con el fin informar que en sesión del día ${
+        }, reciba un cordial saludo. Comedidamente me dirijo a usted con el fin informar que en sesión del día ${
             fechaComite[0]
         } de ${mesEnLetras} de ${
             fechaComite[2]
-        } el Comité de Programa avaló el aplazamiento del semestre ${semestre} solicitado por el/la estudiante ${this.servicioGestor.infoSolicitud.datosComunSolicitud.nombreSolicitante.toUpperCase()} ${this.servicioGestor.infoSolicitud.datosComunSolicitud.apellidoSolicitante.toUpperCase()}. Por lo tanto, muy formalmente solicito su colaboración para realizar las gestiones necesarias en este caso.`;
+        }, el Comité de Programa avaló el aplazamiento del semestre ${semestre} solicitado por el/la estudiante ${nombreSolicitante.toUpperCase()} ${apellidoSolicitante.toUpperCase()}, identificado con ${tipoIdentSolicitante} ${numeroIdentSolicitante}. Por lo tanto, muy formalmente solicito su colaboración para realizar las gestiones necesarias en este caso.`;
         const txtRemitente = `${this.servicioGestor.coordinador.nombre.toUpperCase()}\nCoordinador(a) Maestría en Computación`;
 
         let posicionY = this.servicioPDF.agregarContenidoComun(documento, marcaDeAgua, 'consejo');
@@ -116,8 +124,8 @@ export class OficioConcejoAplazamientoSemestre implements DocumentoPDFStrategy {
     }
 }
 
+// Subestrategia para la respuesta del consejo sobre aplazamiento de semestre
 export class RespuestaConcejoAplazamientoSemestre implements DocumentoPDFStrategy {
-    // Se deben incluir todos los servicios que define la fabrica asi no se usen
     constructor(
         private servicioRadicar: RadicarService,
         private servicioPDF: PdfService,
@@ -137,7 +145,7 @@ export class RespuestaConcejoAplazamientoSemestre implements DocumentoPDFStrateg
             fechaConcejo[0]
         } de ${mesEnLetras} de ${
             fechaConcejo[2]
-        } se recibio despuesta del Concejo de Facultad referente a su solicitud ${radicado} de Aplazamiento de Semestre, ${
+        } se recibió respuesta del Consejo de Facultad referente a su solicitud ${radicado} de Aplazamiento de Semestre. ${
             this.servicioGestor.conceptoConsejo.avaladoConcejo === 'Si'
                 ? 'El Consejo decide aprobar su solicitud bajo el siguiente concepto'
                 : 'El Consejo decide no aprobar su solicitud bajo el siguiente concepto'

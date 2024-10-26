@@ -23,7 +23,7 @@ export class SolicitudApoyoEconomicoCongresos implements DocumentoPDFStrategy {
         );
 
         const textAsunto = `Asunto: Solicitud de apoyo económico para asistencia a evento presentando artículo\n`;
-        const textSolicitud = `Reciban cordial saludo, comedidamente me dirijo a ustedes con el fin de solicitar un apoyo económico para asistir al evento de caracter ${
+        const textSolicitud = `Reciban cordial saludo, comedidamente me dirijo a ustedes con el fin de solicitar un apoyo económico para asistir al evento de carácter ${
             this.servicioRadicar.formApoyoAsistEvento.get('tipoCongreso').value
         }: "${
             this.servicioRadicar.formApoyoAsistEvento.get('nombreCongreso').value
@@ -72,7 +72,33 @@ export class RespuestaComiteApoyoEconomicoCongresos implements DocumentoPDFStrat
     ) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
-        throw new Error('Method not implemented.');
+        const documento = new jsPDF({ format: 'letter' });
+
+        const { radicado } = this.servicioGestor.infoSolicitud.datosComunSolicitud;
+        const fechaComite = this.servicioGestor.conceptoComite.fechaAval.split('/');
+        const mesEnLetras = this.servicioUtilidades.obtenerMesEnLetras(Number(fechaComite[1]));
+
+        const txtAsunto = `Asunto: Respuesta a Solicitud ${radicado} de Apoyo Económico para asistencia a congreso presentando artículos\n`;
+        const txtCuerpo = `Reciba un cordial saludo. Por medio de la presente me dirijo a usted con el fin de informar que en sesión del día ${fechaComite[0]} de ${mesEnLetras} de ${fechaComite[2]} el Comité de Programa revisó su solicitud con radicado ${radicado} referente al apoyo económico para asistencia a congreso, decidiendo **NO AVALAR** la solicitud y emite el siguiente concepto:`;
+        const txtConcepto = `\n${this.servicioGestor.conceptoComite.conceptoComite}`;
+        const txtRemitente = `${this.servicioGestor.coordinador.nombre.toUpperCase()}\nCoordinador(a) Maestría en Computación`;
+
+        let posicionY = this.servicioPDF.agregarContenidoComun(documento, marcaDeAgua, 'solicitante');
+        posicionY = this.servicioPDF.agregarAsuntoYSolicitud(documento, posicionY, txtAsunto, txtCuerpo, marcaDeAgua);
+        posicionY = this.servicioPDF.agregarTexto(documento, {
+            text: txtConcepto,
+            startY: posicionY,
+            alignment: 'justify',
+        });
+
+        posicionY = this.servicioPDF.agregarDespedida(documento, posicionY + 5, marcaDeAgua, 'respuesta');
+        posicionY = this.servicioPDF.agregarTexto(documento, {
+            text: txtRemitente,
+            startY: posicionY + 10,
+            watermark: marcaDeAgua,
+        });
+
+        return documento;
     }
 }
 
@@ -85,7 +111,36 @@ export class OficioConcejoApoyoEconomicoCongresos implements DocumentoPDFStrateg
     ) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
-        throw new Error('Method not implemented.');
+        const documento = new jsPDF({ format: 'letter' });
+
+        const fechaComite = this.servicioGestor.conceptoComite.fechaAval.split('/');
+        const mesEnLetras = this.servicioUtilidades.obtenerMesEnLetras(Number(fechaComite[1]));
+        const { nombreSolicitante, apellidoSolicitante, numeroIdentSolicitante, tipoIdentSolicitante } =
+            this.servicioGestor.infoSolicitud.datosComunSolicitud;
+
+        const textAsunto = `Asunto: Solicitud de apoyo económico para el/la estudiante ${nombreSolicitante} ${apellidoSolicitante}\n`;
+        const textCuerpo = `Estimado ${
+            this.servicioGestor.decano.nombre.split(' ')[0]
+        }, reciba un cordial saludo. Comedidamente me dirijo a usted con el fin de informar que en sesión del día ${
+            fechaComite[0]
+        } de ${mesEnLetras} de ${
+            fechaComite[2]
+        }, el Comité de Programa avaló la solicitud de apoyo económico para la asistencia al evento: "${
+            this.servicioGestor.infoSolicitud.datosApoyoEconomicoCongreso.nombreCongreso
+        }", presentada por el/la estudiante ${nombreSolicitante.toUpperCase()} ${apellidoSolicitante.toUpperCase()}, con identificación ${tipoIdentSolicitante} ${numeroIdentSolicitante}. Por lo tanto, muy formalmente solicito su colaboración para realizar las gestiones necesarias en este caso.`;
+        const txtRemitente = `${this.servicioGestor.coordinador.nombre.toUpperCase()}\nCoordinador(a) Maestría en Computación`;
+
+        let posicionY = this.servicioPDF.agregarContenidoComun(documento, marcaDeAgua, 'consejo');
+        posicionY = this.servicioPDF.agregarAsuntoYSolicitud(documento, posicionY, textAsunto, textCuerpo, marcaDeAgua);
+
+        posicionY = this.servicioPDF.agregarDespedida(documento, posicionY + 5, marcaDeAgua);
+        posicionY = this.servicioPDF.agregarTexto(documento, {
+            text: txtRemitente,
+            startY: posicionY + 10,
+            watermark: marcaDeAgua,
+        });
+
+        return documento;
     }
 }
 
@@ -98,6 +153,40 @@ export class RespuestaConcejoApoyoEconomicoCongresos implements DocumentoPDFStra
     ) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
-        throw new Error('Method not implemented.');
+        const documento = new jsPDF({ format: 'letter' });
+
+        const { radicado } = this.servicioGestor.infoSolicitud.datosComunSolicitud;
+        const fechaConcejo = this.servicioGestor.conceptoConsejo.fechaAval.split('/');
+        const mesEnLetras = this.servicioUtilidades.obtenerMesEnLetras(Number(fechaConcejo[1]));
+
+        const txtAsunto = `Asunto: Respuesta a Solicitud ${radicado} de apoyo económico para asistencia a congreso presentando artículos\n`;
+        const txtCuerpo = `Reciba un cordial saludo. Por medio de la presente me dirijo a usted con el fin de informar que el día ${
+            fechaConcejo[0]
+        } de ${mesEnLetras} de ${
+            fechaConcejo[2]
+        } se recibió respuesta del Consejo de Facultad referente a su solicitud ${radicado} de apoyo económico. ${
+            this.servicioGestor.conceptoConsejo.avaladoConcejo === 'Si'
+                ? 'El Consejo decide aprobar su solicitud bajo el siguiente concepto'
+                : 'El Consejo decide no aprobar su solicitud bajo el siguiente concepto'
+        }.`;
+        const txtConcepto = `${this.servicioGestor.conceptoConsejo.conceptoConcejo}`;
+        const txtRemitente = `${this.servicioGestor.coordinador.nombre.toUpperCase()}\nCoordinador(a) Maestría en Computación`;
+
+        let posicionY = this.servicioPDF.agregarContenidoComun(documento, marcaDeAgua, 'solicitante');
+        posicionY = this.servicioPDF.agregarAsuntoYSolicitud(documento, posicionY, txtAsunto, txtCuerpo, marcaDeAgua);
+        posicionY = this.servicioPDF.agregarTexto(documento, {
+            text: txtConcepto,
+            startY: posicionY + 5,
+            alignment: 'justify',
+            watermark: marcaDeAgua,
+        });
+        posicionY = this.servicioPDF.agregarDespedida(documento, posicionY + 5, marcaDeAgua, 'respuesta');
+        posicionY = this.servicioPDF.agregarTexto(documento, {
+            text: txtRemitente,
+            startY: posicionY + 10,
+            watermark: marcaDeAgua,
+        });
+
+        return documento;
     }
 }

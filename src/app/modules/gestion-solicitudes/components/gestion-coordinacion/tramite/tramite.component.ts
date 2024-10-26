@@ -50,6 +50,7 @@ export class TramiteComponent implements OnInit {
         numeroActa: '',
         fechaAval: '',
         documentosConcejo: [],
+        asignaturasAprobadas: [],
     };
 
     bloquearConceptoComite: boolean = false;
@@ -103,6 +104,10 @@ export class TramiteComponent implements OnInit {
 
         console.log(this.gestor.infoSolicitud);
 
+        this.cargarConceptosGuardados();
+    }
+
+    cargarConceptosGuardados() {
         this.http.consultarConceptoComite(this.gestor.solicitudSeleccionada.idSolicitud).subscribe(
             async (infoComite: SolicitudEnComiteResponse) => {
                 console.log(infoComite);
@@ -304,6 +309,7 @@ export class TramiteComponent implements OnInit {
                 if (response) {
                     this.gestor.estadoSolicitud = 'En concejo';
                     this.gestor.moverSolicitud(this.gestor.solicitudSeleccionada, 'EN_COMITE', 'EN_CONCEJO');
+                    this.cargarConceptosGuardados();
                 }
             },
             (error) => {
@@ -436,7 +442,7 @@ export class TramiteComponent implements OnInit {
                 // Lógica para guardar
                 this.avalComite.fechaAval = this.formatearFecha(this.fechaSeleccionada);
                 this.gestor.conceptoComite = this.avalComite;
-                this.gestor.asignaturasAceptadas = this.asignaturasAprobadas;
+                //this.gestor.asignaturasAceptadasComite = this.asignaturasAprobadas;
                 //this.gestor.respuestaConsejo = this.respuestaConsejo;
 
                 this.http.guardarConceptoComite(this.avalComite).subscribe(
@@ -662,22 +668,37 @@ export class TramiteComponent implements OnInit {
             asignaturasAprobadas.length > 0 &&
             asignaturasAprobadas.some((asignatura) => asignatura.aprobado);
 
+        // Verificación de que la fecha es válida
+        const fechaValida = this.fechaSeleccionada instanceof Date && !isNaN(this.fechaSeleccionada.getTime());
+
         return (
-            (this.avalComite.avaladoComite === 'Si' || this.avalComite.avaladoComite === 'No') &&
+            this.avalComite.avaladoComite !== '' && // Verificación de que no sea vacío
             this.avalComite.conceptoComite !== '' &&
-            this.fechaSeleccionada !== null &&
+            fechaValida && // Asegura que la fecha no sea nula ni inválida
             this.avalComite.numeroActa !== '' &&
-            (this.avalComite.avaladoComite === 'No' ||
-                !asignaturasAprobadas || // Comprobación adicional aquí
-                hayAsignaturasAprobadas)
+            (this.avalComite.avaladoComite === 'No' || // Si es 'No', no requiere asignaturas aprobadas
+                hayAsignaturasAprobadas) // Si es 'Sí', debe haber asignaturas aprobadas
         );
     }
 
     private validarFormularioConcejo(): boolean {
+        const asignaturasAprobadas = this.respuestaConsejo.asignaturasAprobadas;
+
+        // Verificación de que hay al menos una asignatura aprobada
+        const hayAsignaturasAprobadas =
+            asignaturasAprobadas &&
+            asignaturasAprobadas.length > 0 &&
+            asignaturasAprobadas.some((asignatura) => asignatura.aprobado);
+
+        // Validación de que la fecha del consejo es válida
+        const fechaValida = this.fechaConsejo instanceof Date && !isNaN(this.fechaConsejo.getTime());
+
         return (
             (this.respuestaConsejo.avaladoConcejo === 'Si' || this.respuestaConsejo.avaladoConcejo === 'No') &&
             this.respuestaConsejo.conceptoConcejo !== '' &&
-            this.fechaConsejo !== null
+            fechaValida &&
+            (this.respuestaConsejo.avaladoConcejo === 'No' || // Si es "No", no requiere asignaturas aprobadas
+                hayAsignaturasAprobadas) // Si es "Si", debe haber al menos una asignatura aprobada
         );
     }
 

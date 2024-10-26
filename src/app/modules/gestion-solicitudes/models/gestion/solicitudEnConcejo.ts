@@ -1,3 +1,5 @@
+import { AprobarAsignaturas } from './aprobarAsignaturas';
+
 export class SolicitudEnConcejoResponse {
     static nuevoSolicitudEnConcejoResponse(obj: Object) {
         return new SolicitudEnConcejoResponse(
@@ -7,7 +9,8 @@ export class SolicitudEnConcejoResponse {
             obj['conceptoConcejo'],
             obj['numeroActa'],
             obj['fechaAval'],
-            obj['documentosConcejo']
+            obj['documentosConcejo'],
+            obj['asignaturasAprobadas']
         );
     }
 
@@ -18,6 +21,7 @@ export class SolicitudEnConcejoResponse {
         public conceptoConcejo: string,
         public numeroActa: string,
         public fechaAval: string,
-        public documentosConcejo: string[]
+        public documentosConcejo: string[],
+        public asignaturasAprobadas: AprobarAsignaturas[]
     ) {}
 }
