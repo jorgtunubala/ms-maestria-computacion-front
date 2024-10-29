@@ -120,12 +120,14 @@
                                 dateFormat="dd/mm/yy"
                             ></p-calendar>
                         </div>
-
+                        <!--
                         <div
                             class="mt-2"
                             *ngIf="
                                 avalComite.avaladoComite === 'Si' &&
-                                ['AD_ASIG', 'CA_ASIG'].includes(gestor.solicitudSeleccionada.codigoSolicitud)
+                                ['AD_ASIG', 'CA_ASIG', 'HO_ASIG_POS', 'HO_ASIG_ESP', 'CU_ASIG'].includes(
+                                    gestor.solicitudSeleccionada.codigoSolicitud
+                                )
                             "
                         >
                             <p class="font-semibold">
@@ -145,6 +147,48 @@
                                 ></p-checkbox>
                                 <label>{{
                                     asignatura.nombre + " GRUPO " + asignatura.grupo + " - " + asignatura.nombreDocente
+                                }}</label>
+                            </div>
+                        </div>
+
+                        -->
+
+                        <div
+                            class="mt-2"
+                            *ngIf="
+                                avalComite.avaladoComite === 'Si' &&
+                                [
+                                    'AD_ASIG',
+                                    'CA_ASIG',
+                                    'HO_ASIG_POS',
+                                    'HO_ASIG_ESP',
+                                    'CU_ASIG',
+                                    'AV_COMI_PR',
+                                    'RE_CRED_PR_DOC'
+                                ].includes(gestor.solicitudSeleccionada.codigoSolicitud)
+                            "
+                        >
+                            <p class="font-semibold">
+                                {{ getTituloPorSolicitud(gestor.solicitudSeleccionada.codigoSolicitud, "COMITE") }}
+                            </p>
+
+                            <div
+                                *ngFor="
+                                    let asignatura of getAsignaturasPorSolicitud(
+                                        avalComite,
+                                        gestor.solicitudSeleccionada.codigoSolicitud
+                                    )
+                                "
+                                class="field-checkbox"
+                            >
+                                <p-checkbox
+                                    [(ngModel)]="asignatura.aprobado"
+                                    [disabled]="bloquearConceptoComite"
+                                    (onChange)="onCheckboxChange()"
+                                    binary="true"
+                                ></p-checkbox>
+                                <label>{{
+                                    getDetalleAsignatura(asignatura, gestor.solicitudSeleccionada.codigoSolicitud)
                                 }}</label>
                             </div>
                         </div>
@@ -302,19 +346,28 @@
                             class="mt-2"
                             *ngIf="
                                 respuestaConsejo.avaladoConcejo === 'Si' &&
-                                ['AD_ASIG', 'CA_ASIG'].includes(gestor.solicitudSeleccionada.codigoSolicitud)
+                                [
+                                    'AD_ASIG',
+                                    'CA_ASIG',
+                                    'HO_ASIG_POS',
+                                    'HO_ASIG_ESP',
+                                    'CU_ASIG',
+                                    'AV_COMI_PR',
+                                    'RE_CRED_PR_DOC'
+                                ].includes(gestor.solicitudSeleccionada.codigoSolicitud)
                             "
                         >
                             <p class="font-semibold">
-                                {{
-                                    gestor.solicitudSeleccionada.codigoSolicitud === "AD_ASIG"
-                                        ? "Asignaturas aprobadas por el consejo para su adición"
-                                        : "Asignaturas aprobadas por el consejo para su cancelación"
-                                }}
+                                {{ getTituloPorSolicitud(gestor.solicitudSeleccionada.codigoSolicitud, "CONSEJO") }}
                             </p>
 
                             <div
-                                *ngFor="let asignatura of respuestaConsejo.asignaturasAprobadas"
+                                *ngFor="
+                                    let asignatura of getAsignaturasPorSolicitud(
+                                        respuestaConsejo,
+                                        gestor.solicitudSeleccionada.codigoSolicitud
+                                    )
+                                "
                                 class="field-checkbox"
                             >
                                 <p-checkbox
@@ -324,7 +377,7 @@
                                     binary="true"
                                 ></p-checkbox>
                                 <label>{{
-                                    asignatura.nombre + " GRUPO " + asignatura.grupo + " - " + asignatura.nombreDocente
+                                    getDetalleAsignatura(asignatura, gestor.solicitudSeleccionada.codigoSolicitud)
                                 }}</label>
                             </div>
                         </div>

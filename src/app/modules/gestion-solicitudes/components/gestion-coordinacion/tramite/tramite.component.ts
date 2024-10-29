@@ -40,6 +40,10 @@ export class TramiteComponent implements OnInit {
         numeroActa: '',
         fechaAval: '',
         asignaturasAprobadas: [],
+        asignaturasHomologadas: [],
+        asignaturasOtroPrograma: [],
+        avalActPracticaDocente: [],
+        reconocimientoCreditosPD: [],
     };
 
     respuestaConsejo: SolicitudEnConcejoResponse = {
@@ -51,6 +55,10 @@ export class TramiteComponent implements OnInit {
         fechaAval: '',
         documentosConcejo: [],
         asignaturasAprobadas: [],
+        asignaturasHomologadas: [],
+        asignaturasOtroPrograma: [],
+        avalActPracticaDocente: [],
+        reconocimientoCreditosPD: [],
     };
 
     bloquearConceptoComite: boolean = false;
@@ -101,9 +109,6 @@ export class TramiteComponent implements OnInit {
 
     ngOnInit(): void {
         this.servicioUtilidades.configurarIdiomaCalendario();
-
-        console.log(this.gestor.infoSolicitud);
-
         this.cargarConceptosGuardados();
     }
 
@@ -445,6 +450,8 @@ export class TramiteComponent implements OnInit {
                 //this.gestor.asignaturasAceptadasComite = this.asignaturasAprobadas;
                 //this.gestor.respuestaConsejo = this.respuestaConsejo;
 
+                console.log(this.avalComite);
+
                 this.http.guardarConceptoComite(this.avalComite).subscribe(
                     (response) => {
                         if (response) {
@@ -660,13 +667,17 @@ export class TramiteComponent implements OnInit {
         return fecha;
     }
 
-    private validarFormularioComite(): boolean {
-        const asignaturasAprobadas = this.avalComite.asignaturasAprobadas;
+    private hayAsignaturasAprobadas(asignaturas: any[]): boolean {
+        return asignaturas && asignaturas.length > 0 && asignaturas.some((asignatura) => asignatura.aprobado);
+    }
 
+    private validarFormularioComite(): boolean {
         const hayAsignaturasAprobadas =
-            asignaturasAprobadas &&
-            asignaturasAprobadas.length > 0 &&
-            asignaturasAprobadas.some((asignatura) => asignatura.aprobado);
+            this.hayAsignaturasAprobadas(this.avalComite.asignaturasAprobadas) ||
+            this.hayAsignaturasAprobadas(this.avalComite.asignaturasHomologadas) ||
+            this.hayAsignaturasAprobadas(this.avalComite.asignaturasOtroPrograma) ||
+            this.hayAsignaturasAprobadas(this.avalComite.reconocimientoCreditosPD) ||
+            this.hayAsignaturasAprobadas(this.avalComite.avalActPracticaDocente);
 
         // Verificación de que la fecha es válida
         const fechaValida = this.fechaSeleccionada instanceof Date && !isNaN(this.fechaSeleccionada.getTime());
@@ -677,18 +688,17 @@ export class TramiteComponent implements OnInit {
             fechaValida && // Asegura que la fecha no sea nula ni inválida
             this.avalComite.numeroActa !== '' &&
             (this.avalComite.avaladoComite === 'No' || // Si es 'No', no requiere asignaturas aprobadas
-                hayAsignaturasAprobadas) // Si es 'Sí', debe haber asignaturas aprobadas
+                hayAsignaturasAprobadas) // Si es 'Sí', debe haber asignaturas aprobadas en alguna lista
         );
     }
 
     private validarFormularioConcejo(): boolean {
-        const asignaturasAprobadas = this.respuestaConsejo.asignaturasAprobadas;
-
-        // Verificación de que hay al menos una asignatura aprobada
         const hayAsignaturasAprobadas =
-            asignaturasAprobadas &&
-            asignaturasAprobadas.length > 0 &&
-            asignaturasAprobadas.some((asignatura) => asignatura.aprobado);
+            this.hayAsignaturasAprobadas(this.respuestaConsejo.asignaturasAprobadas) ||
+            this.hayAsignaturasAprobadas(this.respuestaConsejo.asignaturasHomologadas) ||
+            this.hayAsignaturasAprobadas(this.respuestaConsejo.asignaturasOtroPrograma) ||
+            this.hayAsignaturasAprobadas(this.respuestaConsejo.reconocimientoCreditosPD) ||
+            this.hayAsignaturasAprobadas(this.respuestaConsejo.avalActPracticaDocente);
 
         // Validación de que la fecha del consejo es válida
         const fechaValida = this.fechaConsejo instanceof Date && !isNaN(this.fechaConsejo.getTime());
@@ -698,7 +708,7 @@ export class TramiteComponent implements OnInit {
             this.respuestaConsejo.conceptoConcejo !== '' &&
             fechaValida &&
             (this.respuestaConsejo.avaladoConcejo === 'No' || // Si es "No", no requiere asignaturas aprobadas
-                hayAsignaturasAprobadas) // Si es "Si", debe haber al menos una asignatura aprobada
+                hayAsignaturasAprobadas) // Si es "Si", debe haber al menos una asignatura aprobada en alguna lista
         );
     }
 
@@ -708,7 +718,7 @@ export class TramiteComponent implements OnInit {
                 this.messageService.add({
                     severity: 'warn',
                     summary: 'Datos Incompletos',
-                    detail: 'Igrese toda la información requerida',
+                    detail: 'Ingrese toda la información requerida',
                 });
                 break;
 
@@ -751,5 +761,66 @@ export class TramiteComponent implements OnInit {
 
     eliminarDocuementoConcejo(index: number) {
         this.archivosCargados.splice(index, 1);
+    }
+
+    getAsignaturasPorSolicitud(solicitud: any, codigoSolicitud: string): any[] {
+        switch (codigoSolicitud) {
+            case 'AD_ASIG':
+            case 'CA_ASIG':
+                return solicitud.asignaturasAprobadas;
+            case 'HO_ASIG_POS':
+            case 'HO_ASIG_ESP':
+                return solicitud.asignaturasHomologadas;
+            case 'CU_ASIG':
+                return solicitud.asignaturasOtroPrograma;
+            case 'AV_COMI_PR':
+                return solicitud.avalActPracticaDocente;
+            case 'RE_CRED_PR_DOC':
+                return solicitud.reconocimientoCreditosPD;
+            default:
+                return [];
+        }
+    }
+
+    getTituloPorSolicitud(codigoSolicitud: string, contexto: string): string {
+        const contextoTexto = contexto === 'COMITE' ? 'comité' : 'consejo';
+
+        switch (codigoSolicitud) {
+            case 'AD_ASIG':
+                return `Asignaturas aprobadas por el ${contextoTexto} para su adición`;
+            case 'CA_ASIG':
+                return `Asignaturas aprobadas por el ${contextoTexto} para su cancelación`;
+            case 'HO_ASIG_POS':
+            case 'HO_ASIG_ESP':
+                return `Asignaturas aprobadas por el ${contextoTexto} para su homologación`;
+            case 'CU_ASIG':
+                return `Asignaturas aprobadas para cursar en otro programa según el ${contextoTexto}`;
+            case 'AV_COMI_PR':
+                return `Actividades de práctica docente aprobadas por el ${contextoTexto}`;
+            case 'RE_CRED_PR_DOC':
+                return `Actividades aprobadas para el reconocimiento de créditos por el ${contextoTexto}`;
+            default:
+                return `Asignaturas aprobadas por el ${contextoTexto}`;
+        }
+    }
+
+    getDetalleAsignatura(asignatura: any, codigoSolicitud: string): string {
+        console.log(this.avalComite);
+        switch (codigoSolicitud) {
+            case 'AD_ASIG':
+            case 'CA_ASIG':
+                return `${asignatura.nombre} GRUPO ${asignatura.grupo} - ${asignatura.nombreDocente}`;
+            case 'HO_ASIG_POS':
+            case 'HO_ASIG_ESP':
+                return `${asignatura.nombreAsignatura} - ${asignatura.nombrePrograma} (${asignatura.nombreInstitucion})`;
+            case 'CU_ASIG':
+                return `${asignatura.nombreAsignatura} - ${asignatura.creditos} créditos - (${asignatura.nombrePrograma} - ${asignatura.nombreInstitucion})`;
+            case 'AV_COMI_PR':
+                return `${asignatura.nombreActividad}`;
+            case 'RE_CRED_PR_DOC':
+                return `${asignatura.nombreActividad}`;
+            default:
+                return `${asignatura.nombre}`;
+        }
     }
 }

@@ -99,7 +99,8 @@ export class RespuestaComiteApoyoPublicOInscrip implements DocumentoPDFStrategy 
     ) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
-        throw new Error('Method not implemented.');
+        const documento = new jsPDF({ format: 'letter' });
+        return documento;
     }
 }
 
@@ -113,7 +114,8 @@ export class OficioConcejoApoyoPublicOInscrip implements DocumentoPDFStrategy {
     ) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
-        throw new Error('Method not implemented.');
+        const documento = new jsPDF({ format: 'letter' });
+        return documento;
     }
 }
 
@@ -127,6 +129,7 @@ export class RespuestaConcejoApoyoPublicOInscrip implements DocumentoPDFStrategy
     ) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
-        throw new Error('Method not implemented.');
+        const documento = new jsPDF({ format: 'letter' });
+        return documento;
     }
 }

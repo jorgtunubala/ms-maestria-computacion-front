@@ -44,3 +44,6 @@ export { SolicitudEnComiteResponse } from './gestion/solicitudEnComite';
 export { SolicitudEnConcejoResponse } from './gestion/solicitudEnConcejo';
 export { AprobarAsignaturas } from './gestion/aprobarAsignaturas';
 export { EnvioCorreoRequest } from './gestion/envioCorreo';
+export { AprobarHomologacion } from './gestion/aprobarHomologacion';
+export { AprobarAsignaturasExt } from './gestion/aprobarAsignaturasExt';
+export { AprobarAvalComite } from './gestion/aprobarAvalComite';

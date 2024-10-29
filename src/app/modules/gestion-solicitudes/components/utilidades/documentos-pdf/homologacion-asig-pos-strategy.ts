@@ -17,7 +17,7 @@ export class SolicitudHomologAsignaturasPos implements DocumentoPDFStrategy {
         const doc = new jsPDF({ format: 'letter' });
 
         // Texto para el asunto
-        const textAsunto = `Asunto: Solicitud de homologación de asignaturas en otros programas de posgrado\n`;
+        const textAsunto = `Asunto: Solicitud de homologación de asignaturas cursadas en otros programas de posgrado\n`;
 
         const textAdjuntos = `${this.servicioRadicar.obtenerNombreArchivosAdjuntos()}`;
         // Texto para la solicitud
@@ -57,25 +57,125 @@ export class SolicitudHomologAsignaturasPos implements DocumentoPDFStrategy {
 }
 
 export class RespuestaComiteHomologAsignaturasPos implements DocumentoPDFStrategy {
-    constructor(private servicioRadicar: RadicarService, private servicioPDF: PdfService) {}
+    constructor(
+        private servicioRadicar: RadicarService,
+        private servicioPDF: PdfService,
+        private servicioGestor: GestorService,
+        private servicioUtilidades: UtilidadesService
+    ) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
-        throw new Error('Method not implemented.');
+        const documento = new jsPDF({ format: 'letter' });
+        const { radicado } = this.servicioGestor.infoSolicitud.datosComunSolicitud;
+        const [dia, mes, año] = this.servicioGestor.conceptoComite.fechaAval.split('/');
+        const mesEnLetras = this.servicioUtilidades.obtenerMesEnLetras(Number(mes));
+
+        const asunto = `Asunto: Respuesta a Solicitud ${radicado} de homologación de asignaturas\n`;
+        const cuerpo = `Reciba un cordial saludo. Me dirijo a usted para informar que en la sesión del ${dia} de ${mesEnLetras} de ${año}, el Comité de Programa revisó su solicitud con radicado ${radicado}, referente a la homologación de asignaturas, decidiendo **NO AVALAR** la solicitud. A continuación se expone el concepto:`;
+        const concepto = `\n${this.servicioGestor.conceptoComite.conceptoComite}`;
+        const remitente = `${this.servicioGestor.coordinador.nombre.toUpperCase()}\nCoordinador(a) Maestría en Computación`;
+
+        let cursorY = this.servicioPDF.agregarContenidoComun(documento, marcaDeAgua, 'solicitante');
+        cursorY = this.servicioPDF.agregarAsuntoYSolicitud(documento, cursorY, asunto, cuerpo, marcaDeAgua);
+        cursorY = this.servicioPDF.agregarTexto(documento, { text: concepto, startY: cursorY, alignment: 'justify' });
+        cursorY = this.servicioPDF.agregarDespedida(documento, cursorY + 5, marcaDeAgua, 'respuesta');
+        cursorY = this.servicioPDF.agregarTexto(documento, {
+            text: remitente,
+            startY: cursorY + 10,
+            watermark: marcaDeAgua,
+        });
+
+        return documento;
     }
 }
 
 export class OficioConcejoHomologAsignaturasPos implements DocumentoPDFStrategy {
-    constructor(private servicioRadicar: RadicarService, private servicioPDF: PdfService) {}
+    constructor(
+        private servicioRadicar: RadicarService,
+        private servicioPDF: PdfService,
+        private servicioGestor: GestorService,
+        private servicioUtilidades: UtilidadesService
+    ) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
-        throw new Error('Method not implemented.');
+        const documento = new jsPDF({ format: 'letter' });
+        const [dia, mes, año] = this.servicioGestor.conceptoComite.fechaAval.split('/');
+        const mesEnLetras = this.servicioUtilidades.obtenerMesEnLetras(Number(mes));
+        const { nombreSolicitante, apellidoSolicitante, numeroIdentSolicitante, tipoIdentSolicitante } =
+            this.servicioGestor.infoSolicitud.datosComunSolicitud;
+
+        const asunto = `Asunto: Solicitud de Homologación de asignaturas para el/la estudiante ${nombreSolicitante} ${apellidoSolicitante}\n`;
+        const cuerpo = `Estimado ${
+            this.servicioGestor.decano.nombre.split(' ')[0]
+        }, reciba un cordial saludo. Me dirijo a usted para informar que el ${dia} de ${mesEnLetras} de ${año}, el Comité de Programa avaló la homologación de las asignaturas cursadas por el/la estudiante ${nombreSolicitante.toUpperCase()} ${apellidoSolicitante.toUpperCase()}, identificado con ${tipoIdentSolicitante}.${numeroIdentSolicitante} en el programa de ${
+            this.servicioGestor.infoSolicitud.datosSolicitudHomologacion.programaProcedencia
+        } (${
+            this.servicioGestor.infoSolicitud.datosSolicitudHomologacion.institutoProcedencia
+        }). Agradezco su colaboración en las gestiones necesarias para el registro de dichas homologaciones.`;
+        const remitente = `${this.servicioGestor.coordinador.nombre.toUpperCase()}\nCoordinador(a) Maestría en Computación`;
+
+        let cursorY = this.servicioPDF.agregarContenidoComun(documento, marcaDeAgua, 'consejo');
+        cursorY = this.servicioPDF.agregarAsuntoYSolicitud(documento, cursorY, asunto, cuerpo, marcaDeAgua);
+
+        const encabezados = ['No.', 'Asignatura', 'Créditos', 'Intensidad (h/semana)', 'Calificación'];
+        const datosTabla = this.servicioGestor.conceptoComite.asignaturasHomologadas
+            .filter((item) => item.aprobado)
+            .map((item, index) => [
+                (index + 1).toString(),
+                item.nombreAsignatura,
+                item.creditos.toString(),
+                item.intensidadHoraria.toString(),
+                item.calificacion.toString(),
+            ]);
+
+        cursorY = this.servicioPDF.agregarTablaPersonalizada(documento, cursorY, encabezados, datosTabla, marcaDeAgua);
+        cursorY = this.servicioPDF.agregarDespedida(documento, cursorY + 5, marcaDeAgua);
+        cursorY = this.servicioPDF.agregarTexto(documento, {
+            text: remitente,
+            startY: cursorY + 10,
+            watermark: marcaDeAgua,
+        });
+
+        return documento;
     }
 }
 
 export class RespuestaConcejoHomologAsignaturasPos implements DocumentoPDFStrategy {
-    constructor(private servicioRadicar: RadicarService, private servicioPDF: PdfService) {}
+    constructor(
+        private servicioRadicar: RadicarService,
+        private servicioPDF: PdfService,
+        private servicioGestor: GestorService,
+        private servicioUtilidades: UtilidadesService
+    ) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
-        throw new Error('Method not implemented.');
+        const documento = new jsPDF({ format: 'letter' });
+        const { radicado } = this.servicioGestor.infoSolicitud.datosComunSolicitud;
+        const [dia, mes, año] = this.servicioGestor.conceptoConsejo.fechaAval.split('/');
+        const mesEnLetras = this.servicioUtilidades.obtenerMesEnLetras(Number(mes));
+
+        const asunto = `Asunto: Respuesta a Solicitud ${radicado} de homologación de asignaturas\n`;
+        const cuerpo = `Reciba un cordial saludo. Me dirijo a usted para informar que el ${dia} de ${mesEnLetras} de ${año}, se recibió la respuesta del Consejo de Facultad referente a su solicitud con radicado ${radicado}. El Consejo ${
+            this.servicioGestor.conceptoConsejo.avaladoConcejo === 'Si' ? 'aprueba' : 'no aprueba'
+        } su solicitud bajo el siguiente concepto:`;
+        const concepto = this.servicioGestor.conceptoConsejo.conceptoConcejo;
+        const remitente = `${this.servicioGestor.coordinador.nombre.toUpperCase()}\nCoordinador(a) Maestría en Computación`;
+
+        let cursorY = this.servicioPDF.agregarContenidoComun(documento, marcaDeAgua, 'solicitante');
+        cursorY = this.servicioPDF.agregarAsuntoYSolicitud(documento, cursorY, asunto, cuerpo, marcaDeAgua);
+        cursorY = this.servicioPDF.agregarTexto(documento, {
+            text: concepto,
+            startY: cursorY + 5,
+            alignment: 'justify',
+            watermark: marcaDeAgua,
+        });
+        cursorY = this.servicioPDF.agregarDespedida(documento, cursorY + 5, marcaDeAgua, 'respuesta');
+        cursorY = this.servicioPDF.agregarTexto(documento, {
+            text: remitente,
+            startY: cursorY + 10,
+            watermark: marcaDeAgua,
+        });
+
+        return documento;
     }
 }

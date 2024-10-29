@@ -1,3 +1,4 @@
+import { AprobarAsignaturasExt, AprobarAvalComite, AprobarHomologacion } from '../indiceModelos';
 import { AprobarAsignaturas } from './aprobarAsignaturas';
 
 export class SolicitudEnConcejoResponse {
@@ -10,7 +11,11 @@ export class SolicitudEnConcejoResponse {
             obj['numeroActa'],
             obj['fechaAval'],
             obj['documentosConcejo'],
-            obj['asignaturasAprobadas']
+            obj['asignaturasAprobadas'],
+            obj['asignaturasHomologadas'],
+            obj['asignaturasOtroPrograma'],
+            obj['avalActPracticaDocente'],
+            obj['reconocimientoCreditosPD']
         );
     }
 
@@ -22,6 +27,10 @@ export class SolicitudEnConcejoResponse {
         public numeroActa: string,
         public fechaAval: string,
         public documentosConcejo: string[],
-        public asignaturasAprobadas: AprobarAsignaturas[]
+        public asignaturasAprobadas: AprobarAsignaturas[],
+        public asignaturasHomologadas: AprobarHomologacion[],
+        public asignaturasOtroPrograma: AprobarAsignaturasExt[],
+        public avalActPracticaDocente: AprobarAvalComite[],
+        public reconocimientoCreditosPD: AprobarAvalComite[]
     ) {}
 }

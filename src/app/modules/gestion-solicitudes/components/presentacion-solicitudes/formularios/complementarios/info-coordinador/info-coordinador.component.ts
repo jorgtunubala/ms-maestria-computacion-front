@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import { RadicarService } from 'src/app/modules/gestion-solicitudes/services/radicar.service';
 
@@ -11,13 +11,17 @@ import { RadicarService } from 'src/app/modules/gestion-solicitudes/services/rad
 export class InfoCoordinadorComponent implements OnInit {
     formInfoCoordinador: FormGroup;
     showWarning: boolean = false; // Flag para mostrar advertencia
+    pronombres: string[];
 
-    constructor(private fb: FormBuilder, private radicar: RadicarService, public ref: DynamicDialogRef) {}
+    constructor(private fb: FormBuilder, private radicar: RadicarService, public ref: DynamicDialogRef) {
+        this.pronombres = ['el', 'ella'];
+    }
 
     ngOnInit(): void {
         this.formInfoCoordinador = this.fb.group({
             nombreCompleto: ['', Validators.required],
             titulo: ['', Validators.required],
+            pronombre: ['', this.customValidator()],
         });
 
         // Verificar si ya hay datos en el servicio
@@ -31,6 +35,16 @@ export class InfoCoordinadorComponent implements OnInit {
 
         // Establecer el formulario en el servicio para compartirlo
         this.radicar.formInfoCoordinador = this.formInfoCoordinador;
+    }
+
+    customValidator() {
+        return (control: AbstractControl) => {
+            const tipoSeleccionado: string = control.value;
+            if (!tipoSeleccionado || tipoSeleccionado === '') {
+                return { tipoInvalido: true };
+            }
+            return null;
+        };
     }
 
     obtenerEstadoFormulario(): boolean {

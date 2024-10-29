@@ -8,7 +8,7 @@
             padding: 10px;
         "
     >
-        <div class="col-12 md:col-10">
+        <div class="col-12 md:col-8">
             <span class="p-float-label mt-3">
                 <input formControlName="nombreCompleto" class="w-full" id="nombreCoordinador" type="text" pInputText />
                 <label for="nombreCoordinador">Nombre Completo</label>
@@ -18,6 +18,19 @@
             <span class="p-float-label mt-3">
                 <input formControlName="titulo" class="w-full" id="tituloCoordinador" type="text" pInputText />
                 <label for="tituloCoordinador">Título Académico</label>
+            </span>
+        </div>
+
+        <div class="col-12 md:col-2">
+            <span class="p-float-label mt-3">
+                <p-dropdown
+                    formControlName="pronombre"
+                    inputId="tipoCongreso"
+                    [autoDisplayFirst]="false"
+                    [options]="pronombres"
+                    [style]="{ width: '100%' }"
+                ></p-dropdown>
+                <label for="tipoCongreso">Pronombre</label>
             </span>
         </div>
     </div>

@@ -131,7 +131,8 @@ export class OficioConcejoAvalPracticaDocente implements DocumentoPDFStrategy {
     constructor(private servicioRadicar: RadicarService, private servicioPDF: PdfService) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
-        throw new Error('Method not implemented.');
+        const documento = new jsPDF({ format: 'letter' });
+        return documento;
     }
 }
 
@@ -139,6 +140,7 @@ export class RespuestaConcejoAvalPracticaDocente implements DocumentoPDFStrategy
     constructor(private servicioRadicar: RadicarService, private servicioPDF: PdfService) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
-        throw new Error('Method not implemented.');
+        const documento = new jsPDF({ format: 'letter' });
+        return documento;
     }
 }
