@@ -1,9 +1,16 @@
 <form [formGroup]="formApoyoPagoPublic">
     <div class="grid p-fluid">
-        <div class="col-12 md:col-9">
+        <div class="col-12 md:col-5">
             <span class="p-float-label mt-3">
-                <input formControlName="nombreCongreso" class="w-full" id="nomCongreso" type="text" pInputText />
-                <label for="nomCongreso">Nombre del evento</label>
+                <input formControlName="nombreCongreso" class="w-full" id="nombreCongreso" type="text" pInputText />
+                <label for="nombreCongreso">Nombre del evento</label>
+            </span>
+        </div>
+
+        <div class="col-12 md:col-4">
+            <span class="p-float-label mt-3">
+                <input formControlName="lugarEvento" class="w-full" id="lugarEvento" type="text" pInputText />
+                <label for="lugarEvento">Lugar del evento</label>
             </span>
         </div>
 
@@ -25,12 +32,12 @@
             <span class="p-float-label mt-3">
                 <p-dropdown
                     formControlName="grupoInvestigacion"
-                    inputId="nomgrupivst"
+                    inputId="grupoInvestigacion"
                     [autoDisplayFirst]="false"
                     [options]="listaGruposInvestigacion"
                     [style]="{ width: '100%' }"
                 ></p-dropdown>
-                <label for="nomgrupivst">Grupo de Investigación</label>
+                <label for="grupoInvestigacion">Grupo de Investigación</label>
             </span>
         </div>
 
@@ -38,14 +45,14 @@
             <span class="p-float-label mt-3">
                 <p-inputNumber
                     formControlName="valorApoyo"
-                    inputId="valorapoyo"
+                    inputId="valorApoyo"
                     [minFractionDigits]="2"
                     prefix="COP "
                     [style]="{ width: '100%' }"
                 >
                 </p-inputNumber>
 
-                <label for="valorapoyo">Valor del Apoyo</label>
+                <label for="valorApoyo">Valor del Apoyo</label>
             </span>
         </div>
 
@@ -76,17 +83,26 @@
             </span>
         </div>
 
-        <div class="col-12 md:col-4">
+        <div class="col-12">
             <span class="p-float-label mt-3">
-                <input formControlName="cedulaEnBanco" class="w-full" id="cedubanco" type="text" pInputText />
-                <label for="cedubanco">Número de Cédula Asociada</label>
+                <input formControlName="direccionRecidencia" class="w-full" id="direccion" type="text" pInputText />
+                <label for="direccion">Dirección y Ciudad de Residencia </label>
             </span>
         </div>
 
-        <div class="col-12 md:col-8">
+        <div class="col-12">
             <span class="p-float-label mt-3">
-                <input formControlName="direccionRecidencia" class="w-full" id="direccion" type="text" pInputText />
-                <label for="direccion">Dirección de Residencia</label>
+                <textarea
+                    formControlName="infoDePago"
+                    id="infoDePagoFactura"
+                    [rows]="5"
+                    pInputTextarea
+                    spellcheck="true"
+                    class="w-full"
+                ></textarea>
+                <label for="infoDePagoFactura"
+                    >Información de pago de la factura (forma de pago o intrucciones especiales)</label
+                >
             </span>
         </div>
     </div>

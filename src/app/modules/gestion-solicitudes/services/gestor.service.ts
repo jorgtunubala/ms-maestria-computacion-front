@@ -1,7 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpService } from './http.service';
 import { Observable, of, Subject, tap } from 'rxjs';
-import { SolicitudEnComiteResponse, SolicitudEnConcejoResponse, SolicitudRecibida } from '../models/indiceModelos';
+import {
+    InformacionRoles,
+    SolicitudEnComiteResponse,
+    SolicitudEnConcejoResponse,
+    SolicitudRecibida,
+} from '../models/indiceModelos';
 import { DatosSolicitudRequest } from '../models/solicitudes/datosSolicitudRequest';
 
 interface InfoDecano {
@@ -29,8 +34,8 @@ export class GestorService {
     //asignaturasAceptadasComite: any[];
     //asignaturasAceptadasConsejo: any[];
 
-    decano: InfoDecano = { nombre: 'Alejandro Toledo Tovar', titulo: 'Magister' };
-    coordinador: InfoCoordinador = { nombre: 'Hugo Armando Ordoñez Erazo', titulo: 'Doctor' };
+    InfoDecano: InformacionRoles;
+    InfoCoordinador: InformacionRoles;
 
     solicitudesTutorDirectorCache: SolicitudRecibida[] = [];
     solicitudesCoordinadorCache: SolicitudRecibida[] = [];
@@ -40,7 +45,10 @@ export class GestorService {
     private cacheTimestamps: { [filtro: string]: number } = {};
     private cacheTTL: number = 10 * 60 * 1000; // Tiempo de vida del caché (10 minutos)
 
-    constructor(private http: HttpService) {}
+    constructor(private http: HttpService) {
+        this.cargarInfoDeRol('Presidente', 'InfoDecano');
+        this.cargarInfoDeRol('Coordinador', 'InfoCoordinador');
+    }
 
     // Obtiene las solicitudes de tutor o director, usando caché si es posible.
     obtenerSolicitudesTutorDirector(correoUsuario: string): Observable<SolicitudRecibida[]> {
@@ -138,6 +146,19 @@ export class GestorService {
         return this.solicitudSeleccionada;
     }
     */
+
+    private cargarInfoDeRol(rol: string, propiedad: 'InfoDecano' | 'InfoCoordinador'): void {
+        this.http.consultarInfoDeRolExterno(rol).subscribe(
+            (data: InformacionRoles) => {
+                if (data) {
+                    this[propiedad] = data;
+                }
+            },
+            (error) => {
+                console.error(`Error al obtener la información de ${rol.toLowerCase()}:`, error);
+            }
+        );
+    }
 }
 
 //CODIGO ANTIGUO - ELIMINAR EN CASAO DE QUE FUNCIONE LO DE ARRIBA

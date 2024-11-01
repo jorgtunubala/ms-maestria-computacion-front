@@ -56,7 +56,9 @@ export class RespuestaComiteAdicionAsignaturas implements DocumentoPDFStrategy {
         const asunto = `Asunto: Respuesta a Solicitud ${radicado} de Adición de Asignaturas\n`;
         const cuerpo = `Reciba un cordial saludo. Me dirijo a usted para informar que en la sesión del ${dia} de ${mesEnLetras} de ${año}, el Comité de Programa revisó su solicitud con radicado ${radicado}, referente a la Adición de Asignaturas, decidiendo **NO AVALAR** la solicitud. A continuación se expone el concepto:`;
         const concepto = `\n${this.servicioGestor.conceptoComite.conceptoComite}`;
-        const remitente = `${this.servicioGestor.coordinador.nombre.toUpperCase()}\nCoordinador(a) Maestría en Computación`;
+        const remitente = `${this.servicioGestor.InfoCoordinador.nombreCompleto.toUpperCase()}\n${
+            this.servicioGestor.InfoCoordinador.tratamiento == 'sr.' ? 'Coordinador' : 'Coordinadora'
+        } Maestría en Computación`;
 
         let cursorY = this.servicioPDF.agregarContenidoComun(documento, marcaDeAgua, 'solicitante');
         cursorY = this.servicioPDF.agregarAsuntoYSolicitud(documento, cursorY, asunto, cuerpo, marcaDeAgua);
@@ -89,10 +91,12 @@ export class OficioConcejoAdicionAsignaturas implements DocumentoPDFStrategy {
             this.servicioGestor.infoSolicitud.datosComunSolicitud;
 
         const asunto = `Asunto: Solicitud de Adición de Asignaturas para el/la estudiante ${nombreSolicitante} ${apellidoSolicitante}\n`;
-        const cuerpo = `Estimado ${
-            this.servicioGestor.decano.nombre.split(' ')[0]
+        const cuerpo = `${this.servicioGestor.InfoDecano.tratamiento == 'sr.' ? 'Estimado' : 'Estimada'} ${
+            this.servicioGestor.InfoDecano.nombreCompleto.split(' ')[0]
         }, reciba un cordial saludo. Me dirijo a usted para informar que el ${dia} de ${mesEnLetras} de ${año}, el Comité de Programa avaló la adición de las asignaturas para el/la estudiante ${nombreSolicitante.toUpperCase()} ${apellidoSolicitante.toUpperCase()}, identificado con ${tipoIdentSolicitante} ${numeroIdentSolicitante}. Agradezco su colaboración en las gestiones necesarias para el registro de dichas adiciones.`;
-        const remitente = `${this.servicioGestor.coordinador.nombre.toUpperCase()}\nCoordinador(a) Maestría en Computación`;
+        const remitente = `${this.servicioGestor.InfoCoordinador.nombreCompleto.toUpperCase()}\n${
+            this.servicioGestor.InfoCoordinador.tratamiento == 'sr.' ? 'Coordinador' : 'Coordinadora'
+        } Maestría en Computación`;
 
         let cursorY = this.servicioPDF.agregarContenidoComun(documento, marcaDeAgua, 'consejo');
         cursorY = this.servicioPDF.agregarAsuntoYSolicitud(documento, cursorY, asunto, cuerpo, marcaDeAgua);
@@ -134,7 +138,9 @@ export class RespuestaConcejoAdicionAsignaturas implements DocumentoPDFStrategy 
             this.servicioGestor.conceptoConsejo.avaladoConcejo === 'Si' ? 'aprueba' : 'no aprueba'
         } su solicitud bajo el siguiente concepto:`;
         const concepto = this.servicioGestor.conceptoConsejo.conceptoConcejo;
-        const remitente = `${this.servicioGestor.coordinador.nombre.toUpperCase()}\nCoordinador(a) Maestría en Computación`;
+        const remitente = `${this.servicioGestor.InfoCoordinador.nombreCompleto.toUpperCase()}\n${
+            this.servicioGestor.InfoCoordinador.tratamiento == 'sr.' ? 'Coordinador' : 'Coordinadora'
+        } Maestría en Computación`;
 
         let cursorY = this.servicioPDF.agregarContenidoComun(documento, marcaDeAgua, 'solicitante');
         cursorY = this.servicioPDF.agregarAsuntoYSolicitud(documento, cursorY, asunto, cuerpo, marcaDeAgua);

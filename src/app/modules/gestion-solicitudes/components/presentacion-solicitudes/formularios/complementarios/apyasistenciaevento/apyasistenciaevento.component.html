@@ -1,14 +1,21 @@
 <form [formGroup]="this.radicar.formApoyoAsistEvento">
     <p-fieldset legend="Información para apoyo económico" styleClass="bg-bluegray-50">
         <div class="grid p-fluid">
-            <div class="col-12 md:col-6">
+            <div class="col-12 md:col-4">
                 <span class="p-float-label mt-3">
                     <input formControlName="nombreCongreso" class="w-full" id="nomCongreso" type="text" pInputText />
-                    <label for="nomCongreso">Nombre del congreso</label>
+                    <label for="nomCongreso">Nombre del evanto</label>
                 </span>
             </div>
 
-            <div class="col-12 lg:col-3">
+            <div class="col-12 md:col-3">
+                <span class="p-float-label mt-3">
+                    <input formControlName="lugarCongreso" class="w-full" id="lugarCongreso" type="text" pInputText />
+                    <label for="lugarCongreso">Lugar del evento</label>
+                </span>
+            </div>
+
+            <div class="col-12 lg:col-2">
                 <span class="p-float-label mt-3">
                     <p-dropdown
                         formControlName="tipoCongreso"
@@ -17,7 +24,7 @@
                         [options]="tiposCongreso"
                         [style]="{ width: '100%' }"
                     ></p-dropdown>
-                    <label for="tipoCongreso">Tipo de congreso</label>
+                    <label for="tipoCongreso">Tipo de evento</label>
                 </span>
             </div>
 

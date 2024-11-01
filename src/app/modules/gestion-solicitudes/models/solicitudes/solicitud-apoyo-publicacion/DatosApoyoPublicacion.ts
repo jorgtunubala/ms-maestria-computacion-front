@@ -16,7 +16,10 @@ export class DatosApoyoPublicacion {
             obj['numeroCuenta'],
             obj['numeroCedulaAsociada'],
             obj['direccionResidencia'],
-            obj['documentosAdjuntos']
+            obj['documentosAdjuntos'],
+            obj['informacionPago'],
+            obj['nombreRevista'],
+            obj['lugarEvento']
         );
     }
 
@@ -36,6 +39,9 @@ export class DatosApoyoPublicacion {
         public numeroCuenta: string,
         public numeroCedulaAsociada: string,
         public direccionResidencia: string,
-        public documentosAdjuntos: string[]
+        public documentosAdjuntos: string[],
+        public informacionPago: string,
+        public nombreRevista: string,
+        public lugarEvento: string
     ) {}
 }

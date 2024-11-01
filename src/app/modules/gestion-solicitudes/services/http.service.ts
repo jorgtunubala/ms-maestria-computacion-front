@@ -17,6 +17,7 @@ import {
     SolicitudEnComiteResponse,
     SolicitudEnConcejoResponse,
     EnvioCorreoRequest,
+    InformacionRoles,
 } from '../models/indiceModelos';
 import { InfoPersonalResponse } from '../models/solicitante/infoPersonalResponse';
 import { DatosSolicitudRequest } from '../models/solicitudes/datosSolicitudRequest';
@@ -151,12 +152,26 @@ export class HttpService {
     }
 
     enviarCorreo(objeto: EnvioCorreoRequest): Observable<any> {
-        const url = `${httpConfig.apiCorreo}${httpConfig.enviarCorreo}`;
+        const url = `${httpConfig.apiGesion}${httpConfig.enviarCorreo}`;
         return this.http.post(url, objeto).pipe(catchError(this.manejarError));
     }
 
     cambiarEstadoSolicitud(id: number, nuevoEstado: string): Observable<any> {
         const url = `${this.apiUrl}${httpConfig.cambiarEstado}${id}/${nuevoEstado}`;
         return this.http.post(url, null).pipe(catchError(this.manejarError));
+    }
+
+    consultarInfoDeRolExterno(rol: string) {
+        const url = `${httpConfig.apiGesion}${httpConfig.consultarInfoRolExterno}${rol}`;
+        return this.http.get<InformacionRoles>(url).pipe(
+            map((respuesta) => respuesta),
+            catchError(this.manejarError)
+        );
+    }
+
+    guardarInfoDeRolExterno(objeto: InformacionRoles): Observable<any> {
+        console.log(objeto);
+        const url = `${httpConfig.apiGesion}${httpConfig.guardarInfoRolExterno}`;
+        return this.http.post(url, objeto).pipe(catchError(this.manejarError));
     }
 }

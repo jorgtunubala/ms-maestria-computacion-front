@@ -103,9 +103,7 @@
                             ></button>
                         </ng-container>
 
-                        <ng-container
-                            *ngIf="['RE_CRED_PAS', 'RE_CRED_DIS'].includes(solicitudSeleccionada.codigoSolicitud)"
-                        >
+                        <ng-container *ngIf="enlacesAdjuntos">
                             <ng-container *ngFor="let enlace of enlacesAdjuntos">
                                 <button
                                     pButton

@@ -24,7 +24,7 @@ export class SolicitudAvalPasantia implements DocumentoPDFStrategy {
             this.servicioRadicar.fechasEstancia[0],
             this.servicioRadicar.fechasEstancia[1]
         );
-        const textSolicitud = `Reciban cordial saludo, comedidamente me dirijo a ustedes con el fin de solicitar el aval para la realización de una estancia de investigación en ${this.servicioRadicar.lugarEstancia} en el periodo comprendido entre las fechas: ${rangoFechas}. Adjunto a esta solicitud la documentación y formatos requeridos para su revisión.`;
+        const textSolicitud = `Reciban un cordial saludo. Me dirijo a ustedes con el fin de solicitar el aval para la realización de una estancia de investigación en la ${this.servicioRadicar.UniversidadExternaPasantia}, ${this.servicioRadicar.lugarEstancia}, durante el periodo comprendido entre el ${rangoFechas}.\n\nLa estancia se llevará a cabo con la colaboración del ${this.servicioRadicar.grupoInvestigacionExternoPanatia} de la ${this.servicioRadicar.UniversidadExternaPasantia}, bajo la supervisión del docente ${this.servicioRadicar.docenteExternoPas}. Adjunto a esta solicitud la documentación y formatos requeridos para su revisión.`;
 
         // Adjuntos
         const textAdjuntos = `${this.servicioRadicar.obtenerNombreArchivosAdjuntos()}`;
@@ -69,10 +69,12 @@ export class RespuestaComiteAvalPasantia implements DocumentoPDFStrategy {
         const fechaComite = this.servicioGestor.conceptoComite.fechaAval.split('/');
         const mesEnLetras = this.servicioUtilidades.obtenerMesEnLetras(Number(fechaComite[1]));
 
-        const txtAsunto = `Asunto: Respuesta a Solicitud ${radicado} de Aval para realización de Pasantia de Investigación\n`;
-        const txtCuerpo = `Reciba un cordial saludo. Por medio de la presente me dirijo a usted con el fin de informar que en sesión del día ${fechaComite[0]} de ${mesEnLetras} de ${fechaComite[2]} el Comité de Programa revisó su solicitud con radicado ${radicado} referente al Avalr para la realización de una Pasantia de Investigación, decidiendo NO AVALAR la solicitud y emite el siguiente concepto:`;
+        const txtAsunto = `Asunto: Respuesta a Solicitud ${radicado} de Aval para realización de Pasantía de Investigación\n`;
+        const txtCuerpo = `Reciba un cordial saludo. Por medio de la presente me dirijo a usted con el fin de informar que en sesión del día ${fechaComite[0]} de ${mesEnLetras} de ${fechaComite[2]} el Comité de Programa revisó su solicitud con radicado ${radicado} referente al Aval para la realización de una Pasantía de Investigación, decidiendo **NO AVALAR** la solicitud y emite el siguiente concepto:`;
         const txtConcepto = `\n${this.servicioGestor.conceptoComite.conceptoComite}`;
-        const txtRemitente = `${this.servicioGestor.coordinador.nombre.toUpperCase()}\nCoordinador(a) Maestría en Computación`;
+        const txtRemitente = `${this.servicioGestor.InfoCoordinador.nombreCompleto.toUpperCase()}\n${
+            this.servicioGestor.InfoCoordinador.tratamiento == 'sr.' ? 'Coordinador' : 'Coordinadora'
+        } Maestría en Computación`;
 
         let posicionY = this.servicioPDF.agregarContenidoComun(documento, marcaDeAgua, 'solicitante');
         posicionY = this.servicioPDF.agregarAsuntoYSolicitud(documento, posicionY, txtAsunto, txtCuerpo, marcaDeAgua);
@@ -111,17 +113,19 @@ export class OficioConcejoAvalPasantia implements DocumentoPDFStrategy {
         const fechaComite = this.servicioGestor.conceptoComite.fechaAval.split('/');
         const mesEnLetras = this.servicioUtilidades.obtenerMesEnLetras(Number(fechaComite[1]));
 
-        const textAsunto = `Asunto: Solicitud Aval Académico para realizacion de Pasantia estudiante ${this.servicioGestor.infoSolicitud.datosComunSolicitud.nombreSolicitante} ${this.servicioGestor.infoSolicitud.datosComunSolicitud.apellidoSolicitante} \n`;
-        const textCuerpo = `Estimado ${
-            this.servicioGestor.decano.nombre.split(' ')[0]
+        const textAsunto = `Asunto: Solicitud Aval Académico para realización de Pasantía del estudiante ${this.servicioGestor.infoSolicitud.datosComunSolicitud.nombreSolicitante} ${this.servicioGestor.infoSolicitud.datosComunSolicitud.apellidoSolicitante} \n`;
+        const textCuerpo = `${this.servicioGestor.InfoDecano.tratamiento == 'sr.' ? 'Estimado' : 'Estimada'} ${
+            this.servicioGestor.InfoDecano.nombreCompleto.split(' ')[0]
         }, reciba cordial saludo. Comedidamente me dirijo a usted con el fin informar que en sesión del día ${
             fechaComite[0]
         } de ${mesEnLetras} de ${
             fechaComite[2]
-        } el Comité de Programa avaló la solicitud presentada por el/la estudiante ${this.servicioGestor.infoSolicitud.datosComunSolicitud.nombreSolicitante.toUpperCase()} ${this.servicioGestor.infoSolicitud.datosComunSolicitud.apellidoSolicitante.toUpperCase()} para la realizacion de una Pasantia de Investigacione en ${
+        } el Comité de Programa avaló la solicitud presentada por el/la estudiante ${this.servicioGestor.infoSolicitud.datosComunSolicitud.nombreSolicitante.toUpperCase()} ${this.servicioGestor.infoSolicitud.datosComunSolicitud.apellidoSolicitante.toUpperCase()} para la realización de una Pasantía de Investigación en ${
             this.servicioGestor.infoSolicitud.datoAvalPasantiaInv.lugarPasantia
-        } a llevarse a cabo del ${fechaInicio} al ${fechaFin}. Por lo tanto, muy formalmente solicito su colaboración para realizar las gestiones necesarias para la obtencion del aval acedemico y el aval de la ORI.`;
-        const txtRemitente = `${this.servicioGestor.coordinador.nombre.toUpperCase()}\nCoordinador(a) Maestría en Computación`;
+        } a llevarse a cabo del ${fechaInicio} al ${fechaFin}. Por lo tanto, muy formalmente solicito su colaboración para realizar las gestiones necesarias para la obtención del aval académico y el aval de la ORI.`;
+        const txtRemitente = `${this.servicioGestor.InfoCoordinador.nombreCompleto.toUpperCase()}\n${
+            this.servicioGestor.InfoCoordinador.tratamiento == 'sr.' ? 'Coordinador' : 'Coordinadora'
+        } Maestría en Computación`;
 
         let posicionY = this.servicioPDF.agregarContenidoComun(documento, marcaDeAgua, 'consejo');
         posicionY = this.servicioPDF.agregarAsuntoYSolicitud(documento, posicionY, textAsunto, textCuerpo, marcaDeAgua);
@@ -153,18 +157,20 @@ export class RespuestaConcejoAvalPasantia implements DocumentoPDFStrategy {
         const fechaConcejo = this.servicioGestor.conceptoConsejo.fechaAval.split('/');
         const mesEnLetras = this.servicioUtilidades.obtenerMesEnLetras(Number(fechaConcejo[1]));
 
-        const txtAsunto = `Asunto: Respuesta a Solicitud ${radicado} de Aval para realización de Pasantia de Investigación\n`;
+        const txtAsunto = `Asunto: Respuesta a Solicitud ${radicado} de Aval para realización de Pasantía de Investigación\n`;
         const txtCuerpo = `Reciba un cordial saludo. Por medio de la presente me dirijo a usted con el fin de informar que el día ${
             fechaConcejo[0]
         } de ${mesEnLetras} de ${
             fechaConcejo[2]
-        } se recibio respuesta del Concejo de Facultad referente a su solicitud ${radicado} de Aval para realización de Pasantia de Investigación, ${
+        }, se recibió respuesta del Consejo de Facultad referente a su solicitud ${radicado} de Aval para realización de Pasantía de Investigación. ${
             this.servicioGestor.conceptoConsejo.avaladoConcejo === 'Si'
-                ? 'El Consejo decide aprobar su solicitud bajo el siguiente concepto'
-                : 'El Consejo decide no aprobar su solicitud bajo el siguiente concepto'
-        }.`;
+                ? 'El Consejo decide aprobar su solicitud bajo el siguiente concepto:'
+                : 'El Consejo decide no aprobar su solicitud bajo el siguiente concepto:'
+        }`;
         const txtConcepto = `${this.servicioGestor.conceptoConsejo.conceptoConcejo}`;
-        const txtRemitente = `${this.servicioGestor.coordinador.nombre.toUpperCase()}\nCoordinador(a) Maestría en Computación`;
+        const txtRemitente = `${this.servicioGestor.InfoCoordinador.nombreCompleto.toUpperCase()}\n${
+            this.servicioGestor.InfoCoordinador.tratamiento == 'sr.' ? 'Coordinador' : 'Coordinadora'
+        } Maestría en Computación`;
 
         let posicionY = this.servicioPDF.agregarContenidoComun(documento, marcaDeAgua, 'solicitante');
         posicionY = this.servicioPDF.agregarAsuntoYSolicitud(documento, posicionY, txtAsunto, txtCuerpo, marcaDeAgua);

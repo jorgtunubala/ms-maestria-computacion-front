@@ -47,3 +47,4 @@ export { EnvioCorreoRequest } from './gestion/envioCorreo';
 export { AprobarHomologacion } from './gestion/aprobarHomologacion';
 export { AprobarAsignaturasExt } from './gestion/aprobarAsignaturasExt';
 export { AprobarAvalComite } from './gestion/aprobarAvalComite';
+export { InformacionRoles } from './gestion/InformacionRoles';

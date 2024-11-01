@@ -1,6 +1,6 @@
 <form [formGroup]="formApoyoPagoPublic">
     <div class="grid p-fluid">
-        <div class="col-12 lg:col-8">
+        <div class="col-12 lg:col-5">
             <span class="p-float-label mt-3">
                 <input
                     formControlName="tituloPublicacion"
@@ -10,6 +10,13 @@
                     pInputText
                 />
                 <label for="tituloPublicacion">Título de la publicación</label>
+            </span>
+        </div>
+
+        <div class="col-12 lg:col-3">
+            <span class="p-float-label mt-3">
+                <input formControlName="nombreRevista" class="w-full" id="nombreRevista" type="text" pInputText />
+                <label for="nombreRevista">Nombre de Revista/Libro (opcional)</label>
             </span>
         </div>
 
@@ -81,17 +88,26 @@
             </span>
         </div>
 
-        <div class="col-12 md:col-4">
+        <div class="col-12">
             <span class="p-float-label mt-3">
-                <input formControlName="cedulaEnBanco" class="w-full" id="cedubanco" type="text" pInputText />
-                <label for="cedubanco">Número de Cédula Asociada</label>
+                <input formControlName="direccionRecidencia" class="w-full" id="direccion" type="text" pInputText />
+                <label for="direccion">Dirección y Ciudad de Residencia</label>
             </span>
         </div>
 
-        <div class="col-12 md:col-8">
+        <div class="col-12">
             <span class="p-float-label mt-3">
-                <input formControlName="direccionRecidencia" class="w-full" id="direccion" type="text" pInputText />
-                <label for="direccion">Dirección de Residencia</label>
+                <textarea
+                    formControlName="infoDePago"
+                    id="infoDePagoFactura"
+                    [rows]="5"
+                    pInputTextarea
+                    spellcheck="true"
+                    class="w-full"
+                ></textarea>
+                <label for="infoDePagoFactura"
+                    >Información de pago de la factura (forma de pago o intrucciones especiales)</label
+                >
             </span>
         </div>
     </div>

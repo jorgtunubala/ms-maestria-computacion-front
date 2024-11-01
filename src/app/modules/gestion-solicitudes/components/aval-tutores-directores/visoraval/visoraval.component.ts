@@ -242,6 +242,8 @@ export class VisoravalComponent implements OnInit {
             procesarDocumentosAdjuntos(actividad.documentos);
             actividad.enlaces?.forEach((enlace) => this.enlacesAdjuntos.push(enlace));
         });
+
+        console.log(this.enlacesAdjuntos);
     }
 
     private verificarRestricciones() {

@@ -542,8 +542,8 @@ export class PdfService {
             textDestinatario = `Señor(a)\n${this.servicioGestor.infoSolicitud.datosComunSolicitud.nombreSolicitante.toUpperCase()} ${this.servicioGestor.infoSolicitud.datosComunSolicitud.apellidoSolicitante.toUpperCase()}\nPrograma de Maestría en Computación\n`;
         } else if (destinatario === 'consejo') {
             textDestinatario = `${
-                this.servicioGestor.decano.titulo
-            }\n${this.servicioGestor.decano.nombre.toUpperCase()}\nPresidente Consejo\nFacultad de Ingeniería Electrónica y Telecomunicaciones\nUniversidad del Cauca\n`;
+                this.servicioGestor.InfoDecano.titulo
+            }\n${this.servicioGestor.InfoDecano.nombreCompleto.toUpperCase()}\nPresidente Consejo\nFacultad de Ingeniería Electrónica y Telecomunicaciones\nUniversidad del Cauca\n`;
         }
         // Agregar el primer bloque de texto dinámico
         let cursorY = this.agregarTexto(doc, {

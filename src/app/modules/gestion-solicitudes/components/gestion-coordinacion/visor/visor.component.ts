@@ -181,6 +181,9 @@ export class VisorComponent implements OnInit, OnDestroy {
             case 'PA_PUBL_EVE':
                 procesarDocumentosAdjuntos(this.datosSolicitud.datosApoyoEconomicoPublicacion.documentosAdjuntos);
                 break;
+            case 'RE_CRED_PR_DOC':
+                this.extraerAdjuntosActividadDocente(procesarDocumentosAdjuntos);
+                break;
             case 'SO_BECA':
             case 'SO_DESC':
             default:

@@ -1,14 +1,20 @@
 <form [formGroup]="formApoyoEconEstancia">
     <p-fieldset legend="Información para apoyo económico" styleClass="bg-bluegray-50">
         <div class="grid p-fluid">
-            <div class="col-12 md:col-6">
+            <div class="col-12 md:col-4">
+                <span class="p-float-label mt-3">
+                    <input formControlName="universidad" class="w-full" id="universidad" type="text" pInputText />
+                    <label for="universidad">Universidad de la estancia</label>
+                </span>
+            </div>
+            <div class="col-12 md:col-4">
                 <span class="p-float-label mt-3">
                     <input formControlName="lugar" class="w-full" id="lugpasantia" type="text" pInputText />
-                    <label for="lugpasantia">Lugar de Estancia</label>
+                    <label for="lugpasantia">Lugar de la estancia (Ciudad - País)</label>
                 </span>
             </div>
 
-            <div class="col-12 md:col-6">
+            <div class="col-12 md:col-4">
                 <span class="p-float-label mt-3">
                     <p-calendar
                         formControlName="fechas"
@@ -35,6 +41,20 @@
                 </span>
             </div>
 -->
+            <div class="col-12 md:col-6">
+                <span class="p-float-label mt-3">
+                    <input formControlName="grupoInvestExt" class="w-full" id="grupoInvestExt" type="text" pInputText />
+                    <label for="grupoInvestExt">Grupo de Investigación Externo</label>
+                </span>
+            </div>
+
+            <div class="col-12 md:col-6">
+                <span class="p-float-label mt-3">
+                    <input formControlName="docenteExterno" class="w-full" id="docenteExterno" type="text" pInputText />
+                    <label for="docenteExterno">Nombre Completo Docente Externo</label>
+                </span>
+            </div>
+
             <div class="col-12">
                 <span class="p-float-label mt-3">
                     <p-dropdown
@@ -91,17 +111,10 @@
                 </span>
             </div>
 
-            <div class="col-12 md:col-4">
-                <span class="p-float-label mt-3">
-                    <input formControlName="cedulaEnBanco" class="w-full" id="cedubanco" type="text" pInputText />
-                    <label for="cedubanco">Número de Cédula Asociada</label>
-                </span>
-            </div>
-
-            <div class="col-12 md:col-8">
+            <div class="col-12">
                 <span class="p-float-label mt-3">
                     <input formControlName="direccionRecidencia" class="w-full" id="direccion" type="text" pInputText />
-                    <label for="direccion">Dirección de Residencia</label>
+                    <label for="direccion">Dirección y Ciudad de Residencia</label>
                 </span>
             </div>
         </div>

@@ -66,6 +66,7 @@ export class RadicarService {
     firmaDirectorY: number = 0;
 
     tipoApoyo: string = null;
+    InfoDePago: string = '';
 
     fechasEstancia: Date[] = [];
     lugarEstancia: string = '';
@@ -73,11 +74,15 @@ export class RadicarService {
     nombreCongreso: string = '';
     tipoCongreso: string = '';
     tituloPublicacion: string = '';
+    nombreRevistaLibro: string = '';
 
     horasIngresadas: number[] = [];
     horasAsignables: number[] = [];
     adjuntosDeActividades: AdjuntosDeActividades = {};
 
+    grupoInvestigacionExternoPanatia: string = '';
+    UniversidadExternaPasantia: string = '';
+    docenteExternoPas: string = '';
     grupoInvestigacion: string = '';
     valorApoyoEcon: number = 0;
     banco: string = '';
@@ -165,6 +170,7 @@ export class RadicarService {
         this.datosAsignaturasAHomologar = [];
         this.datosInstitucionHomologar = { institucion: '', programa: '' };
         //this.semestreAplazamiento = '';
+        this.docenteExternoPas = '';
         this.actividadesReCreditos = [];
         this.actividadesSeleccionadas = [];
         this.numeroInstanciasAsignExterna = 1;
@@ -174,9 +180,13 @@ export class RadicarService {
         this.instanciasAsignAdiCancel = [{}];
         this.datosAsignAdiCancel = [];
         this.tipoApoyo = null;
+        this.InfoDePago = '';
         this.fechasEstancia = [];
+        this.nombreRevistaLibro = '';
         this.lugarEstancia = '';
         this.grupoInvestigacion = '';
+        this.grupoInvestigacionExternoPanatia = '';
+        this.UniversidadExternaPasantia = '';
         this.valorApoyoEcon = 0;
         this.banco = '';
         this.tipoCuenta = '';

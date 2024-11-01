@@ -33,6 +33,7 @@ export class ApyasistenciaeventoComponent implements OnInit {
 
         this.formApoyoAsistEvento = this.fb.group({
             nombreCongreso: ['', Validators.required],
+            lugarCongreso: ['', Validators.required],
             tipoCongreso: ['', this.customValidator()],
             tituloPublicacion: ['', Validators.required],
             grupoInvestigacion: ['', Validators.required],

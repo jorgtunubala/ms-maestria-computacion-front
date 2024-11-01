@@ -106,7 +106,9 @@ export class RespuestaComiteAvalPracticaDocente implements DocumentoPDFStrategy 
                 : 'decidiendo no aprobar su solicitud bajo el siguiente concepto'
         }`;
         const txtConcepto = `\n${this.servicioGestor.conceptoComite.conceptoComite}`;
-        const txtRemitente = `${this.servicioGestor.coordinador.nombre.toUpperCase()}\nCoordinador(a) Maestría en Computación`;
+        const txtRemitente = `${this.servicioGestor.InfoCoordinador.nombreCompleto.toUpperCase()}\n${
+            this.servicioGestor.InfoCoordinador.tratamiento == 'sr.' ? 'Coordinador' : 'Coordinadora'
+        } Maestría en Computación`;
 
         let posicionY = this.servicioPDF.agregarContenidoComun(documento, marcaDeAgua, 'solicitante');
         posicionY = this.servicioPDF.agregarAsuntoYSolicitud(documento, posicionY, txtAsunto, txtCuerpo, marcaDeAgua);
@@ -128,19 +130,93 @@ export class RespuestaComiteAvalPracticaDocente implements DocumentoPDFStrategy 
 }
 
 export class OficioConcejoAvalPracticaDocente implements DocumentoPDFStrategy {
-    constructor(private servicioRadicar: RadicarService, private servicioPDF: PdfService) {}
+    // Se deben incluir todos los servicios que define la fabrica asi no se usen
+    constructor(
+        private servicioRadicar: RadicarService,
+        private servicioPDF: PdfService,
+        private servicioGestor: GestorService,
+        private servicioUtilidades: UtilidadesService
+    ) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
         const documento = new jsPDF({ format: 'letter' });
+
+        const fechaComite = this.servicioGestor.conceptoComite.fechaAval.split('/');
+        const mesEnLetras = this.servicioUtilidades.obtenerMesEnLetras(Number(fechaComite[1]));
+        const { nombreSolicitante, apellidoSolicitante } = this.servicioGestor.infoSolicitud.datosComunSolicitud;
+
+        const textAsunto = `Asunto: Aval para actividades de práctica docente del estudiante ${nombreSolicitante} ${apellidoSolicitante}\n`;
+        const textCuerpo = `${this.servicioGestor.InfoDecano.tratamiento == 'sr.' ? 'Estimado' : 'Estimada'} ${
+            this.servicioGestor.InfoDecano.nombreCompleto.split(' ')[0]
+        }, reciba un cordial saludo. Comedidamente me dirijo a usted para informar que en sesión del día ${
+            fechaComite[0]
+        } de ${mesEnLetras} de ${
+            fechaComite[2]
+        }, el Comité de Programa avaló la solicitud presentada por el/la estudiante ${nombreSolicitante.toUpperCase()} ${apellidoSolicitante.toUpperCase()} para la realización de actividades de práctica docente. Agradezco de antemano su colaboración en las gestiones necesarias para la implementación de dichas actividades.`;
+        const txtRemitente = `${this.servicioGestor.InfoCoordinador.nombreCompleto.toUpperCase()}\n${
+            this.servicioGestor.InfoCoordinador.tratamiento == 'sr.' ? 'Coordinador' : 'Coordinadora'
+        } Maestría en Computación`;
+
+        let posicionY = this.servicioPDF.agregarContenidoComun(documento, marcaDeAgua, 'consejo');
+        posicionY = this.servicioPDF.agregarAsuntoYSolicitud(documento, posicionY, textAsunto, textCuerpo, marcaDeAgua);
+
+        posicionY = this.servicioPDF.agregarDespedida(documento, posicionY + 5, marcaDeAgua);
+        posicionY = this.servicioPDF.agregarTexto(documento, {
+            text: txtRemitente,
+            startY: posicionY + 10,
+            watermark: marcaDeAgua,
+        });
+
         return documento;
     }
 }
 
 export class RespuestaConcejoAvalPracticaDocente implements DocumentoPDFStrategy {
-    constructor(private servicioRadicar: RadicarService, private servicioPDF: PdfService) {}
+    // Se deben incluir todos los servicios que define la fabrica asi no se usen
+    constructor(
+        private servicioRadicar: RadicarService,
+        private servicioPDF: PdfService,
+        private servicioGestor: GestorService,
+        private servicioUtilidades: UtilidadesService
+    ) {}
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
         const documento = new jsPDF({ format: 'letter' });
+
+        const { radicado } = this.servicioGestor.infoSolicitud.datosComunSolicitud;
+        const fechaConcejo = this.servicioGestor.conceptoConsejo.fechaAval.split('/');
+        const mesEnLetras = this.servicioUtilidades.obtenerMesEnLetras(Number(fechaConcejo[1]));
+
+        const txtAsunto = `Asunto: Respuesta a Solicitud ${radicado} de Aval para actividades de práctica docente\n`;
+        const txtCuerpo = `Reciba un cordial saludo. Por medio de la presente me dirijo a usted con el fin de informar que el día ${
+            fechaConcejo[0]
+        } de ${mesEnLetras} de ${
+            fechaConcejo[2]
+        }, se recibió respuesta del Consejo de Facultad referente a su solicitud ${radicado} de aval para actividades de práctica docente. ${
+            this.servicioGestor.conceptoConsejo.avaladoConcejo === 'Si'
+                ? 'El Consejo decide aprobar su solicitud bajo el siguiente concepto:'
+                : 'El Consejo decide no aprobar su solicitud bajo el siguiente concepto:'
+        }`;
+        const txtConcepto = `${this.servicioGestor.conceptoConsejo.conceptoConcejo}`;
+        const txtRemitente = `${this.servicioGestor.InfoCoordinador.nombreCompleto.toUpperCase()}\n${
+            this.servicioGestor.InfoCoordinador.tratamiento == 'sr.' ? 'Coordinador' : 'Coordinadora'
+        } Maestría en Computación`;
+
+        let posicionY = this.servicioPDF.agregarContenidoComun(documento, marcaDeAgua, 'solicitante');
+        posicionY = this.servicioPDF.agregarAsuntoYSolicitud(documento, posicionY, txtAsunto, txtCuerpo, marcaDeAgua);
+        posicionY = this.servicioPDF.agregarTexto(documento, {
+            text: txtConcepto,
+            startY: posicionY + 5,
+            alignment: 'justify',
+            watermark: marcaDeAgua,
+        });
+        posicionY = this.servicioPDF.agregarDespedida(documento, posicionY + 5, marcaDeAgua, 'respuesta');
+        posicionY = this.servicioPDF.agregarTexto(documento, {
+            text: txtRemitente,
+            startY: posicionY + 10,
+            watermark: marcaDeAgua,
+        });
+
         return documento;
     }
 }

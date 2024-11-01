@@ -98,50 +98,6 @@ export class ResumenComponent implements OnInit {
         this.radicar.oficioDeSolicitud = pdfFileSinMarca;
     }
 
-    /*
-    cargarVistaPreviaPDF(codigoSolicitud: string, agregarMarcaDeAgua: boolean) {
-        // Utiliza la fábrica para obtener la estrategia basada en el código de solicitud
-        const estrategia = this.factory.crearEstrategia(codigoSolicitud);
-
-        // Verifica si se encontró una estrategia válida
-        if (!estrategia) {
-            console.error(
-                `No se encontró una estrategia para el código de solicitud: ${codigoSolicitud}`
-            );
-            return;
-        }
-
-        // Genera el documento PDF usando la estrategia
-        const pdfDocConMarca = estrategia.generarDocumento(agregarMarcaDeAgua);
-
-        // Función para crear un archivo PDF y asignar su URL
-        const crearArchivoPDF = (pdfDoc: any, nombreArchivo: string) => {
-            const pdfBlob = pdfDoc.output('blob');
-            const pdfFile = new File([pdfBlob], nombreArchivo, {
-                type: 'application/pdf',
-            });
-            return this.servicioUtilidades.crearUrlSeguroParaPDF(pdfFile);
-        };
-
-        // Genera y asigna el PDF con marca de agua
-        this.urlVistaPreviaSolicitudPDF = crearArchivoPDF(
-            pdfDocConMarca,
-            'Solicitud.pdf'
-        );
-
-        // Genera el PDF sin marca de agua
-        const pdfDocSinMarca = estrategia.generarDocumento(false);
-        const pdfFileSinMarca = new File(
-            [pdfDocSinMarca.output('blob')],
-            'Oficio de Solicitud.pdf',
-            { type: 'application/pdf' }
-        );
-
-        // Asigna el documento generado al oficio de solicitud
-        this.radicar.oficioDeSolicitud = pdfFileSinMarca;
-    }
-    */
-
     onUpload(event, firmante) {
         this.radicar.firmaSolicitante = event.files[0];
         this.renderizarImagen(this.radicar.firmaSolicitante);
@@ -195,14 +151,10 @@ export class ResumenComponent implements OnInit {
             return;
         }
 
-        //this.bloquearBoton = true;
-
         if (this.validarFirmaCargada()) {
             this.guardadoEnProceso = true;
 
             try {
-                //await this.convertirOficioEnPDF();
-
                 const resultado = await this.almacenar.almacenarSolicitudEnBD();
 
                 if (resultado != null) {

@@ -18,24 +18,25 @@ export class ApyeconomicoestanciaComponent implements OnInit {
         private fb: FormBuilder,
         private servicioUtilidades: UtilidadesService
     ) {
-        this.tiposCuentaBancaria = ['Seleccione una opción', 'Ahorros', 'Corriente'];
+        this.tiposCuentaBancaria = ['Ahorros', 'Corriente'];
 
         this.listaGruposInvestigacion = [
-            'Seleccione una opción',
             'Grupo de Investigación y Desarrollo en Ingeniería de Software - IDIS',
             'Grupo de Investigación en Tecnologías de la Información - GTI',
             'Grupo de Investigación en Inteligencia Computacional - GICO',
         ];
 
         this.formApoyoEconEstancia = this.fb.group({
+            universidad: ['', Validators.required],
             lugar: ['', Validators.required],
             fechas: ['', Validators.required],
+            grupoInvestExt: ['', Validators.required],
+            docenteExterno: ['', Validators.required],
             grupoInvestigacion: ['', this.customValidator],
             valorApoyo: ['', Validators.required],
             nombreBanco: ['', Validators.required],
             tipoCuenta: ['', this.customValidator()],
             numeroCuenta: ['', Validators.required],
-            cedulaEnBanco: ['', Validators.required],
             direccionRecidencia: ['', Validators.required],
         });
     }
@@ -53,9 +54,24 @@ export class ApyeconomicoestanciaComponent implements OnInit {
                 lugar: this.radicar.lugarEstancia,
             });
         }
+        if (this.radicar.UniversidadExternaPasantia.trim() !== '') {
+            this.formApoyoEconEstancia.patchValue({
+                universidad: this.radicar.UniversidadExternaPasantia,
+            });
+        }
         if (this.radicar.grupoInvestigacion.trim() !== '') {
             this.formApoyoEconEstancia.patchValue({
                 grupoInvestigacion: this.radicar.grupoInvestigacion,
+            });
+        }
+        if (this.radicar.docenteExternoPas.trim() !== '') {
+            this.formApoyoEconEstancia.patchValue({
+                docenteExterno: this.radicar.docenteExternoPas,
+            });
+        }
+        if (this.radicar.grupoInvestigacionExternoPanatia.trim() !== '') {
+            this.formApoyoEconEstancia.patchValue({
+                grupoInvestExt: this.radicar.grupoInvestigacionExternoPanatia,
             });
         }
 
@@ -79,11 +95,6 @@ export class ApyeconomicoestanciaComponent implements OnInit {
                 numeroCuenta: this.radicar.numeroCuenta,
             });
         }
-        if (this.radicar.cedulaCuentaBanco.trim() !== '') {
-            this.formApoyoEconEstancia.patchValue({
-                cedulaEnBanco: this.radicar.cedulaCuentaBanco,
-            });
-        }
         if (this.radicar.direccion.trim() !== '') {
             this.formApoyoEconEstancia.patchValue({
                 direccionRecidencia: this.radicar.direccion,
@@ -105,9 +116,11 @@ export class ApyeconomicoestanciaComponent implements OnInit {
             this.radicar.grupoInvestigacion = value.grupoInvestigacion;
             this.radicar.valorApoyoEcon = value.valorApoyo;
             this.radicar.banco = value.nombreBanco;
+            this.radicar.UniversidadExternaPasantia = value.universidad;
+            this.radicar.grupoInvestigacionExternoPanatia = value.grupoInvestExt;
+            this.radicar.docenteExternoPas = value.docenteExterno;
             this.radicar.tipoCuenta = value.tipoCuenta;
             this.radicar.numeroCuenta = value.numeroCuenta;
-            this.radicar.cedulaCuentaBanco = value.cedulaEnBanco;
             this.radicar.direccion = value.direccionRecidencia;
         });
     }
@@ -124,7 +137,7 @@ export class ApyeconomicoestanciaComponent implements OnInit {
     customValidator() {
         return (control: AbstractControl) => {
             const tipoSeleccionado: string = control.value;
-            if (!tipoSeleccionado || tipoSeleccionado === 'Seleccione una opción') {
+            if (!tipoSeleccionado || tipoSeleccionado === '') {
                 return { invalidTipo: true };
             }
             return null;

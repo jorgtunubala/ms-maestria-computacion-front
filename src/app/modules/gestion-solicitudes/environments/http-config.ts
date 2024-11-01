@@ -1,7 +1,7 @@
 export const httpConfig = {
     apiUrl: 'http://localhost:8095/msmaestriac/gestionSolicitud',
     apiUrlSub: 'http://localhost:8095/msmaestriac/gestionSubtipos',
-    apiCorreo: 'http://localhost:8095/msmaestriac',
+    apiGesion: 'http://localhost:8095/msmaestriac',
     obtenerTiposDeSolicitudUrl: '/tiposSolicitud',
     obtenerRequisitosDeSolicitudUrl: '/requisitoSolicitud/',
     obtenerInfoPersonalSolicitanteUrl: '/obtenerInfoPersonal/',
@@ -20,4 +20,6 @@ export const httpConfig = {
     guardarConceptoConsejo: '/save-solicitud-en-concejo',
     rechazarSolicitud: '/rechazar-solicitud',
     enviarCorreo: '/gestionEnvioCorreo/send-email',
+    consultarInfoRolExterno: '/gestion/rol-informacion/buscar?cargo=',
+    guardarInfoRolExterno: '/gestion/rol-informacion/guardar',
 };

@@ -17,6 +17,9 @@ export class AvalpasantiainvestComponent implements OnInit {
         private servicioUtilidades: UtilidadesService
     ) {
         this.formPasantiaInvest = this.fb.group({
+            grupoInvestExt: ['', Validators.required],
+            docenteExterno: ['', Validators.required],
+            universidad: ['', Validators.required],
             fechas: ['', Validators.required],
             lugar: ['', Validators.required],
         });
@@ -26,6 +29,21 @@ export class AvalpasantiainvestComponent implements OnInit {
         this.servicioUtilidades.configurarIdiomaCalendario();
 
         // Verificar si hay datos en las variables del servicio radicar y llenar el formulario
+        if (this.radicar.UniversidadExternaPasantia.trim() !== '') {
+            this.formPasantiaInvest.patchValue({
+                universidad: this.radicar.UniversidadExternaPasantia,
+            });
+        }
+        if (this.radicar.grupoInvestigacionExternoPanatia.trim() !== '') {
+            this.formPasantiaInvest.patchValue({
+                grupoInvestExt: this.radicar.grupoInvestigacionExternoPanatia,
+            });
+        }
+        if (this.radicar.docenteExternoPas.trim() !== '') {
+            this.formPasantiaInvest.patchValue({
+                docenteExterno: this.radicar.docenteExternoPas,
+            });
+        }
         if (this.radicar.fechasEstancia.length > 0) {
             this.formPasantiaInvest.patchValue({
                 fechas: this.radicar.fechasEstancia,
@@ -50,6 +68,9 @@ export class AvalpasantiainvestComponent implements OnInit {
                 this.radicar.fechasEstancia = value.fechas;
             }
             this.radicar.lugarEstancia = value.lugar;
+            this.radicar.UniversidadExternaPasantia = value.universidad;
+            this.radicar.grupoInvestigacionExternoPanatia = value.grupoInvestExt;
+            this.radicar.docenteExternoPas = value.docenteExterno;
         });
     }
 

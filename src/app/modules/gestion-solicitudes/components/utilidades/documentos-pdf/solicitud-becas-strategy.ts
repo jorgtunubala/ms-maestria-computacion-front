@@ -94,7 +94,9 @@ export class RespuestaComiteSolicitudDeBeca implements DocumentoPDFStrategy {
         const txtAsunto = `Asunto: Respuesta a Solicitud ${radicado} de ${tipoBeca}\n`;
         const txtCuerpo = `Reciba un cordial saludo. Por medio de la presente, me dirijo a usted para informarle que en sesión del día ${fechaComite[0]} de ${mesEnLetras} de ${fechaComite[2]}, el Comité de Programa revisó su solicitud con radicado ${radicado} referente a la ${tipoBeca}, decidiendo NO AVALAR la solicitud y emite el siguiente concepto:`;
         const txtConcepto = `\n${this.servicioGestor.conceptoComite.conceptoComite}`;
-        const txtRemitente = `${this.servicioGestor.coordinador.nombre.toUpperCase()}\nCoordinador/a de la Maestría en Computación`;
+        const txtRemitente = `${this.servicioGestor.InfoCoordinador.nombreCompleto.toUpperCase()}\n${
+            this.servicioGestor.InfoCoordinador.tratamiento == 'sr.' ? 'Coordinador' : 'Coordinadora'
+        } de la Maestría en Computación`;
 
         let posicionY = this.servicioPDF.agregarContenidoComun(documento, marcaDeAgua, 'solicitante');
         posicionY = this.servicioPDF.agregarAsuntoYSolicitud(documento, posicionY, txtAsunto, txtCuerpo, marcaDeAgua);
@@ -131,15 +133,17 @@ export class OficioConcejoSolicitudDeBeca implements DocumentoPDFStrategy {
         const tipoBeca = this.servicioGestor.infoSolicitud.datoSolicitudBeca.tipo;
 
         const textAsunto = `Asunto: Solicitud de ${tipoBeca} para el/la estudiante ${this.servicioGestor.infoSolicitud.datosComunSolicitud.nombreSolicitante} ${this.servicioGestor.infoSolicitud.datosComunSolicitud.apellidoSolicitante}\n`;
-        const textCuerpo = `Estimado/a ${
-            this.servicioGestor.decano.nombre.split(' ')[0]
+        const textCuerpo = `${this.servicioGestor.InfoDecano.tratamiento == 'sr.' ? 'Estimado' : 'Estimada'} ${
+            this.servicioGestor.InfoDecano.nombreCompleto.split(' ')[0]
         },\n\nReciba un cordial saludo. Me dirijo a usted de manera respetuosa para informarle que, en sesión del día ${
             fechaComite[0]
         } de ${mesEnLetras} de ${
             fechaComite[2]
-        }, el Comité de Programa ha avalado la solicitud ${tipoBeca} realizada por ${this.servicioGestor.infoSolicitud.datosComunSolicitud.nombreSolicitante.toUpperCase()} ${this.servicioGestor.infoSolicitud.datosComunSolicitud.apellidoSolicitante.toUpperCase()}. Por lo tanto, solicito su colaboración para llevar a cabo las gestiones necesarias que permitan la conceder la Beca solicitada por el estudiante.`;
+        }, el Comité de Programa ha avalado la solicitud ${tipoBeca} realizada por ${this.servicioGestor.infoSolicitud.datosComunSolicitud.nombreSolicitante.toUpperCase()} ${this.servicioGestor.infoSolicitud.datosComunSolicitud.apellidoSolicitante.toUpperCase()}. Por lo tanto, solicito su colaboración para llevar a cabo las gestiones necesarias que permitan conceder la beca solicitada por el estudiante.`;
 
-        const txtRemitente = `${this.servicioGestor.coordinador.nombre.toUpperCase()}\nCoordinador/a de la Maestría en Computación`;
+        const txtRemitente = `${this.servicioGestor.InfoCoordinador.nombreCompleto.toUpperCase()}\n${
+            this.servicioGestor.InfoCoordinador.tratamiento == 'sr.' ? 'Coordinador' : 'Coordinadora'
+        } de la Maestría en Computación`;
 
         let posicionY = this.servicioPDF.agregarContenidoComun(documento, marcaDeAgua, 'consejo');
         posicionY = this.servicioPDF.agregarAsuntoYSolicitud(documento, posicionY, textAsunto, textCuerpo, marcaDeAgua);
@@ -176,13 +180,15 @@ export class RespuestaConcejoSolicitudDeBeca implements DocumentoPDFStrategy {
             fechaConcejo[0]
         } de ${mesEnLetras} de ${
             fechaConcejo[2]
-        } se recibió respuesta del Concejo de Facultad referente a su solicitud ${radicado} de ${tipoBeca}. ${
+        } se recibió respuesta del Consejo de Facultad referente a su solicitud ${radicado} de ${tipoBeca}. ${
             this.servicioGestor.conceptoConsejo.avaladoConcejo === 'Si'
                 ? 'El Consejo decide aprobar su solicitud bajo el siguiente concepto:'
                 : 'El Consejo decide no aprobar su solicitud bajo el siguiente concepto:'
         }`;
         const txtConcepto = `${this.servicioGestor.conceptoConsejo.conceptoConcejo}`;
-        const txtRemitente = `${this.servicioGestor.coordinador.nombre.toUpperCase()}\nCoordinador/a de la Maestría en Computación`;
+        const txtRemitente = `${this.servicioGestor.InfoCoordinador.nombreCompleto.toUpperCase()}\n${
+            this.servicioGestor.InfoCoordinador.tratamiento == 'sr.' ? 'Coordinador' : 'Coordinadora'
+        } de la Maestría en Computación`;
 
         let posicionY = this.servicioPDF.agregarContenidoComun(documento, marcaDeAgua, 'solicitante');
         posicionY = this.servicioPDF.agregarAsuntoYSolicitud(documento, posicionY, txtAsunto, txtCuerpo, marcaDeAgua);

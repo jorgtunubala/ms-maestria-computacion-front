@@ -22,6 +22,7 @@ export class SolicitudHomologAsignaturasEsp implements DocumentoPDFStrategy {
         // Texto para la solicitud
         const textSolicitud = `Reciban cordial saludo, comedidamente me dirijo a ustedes con el fin de solicitar la homologación de las asignaturas relacionadas en la tabla a continuación, las cuales fueron cursadas en el programa de posgrado, ${this.servicioRadicar.datosInstitucionHomologar.programa} de la ${this.servicioRadicar.datosInstitucionHomologar.institucion}.`;
 
+        const textAdjuntos = `${this.servicioRadicar.obtenerNombreArchivosAdjuntos()}`;
         // Añadir contenido común
         let cursorY = this.pdfService.agregarContenidoComun(doc, marcaDeAgua);
 
@@ -46,6 +47,10 @@ export class SolicitudHomologAsignaturasEsp implements DocumentoPDFStrategy {
 
         // Añadir espacios para firmas
         cursorY = this.pdfService.agregarEspaciosDeFirmas(doc, cursorY, false, marcaDeAgua);
+
+        if (textAdjuntos) {
+            cursorY = this.pdfService.agregarListadoAdjuntos(doc, cursorY, textAdjuntos, marcaDeAgua);
+        }
 
         // Retornar el documento generado
         return doc;

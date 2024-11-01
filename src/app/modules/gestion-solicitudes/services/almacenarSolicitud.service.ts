@@ -200,6 +200,9 @@ export class AlmacenarSolicitudService {
             fechaInicio: this.formatearDate(this.radicar.fechasEstancia[0]),
             fechaFin: this.formatearDate(this.radicar.fechasEstancia[1]),
             documentosAdjuntos: docsAdjuntos,
+            universidadResidencia: this.radicar.UniversidadExternaPasantia,
+            grupoUniversidadResidencia: this.radicar.grupoInvestigacionExternoPanatia,
+            nombreDocenteExterno: this.radicar.docenteExternoPas,
         };
 
         return this.construirObjAGuardar('AV_PASA_INV', datos);
@@ -222,6 +225,8 @@ export class AlmacenarSolicitudService {
             numeroCedulaAsociada: this.radicar.cedulaCuentaBanco,
             direccionResidencia: this.radicar.direccion,
             documentosAdjuntos: docsAdjuntos,
+            universidadResidencia: this.radicar.UniversidadExternaPasantia,
+            grupoUniversidadResidencia: this.radicar.grupoInvestigacionExternoPanatia,
         };
 
         return this.construirObjAGuardar('AP_ECON_INV', datos);
@@ -291,6 +296,9 @@ export class AlmacenarSolicitudService {
                 documentosAdjuntos: docsAdjuntos,
                 grupoInvestigacion: this.radicar.grupoInvestigacion,
                 finalidadApoyo: this.radicar.tipoApoyo,
+                informacionPago: this.radicar.InfoDePago,
+                nombreRevista: this.radicar.nombreRevistaLibro,
+                lugarEvento: null,
             };
         }
 
@@ -312,6 +320,9 @@ export class AlmacenarSolicitudService {
                 documentosAdjuntos: docsAdjuntos,
                 grupoInvestigacion: this.radicar.grupoInvestigacion,
                 finalidadApoyo: this.radicar.tipoApoyo,
+                informacionPago: this.radicar.InfoDePago,
+                nombreRevista: null,
+                lugarEvento: this.radicar.lugarEstancia,
             };
         }
 

@@ -37,14 +37,15 @@ export class ApypublicacionComponent implements OnInit {
 
         this.formApoyoPagoPublic = this.fb.group({
             tipoCongreso: ['', this.customValidator()],
+            nombreRevista: [''],
             tituloPublicacion: ['', Validators.required],
             grupoInvestigacion: ['', this.customValidator],
             valorApoyo: ['', Validators.required],
             nombreBanco: ['', Validators.required],
             tipoCuenta: ['', this.customValidator()],
-            numeroCuenta: ['', Validators.required],
-            cedulaEnBanco: ['', Validators.required],
+            numeroCuenta: ['', this.customValidator()],
             direccionRecidencia: ['', Validators.required],
+            infoDePago: ['', Validators.required],
         });
     }
 
@@ -54,6 +55,11 @@ export class ApypublicacionComponent implements OnInit {
         if (this.radicar.tipoCongreso.trim() !== '') {
             this.formApoyoPagoPublic.patchValue({
                 tipoCongreso: this.radicar.tipoCongreso,
+            });
+        }
+        if (this.radicar.nombreRevistaLibro.trim() !== '') {
+            this.formApoyoPagoPublic.patchValue({
+                nombreRevista: this.radicar.nombreRevistaLibro,
             });
         }
         if (this.radicar.tituloPublicacion.trim() !== '') {
@@ -86,27 +92,29 @@ export class ApypublicacionComponent implements OnInit {
                 numeroCuenta: this.radicar.numeroCuenta,
             });
         }
-        if (this.radicar.cedulaCuentaBanco.trim() !== '') {
-            this.formApoyoPagoPublic.patchValue({
-                cedulaEnBanco: this.radicar.cedulaCuentaBanco,
-            });
-        }
         if (this.radicar.direccion.trim() !== '') {
             this.formApoyoPagoPublic.patchValue({
                 direccionRecidencia: this.radicar.direccion,
             });
         }
 
+        if (this.radicar.InfoDePago.trim() !== '') {
+            this.formApoyoPagoPublic.patchValue({
+                infoDePago: this.radicar.InfoDePago,
+            });
+        }
+
         this.formApoyoPagoPublic.valueChanges.subscribe((value) => {
             this.radicar.tipoCongreso = value.tipoCongreso;
+            this.radicar.nombreRevistaLibro = value.nombreRevista;
             this.radicar.tituloPublicacion = value.tituloPublicacion;
             this.radicar.grupoInvestigacion = value.grupoInvestigacion;
             this.radicar.valorApoyoEcon = value.valorApoyo;
             this.radicar.banco = value.nombreBanco;
             this.radicar.tipoCuenta = value.tipoCuenta;
             this.radicar.numeroCuenta = value.numeroCuenta;
-            this.radicar.cedulaCuentaBanco = value.cedulaEnBanco;
             this.radicar.direccion = value.direccionRecidencia;
+            this.radicar.InfoDePago = value.infoDePago;
         });
     }
 

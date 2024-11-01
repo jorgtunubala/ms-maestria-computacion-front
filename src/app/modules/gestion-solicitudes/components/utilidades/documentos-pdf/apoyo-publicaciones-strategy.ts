@@ -35,11 +35,16 @@ export class SolicitudApoyoPublicOInscrip implements DocumentoPDFStrategy {
 
         if (this.servicioRadicar.tipoApoyo === 'inscripcion') {
             textAsunto = `Asunto: Solicitud de apoyo económico para el pago de inscripción a evento\n`;
-            textSolicitud = `Reciban cordial saludo, comedidamente me dirijo a ustedes con el fin de solicitar un apoyo económico para el pago de la inscripción al evento "${this.servicioRadicar.nombreCongreso}" que se llevará a cabo del ${rangoFechas}. La presente solicitud está avalada por la dirección del ${this.servicioRadicar.grupoInvestigacion}, adicionalmente anexo la documentación e información requerida para su estudio.`;
+            textSolicitud = `Reciban cordial saludo. Comedidamente, me dirijo a ustedes con el fin de solicitar un apoyo económico para el pago de la inscripción al evento "${this.servicioRadicar.nombreCongreso}" que se llevará a cabo en ${this.servicioRadicar.lugarEstancia} del ${rangoFechas}. La presente solicitud está avalada por la dirección del ${this.servicioRadicar.grupoInvestigacion}.`;
         }
         if (this.servicioRadicar.tipoApoyo === 'publicacion') {
-            textAsunto = `Asunto: Solicitud de apoyo económico para el pago de publicacion de ${this.servicioRadicar.tipoCongreso}\n`;
-            textSolicitud = `Reciban cordial saludo, comedidamente me dirijo a ustedes con el fin de solicitar un apoyo económico para el pago de la publicación del trabajo titulado "${this.servicioRadicar.tituloPublicacion}" como ${this.servicioRadicar.tipoCongreso}. La presente solicitud está avalada por la dirección del ${this.servicioRadicar.grupoInvestigacion}, adicionalmente anexo la documentación e información requerida para su estudio.`;
+            textAsunto = `Asunto: Solicitud de apoyo económico para el pago de publicación de ${this.servicioRadicar.tipoCongreso}\n`;
+
+            const nombreRevistaLibro = this.servicioRadicar.nombreRevistaLibro
+                ? ` en "${this.servicioRadicar.nombreRevistaLibro}"`
+                : '';
+
+            textSolicitud = `Reciban cordial saludo. Comedidamente, me dirijo a ustedes con el fin de solicitar un apoyo económico para cubrir los gastos de publicación del trabajo titulado "${this.servicioRadicar.tituloPublicacion}", el cual ha sido aceptado para su publicación como ${this.servicioRadicar.tipoCongreso}${nombreRevistaLibro}. La presente solicitud está avalada por la dirección del ${this.servicioRadicar.grupoInvestigacion}.`;
         }
 
         // Texto para los datos del apoyo económico
@@ -47,11 +52,16 @@ export class SolicitudApoyoPublicOInscrip implements DocumentoPDFStrategy {
             this.servicioRadicar.valorApoyoEcon
         )}\nEntidad Bancaria: ${this.servicioRadicar.banco}\nTipo de Cuenta: ${
             this.servicioRadicar.tipoCuenta
-        }\nNúmero de Cuenta: ${this.servicioRadicar.numeroCuenta}\nTitular: ${
-            this.servicioRadicar.formInfoPersonal.get('nombres').value
-        } ${this.servicioRadicar.formInfoPersonal.get('apellidos').value}\nCédula: ${
-            this.servicioRadicar.cedulaCuentaBanco
-        }\nDirección: ${this.servicioRadicar.direccion}\n`;
+        }\nNúmero de Cuenta: ${this.servicioRadicar.numeroCuenta}
+        \nDatos del solicitante:
+        \nNombre: ${this.servicioRadicar.formInfoPersonal.get('nombres').value} ${
+            this.servicioRadicar.formInfoPersonal.get('apellidos').value
+        }\nCédula: ${this.servicioRadicar.formInfoPersonal.get('numeroDocumento').value}\nCelular: ${
+            this.servicioRadicar.formInfoPersonal.get('celular').value
+        }\nCorreo: ${this.servicioRadicar.formInfoPersonal.get('correo').value}\nDirección: ${
+            this.servicioRadicar.direccion
+        }
+        \nInstrucciones especiales para el pago de la factura: ${this.servicioRadicar.InfoDePago}\n`;
 
         // Adjuntos
         const textAdjuntos = `${this.servicioRadicar.obtenerNombreArchivosAdjuntos()}`;

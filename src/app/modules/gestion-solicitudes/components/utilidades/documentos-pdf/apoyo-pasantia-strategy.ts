@@ -26,17 +26,21 @@ export class SolicitudApoyoEconomicoPasantia implements DocumentoPDFStrategy {
         const textAsunto = `Asunto: Solicitud de Apoyo Económico para Pasantía de Investigación\n`;
 
         // Texto para la solicitud
-        const textSolicitud = `Reciban cordial saludo, comedidamente me dirijo a ustedes con el fin de solicitar un apoyo económico para la realización de una estancia de investigación en ${this.servicioRadicar.lugarEstancia}, en el periodo comprendido entre las fechas: ${rangoFechas}. La presente solicitud está avalada por la dirección del ${this.servicioRadicar.grupoInvestigacion}, adicionalmente anexo la documentación e información requerida para su estudio.`;
+        const textSolicitud = `Reciban cordial saludo, comedidamente me dirijo a ustedes con el fin de solicitar un apoyo económico para realizar una estancia de investigación en la ${this.servicioRadicar.UniversidadExternaPasantia}, ${this.servicioRadicar.lugarEstancia}, durante el periodo comprendido entre el ${rangoFechas}. Esta solicitud está avalada por la dirección del ${this.servicioRadicar.grupoInvestigacion} de la Universidad del Cauca. Adicionalmente, la pasantía se llevará a cabo con la colaboración del ${this.servicioRadicar.grupoInvestigacionExternoPanatia} de la ${this.servicioRadicar.UniversidadExternaPasantia} bajo la supervisión del docente ${this.servicioRadicar.docenteExternoPas}. Anexo la documentación requerida para este proceso.`;
 
         // Texto para los datos del apoyo económico
-        const textDatosApoyo = `\nValor apoyo económico: COP $${this.servicioUtilidades.numeroAMoneda(
+        const textDatosApoyo = `\nA continuación, incluyo los detalles del apoyo solicitado:
+        \nValor apoyo económico: COP $${this.servicioUtilidades.numeroAMoneda(
             this.servicioRadicar.valorApoyoEcon
         )}\nEntidad Bancaria: ${this.servicioRadicar.banco}\nTipo de Cuenta: ${
             this.servicioRadicar.tipoCuenta
         }\nNúmero de Cuenta: ${this.servicioRadicar.numeroCuenta}\nTitular: ${
             this.servicioRadicar.formInfoPersonal.get('nombres').value
         } ${this.servicioRadicar.formInfoPersonal.get('apellidos').value}\nCédula: ${
-            this.servicioRadicar.cedulaCuentaBanco
+            this.servicioRadicar.formInfoPersonal.get('numeroDocumento').value
+        }\n\nContacto:
+        \nCelular: ${this.servicioRadicar.formInfoPersonal.get('celular').value}\nCorreo: ${
+            this.servicioRadicar.formInfoPersonal.get('correo').value
         }\nDirección: ${this.servicioRadicar.direccion}\n`;
 
         // Adjuntar archivos

@@ -4,7 +4,10 @@ export class DatosSolicitudAvalPasantia {
             obj['lugarPasantia'],
             obj['fechaInicio'],
             obj['fechaFin'],
-            obj['documentosAdjuntos']
+            obj['documentosAdjuntos'],
+            obj['universidadResidencia'],
+            obj['grupoUniversidadResidencia'],
+            obj['nombreDocenteExterno']
         );
     }
 
@@ -12,6 +15,9 @@ export class DatosSolicitudAvalPasantia {
         public lugarPasantia: string,
         public fechaInicio: string,
         public fechaFin: string,
-        public documentosAdjuntos: string[]
+        public documentosAdjuntos: string[],
+        public universidadResidencia: string,
+        public grupoUniversidadResidencia: string,
+        public nombreDocenteExterno: string
     ) {}
 }
