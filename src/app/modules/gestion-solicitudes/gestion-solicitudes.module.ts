@@ -8,13 +8,11 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { GestionComponent } from './pages/gestion/gestion.component';
 import { BuzonComponent } from './components/gestion-coordinacion/buzon/buzon.component';
 import { SelectorComponent } from './components/presentacion-solicitudes/selector/selector.component';
-
 import { DocsAdjuntosComponent } from './components/presentacion-solicitudes/docsadjuntos/docsadjuntos.component';
 import { ResumenComponent } from './components/presentacion-solicitudes/resumen/ResumenComponent';
 import { VisorComponent } from './components/gestion-coordinacion/visor/visor.component';
 import { FormulariosComponent } from './components/presentacion-solicitudes/formularios/formularios.component';
 import { AsignaturahomologarComponent } from './components/presentacion-solicitudes/formularios/complementarios/asignaturahomologar/asignaturahomologar.component';
-import { FirmaelectronicaComponent } from './components/utilidades/firmaelectronica/firmaelectronica.component';
 import { BuzondeavalesComponent } from './components/aval-tutores-directores/buzondeavales/buzondeavales.component';
 import { PendientesavalComponent } from './components/aval-tutores-directores/pendientesaval/pendientesaval.component';
 import { VisoravalComponent } from './components/aval-tutores-directores/visoraval/visoraval.component';
@@ -39,7 +37,6 @@ import { AvalpracticadocenteComponent } from './components/presentacion-solicitu
 import { BecaDescuentoComponent } from './components/presentacion-solicitudes/formularios/complementarios/becadescuento/becadescuento.component';
 import { SkelinfosolicitudComponent } from './components/utilidades/skeleton/skelinfosolicitud/skelinfosolicitud.component';
 import { SkeltablaComponent } from './components/utilidades/skeleton/skeltabla/skeltabla.component';
-import { PruebaComponent } from './components/presentacion-solicitudes/formularios/complementarios/prueba/prueba.component';
 import { FormulariorechazoComponent } from './components/gestion-coordinacion/complementos/formulariorechazo/formulariorechazo.component';
 import { ApyinscripcionComponent } from './components/presentacion-solicitudes/formularios/complementarios/apyinscripcion/apyinscripcion.component';
 import { InfoCoordinadorComponent } from './components/presentacion-solicitudes/formularios/complementarios/info-coordinador/info-coordinador.component';
@@ -57,7 +54,6 @@ import { OtrasolictudComponent } from './components/presentacion-solicitudes/for
         ResumenComponent,
         VisorComponent,
         AsignaturahomologarComponent,
-        FirmaelectronicaComponent,
         BuzondeavalesComponent,
         PendientesavalComponent,
         VisoravalComponent,
@@ -82,7 +78,6 @@ import { OtrasolictudComponent } from './components/presentacion-solicitudes/for
         BecaDescuentoComponent,
         SkelinfosolicitudComponent,
         SkeltablaComponent,
-        PruebaComponent,
         FormulariorechazoComponent,
         ApyinscripcionComponent,
         InfoCoordinadorComponent,
@@ -90,13 +85,7 @@ import { OtrasolictudComponent } from './components/presentacion-solicitudes/for
         RadicadorComponent,
         OtrasolictudComponent,
     ],
-    imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        PrimenNgModule,
-        SharedModule,
-        GestionSolicitudesRoutingModule,
-    ],
+    imports: [CommonModule, ReactiveFormsModule, PrimenNgModule, SharedModule, GestionSolicitudesRoutingModule],
     providers: [DatePipe],
 })
 export class GestionSolicitudesModule {}

@@ -76,11 +76,7 @@
                 </div>
             </div>
 -->
-            <div
-                *ngIf="!radicar.esperando && mostrarPFSet"
-                class="w-full md:w-9 mt-4"
-                style="margin-left: auto; margin-right: auto"
-            >
+            <div *ngIf="mostrarPFSet" class="w-full md:w-9 mt-4" style="margin-left: auto; margin-right: auto">
                 <p-fieldset legend="Firma">
                     <div class="col-12">
                         <p-fileUpload
@@ -118,7 +114,7 @@
                 </p-fieldset>
             </div>
 
-            <div class="grid mt-4" *ngIf="!radicar.esperando">
+            <div class="grid mt-4">
                 <div class="mt-4 col-6" style="text-align: center">
                     <button
                         *ngIf="mostrarBtnAvalar"

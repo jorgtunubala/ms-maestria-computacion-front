@@ -9,57 +9,51 @@ import {
 } from '../models/indiceModelos';
 import { DatosSolicitudRequest } from '../models/solicitudes/datosSolicitudRequest';
 
-interface InfoDecano {
-    nombre: string;
-    titulo: string;
-}
-
-interface InfoCoordinador {
-    nombre: string;
-    titulo: string;
-}
-
 @Injectable({
     providedIn: 'root',
 })
 export class GestorService {
+    // Emisor de evento para descarga de archivos
     private descargarArchivosSource = new Subject<void>();
     descargarArchivos$ = this.descargarArchivosSource.asObservable();
 
+    // Propiedades para manejar el estado de la solicitud seleccionada
     solicitudSeleccionada: SolicitudRecibida;
     infoSolicitud: DatosSolicitudRequest;
     estadoSolicitud: string;
     conceptoComite: SolicitudEnComiteResponse;
     conceptoConsejo: SolicitudEnConcejoResponse;
-    //asignaturasAceptadasComite: any[];
-    //asignaturasAceptadasConsejo: any[];
 
+    // Información del decano y coordinador (cargada desde el servidor)
     InfoDecano: InformacionRoles;
     InfoCoordinador: InformacionRoles;
 
+    // Caché de solicitudes específicas para tutores/directores y coordinadores
     solicitudesTutorDirectorCache: SolicitudRecibida[] = [];
     solicitudesCoordinadorCache: SolicitudRecibida[] = [];
-    filtroAnterior: string = '';
+    filtroAnterior: string = ''; // Último filtro aplicado en solicitudes del coordinador
 
+    // Caché por filtro y timestamps para gestionar la caducidad del caché (TTL de 10 minutos)
     private solicitudesPorFiltro: { [filtro: string]: SolicitudRecibida[] } = {};
     private cacheTimestamps: { [filtro: string]: number } = {};
-    private cacheTTL: number = 10 * 60 * 1000; // Tiempo de vida del caché (10 minutos)
+    private cacheTTL: number = 10 * 60 * 1000; // 10 minutos en milisegundos
 
     constructor(private http: HttpService) {
+        // Cargar información del rol de decano y coordinador al iniciar el servicio
         this.cargarInfoDeRol('Presidente', 'InfoDecano');
         this.cargarInfoDeRol('Coordinador', 'InfoCoordinador');
     }
 
-    // Obtiene las solicitudes de tutor o director, usando caché si es posible.
+    // Obtiene las solicitudes de tutor/director. Si el caché es válido, lo utiliza.
     obtenerSolicitudesTutorDirector(correoUsuario: string): Observable<SolicitudRecibida[]> {
         const now = Date.now();
 
-        // Si hay datos en el caché y no ha expirado, devolver caché
+        // Si el caché de tutor/director está vigente, retorna los datos almacenados
         if (this.solicitudesTutorDirectorCache.length && now - this.cacheTimestamps['tutorDirector'] < this.cacheTTL) {
             return of(this.solicitudesTutorDirectorCache);
         }
 
-        // Si el caché ha expirado o no existe, hacer la petición al servidor
+        // Si el caché ha expirado o no existe, realiza una petición al servidor
         return this.http.obtenerListaSolPendientesAval(correoUsuario).pipe(
             tap((solicitudes) => {
                 this.solicitudesTutorDirectorCache = solicitudes;
@@ -68,17 +62,17 @@ export class GestorService {
         );
     }
 
-    // Obtiene las solicitudes del coordinador, usando caché si es posible.
+    // Obtiene las solicitudes del coordinador usando el filtro. Utiliza caché si está vigente.
     obtenerSolicitudesCoordinador(filtro: string): Observable<SolicitudRecibida[]> {
         const now = Date.now();
 
-        // Si hay datos en el caché para el filtro y no ha expirado el TTL, devolver caché
+        // Si hay datos en caché para el filtro y están vigentes, los devuelve
         if (this.solicitudesPorFiltro[filtro]?.length && now - this.cacheTimestamps[filtro] < this.cacheTTL) {
             this.solicitudesCoordinadorCache = this.solicitudesPorFiltro[filtro];
             return of(this.solicitudesCoordinadorCache);
         }
 
-        // Si el caché ha expirado o no existe, hacer la petición al servidor
+        // Si el caché ha expirado o no existe, realiza una petición al servidor
         return this.http.consultarSolicitudesCoordinacion(filtro).pipe(
             tap((solicitudes: SolicitudRecibida[]) => {
                 this.solicitudesPorFiltro[filtro] = solicitudes;
@@ -89,13 +83,13 @@ export class GestorService {
         );
     }
 
-    // Mueve una solicitud de un estado a otro, actualizando las listas en caché o recargando desde la base de datos.
+    // Mueve una solicitud de un estado a otro, actualizando las listas de caché
     moverSolicitud(solicitud: SolicitudRecibida, estadoActual: string, nuevoEstado: string): void {
         this.eliminarSolicitudDeLista(solicitud, estadoActual);
         this.agregarSolicitudANuevaLista(solicitud, nuevoEstado);
     }
 
-    // Elimina una solicitud de la lista del filtro actual.
+    // Elimina una solicitud de la lista de un filtro específico en caché
     private eliminarSolicitudDeLista(solicitud: SolicitudRecibida, filtro: string): void {
         if (this.solicitudesPorFiltro[filtro]) {
             this.solicitudesPorFiltro[filtro] = this.solicitudesPorFiltro[filtro].filter(
@@ -104,15 +98,15 @@ export class GestorService {
         }
     }
 
-    // Agrega una solicitud a la lista del nuevo estado en caché o la carga desde la base de datos si el caché ha expirado.
+    // Agrega una solicitud a la lista de un nuevo estado en caché o recarga desde el servidor si ha caducado
     private agregarSolicitudANuevaLista(solicitud: SolicitudRecibida, filtro: string): void {
         const now = Date.now();
 
-        // Si el caché para el nuevo estado es válido, agregar la solicitud directamente
+        // Si el caché para el nuevo estado está vigente, agrega la solicitud directamente
         if (this.solicitudesPorFiltro[filtro]?.length && now - this.cacheTimestamps[filtro] < this.cacheTTL) {
             this.solicitudesPorFiltro[filtro].push(solicitud);
         } else {
-            // Si el caché ha expirado o no existe, recargar desde la base de datos
+            // Si el caché ha expirado o no existe, recarga desde el servidor
             this.http.consultarSolicitudesCoordinacion(filtro).subscribe(
                 (solicitudes: SolicitudRecibida[]) => {
                     this.solicitudesPorFiltro[filtro] = solicitudes;
@@ -126,27 +120,18 @@ export class GestorService {
         }
     }
 
-    // Emite un evento para descargar archivos.
+    // Emite un evento para iniciar la descarga de archivos
     emitirDescargarArchivos() {
         this.descargarArchivosSource.next();
     }
 
-    // Restablece los valores seleccionados de la solicitud.
+    // Restablece los valores de la solicitud seleccionada y su estado
     restablecerValores() {
         this.solicitudSeleccionada = null;
         this.estadoSolicitud = '';
     }
 
-    /*
-    setSolicitudSeleccionada(prmSolicitud: SolicitudRecibida) {
-        this.solicitudSeleccionada = prmSolicitud;
-    }
-
-    getSolicitudSeleccionada(): SolicitudRecibida {
-        return this.solicitudSeleccionada;
-    }
-    */
-
+    // Carga la información de un rol específico (decano o coordinador) desde el servidor
     private cargarInfoDeRol(rol: string, propiedad: 'InfoDecano' | 'InfoCoordinador'): void {
         this.http.consultarInfoDeRolExterno(rol).subscribe(
             (data: InformacionRoles) => {
@@ -160,133 +145,3 @@ export class GestorService {
         );
     }
 }
-
-//CODIGO ANTIGUO - ELIMINAR EN CASAO DE QUE FUNCIONE LO DE ARRIBA
-/*
-import { Injectable } from '@angular/core';
-import { HttpService } from './http.service';
-import { Observable, of, Subject, tap } from 'rxjs';
-import { SolicitudEnComiteResponse, SolicitudRecibida } from '../models/indiceModelos';
-import { DatosSolicitudRequest } from '../models/solicitudes/datosSolicitudRequest';
-
-@Injectable({
-    providedIn: 'root',
-})
-export class GestorService {
-    private descargarArchivosSource = new Subject<void>();
-    descargarArchivos$ = this.descargarArchivosSource.asObservable();
-
-    solicitudSeleccionada: SolicitudRecibida;
-    infoSolicitud: DatosSolicitudRequest;
-    estadoSolicitud: string;
-    conceptoComite: SolicitudEnComiteResponse;
-
-    solicitudesTutorDirectorCache: SolicitudRecibida[] = [];
-    solicitudesCoordinadorCache: SolicitudRecibida[] = [];
-    filtroAnterior: string = '';
-
-    private solicitudesPorFiltro: { [filtro: string]: SolicitudRecibida[] } = {};
-    private cacheTimestamps: { [filtro: string]: number } = {};
-    private cacheTTL: number = 10 * 60 * 1000; // 10 minutos
-
-    constructor(private http: HttpService) {}
-
-    obtenerSolicitudesTutorDirector(correoUsuario: string): Observable<SolicitudRecibida[]> {
-        const now = Date.now();
-
-        if (this.solicitudesTutorDirectorCache.length && now - this.cacheTimestamps['tutorDirector'] < this.cacheTTL) {
-            return of(this.solicitudesTutorDirectorCache);
-        }
-
-        return this.http.obtenerListaSolPendientesAval(correoUsuario).pipe(
-            tap((solicitudes) => {
-                this.solicitudesTutorDirectorCache = solicitudes;
-                this.cacheTimestamps['tutorDirector'] = Date.now();
-            })
-        );
-    }
-
-    obtenerSolicitudesCoordinador(filtro: string): Observable<SolicitudRecibida[]> {
-        const now = Date.now();
-
-        // Si hay datos en el caché para ese filtro y no ha expirado el TTL, usa el caché
-        if (this.solicitudesPorFiltro[filtro]?.length && now - this.cacheTimestamps[filtro] < this.cacheTTL) {
-            this.solicitudesCoordinadorCache = this.solicitudesPorFiltro[filtro];
-            return of(this.solicitudesCoordinadorCache); // Retorna Observable si está en cache
-        }
-
-        // Si no hay caché o el filtro cambió o expiró el TTL, hacer nueva consulta
-        return this.http.consultarSolicitudesCoordinacion(filtro).pipe(
-            tap((solicitudes: SolicitudRecibida[]) => {
-                // Guardar el resultado en el caché por filtro
-                this.solicitudesPorFiltro[filtro] = solicitudes;
-                this.cacheTimestamps[filtro] = Date.now();
-
-                // Actualizar el caché principal con las solicitudes del filtro actual
-                this.solicitudesCoordinadorCache = solicitudes;
-                this.filtroAnterior = filtro; // Actualizar el filtro anterior
-            })
-        );
-    }
-
-    // Método genérico para actualizar las listas al cambiar el estado de una solicitud
-    moverSolicitud(solicitud: SolicitudRecibida, estadoActual: string, nuevoEstado: string): void {
-        // Eliminar la solicitud de la lista del estado actual (caché local)
-        this.eliminarSolicitudDeLista(solicitud, estadoActual);
-
-        // Intentar agregar la solicitud a la nueva lista en caché
-        this.agregarSolicitudANuevaLista(solicitud, nuevoEstado);
-    }
-
-    // Eliminar solicitud de la lista del filtro actual
-    private eliminarSolicitudDeLista(solicitud: SolicitudRecibida, filtro: string): void {
-        if (this.solicitudesPorFiltro[filtro]) {
-            this.solicitudesPorFiltro[filtro] = this.solicitudesPorFiltro[filtro].filter(
-                (sol) => sol.idSolicitud !== solicitud.idSolicitud // Asumiendo que la solicitud tiene un 'id' único
-            );
-        }
-    }
-
-    // Agregar solicitud a la nueva lista, o cargar desde la BD si el cache está vencido
-    private agregarSolicitudANuevaLista(solicitud: SolicitudRecibida, filtro: string): void {
-        const now = Date.now();
-
-        // Si el caché para el nuevo estado existe y no ha expirado, agregar la solicitud directamente
-        if (this.solicitudesPorFiltro[filtro]?.length && now - this.cacheTimestamps[filtro] < this.cacheTTL) {
-            this.solicitudesPorFiltro[filtro].push(solicitud);
-        } else {
-            // Si el caché ha expirado o no existe, recargar desde la base de datos
-            this.http.consultarSolicitudesCoordinacion(filtro).subscribe(
-                (solicitudes: SolicitudRecibida[]) => {
-                    // Actualizar el caché con la nueva lista desde la BD
-                    this.solicitudesPorFiltro[filtro] = solicitudes;
-                    this.cacheTimestamps[filtro] = Date.now(); // Actualizar la marca de tiempo del cache
-
-                    // Asegurarse de que la nueva solicitud también se agregue a la lista
-                    this.solicitudesPorFiltro[filtro].push(solicitud);
-                },
-                (error) => {
-                    console.error('Error al actualizar la lista del filtro:', error);
-                }
-            );
-        }
-    }
-
-    emitirDescargarArchivos() {
-        this.descargarArchivosSource.next();
-    }
-
-    restablecerValores() {
-        this.solicitudSeleccionada = null;
-        this.estadoSolicitud = '';
-    }
-
-    setSolicitudSeleccionada(prmSolicitud: SolicitudRecibida) {
-        this.solicitudSeleccionada = prmSolicitud;
-    }
-
-    getSolicitudSeleccionada(): SolicitudRecibida {
-        return this.solicitudSeleccionada;
-    }
-}
-*/
