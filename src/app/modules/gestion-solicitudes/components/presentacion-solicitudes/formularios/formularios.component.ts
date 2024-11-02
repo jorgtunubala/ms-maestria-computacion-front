@@ -21,6 +21,7 @@ import { TipoBeca } from 'src/app/core/enums/domain-enum';
 import { CreditosComponent } from './complementarios/creditos/creditos.component';
 import { AvalpracticadocenteComponent } from './complementarios/avalpracticadocente/avalpracticadocente.component';
 import { ApyinscripcionComponent } from './complementarios/apyinscripcion/apyinscripcion.component';
+import { OtrasolicitudComponent } from './complementarios/otrasolicitud/otrasolicitud.component';
 
 @Component({
     selector: 'app-formularios',
@@ -62,6 +63,8 @@ export class FormulariosComponent implements OnInit {
     formReCredPracDocente: CreditosComponent;
     @ViewChild(AvalpracticadocenteComponent)
     formAvalPracDocente: AvalpracticadocenteComponent;
+    @ViewChild(OtrasolicitudComponent)
+    formOtraSolicitud: OtrasolicitudComponent;
 
     identificadorSolicitante: string = 'ctorres@unicauca.edu.co';
     tiposIdentificacion: string[];
@@ -75,6 +78,8 @@ export class FormulariosComponent implements OnInit {
     tipoSolicitudEscogida: any;
 
     variableprovisional: boolean = false;
+
+    solicitudEsOtras: boolean = false;
 
     constructor(
         public radicar: RadicarService,
@@ -175,7 +180,19 @@ export class FormulariosComponent implements OnInit {
             });
         }
 
+        // Inicializa `solicitudEsOtras`
+        this.solicitudEsOtras = this.radicar.tipoSolicitudEscogida.codigoSolicitud === 'SO_OTRA';
+
         this.recuperarListadoTutores();
+    }
+
+    // Obtener el estado de los avales
+    get requiereAvalTutor(): boolean {
+        return this.radicar.formInfoOtraSolicitud.get('requiereAvalTutor')?.value;
+    }
+
+    get requiereAvalDirector(): boolean {
+        return this.radicar.formInfoOtraSolicitud.get('requiereAvalDirector')?.value;
     }
 
     validarDatosFormulario(): boolean {
@@ -296,6 +313,16 @@ export class FormulariosComponent implements OnInit {
                     this.formAvalPracDocente.validarFormulario() && this.formListaTutores.obtenerEstadoFormulario();
 
                 break;
+            case 'SO_OTRA':
+                const esRequeridoTutor = this.radicar.seRequiereTutor;
+                const esRequeridoDirector = this.radicar.seRequieraDirector;
+
+                estadoGeneral =
+                    (esRequeridoTutor ? this.formListaTutores.obtenerEstadoFormulario() : true) &&
+                    (esRequeridoDirector ? this.formDirectores.obtenerEstadoFormulario() : true) &&
+                    this.formOtraSolicitud.obtenerEstadoFormulario();
+
+                break;
             default:
                 estadoGeneral = this.formListaTutores.obtenerEstadoFormulario();
                 break;
@@ -384,7 +411,7 @@ export class FormulariosComponent implements OnInit {
     navigateToNext() {
         if (this.validarDatosFormulario()) {
             if (
-                ['AD_ASIG', 'CU_ASIG', 'AV_COMI_PR', 'RE_CRED_PR_DOC', 'SO_BECA'].includes(
+                ['SO_OTRA', 'AD_ASIG', 'CU_ASIG', 'AV_COMI_PR', 'RE_CRED_PR_DOC', 'SO_BECA'].includes(
                     this.radicar.tipoSolicitudEscogida.codigoSolicitud
                 )
             ) {

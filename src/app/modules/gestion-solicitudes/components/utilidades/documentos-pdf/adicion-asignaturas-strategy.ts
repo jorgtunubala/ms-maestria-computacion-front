@@ -32,7 +32,7 @@ export class SolicitudAdicionAsignaturas implements DocumentoPDFStrategy {
 
         cursorY = this.servicioPDF.agregarTablaPersonalizada(documento, cursorY, encabezados, datosTabla, marcaDeAgua);
         cursorY = this.servicioPDF.agregarDespedida(documento, cursorY, marcaDeAgua);
-        cursorY = this.servicioPDF.agregarEspaciosDeFirmas(documento, cursorY, false, marcaDeAgua);
+        cursorY = this.servicioPDF.agregarEspaciosDeFirmas(documento, cursorY, false, true, marcaDeAgua);
 
         return documento;
     }

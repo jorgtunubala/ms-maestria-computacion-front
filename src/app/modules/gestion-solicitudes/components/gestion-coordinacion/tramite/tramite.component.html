@@ -521,6 +521,39 @@
                     </div>
                 </div>
             </p-accordionTab>
+
+            <p-accordionTab header="Tramite para solicitudes no contempladas" *ngIf="habilitarTramiteGenerico">
+                <div style="margin-top: -15px">
+                    <p-divider align="left">
+                        <div class="inline-flex align-items-center">
+                            <i class="pi pi-send mr-2"></i>
+                            <b>Vitacora del poceso de tramite</b>
+                        </div>
+                    </p-divider>
+                </div>
+                <div class="flex justify-content-center flex-wrap">
+                    <div class="flex gap-1 mt-1 mb-4" style="width: 96%">
+                        <button
+                            pButton
+                            pRipple
+                            type="button"
+                            label="Descargar documentos adjuntos"
+                            class="p-button-outlined p-button-secondary"
+                            icon="pi pi-download"
+                            iconPos="right"
+                            (click)="onDescargarArchivos()"
+                        ></button>
+                    </div>
+                </div>
+                <div style="margin-top: -15px">
+                    <p-divider align="left">
+                        <div class="inline-flex align-items-center">
+                            <i class="pi pi-send mr-2"></i>
+                            <b>Respuesta para solicitante</b>
+                        </div>
+                    </p-divider>
+                </div>
+            </p-accordionTab>
         </p-accordion>
     </div>
 </div>

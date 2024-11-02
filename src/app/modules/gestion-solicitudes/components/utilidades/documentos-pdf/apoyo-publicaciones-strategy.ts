@@ -89,7 +89,7 @@ export class SolicitudApoyoPublicOInscrip implements DocumentoPDFStrategy {
         cursorY = this.pdfService.agregarDespedida(doc, cursorY, marcaDeAgua);
 
         // Añadir espacios de firmas
-        cursorY = this.pdfService.agregarEspaciosDeFirmas(doc, cursorY, true, marcaDeAgua);
+        cursorY = this.pdfService.agregarEspaciosDeFirmas(doc, cursorY, true, true, marcaDeAgua);
 
         // Añadir adjuntos
         this.pdfService.agregarListadoAdjuntos(doc, cursorY, textAdjuntos, marcaDeAgua);

@@ -620,7 +620,13 @@ export class PdfService {
         return nuevaPosicionY;
     }
 
-    agregarEspaciosDeFirmas(doc: jsPDF, posicionY: number, incluirDirector: boolean, marcaDeAgua: boolean) {
+    agregarEspaciosDeFirmas(
+        doc: jsPDF,
+        posicionY: number,
+        incluirDirector: boolean,
+        incluirTutor: boolean,
+        marcaDeAgua: boolean
+    ) {
         // Definir datos de la firma
         let firmaSolicitante = '../assets/layout/images/FirmaEnBlanco.png';
         let firmaTutor = '../assets/layout/images/FirmaEnBlanco.png';
@@ -638,10 +644,6 @@ export class PdfService {
             cell: this.servicioRadicar.formInfoPersonal.get('celular').value,
         };
 
-        const tutorData = {
-            name: this.servicioRadicar.tutor.nombreTutor,
-        };
-
         if (this.servicioRadicar.firmaSolicitante) {
             firmaSolicitante = this.servicioRadicar.firmaSolicitanteUrl.toString();
         }
@@ -657,28 +659,35 @@ export class PdfService {
             marcaDeAgua
         );
 
-        // Si la firma del solicitante provoca un salto de página, alinea la firma del tutor en la misma nueva página
+        // Si la firma del solicitante provoca un salto de página, reiniciamos la posición
         if (resultadoSolicitante.pageNumber !== doc.internal.pages.length) {
-            nuevaPosicionY = 65; // Reinicia cursorY para alinear ambas firmas en la nueva página
+            nuevaPosicionY = 65;
         }
 
-        // Agregar la firma del tutor
-        const resultadoTutor = this.agregarFirma(
-            doc,
-            'Tutor',
-            firmaTutor,
-            'right',
-            tutorData,
-            nuevaPosicionY,
-            marcaDeAgua
-        );
+        // Agregar la firma del tutor si se incluye
+        if (incluirTutor) {
+            const tutorData = {
+                name: this.servicioRadicar.tutor.nombreTutor,
+            };
 
-        nuevaPosicionY = resultadoTutor.cursorY;
+            const resultadoTutor = this.agregarFirma(
+                doc,
+                'Tutor',
+                firmaTutor,
+                'right',
+                tutorData,
+                nuevaPosicionY,
+                marcaDeAgua
+            );
 
-        this.servicioRadicar.firmaTutorPag = resultadoTutor.pageNumber - 1;
-        this.servicioRadicar.firmaTutorX = resultadoTutor.signatureCoordinates.x;
-        this.servicioRadicar.firmaTutorY = resultadoTutor.signatureCoordinates.y;
+            nuevaPosicionY = resultadoTutor.cursorY;
 
+            this.servicioRadicar.firmaTutorPag = resultadoTutor.pageNumber - 1;
+            this.servicioRadicar.firmaTutorX = resultadoTutor.signatureCoordinates.x;
+            this.servicioRadicar.firmaTutorY = resultadoTutor.signatureCoordinates.y;
+        }
+
+        // Agregar la firma del director si se incluye
         if (incluirDirector) {
             const directorData = {
                 name: this.servicioRadicar.director.nombreTutor,
@@ -688,16 +697,16 @@ export class PdfService {
             let espacioRestante = doc.internal.pageSize.height - nuevaPosicionY;
 
             // Si el espacio disponible es menor al necesario para la firma, forzamos un salto de página
-            if (espacioRestante < 20 /* signatureHeight */ + 4 /* lineHeight */ + 30 /* signatureBottomMargin */) {
+            if (espacioRestante < 20 + 4 + 30) {
                 doc.addPage();
-                this.agregarMembretes(doc, marcaDeAgua); // Añadir plantilla si es necesario
-                nuevaPosicionY = 65; // Reiniciar la posición Y para la nueva página
+                this.agregarMembretes(doc, marcaDeAgua);
+                nuevaPosicionY = 65;
             }
 
             // Guardar el número de página antes de agregar la firma
             const numeroPaginaAntesDeFirma = doc.internal.pages.length;
 
-            // Agregar la firma del Director
+            // Ajustar la posición del director para que esté al lado derecho de la firma del solicitante
             const resultadoDirector = this.agregarFirma(
                 doc,
                 'Director',
@@ -710,16 +719,14 @@ export class PdfService {
 
             nuevaPosicionY = resultadoDirector.cursorY;
 
-            // Verificar si hubo un cambio en el número de página
             const numeroPaginaDespuesDeFirma = doc.internal.pages.length;
 
-            // Si el número de página cambió, ajustar el valor a la nueva página
             const paginaFirmaDirector =
                 numeroPaginaDespuesDeFirma > numeroPaginaAntesDeFirma
                     ? numeroPaginaDespuesDeFirma
                     : numeroPaginaAntesDeFirma;
 
-            this.servicioRadicar.firmaDirectorPag = paginaFirmaDirector - 1; // Guardar correctamente el número de página
+            this.servicioRadicar.firmaDirectorPag = paginaFirmaDirector - 1;
             this.servicioRadicar.firmaDirectorX = resultadoDirector.signatureCoordinates.x;
             this.servicioRadicar.firmaDirectorY = resultadoDirector.signatureCoordinates.y;
         }

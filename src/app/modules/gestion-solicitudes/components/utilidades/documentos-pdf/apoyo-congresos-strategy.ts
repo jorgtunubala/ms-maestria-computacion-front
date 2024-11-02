@@ -56,7 +56,7 @@ export class SolicitudApoyoEconomicoCongresos implements DocumentoPDFStrategy {
         });
 
         cursorY = this.servicioPDF.agregarDespedida(doc, cursorY, marcaDeAgua);
-        cursorY = this.servicioPDF.agregarEspaciosDeFirmas(doc, cursorY, true, marcaDeAgua);
+        cursorY = this.servicioPDF.agregarEspaciosDeFirmas(doc, cursorY, true, true, marcaDeAgua);
         this.servicioPDF.agregarListadoAdjuntos(doc, cursorY, textAdjuntos, marcaDeAgua);
 
         return doc;

@@ -212,14 +212,26 @@
     <div class="mt-4" *ngIf="['SO_BECA'].includes(radicar.tipoSolicitudEscogida.codigoSolicitud)">
         <app-becadescuento></app-becadescuento>
     </div>
+    <!-- Formulario de solicitud otras solicitudes -->
+    <div class="mt-4" *ngIf="['SO_OTRA'].includes(radicar.tipoSolicitudEscogida.codigoSolicitud)">
+        <app-otrasolicitud></app-otrasolicitud>
+    </div>
 
-    <!-- Formulario Seleccion de un tutor -->
-    <app-listatutores></app-listatutores>
+    <!-- Formulario Selección de un tutor -->
+    <ng-container *ngIf="!solicitudEsOtras || radicar.seRequiereTutor">
+        <app-listatutores></app-listatutores>
+    </ng-container>
 
-    <!-- Formulario Seleccion de un Director -->
+    <!-- Formulario Selección de un Director -->
     <div
         class="mt-4"
-        *ngIf="['AP_ECON_INV', 'AP_ECON_ASI', 'PA_PUBL_EVE'].includes(radicar.tipoSolicitudEscogida.codigoSolicitud)"
+        *ngIf="
+            (!solicitudEsOtras &&
+                ['AP_ECON_INV', 'AP_ECON_ASI', 'PA_PUBL_EVE'].includes(
+                    radicar.tipoSolicitudEscogida.codigoSolicitud
+                )) ||
+            radicar.seRequieraDirector
+        "
     >
         <app-listadirectores></app-listadirectores>
     </div>

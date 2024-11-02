@@ -75,6 +75,7 @@ export class TramiteComponent implements OnInit {
     vaAlConcejo: boolean = true;
     habilitarConcejo: boolean = false;
     habilitarComite: boolean = false;
+    habilitarTramiteGenerico: boolean = false;
     enviandoCorreo: boolean = false;
 
     habilitarRespuestaSolicitantes: boolean = false;
@@ -579,6 +580,7 @@ export class TramiteComponent implements OnInit {
             case 'Avalada':
                 this.mostrarBtnRechazar = true;
                 this.habilitarComite = true;
+                this.habilitarTramiteGenerico = this.gestor.solicitudSeleccionada.codigoSolicitud === 'SO_OTRA';
 
                 break;
 
@@ -603,6 +605,8 @@ export class TramiteComponent implements OnInit {
                     this.habilitarConcejo = true;
                     this.deshabilitarEnvioAConsejo = true;
                 }
+
+                this.habilitarTramiteGenerico = this.gestor.solicitudSeleccionada.codigoSolicitud === 'SO_OTRA';
 
                 this.mostrarBtnRechazar = false;
                 break;

@@ -58,7 +58,7 @@ export class SolicitudRecoCredPracticaDocente implements DocumentoPDFStrategy {
         cursorY = this.pdfService.agregarDespedida(doc, cursorY, marcaDeAgua);
 
         // Añadir espacios para firmas
-        cursorY = this.pdfService.agregarEspaciosDeFirmas(doc, cursorY, false, marcaDeAgua);
+        cursorY = this.pdfService.agregarEspaciosDeFirmas(doc, cursorY, false, true, marcaDeAgua);
 
         // Añadir listado de adjuntos
         this.pdfService.agregarListadoAdjuntos(doc, cursorY, textAdjuntos, marcaDeAgua);

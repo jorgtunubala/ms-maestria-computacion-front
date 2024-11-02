@@ -31,7 +31,7 @@ export class SolicitudAplazamientoSemestre implements DocumentoPDFStrategy {
         let cursorY = this.servicioPDF.agregarContenidoComun(doc, marcaDeAgua);
         cursorY = this.servicioPDF.agregarAsuntoYSolicitud(doc, cursorY, textAsunto, textSolicitud, marcaDeAgua);
         cursorY = this.servicioPDF.agregarDespedida(doc, cursorY + 5, marcaDeAgua);
-        cursorY = this.servicioPDF.agregarEspaciosDeFirmas(doc, cursorY, false, marcaDeAgua);
+        cursorY = this.servicioPDF.agregarEspaciosDeFirmas(doc, cursorY, false, true, marcaDeAgua);
 
         if (textAdjuntos) {
             cursorY = this.servicioPDF.agregarListadoAdjuntos(doc, cursorY, textAdjuntos, marcaDeAgua);

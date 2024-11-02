@@ -90,7 +90,6 @@ export class PendientesavalComponent implements OnInit {
     }
 
     mostrarDetalles() {
-        console.log(this.seleccionada);
         localStorage.setItem('solicitudSeleccionadaTutorDirector', JSON.stringify(this.seleccionada));
 
         // Navega a VistaComponent pasando la ID de la solicitud seleccionada como parámetro de ruta

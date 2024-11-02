@@ -19,6 +19,7 @@ import * as StRePd from './rec-cred-practica-doc-strategy';
 import * as StRePa from './rec-cred-pasantia-strategy';
 import * as StRePu from './rec-cred-publicacion-strategy';
 import * as StBeca from './solicitud-becas-strategy';
+import * as StOtra from './otro-tipo-solicitud-strategy';
 import { GestorService } from '../../../services/gestor.service';
 
 @Injectable({
@@ -153,6 +154,12 @@ export class DocumentoPDFFactory {
             'respuesta-comite': StBeca.RespuestaComiteSolicitudDeBeca,
             'oficio-consejo': StBeca.OficioConcejoSolicitudDeBeca,
             'respuesta-consejo': StBeca.RespuestaConcejoSolicitudDeBeca,
+        };
+
+        // Estrategias para Solicitud de Otro tipo
+        this.estrategiasPorSolicitud['SO_OTRA'] = {
+            'carta-solicitud': StOtra.SolicitudDeOtroTipo,
+            'respuesta-comite': StOtra.RespuestaSolicitudDeOtroTipo,
         };
 
         // Añadir otras solicitudes...

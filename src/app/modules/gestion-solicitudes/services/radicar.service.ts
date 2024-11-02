@@ -26,6 +26,7 @@ export class RadicarService {
     formSolicitudBecaDescuento: FormGroup = new FormGroup({});
     formInfoCoordinador: FormGroup = new FormGroup({});
     formInfoPresidenteConsejo: FormGroup = new FormGroup({});
+    formInfoOtraSolicitud: FormGroup = new FormGroup({});
 
     tipoSolicitudEscogida: TipoSolicitud;
     requisitosSolicitudEscogida: RequisitosSolicitud;
@@ -83,6 +84,9 @@ export class RadicarService {
     grupoInvestigacionExternoPanatia: string = '';
     UniversidadExternaPasantia: string = '';
     docenteExternoPas: string = '';
+
+    seRequiereTutor: boolean = false;
+    seRequieraDirector: boolean = false;
 
     tipoBeca: string = '';
 
@@ -143,6 +147,7 @@ export class RadicarService {
         this.formSolicitudBecaDescuento = new FormGroup({});
         this.formInfoCoordinador = new FormGroup({});
         this.formInfoPresidenteConsejo = new FormGroup({});
+        this.formInfoOtraSolicitud = new FormGroup({});
         this.tipoSolicitudEscogida = null;
         this.radicadoAsignado = '';
         this.asignaturasAdicCancel = [];
@@ -201,6 +206,8 @@ export class RadicarService {
         this.firmaDirectorPag = 0;
         this.firmaDirectorX = 0;
         this.firmaDirectorY = 0;
+        this.seRequieraDirector = false;
+        this.seRequiereTutor = false;
     }
 
     async asignarDocumentosAdjuntos(docs: string[]): Promise<void> {
@@ -265,6 +272,11 @@ export class RadicarService {
                 }
             });
         }
+
+        // Procesar enlaces adjuntos
+        this.enlacesAdjuntos?.forEach((enlace) => {
+            agregarNombre(enlace);
+        });
 
         // Unir los nombres con salto de línea
         return adjuntos.join('\n');

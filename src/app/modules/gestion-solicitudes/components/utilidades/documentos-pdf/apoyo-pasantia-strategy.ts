@@ -63,7 +63,7 @@ export class SolicitudApoyoEconomicoPasantia implements DocumentoPDFStrategy {
         cursorY = this.servicioPDF.agregarDespedida(doc, cursorY, marcaDeAgua);
 
         // Añadir espacios de firmas
-        cursorY = this.servicioPDF.agregarEspaciosDeFirmas(doc, cursorY, true, marcaDeAgua);
+        cursorY = this.servicioPDF.agregarEspaciosDeFirmas(doc, cursorY, true, true, marcaDeAgua);
 
         // Añadir adjuntos
         this.servicioPDF.agregarListadoAdjuntos(doc, cursorY, textAdjuntos, marcaDeAgua);

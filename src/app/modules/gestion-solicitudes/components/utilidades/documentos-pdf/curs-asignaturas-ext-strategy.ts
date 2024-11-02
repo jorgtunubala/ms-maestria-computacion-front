@@ -65,7 +65,7 @@ export class SolicitudCursarEnOtrosProgramas implements DocumentoPDFStrategy {
         cursorY = this.pdfService.agregarDespedida(doc, cursorY, marcaDeAgua);
 
         // Añadir espacios para firmas
-        cursorY = this.pdfService.agregarEspaciosDeFirmas(doc, cursorY, false, marcaDeAgua);
+        cursorY = this.pdfService.agregarEspaciosDeFirmas(doc, cursorY, false, true, marcaDeAgua);
 
         cursorY = this.pdfService.agregarListadoAdjuntos(doc, cursorY, textAdjuntos, marcaDeAgua);
 
