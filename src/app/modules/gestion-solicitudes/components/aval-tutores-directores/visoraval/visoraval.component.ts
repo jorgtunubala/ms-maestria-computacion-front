@@ -162,8 +162,12 @@ export class VisoravalComponent implements OnInit {
             });
         };
 
-        const procesarEnlacesAdjuntos = (enlascesAdjuntos: any[]): void => {
-            enlascesAdjuntos?.forEach((enlace) => this.enlacesAdjuntos.push(enlace));
+        const procesarEnlacesAdjuntos = (enlacesAdjuntos: any[]): void => {
+            enlacesAdjuntos?.forEach((enlace) => {
+                if (enlace) {
+                    this.enlacesAdjuntos.push(enlace);
+                }
+            });
         };
 
         switch (tipoSolicitud) {
@@ -204,7 +208,7 @@ export class VisoravalComponent implements OnInit {
                 break;
             case 'RE_CRED_PAS':
                 procesarDocumentosAdjuntos(this.datosSolicitud.datosReconocimientoCreditos.documentosAdjuntos);
-                procesarEnlacesAdjuntos(this.datosSolicitud.datosReconocimientoCreditos.documentosAdjuntos); //REMPLAZAR LA LISTA DE ENLACES
+                procesarEnlacesAdjuntos(this.datosSolicitud.datosReconocimientoCreditos.enlacesAdjuntos);
                 break;
             case 'RE_CRED_PUB':
                 procesarDocumentosAdjuntos(this.datosSolicitud.datosReconocimientoCreditos.documentosAdjuntos);
@@ -218,7 +222,7 @@ export class VisoravalComponent implements OnInit {
             case 'SO_BECA':
                 procesarDocumentosAdjuntos([this.datosSolicitud.datoSolicitudBeca.formatoSolicitudBeca]);
                 break;
-            case 'SO_DESC':
+
             default:
                 // No se realiza ninguna acción para estos tipos de solicitud
                 break;

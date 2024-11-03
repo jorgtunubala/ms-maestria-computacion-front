@@ -62,6 +62,7 @@ export class RadicarService {
     descripcionesActividades: string[] = [];
     adjuntosDeActividades: AdjuntosDeActividades = {};
     horasIngresadas: number[] = [];
+    numSemanasIngresado: number[] = [];
     horasAsignables: number[] = [];
 
     tipoApoyo: string = null;
@@ -196,6 +197,7 @@ export class RadicarService {
         this.fechaEnvio = null;
         this.enlaceMaterialAudiovisual = '';
         this.horasIngresadas = [];
+        this.numSemanasIngresado = [];
         this.horasAsignables = [];
         this.adjuntosDeActividades = {};
         this.tipoBeca = '';

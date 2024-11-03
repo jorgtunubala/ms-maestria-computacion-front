@@ -22,18 +22,23 @@ export class SolicitudApoyoEconomicoCongresos implements DocumentoPDFStrategy {
             this.servicioRadicar.formApoyoAsistEvento.get('fechas').value[1]
         );
 
+        // Texto para el asunto
         const textAsunto = `Asunto: Solicitud de apoyo económico para asistencia a evento presentando artículo\n`;
+
+        // Texto para la solicitud
         const textSolicitud = `Reciban cordial saludo, comedidamente me dirijo a ustedes con el fin de solicitar un apoyo económico para asistir al evento de carácter ${
             this.servicioRadicar.formApoyoAsistEvento.get('tipoCongreso').value
-        }: "${
-            this.servicioRadicar.formApoyoAsistEvento.get('nombreCongreso').value
-        }" que se llevará a cabo del ${rangoFechas}, y donde se hará la publicación del trabajo titulado "${
+        }: "${this.servicioRadicar.formApoyoAsistEvento.get('nombreCongreso').value}", que se llevará a cabo en ${
+            this.servicioRadicar.formApoyoAsistEvento.get('lugarEvento').value
+        } del ${rangoFechas}, y donde se realizará la presentación del trabajo titulado "${
             this.servicioRadicar.formApoyoAsistEvento.get('tituloPublicacion').value
         }". La presente solicitud está avalada por la dirección del ${
             this.servicioRadicar.formApoyoAsistEvento.get('grupoInvestigacion').value
-        }, adicionalmente anexo la documentación e información requerida para su estudio.`;
+        }. Adicionalmente, anexo la documentación e información requerida para su estudio.`;
 
-        const textDatosApoyo = `\nValor apoyo económico: COP $${this.servicioUtilidades.numeroAMoneda(
+        // Texto para los datos del apoyo económico
+        const textDatosApoyo = `\nA continuación, incluyo los detalles del apoyo solicitado:
+\nValor apoyo económico: COP $${this.servicioUtilidades.numeroAMoneda(
             this.servicioRadicar.formApoyoAsistEvento.get('valorApoyo').value
         )}\nEntidad Bancaria: ${
             this.servicioRadicar.formApoyoAsistEvento.get('entidadBancaria').value
@@ -41,9 +46,10 @@ export class SolicitudApoyoEconomicoCongresos implements DocumentoPDFStrategy {
             this.servicioRadicar.formApoyoAsistEvento.get('numeroCuenta').value
         }\nTitular: ${this.servicioRadicar.formInfoPersonal.get('nombres').value} ${
             this.servicioRadicar.formInfoPersonal.get('apellidos').value
-        }\nCédula: ${this.servicioRadicar.formApoyoAsistEvento.get('numeroCedulaAsociada').value}\nDirección: ${
-            this.servicioRadicar.formApoyoAsistEvento.get('direccionResidencia').value
-        }\n`;
+        }\nCédula: ${this.servicioRadicar.formInfoPersonal.get('numeroDocumento').value}\nCelular: ${
+            this.servicioRadicar.formInfoPersonal.get('celular').value
+        }\nDirección: ${this.servicioRadicar.formApoyoAsistEvento.get('direccionResidencia').value}\n`;
+
         const textAdjuntos = `${this.servicioRadicar.obtenerNombreArchivosAdjuntos()}`;
 
         let cursorY = this.servicioPDF.agregarContenidoComun(doc, marcaDeAgua);

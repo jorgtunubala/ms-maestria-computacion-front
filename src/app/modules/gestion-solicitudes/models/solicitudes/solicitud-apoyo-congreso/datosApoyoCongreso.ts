@@ -14,7 +14,9 @@ export class DatosApoyoCongreso {
             obj['numeroCuenta'],
             obj['numeroCedulaAsociada'],
             obj['direccionResidencia'],
-            obj['documentosAdjuntos']
+            obj['documentosAdjuntos'],
+            obj['grupoInvestigacion'],
+            obj['lugarEvento']
         );
     }
 
@@ -32,6 +34,8 @@ export class DatosApoyoCongreso {
         public numeroCuenta: string,
         public numeroCedulaAsociada: string,
         public direccionResidencia: string,
-        public documentosAdjuntos: string[]
+        public documentosAdjuntos: string[],
+        public grupoInvestigacion: string,
+        public lugarEvento: string
     ) {}
 }

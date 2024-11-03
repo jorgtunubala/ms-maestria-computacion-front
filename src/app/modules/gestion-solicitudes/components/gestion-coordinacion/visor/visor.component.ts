@@ -138,6 +138,14 @@ export class VisorComponent implements OnInit, OnDestroy {
             });
         };
 
+        const procesarEnlacesAdjuntos = (enlacesAdjuntos: any[]): void => {
+            enlacesAdjuntos?.forEach((enlace) => {
+                if (enlace) {
+                    this.enlacesAdjuntos.push(enlace);
+                }
+            });
+        };
+
         switch (tipoSolicitud) {
             case 'HO_ASIG_ESP':
             case 'HO_ASIG_POS':
@@ -171,7 +179,8 @@ export class VisorComponent implements OnInit, OnDestroy {
                 procesarDocumentosAdjuntos(this.datosSolicitud.datosApoyoEconomico.documentosAdjuntos);
                 break;
             case 'RE_CRED_PAS':
-                this.extraerAdjuntosActividadDocente(procesarDocumentosAdjuntos);
+                procesarDocumentosAdjuntos(this.datosSolicitud.datosReconocimientoCreditos.documentosAdjuntos);
+                procesarEnlacesAdjuntos(this.datosSolicitud.datosReconocimientoCreditos.enlacesAdjuntos);
                 break;
             case 'RE_CRED_PUB':
                 procesarDocumentosAdjuntos(this.datosSolicitud.datosReconocimientoCreditos.documentosAdjuntos);
@@ -186,8 +195,9 @@ export class VisorComponent implements OnInit, OnDestroy {
                 this.extraerAdjuntosActividadDocente(procesarDocumentosAdjuntos);
                 break;
             case 'SO_BECA':
-            //this.procesarDocumentosAdjuntos(this.datosSolicitud.datoSolicitudBeca.formatoSolicitudBeca);
-            case 'SO_DESC':
+                procesarDocumentosAdjuntos([this.datosSolicitud.datoSolicitudBeca.formatoSolicitudBeca]);
+                break;
+
             default:
                 // No se realiza ninguna acción para estos tipos de solicitud
                 break;

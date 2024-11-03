@@ -16,20 +16,19 @@ export class BecaDescuentoComponent implements OnInit {
             'Beca - Trabajo',
             'Beca - Mejor promedio en pregrado',
             'Beca - Convenio (cidesco)',
+            'Descuento en la matrícula',
         ];
     }
 
     ngOnInit(): void {
         this.formSolicitudBecaDescuento = this.fb.group({
             tipoBeca: ['', Validators.required],
-            justificacion: ['', Validators.required],
+            justificacion: [''],
         });
 
         // Verificar si ya hay datos en el servicio
         const formData = this.radicar.formSolicitudBecaDescuento.value;
-        const hasData = Object.values(formData).some(
-            (value) => value !== null && value !== ''
-        );
+        const hasData = Object.values(formData).some((value) => value !== null && value !== '');
 
         if (hasData) {
             // Cargar datos en el formulario desde el servicio
@@ -37,8 +36,7 @@ export class BecaDescuentoComponent implements OnInit {
         }
 
         // Establecer el formulario en el servicio para compartirlo
-        this.radicar.formSolicitudBecaDescuento =
-            this.formSolicitudBecaDescuento;
+        this.radicar.formSolicitudBecaDescuento = this.formSolicitudBecaDescuento;
     }
 
     onUpload(event, fubauto, indice) {
@@ -51,5 +49,17 @@ export class BecaDescuentoComponent implements OnInit {
 
     eliminarDocumento(indice) {
         this.radicar.documentosAdjuntos[indice] = undefined;
+    }
+
+    validarFormulario(): boolean {
+        const tipoBeca = this.formSolicitudBecaDescuento.get('tipoBeca').value;
+        const justificacion = this.formSolicitudBecaDescuento.get('justificacion').value;
+
+        // Validar condiciones
+        if (tipoBeca === 'Descuento en la matrícula' || tipoBeca === 'Beca - Trabajo') {
+            return justificacion.trim() !== ''; // Justificación debe tener texto
+        } else {
+            return this.radicar.documentosAdjuntos[0] !== undefined; // Debe contener un documento
+        }
     }
 }

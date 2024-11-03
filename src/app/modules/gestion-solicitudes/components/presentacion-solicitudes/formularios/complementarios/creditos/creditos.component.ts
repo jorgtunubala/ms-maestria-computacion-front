@@ -62,9 +62,31 @@ export class CreditosComponent implements OnInit {
         this.radicar.adjuntosDeActividades = newActividades;
     }
 
-    onValueChange(value: number, index: number, pesoActividad: number, horasAsignadas: number): void {
-        this.radicar.horasIngresadas[index] = value;
-        this.radicar.horasAsignables[index] = value * pesoActividad;
+    onValueChange(
+        value: number,
+        index: number,
+        pesoActividad: number,
+        codigoActividad: string,
+        tipoCampo: string
+    ): void {
+        if (
+            tipoCampo === 'semanas' &&
+            (codigoActividad == 'DOC_CUR_PREG' || codigoActividad == 'DOC_CUR_POSG') &&
+            this.radicar.horasIngresadas[index]
+        ) {
+            this.radicar.numSemanasIngresado[index] = value;
+            this.radicar.horasAsignables[index] = this.radicar.horasIngresadas[index] * pesoActividad * value;
+        } else if (
+            tipoCampo === 'horas' &&
+            (codigoActividad == 'DOC_CUR_PREG' || codigoActividad == 'DOC_CUR_POSG') &&
+            this.radicar.numSemanasIngresado[index]
+        ) {
+            this.radicar.horasIngresadas[index] = value;
+            this.radicar.horasAsignables[index] = this.radicar.numSemanasIngresado[index] * pesoActividad * value;
+        } else {
+            this.radicar.horasIngresadas[index] = value;
+            this.radicar.horasAsignables[index] = value * pesoActividad;
+        }
     }
 
     onUpload(event: any, fileUpload: any, actividadId: number, docIndex: number) {
@@ -97,6 +119,13 @@ export class CreditosComponent implements OnInit {
             this.radicar.actividadesSeleccionadas.forEach((actividad, indiceActividad) => {
                 if (actividad.peso) {
                     if (this.radicar.horasIngresadas[indiceActividad] < 0) {
+                        formularioValido = false;
+                    }
+
+                    if (
+                        (actividad.codigo == 'DOC_CUR_POSG' || actividad.codigo == 'DOC_CUR_PREG') &&
+                        this.radicar.numSemanasIngresado[indiceActividad] === undefined
+                    ) {
                         formularioValido = false;
                     }
                 }

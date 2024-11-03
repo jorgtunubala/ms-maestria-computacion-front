@@ -33,7 +33,7 @@ export class ApyasistenciaeventoComponent implements OnInit {
 
         this.formApoyoAsistEvento = this.fb.group({
             nombreCongreso: ['', Validators.required],
-            lugarCongreso: ['', Validators.required],
+            lugarEvento: ['', Validators.required],
             tipoCongreso: ['', this.customValidator()],
             tituloPublicacion: ['', Validators.required],
             grupoInvestigacion: ['', Validators.required],
@@ -42,7 +42,6 @@ export class ApyasistenciaeventoComponent implements OnInit {
             entidadBancaria: ['', Validators.required],
             tipoCuenta: ['', this.customValidator()],
             numeroCuenta: ['', Validators.required],
-            numeroCedulaAsociada: ['', Validators.required],
             direccionResidencia: ['', Validators.required],
         });
 

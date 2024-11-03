@@ -22,6 +22,7 @@ import { CreditosComponent } from './complementarios/creditos/creditos.component
 import { AvalpracticadocenteComponent } from './complementarios/avalpracticadocente/avalpracticadocente.component';
 import { ApyinscripcionComponent } from './complementarios/apyinscripcion/apyinscripcion.component';
 import { OtrasolicitudComponent } from './complementarios/otrasolicitud/otrasolicitud.component';
+import { BecaDescuentoComponent } from './complementarios/becadescuento/becadescuento.component';
 
 @Component({
     selector: 'app-formularios',
@@ -65,6 +66,8 @@ export class FormulariosComponent implements OnInit {
     formAvalPracDocente: AvalpracticadocenteComponent;
     @ViewChild(OtrasolicitudComponent)
     formOtraSolicitud: OtrasolicitudComponent;
+    @ViewChild(BecaDescuentoComponent)
+    formBecaDescuento: BecaDescuentoComponent;
 
     identificadorSolicitante: string = 'ctorres@unicauca.edu.co';
     tiposIdentificacion: string[];
@@ -311,6 +314,12 @@ export class FormulariosComponent implements OnInit {
             case 'AV_COMI_PR':
                 estadoGeneral =
                     this.formAvalPracDocente.validarFormulario() && this.formListaTutores.obtenerEstadoFormulario();
+
+                break;
+
+            case 'SO_BECA':
+                estadoGeneral =
+                    this.formBecaDescuento.validarFormulario() && this.formListaTutores.obtenerEstadoFormulario();
 
                 break;
             case 'SO_OTRA':

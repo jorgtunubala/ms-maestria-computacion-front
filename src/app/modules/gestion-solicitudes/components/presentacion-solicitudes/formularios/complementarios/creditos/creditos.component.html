@@ -54,32 +54,59 @@
                 </ng-container>
 
                 <ng-container *ngIf="actividad.peso">
-                    <div class="field col-12 md:col-6 mb-4" style="margin-left: 0px">
-                        <label for="intensidadCred" class="font-semibold" style="display: block">
-                            <ng-container *ngIf="actividad.codigo === 'CUR_COR_SEM'; else defaultLabel">
-                                Total horas curso
-                            </ng-container>
-                            <ng-template #defaultLabel> Intensidad horaria semanal de la asignatura </ng-template>
-                        </label>
-                        <p-inputNumber
-                            [showButtons]="true"
-                            [min]="1"
-                            [(ngModel)]="radicar.horasIngresadas[i]"
-                            (onInput)="onValueChange($event.value, i, actividad.peso, actividad.horasAsignadas)"
-                            buttonLayout="horizontal"
-                            spinnerMode="horizontal"
-                            inputId="intensidadCred"
-                            decrementButtonClass="p-button-primary"
-                            incrementButtonClass="p-button-primary"
-                            incrementButtonIcon="pi pi-plus"
-                            decrementButtonIcon="pi pi-minus"
-                        >
-                        </p-inputNumber>
+                    <div class="field col-12 md:col-6 mb-4" style="display: flex; align-items: center; gap: 16px">
+                        <div style="flex: 1">
+                            <label for="intensidadCred" class="font-semibold mb-3" style="display: block">
+                                <ng-container *ngIf="actividad.codigo === 'CUR_COR_SEM'; else defaultLabel">
+                                    Total horas curso
+                                </ng-container>
+                                <ng-template #defaultLabel> Intensidad horaria semanal de la asignatura </ng-template>
+                            </label>
+                            <p-inputNumber
+                                [showButtons]="true"
+                                [min]="1"
+                                [(ngModel)]="radicar.horasIngresadas[i]"
+                                (onInput)="onValueChange($event.value, i, actividad.peso, actividad.codigo, 'horas')"
+                                buttonLayout="horizontal"
+                                spinnerMode="horizontal"
+                                inputId="intensidadCred"
+                                decrementButtonClass="p-button-primary"
+                                incrementButtonClass="p-button-primary"
+                                incrementButtonIcon="pi pi-plus"
+                                decrementButtonIcon="pi pi-minus"
+                            >
+                            </p-inputNumber>
+                        </div>
 
-                        <ng-container *ngIf="radicar.horasIngresadas[i]">
-                            &nbsp;Horas a reconocer:
-                            {{ radicar.horasIngresadas[i] * actividad.peso }}
-                        </ng-container>
+                        <div
+                            *ngIf="actividad.codigo === 'DOC_CUR_POSG' || actividad.codigo === 'DOC_CUR_PREG'"
+                            style="flex: 1"
+                        >
+                            <label for="numeroDeSemanas" class="font-semibold mb-3" style="display: block">
+                                Número de semanas del semestre
+                            </label>
+                            <p-inputNumber
+                                [showButtons]="true"
+                                [min]="1"
+                                [(ngModel)]="radicar.numSemanasIngresado[i]"
+                                (onInput)="onValueChange($event.value, i, actividad.peso, actividad.codigo, 'semanas')"
+                                buttonLayout="horizontal"
+                                spinnerMode="horizontal"
+                                inputId="numeroDeSemanas"
+                                decrementButtonClass="p-button-primary"
+                                incrementButtonClass="p-button-primary"
+                                incrementButtonIcon="pi pi-plus"
+                                decrementButtonIcon="pi pi-minus"
+                            >
+                            </p-inputNumber>
+                        </div>
+
+                        <div
+                            *ngIf="radicar.horasIngresadas[i]"
+                            style="margin-left: 10px; display: inline-block; white-space: nowrap"
+                        >
+                            &nbsp;Horas a reconocer: {{ radicar.horasAsignables[i] }}
+                        </div>
                     </div>
                 </ng-container>
 

@@ -244,6 +244,8 @@ export class AlmacenarSolicitudService {
             numeroCuenta,
             numeroCedulaAsociada,
             direccionResidencia,
+            grupoInvestigacion,
+            lugarEvento,
         } = this.radicar.formApoyoAsistEvento.getRawValue();
 
         const [fechaInicio, fechaFin] = [
@@ -266,6 +268,8 @@ export class AlmacenarSolicitudService {
             numeroCedulaAsociada,
             direccionResidencia,
             documentosAdjuntos: docsAdjuntos,
+            grupoInvestigacion,
+            lugarEvento,
         };
 
         return this.construirObjAGuardar('AP_ECON_ASI', datos);
@@ -327,6 +331,7 @@ export class AlmacenarSolicitudService {
 
         const datos: Modelos.DatosReconoCreditos = {
             documentosAdjuntos: docsAdjuntos,
+            enlacesAdjuntos: this.radicar.enlacesAdjuntos,
         };
 
         return this.construirObjAGuardar('RE_CRED_PUB', datos);
@@ -344,6 +349,7 @@ export class AlmacenarSolicitudService {
 
         const datos: Modelos.DatosReconoCreditos = {
             documentosAdjuntos: documentos,
+            enlacesAdjuntos: this.radicar.enlacesAdjuntos,
         };
 
         return this.construirObjAGuardar('RE_CRED_PAS', datos);

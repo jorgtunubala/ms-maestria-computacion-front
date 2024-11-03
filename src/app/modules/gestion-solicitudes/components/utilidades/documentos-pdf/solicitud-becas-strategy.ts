@@ -24,7 +24,9 @@ export class SolicitudDeBeca implements DocumentoPDFStrategy {
         const textAsunto = `Asunto: Solicitud de ${tipoBeca}\n`;
 
         // Texto para la solicitud
-        const textSolicitud = `Reciban cordial saludo, comedidamente me dirijo a ustedes con el fin de solicitar el otorgamiento de una "${tipoBeca}".`;
+        const textSolicitud = `Reciban cordial saludo, comedidamente me dirijo a ustedes con el fin de solicitar el otorgamiento de ${
+            tipoBeca === 'Descuento en la matrícula' ? 'un' : 'una'
+        } "${tipoBeca}".`;
 
         // Texto adicional según el tipo de beca
         const textMotivoBeca = ` La presente solicitud obedece a que ${justificacion}`;
@@ -37,7 +39,7 @@ export class SolicitudDeBeca implements DocumentoPDFStrategy {
         let cursorY = this.pdfService.agregarContenidoComun(doc, marcaDeAgua);
 
         // Añadir asunto y solicitud según el tipo de beca
-        if (tipoBeca === 'Beca - Trabajo') {
+        if (tipoBeca === 'Beca - Trabajo' || tipoBeca === 'Descuento en la matrícula') {
             cursorY = this.pdfService.agregarAsuntoYSolicitud(
                 doc,
                 cursorY,
@@ -66,7 +68,11 @@ export class SolicitudDeBeca implements DocumentoPDFStrategy {
         cursorY = this.pdfService.agregarEspaciosDeFirmas(doc, cursorY, false, true, marcaDeAgua);
 
         // Añadir listado de adjuntos si es necesario
-        if (tipoBeca === 'Beca - Convenio (cidesco)' || tipoBeca === 'Beca - Mejor promedio en pregrado') {
+        if (
+            tipoBeca === 'Beca - Convenio (cidesco)' ||
+            tipoBeca === 'Beca - Mejor promedio en pregrado' ||
+            (tipoBeca === 'Descuento en la matrícula' && this.servicioRadicar.documentosAdjuntos[0] !== undefined)
+        ) {
             this.pdfService.agregarListadoAdjuntos(doc, cursorY, textAdjuntos, marcaDeAgua);
         }
 
