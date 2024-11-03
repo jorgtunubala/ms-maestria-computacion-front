@@ -70,6 +70,7 @@ export class VisorComponent implements OnInit, OnDestroy {
             async (infoSolicitud: DatosSolicitudRequest) => {
                 this.datosSolicitud = infoSolicitud;
                 this.gestor.infoSolicitud = infoSolicitud;
+                console.log(this.gestor.infoSolicitud);
                 this.abrirOficioPdf();
                 this.extraerAdjuntos(this.solicitudSeleccionada.codigoSolicitud);
                 this.gestor.estadoSolicitud = infoSolicitud.datosComunSolicitud.estadoSolicitud;
@@ -185,6 +186,7 @@ export class VisorComponent implements OnInit, OnDestroy {
                 this.extraerAdjuntosActividadDocente(procesarDocumentosAdjuntos);
                 break;
             case 'SO_BECA':
+            //this.procesarDocumentosAdjuntos(this.datosSolicitud.datoSolicitudBeca.formatoSolicitudBeca);
             case 'SO_DESC':
             default:
                 // No se realiza ninguna acción para estos tipos de solicitud
