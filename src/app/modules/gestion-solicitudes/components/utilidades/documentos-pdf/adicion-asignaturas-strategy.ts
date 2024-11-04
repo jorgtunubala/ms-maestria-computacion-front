@@ -54,7 +54,7 @@ export class RespuestaComiteAdicionAsignaturas implements DocumentoPDFStrategy {
         const mesEnLetras = this.servicioUtilidades.obtenerMesEnLetras(Number(mes));
 
         const asunto = `Asunto: Respuesta a Solicitud ${radicado} de Adición de Asignaturas\n`;
-        const cuerpo = `Reciba un cordial saludo. Me dirijo a usted para informar que en la sesión del ${dia} de ${mesEnLetras} de ${año}, el Comité de Programa revisó su solicitud con radicado ${radicado}, referente a la Adición de Asignaturas, decidiendo **NO AVALAR** la solicitud. A continuación se expone el concepto:`;
+        const cuerpo = `Reciba un cordial saludo. Me dirijo a usted para informar que en la sesión del ${dia} de ${mesEnLetras} de ${año}, el Comité de Programa revisó su solicitud con radicado ${radicado}, referente a la Adición de Asignaturas, decidiendo no avalar la solicitud. A continuación se expone el concepto:`;
         const concepto = `\n${this.servicioGestor.conceptoComite.conceptoComite}`;
         const remitente = `${this.servicioGestor.InfoCoordinador.nombreCompleto.toUpperCase()}\n${
             this.servicioGestor.InfoCoordinador.tratamiento == 'sr.' ? 'Coordinador' : 'Coordinadora'
@@ -90,10 +90,10 @@ export class OficioConcejoAdicionAsignaturas implements DocumentoPDFStrategy {
         const { nombreSolicitante, apellidoSolicitante, numeroIdentSolicitante, tipoIdentSolicitante } =
             this.servicioGestor.infoSolicitud.datosComunSolicitud;
 
-        const asunto = `Asunto: Solicitud de Adición de Asignaturas para el/la estudiante ${nombreSolicitante} ${apellidoSolicitante}\n`;
+        const asunto = `Asunto: Solicitud de Adición de Asignaturas para estudiante ${nombreSolicitante} ${apellidoSolicitante}\n`;
         const cuerpo = `${this.servicioGestor.InfoDecano.tratamiento == 'sr.' ? 'Estimado' : 'Estimada'} ${
             this.servicioGestor.InfoDecano.nombreCompleto.split(' ')[0]
-        }, reciba un cordial saludo. Me dirijo a usted para informar que el ${dia} de ${mesEnLetras} de ${año}, el Comité de Programa avaló la adición de las asignaturas para el/la estudiante ${nombreSolicitante.toUpperCase()} ${apellidoSolicitante.toUpperCase()}, identificado con ${tipoIdentSolicitante} ${numeroIdentSolicitante}. Agradezco su colaboración en las gestiones necesarias para el registro de dichas adiciones.`;
+        }, reciba un cordial saludo. Me dirijo a usted para informar que el ${dia} de ${mesEnLetras} de ${año}, el Comité de Programa avaló la adición de las asignaturas solicitadas por ${nombreSolicitante.toUpperCase()} ${apellidoSolicitante.toUpperCase()}, estudiante del programa de Maestría en Computación, con ${tipoIdentSolicitante} ${numeroIdentSolicitante}. Agradezco su colaboración en las gestiones necesarias para el registro de dichas adiciones.`;
         const remitente = `${this.servicioGestor.InfoCoordinador.nombreCompleto.toUpperCase()}\n${
             this.servicioGestor.InfoCoordinador.tratamiento == 'sr.' ? 'Coordinador' : 'Coordinadora'
         } Maestría en Computación`;

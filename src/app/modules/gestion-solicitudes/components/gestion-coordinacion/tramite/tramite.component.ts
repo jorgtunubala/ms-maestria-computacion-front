@@ -671,20 +671,31 @@ export class TramiteComponent implements OnInit {
         return fecha;
     }
 
-    private hayAsignaturasAprobadas(asignaturas: any[]): boolean {
-        return asignaturas && asignaturas.length > 0 && asignaturas.some((asignatura) => asignatura.aprobado);
-    }
-
     private validarFormularioComite(): boolean {
+        // Paso 1: Verificar si alguna de las listas tiene actividades (asegurando que no sean null)
+        const tieneActividades =
+            (this.avalComite.asignaturasAprobadas?.length || 0) > 0 ||
+            (this.avalComite.asignaturasHomologadas?.length || 0) > 0 ||
+            (this.avalComite.asignaturasOtroPrograma?.length || 0) > 0 ||
+            (this.avalComite.reconocimientoCreditosPD?.length || 0) > 0 ||
+            (this.avalComite.avalActPracticaDocente?.length || 0) > 0;
+
+        // Paso 2: Verificar si al menos una actividad está aprobada en las listas, solo si tiene actividades
         const hayAsignaturasAprobadas =
-            this.hayAsignaturasAprobadas(this.avalComite.asignaturasAprobadas) ||
-            this.hayAsignaturasAprobadas(this.avalComite.asignaturasHomologadas) ||
-            this.hayAsignaturasAprobadas(this.avalComite.asignaturasOtroPrograma) ||
-            this.hayAsignaturasAprobadas(this.avalComite.reconocimientoCreditosPD) ||
-            this.hayAsignaturasAprobadas(this.avalComite.avalActPracticaDocente);
+            tieneActividades &&
+            (this.hayAsignaturasAprobadas(this.avalComite.asignaturasAprobadas || []) ||
+                this.hayAsignaturasAprobadas(this.avalComite.asignaturasHomologadas || []) ||
+                this.hayAsignaturasAprobadas(this.avalComite.asignaturasOtroPrograma || []) ||
+                this.hayAsignaturasAprobadas(this.avalComite.reconocimientoCreditosPD || []) ||
+                this.hayAsignaturasAprobadas(this.avalComite.avalActPracticaDocente || []));
+
+        console.log('TIENE ACTIVIDADES? ' + tieneActividades);
+        console.log('HAY ASIGNATURAS APROBADAS? ' + hayAsignaturasAprobadas);
 
         // Verificación de que la fecha es válida
         const fechaValida = this.fechaSeleccionada instanceof Date && !isNaN(this.fechaSeleccionada.getTime());
+
+        console.log('FECHA VALIDA? ' + fechaValida);
 
         return (
             this.avalComite.avaladoComite !== '' && // Verificación de que no sea vacío
@@ -692,17 +703,33 @@ export class TramiteComponent implements OnInit {
             fechaValida && // Asegura que la fecha no sea nula ni inválida
             this.avalComite.numeroActa !== '' &&
             (this.avalComite.avaladoComite === 'No' || // Si es 'No', no requiere asignaturas aprobadas
-                hayAsignaturasAprobadas) // Si es 'Sí', debe haber asignaturas aprobadas en alguna lista
+                !tieneActividades || // Si no hay actividades, no requiere asignaturas aprobadas
+                hayAsignaturasAprobadas) // Si hay actividades, se verifica que al menos una esté aprobada
         );
     }
 
+    // Método auxiliar para verificar si al menos una actividad está aprobada en una lista dada
+    private hayAsignaturasAprobadas(lista: any[]): boolean {
+        return lista.some((actividad) => actividad.aprobado === true);
+    }
+
     private validarFormularioConcejo(): boolean {
+        // Paso 1: Verificar si alguna de las listas tiene actividades (asegurando que no sean null)
+        const tieneActividades =
+            (this.respuestaConsejo.asignaturasAprobadas?.length || 0) > 0 ||
+            (this.respuestaConsejo.asignaturasHomologadas?.length || 0) > 0 ||
+            (this.respuestaConsejo.asignaturasOtroPrograma?.length || 0) > 0 ||
+            (this.respuestaConsejo.reconocimientoCreditosPD?.length || 0) > 0 ||
+            (this.respuestaConsejo.avalActPracticaDocente?.length || 0) > 0;
+
+        // Paso 2: Verificar si al menos una actividad está aprobada en las listas, solo si tiene actividades
         const hayAsignaturasAprobadas =
-            this.hayAsignaturasAprobadas(this.respuestaConsejo.asignaturasAprobadas) ||
-            this.hayAsignaturasAprobadas(this.respuestaConsejo.asignaturasHomologadas) ||
-            this.hayAsignaturasAprobadas(this.respuestaConsejo.asignaturasOtroPrograma) ||
-            this.hayAsignaturasAprobadas(this.respuestaConsejo.reconocimientoCreditosPD) ||
-            this.hayAsignaturasAprobadas(this.respuestaConsejo.avalActPracticaDocente);
+            tieneActividades &&
+            (this.hayAsignaturasAprobadas(this.respuestaConsejo.asignaturasAprobadas || []) ||
+                this.hayAsignaturasAprobadas(this.respuestaConsejo.asignaturasHomologadas || []) ||
+                this.hayAsignaturasAprobadas(this.respuestaConsejo.asignaturasOtroPrograma || []) ||
+                this.hayAsignaturasAprobadas(this.respuestaConsejo.reconocimientoCreditosPD || []) ||
+                this.hayAsignaturasAprobadas(this.respuestaConsejo.avalActPracticaDocente || []));
 
         // Validación de que la fecha del consejo es válida
         const fechaValida = this.fechaConsejo instanceof Date && !isNaN(this.fechaConsejo.getTime());
@@ -712,7 +739,8 @@ export class TramiteComponent implements OnInit {
             this.respuestaConsejo.conceptoConcejo !== '' &&
             fechaValida &&
             (this.respuestaConsejo.avaladoConcejo === 'No' || // Si es "No", no requiere asignaturas aprobadas
-                hayAsignaturasAprobadas) // Si es "Si", debe haber al menos una asignatura aprobada en alguna lista
+                !tieneActividades || // Si no hay actividades, no requiere asignaturas aprobadas
+                hayAsignaturasAprobadas) // Si hay actividades, se verifica que al menos una esté aprobada
         );
     }
 

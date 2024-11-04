@@ -59,7 +59,7 @@ export class RespuestaComiteAplazamientoSemestre implements DocumentoPDFStrategy
         const mesEnLetras = this.servicioUtilidades.obtenerMesEnLetras(Number(fechaComite[1]));
 
         const txtAsunto = `Asunto: Respuesta a Solicitud ${radicado} de Aplazamiento de Semestre\n`;
-        const txtCuerpo = `Reciba un cordial saludo. Me dirijo a usted para informar que en sesión del día ${fechaComite[0]} de ${mesEnLetras} de ${fechaComite[2]}, el Comité de Programa revisó su solicitud con radicado ${radicado} referente al Aplazamiento del semestre ${semestre}, decidiendo **NO AVALAR** la solicitud y emite el siguiente concepto:`;
+        const txtCuerpo = `Reciba un cordial saludo. Me dirijo a usted para informar que en sesión del día ${fechaComite[0]} de ${mesEnLetras} de ${fechaComite[2]}, el Comité de Programa revisó su solicitud con radicado ${radicado} referente al Aplazamiento del semestre ${semestre}, decidiendo no avalar la solicitud y emite el siguiente concepto:`;
         const txtConcepto = `\n${this.servicioGestor.conceptoComite.conceptoComite}`;
         const txtRemitente = `${this.servicioGestor.InfoCoordinador.nombreCompleto.toUpperCase()}\n${
             this.servicioGestor.InfoCoordinador.tratamiento == 'sr.' ? 'Coordinador' : 'Coordinadora'
@@ -102,14 +102,14 @@ export class OficioConcejoAplazamientoSemestre implements DocumentoPDFStrategy {
         const { nombreSolicitante, apellidoSolicitante, numeroIdentSolicitante, tipoIdentSolicitante } =
             this.servicioGestor.infoSolicitud.datosComunSolicitud;
 
-        const textAsunto = `Asunto: Solicitud de Aplazamiento de Semestre para el/la estudiante ${nombreSolicitante} ${apellidoSolicitante}\n`;
+        const textAsunto = `Asunto: Solicitud de Aplazamiento de Semestre para estudiante ${nombreSolicitante} ${apellidoSolicitante}\n`;
         const textCuerpo = `${this.servicioGestor.InfoDecano.tratamiento == 'sr.' ? 'Estimado' : 'Estimada'} ${
             this.servicioGestor.InfoDecano.nombreCompleto.split(' ')[0]
         }, reciba un cordial saludo. Comedidamente me dirijo a usted con el fin de informar que en sesión del día ${
             fechaComite[0]
         } de ${mesEnLetras} de ${
             fechaComite[2]
-        }, el Comité de Programa avaló el aplazamiento del semestre ${semestre} solicitado por el/la estudiante ${nombreSolicitante.toUpperCase()} ${apellidoSolicitante.toUpperCase()}, identificado con ${tipoIdentSolicitante} ${numeroIdentSolicitante}. Por lo tanto, muy formalmente solicito su colaboración para realizar las gestiones necesarias en este caso.`;
+        }, el Comité de Programa avaló el aplazamiento del semestre ${semestre} solicitado por ${nombreSolicitante.toUpperCase()} ${apellidoSolicitante.toUpperCase()}, estudiante del programa de Maestría en Computación, con ${tipoIdentSolicitante} ${numeroIdentSolicitante}. Por lo tanto, muy formalmente solicito su colaboración para realizar las gestiones necesarias en este caso.`;
         const txtRemitente = `${this.servicioGestor.InfoCoordinador.nombreCompleto.toUpperCase()}\n${
             this.servicioGestor.InfoCoordinador.tratamiento == 'sr.' ? 'Coordinador' : 'Coordinadora'
         } Maestría en Computación`;

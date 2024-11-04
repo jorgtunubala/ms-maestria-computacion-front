@@ -84,8 +84,8 @@ export class RespuestaComiteApoyoEconomicoCongresos implements DocumentoPDFStrat
         const fechaComite = this.servicioGestor.conceptoComite.fechaAval.split('/');
         const mesEnLetras = this.servicioUtilidades.obtenerMesEnLetras(Number(fechaComite[1]));
 
-        const txtAsunto = `Asunto: Respuesta a Solicitud ${radicado} de Apoyo Económico para asistencia a congreso presentando artículos\n`;
-        const txtCuerpo = `Reciba un cordial saludo. Por medio de la presente me dirijo a usted con el fin de informar que en sesión del día ${fechaComite[0]} de ${mesEnLetras} de ${fechaComite[2]} el Comité de Programa revisó su solicitud con radicado ${radicado} referente al apoyo económico para asistencia a congreso, decidiendo **NO AVALAR** la solicitud y emite el siguiente concepto:`;
+        const txtAsunto = `Asunto: Respuesta a solicitud ${radicado} de apoyo económico para asistencia a congreso presentando artículos\n`;
+        const txtCuerpo = `Reciba un cordial saludo. Por medio de la presente me dirijo a usted con el fin de informar que en sesión del día ${fechaComite[0]} de ${mesEnLetras} de ${fechaComite[2]} el Comité de Programa revisó su solicitud con radicado ${radicado} referente al apoyo económico para asistencia a congreso, decidiendo no avalar la solicitud y emite el siguiente concepto:`;
         const txtConcepto = `\n${this.servicioGestor.conceptoComite.conceptoComite}`;
         const txtRemitente = `${this.servicioGestor.InfoCoordinador.nombreCompleto.toUpperCase()}\n${
             this.servicioGestor.InfoCoordinador.tratamiento == 'sr.' ? 'Coordinador' : 'Coordinadora'
@@ -126,7 +126,7 @@ export class OficioConcejoApoyoEconomicoCongresos implements DocumentoPDFStrateg
         const { nombreSolicitante, apellidoSolicitante, numeroIdentSolicitante, tipoIdentSolicitante } =
             this.servicioGestor.infoSolicitud.datosComunSolicitud;
 
-        const textAsunto = `Asunto: Solicitud de apoyo económico para el/la estudiante ${nombreSolicitante} ${apellidoSolicitante}\n`;
+        const textAsunto = `Asunto: Solicitud de apoyo económico para estudiante ${nombreSolicitante} ${apellidoSolicitante}\n`;
         const textCuerpo = `${this.servicioGestor.InfoDecano.tratamiento == 'sr.' ? 'Estimado' : 'Estimada'} ${
             this.servicioGestor.InfoDecano.nombreCompleto.split(' ')[0]
         }, reciba un cordial saludo. Comedidamente me dirijo a usted con el fin de informar que en sesión del día ${

@@ -52,7 +52,7 @@ export class RespuestaSolicitudDeOtroTipo implements DocumentoPDFStrategy {
         const mesEnLetras = this.servicioUtilidades.obtenerMesEnLetras(Number(mes));
 
         const asunto = `Asunto: Respuesta a Solicitud ${radicado} de Adición de Asignaturas\n`;
-        const cuerpo = `Reciba un cordial saludo. Me dirijo a usted para informar que en la sesión del ${dia} de ${mesEnLetras} de ${año}, el Comité de Programa revisó su solicitud con radicado ${radicado}, referente a la Adición de Asignaturas, decidiendo **NO AVALAR** la solicitud. A continuación se expone el concepto:`;
+        const cuerpo = `Reciba un cordial saludo. Me dirijo a usted para informar que en la sesión del ${dia} de ${mesEnLetras} de ${año}, el Comité de Programa revisó su solicitud con radicado ${radicado}, referente a la Adición de Asignaturas, decidiendo no avalar la solicitud. A continuación se expone el concepto:`;
         const concepto = `\n${this.servicioGestor.conceptoComite.conceptoComite}`;
         const remitente = `${this.servicioGestor.InfoCoordinador.nombreCompleto.toUpperCase()}\n${
             this.servicioGestor.InfoCoordinador.tratamiento == 'sr.' ? 'Coordinador' : 'Coordinadora'

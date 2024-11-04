@@ -71,7 +71,7 @@ export class RespuestaComiteHomologAsignaturasPos implements DocumentoPDFStrateg
         const mesEnLetras = this.servicioUtilidades.obtenerMesEnLetras(Number(mes));
 
         const asunto = `Asunto: Respuesta a Solicitud ${radicado} de homologación de asignaturas\n`;
-        const cuerpo = `Reciba un cordial saludo. Me dirijo a usted para informar que en la sesión del ${dia} de ${mesEnLetras} de ${año}, el Comité de Programa revisó su solicitud con radicado ${radicado}, referente a la homologación de asignaturas, decidiendo **NO AVALAR** la solicitud. A continuación se expone el concepto:`;
+        const cuerpo = `Reciba un cordial saludo. Me dirijo a usted para informar que en la sesión del ${dia} de ${mesEnLetras} de ${año}, el Comité de Programa revisó su solicitud con radicado ${radicado}, referente a la homologación de asignaturas, decidiendo no avalar la solicitud. A continuación se expone el concepto:`;
         const concepto = `\n${this.servicioGestor.conceptoComite.conceptoComite}`;
         const remitente = `${this.servicioGestor.InfoCoordinador.nombreCompleto.toUpperCase()}\n${
             this.servicioGestor.InfoCoordinador.tratamiento == 'sr.' ? 'Coordinador' : 'Coordinadora'

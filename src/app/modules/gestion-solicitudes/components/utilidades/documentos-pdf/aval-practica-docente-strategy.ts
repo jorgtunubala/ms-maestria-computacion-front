@@ -187,7 +187,7 @@ export class RespuestaConcejoAvalPracticaDocente implements DocumentoPDFStrategy
         const fechaConcejo = this.servicioGestor.conceptoConsejo.fechaAval.split('/');
         const mesEnLetras = this.servicioUtilidades.obtenerMesEnLetras(Number(fechaConcejo[1]));
 
-        const txtAsunto = `Asunto: Respuesta a Solicitud ${radicado} de Aval para actividades de práctica docente\n`;
+        const txtAsunto = `Asunto: Respuesta a Solicitud ${radicado} de Aval para realizar actividades de práctica docente\n`;
         const txtCuerpo = `Reciba un cordial saludo. Por medio de la presente me dirijo a usted con el fin de informar que el día ${
             fechaConcejo[0]
         } de ${mesEnLetras} de ${

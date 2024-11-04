@@ -75,22 +75,6 @@ export class VisoravalComponent implements OnInit {
 
     ngOnInit(): void {
         this.recuperarSolicitudSeleccionada();
-
-        /*
-        try {
-            this.cargarDatosOficio();
-        } catch (error) {
-            const isExpectedError =
-                error instanceof TypeError &&
-                error.message.includes('idSolicitud');
-
-            if (isExpectedError) {
-                this.router.navigate(['/gestionsolicitudes/avales/pendientes']);
-            } else {
-                console.error('Error no esperado:', error);
-            }
-        }
-            */
     }
 
     // Recupera la solicitud seleccionada del localStorage y carga los datos
@@ -103,54 +87,6 @@ export class VisoravalComponent implements OnInit {
             this.cargarDatosSolicitud();
         }
     }
-
-    /*
-    capturarInformacionAdjunta() {
-        if (this.radicar.datosAsignaturasExternas?.length > 0) {
-            this.radicar.datosAsignaturasExternas.forEach((asignatura) => {
-                if (asignatura.contenidos) {
-                    this.documentosAdjuntos.push(asignatura.contenidos);
-                }
-                if (asignatura.cartaAceptacion) {
-                    this.documentosAdjuntos.push(asignatura.cartaAceptacion);
-                }
-            });
-        }
-
-        if (this.radicar.datosAsignaturasAHomologar?.length > 0) {
-            this.radicar.datosAsignaturasAHomologar.forEach((asignatura) => {
-                if (asignatura.contenidos) {
-                    this.documentosAdjuntos.push(asignatura.contenidos);
-                }
-            });
-        }
-
-        if (this.radicar.documentosAdjuntos?.length > 0) {
-            this.documentosAdjuntos = this.documentosAdjuntos.concat(
-                this.radicar.documentosAdjuntos
-            );
-        }
-
-        if (this.radicar.adjuntosDeActividades) {
-            Object.values(this.radicar.adjuntosDeActividades).forEach(
-                (adjuntosActividad) => {
-                    if (adjuntosActividad) {
-                        if (adjuntosActividad.archivos?.length > 0) {
-                            this.documentosAdjuntos.push(
-                                ...adjuntosActividad.archivos
-                            );
-                        }
-                        if (adjuntosActividad.enlaces?.length > 0) {
-                            this.enlacesAdjuntos.push(
-                                ...adjuntosActividad.enlaces
-                            );
-                        }
-                    }
-                }
-            );
-        }
-    }
-        */
 
     // Extrae los archivos adjuntos según el tipo de solicitud
     extraerAdjuntos(tipoSolicitud: string): void {

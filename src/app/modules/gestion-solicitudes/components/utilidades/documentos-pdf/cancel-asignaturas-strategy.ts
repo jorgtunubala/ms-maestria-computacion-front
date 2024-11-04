@@ -88,7 +88,7 @@ export class RespuestaComiteCancelacionAsignaturas implements DocumentoPDFStrate
         const mesEnLetras = this.servicioUtilidades.obtenerMesEnLetras(Number(fechaComite[1]));
 
         const txtAsunto = `Asunto: Respuesta a Solicitud ${radicado} de Cancelación de Asignaturas\n`;
-        const txtCuerpo = `Reciba un cordial saludo. Por medio de la presente me dirijo a usted con el fin de informar que en sesión del día ${fechaComite[0]} de ${mesEnLetras} de ${fechaComite[2]} el Comité de Programa revisó su solicitud con radicado ${radicado} referente a la Cancelación de Asignaturas, decidiendo **NO AVALAR** la solicitud y emite el siguiente concepto:`;
+        const txtCuerpo = `Reciba un cordial saludo. Por medio de la presente me dirijo a usted con el fin de informar que en sesión del día ${fechaComite[0]} de ${mesEnLetras} de ${fechaComite[2]} el Comité de Programa revisó su solicitud con radicado ${radicado} referente a la Cancelación de Asignaturas, decidiendo no avalar la solicitud y emite el siguiente concepto:`;
         const txtConcepto = `\n${this.servicioGestor.conceptoComite.conceptoComite}`;
         const txtRemitente = `${this.servicioGestor.InfoCoordinador.nombreCompleto.toUpperCase()}\n${
             this.servicioGestor.InfoCoordinador.tratamiento == 'sr.' ? 'Coordinador' : 'Coordinadora'
