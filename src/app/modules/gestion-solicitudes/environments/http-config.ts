@@ -1,7 +1,9 @@
+import { gestion_solicitudes } from 'src/environments/environment';
+
 export const httpConfig = {
-    apiUrl: 'http://localhost:8095/msmaestriac/gestionSolicitud',
-    apiUrlSub: 'http://localhost:8095/msmaestriac/gestionSubtipos',
-    apiGesion: 'http://localhost:8095/msmaestriac',
+    apiUrl: `${gestion_solicitudes.api_url}/gestionSolicitud`,
+    apiUrlSub: `${gestion_solicitudes.api_url}/gestionSubtipos`,
+    apiGesion: `${gestion_solicitudes.api_url}`,
     obtenerTiposDeSolicitudUrl: '/tiposSolicitud',
     obtenerRequisitosDeSolicitudUrl: '/requisitoSolicitud/',
     obtenerInfoPersonalSolicitanteUrl: '/obtenerInfoPersonal/',
