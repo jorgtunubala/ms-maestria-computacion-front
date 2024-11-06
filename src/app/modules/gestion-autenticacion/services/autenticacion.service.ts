@@ -1,135 +1,55 @@
-import { EventEmitter, Injectable } from '@angular/core';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { MenuService } from 'src/app/core/services/app.menu.service';
-import { DynamicloginComponent } from '../components/dynamiclogin/dynamiclogin.component';
+import { Injectable, EventEmitter } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-
-interface Usuario {
-    nombreCompleto: string;
-    rol: string;
-    correo: string;
-    username: string;
-    password: string;
-}
-
-const usuarios: Usuario[] = [
-    {
-        nombreCompleto: 'Juan Pérez',
-        rol: 'Admin',
-        correo: 'juan@example.com',
-        username: 'admin',
-        password: 'adm',
-    },
-    {
-        nombreCompleto: 'María García',
-        rol: 'estudiante',
-        correo: 'juliiml95@gmail.com',
-        username: 'estudiante',
-        password: 'est',
-    },
-    {
-        nombreCompleto: 'Carlos Martinez',
-        rol: 'docente',
-        correo: 'julianaml_95@hotmail.com',
-        username: 'docente',
-        password: 'doc',
-    },
-    {
-        nombreCompleto: 'Andrea Zuluaga',
-        rol: 'coordinador',
-        correo: 'julimlps5@gmail.com',
-        username: 'coordinador',
-        password: 'coo',
-    },
-];
+import { MenuService } from 'src/app/core/services/app.menu.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class AutenticacionService {
     isLoggedInStatus: boolean = false;
-    userRole: string = '';
-    loggedInUser: Usuario | null = null;
-    dialogRef: DynamicDialogRef;
-
     loginSuccess$: EventEmitter<void> = new EventEmitter<void>();
+    private apiUrl = 'http://localhost:8080'; // URL del backend que redirige a Google
 
-    constructor(
-        private dialogService: DialogService,
-        private menuService: MenuService,
-        private router: Router
-    ) {
-        // Verificar el estado de inicio de sesión al inicializar el servicio
-        const storedUser = localStorage.getItem('loggedInUser');
-        if (storedUser) {
-            this.isLoggedInStatus = true;
-            this.loggedInUser = JSON.parse(storedUser);
-        }
+    constructor(private menuService: MenuService, private router: Router, private http: HttpClient) {}
+
+    loginWithGoogle(): void {
+        // Redirecciona al usuario a la URL de autenticación de Google
+        window.location.href = `${this.apiUrl}/oauth2/authorization/google`;
     }
 
-    login(username: string, password: string): boolean {
-        const usuarioEncontrado: Usuario = this.buscarUsuario(
-            username,
-            password
-        );
+    handleGoogleLoginResponse(token: string): void {
+        // Guardar el token en localStorage para futuras solicitudes
+        localStorage.setItem('googleToken', token);
+        this.isLoggedInStatus = true;
 
-        if (usuarioEncontrado) {
-            this.isLoggedInStatus = true;
-            this.loggedInUser = usuarioEncontrado;
-            localStorage.setItem(
-                'loggedInUser',
-                JSON.stringify(this.loggedInUser)
-            );
-
-            // Emitir la alerta después de que loggedInUser se actualice correctamente
-            this.menuService.emitAlertLogin();
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    buscarUsuario(username: string, password: string): Usuario | undefined {
-        return usuarios.find(
-            (user) => user.username === username && user.password === password
-        );
+        // Emitir evento de éxito de inicio de sesión
+        this.menuService.emitAlertLogin();
+        this.loginSuccess$.emit();
     }
 
     logout(): void {
         this.isLoggedInStatus = false;
-        this.loggedInUser = null;
-        localStorage.removeItem('loggedInUser');
-        this.router.navigate(['']);
+        localStorage.removeItem('googleToken'); // Remover el token de Google
+        this.router.navigate(['']); // Redirige a la página de inicio
     }
 
     isLoggedIn(): boolean {
-        return this.isLoggedInStatus;
+        return !!localStorage.getItem('googleToken'); // Verifica si hay un token almacenado
     }
 
-    getLoggedInUser(): Usuario | null {
-        return this.loggedInUser;
-    }
-
-    getRole() {
-        return this.loggedInUser.rol;
-    }
-
-    getFullName() {
-        return this.loggedInUser.nombreCompleto;
-    }
-
-    getEmail() {
-        return this.loggedInUser.correo;
-    }
-
-    hasRole(role: string): boolean {
-        return this.loggedInUser.rol === role;
-    }
-
-    openLoginDialog(): void {
-        this.dialogRef = this.dialogService.open(DynamicloginComponent, {
-            header: 'Inicie sesión',
-            width: '30%',
-        });
+    // Método opcional para obtener la información del usuario a través del backend
+    fetchUserProfile(): void {
+        const token = localStorage.getItem('googleToken');
+        if (token) {
+            this.http
+                .get(`${this.apiUrl}/userProfile`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                })
+                .subscribe((user) => {
+                    // Manejo de datos del usuario aquí
+                    console.log('User profile:', user);
+                });
+        }
     }
 }

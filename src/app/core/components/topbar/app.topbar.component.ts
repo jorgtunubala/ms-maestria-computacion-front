@@ -12,6 +12,7 @@ interface Usuario {
     username: string;
     password: string;
 }
+
 @Component({
     selector: 'app-topbar',
     templateUrl: './app.topbar.component.html',
@@ -41,21 +42,21 @@ export class AppTopBarComponent implements OnInit {
     @HostListener('window:scroll', ['$event'])
     onWindowScroll(event) {
         // Mostrar/ocultar la barra superior en función del desplazamiento de la página
-        if (window.pageYOffset > 120) {
-            this.isTopBarVisible = false;
-        } else {
-            this.isTopBarVisible = true;
-        }
+        this.isTopBarVisible = window.pageYOffset <= 120;
     }
 
     initializeMenuItems() {
         // Crear una copia profunda de los elementos del menú originales
         this.items = JSON.parse(JSON.stringify(originalMenuItems));
-        // Actualizar el menú según el estado de autenticación
-        if (this.autenticacion.isLoggedIn()) {
-            this.updateMenuForLoggedInUser();
+
+        // Agregar el command a "LOGIN" si el usuario no está autenticado
+        if (!this.autenticacion.isLoggedIn()) {
+            const loginItem = this.items.find((item) => item.label === 'LOGIN');
+            if (loginItem) {
+                loginItem.command = () => this.autenticacion.loginWithGoogle();
+            }
         } else {
-            this.filterMenuItems(null);
+            this.updateMenuForLoggedInUser();
         }
     }
 
@@ -93,15 +94,11 @@ export class AppTopBarComponent implements OnInit {
                     return false;
                 } else if (user.rol === 'coordinador') {
                     // Mostrar todos los subítems menos "AVALES" si el usuario es coordinador
-                    item.items = item.items.filter(
-                        (subItem) => subItem.label !== 'AVALES'
-                    );
+                    item.items = item.items.filter((subItem) => subItem.label !== 'AVALES');
                     return true;
                 } else if (user.rol === 'docente') {
                     // Mostrar solo el subítem "AVALES" si el usuario es docente
-                    item.items = item.items.filter(
-                        (subItem) => subItem.label === 'AVALES'
-                    );
+                    item.items = item.items.filter((subItem) => subItem.label === 'AVALES');
                     return true;
                 }
                 return false;

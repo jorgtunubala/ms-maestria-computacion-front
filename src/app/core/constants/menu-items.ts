@@ -62,6 +62,5 @@ export const menuItems: MenuItem[] = [
     {
         label: 'LOGIN',
         icon: 'pi pi-fw pi-user',
-        routerLink: '/autenticacion/login',
     },
 ];

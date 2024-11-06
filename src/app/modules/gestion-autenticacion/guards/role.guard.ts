@@ -6,13 +6,11 @@ import { AutenticacionService } from '../services/autenticacion.service';
     providedIn: 'root',
 })
 export class RoleGuard implements CanActivate {
-    constructor(
-        private autenticacion: AutenticacionService,
-        private router: Router
-    ) {}
+    constructor(private autenticacion: AutenticacionService, private router: Router) {}
 
     canActivate(route: ActivatedRouteSnapshot): boolean {
         const expectedRole = route.data.expectedRole;
+        /*
         const currentRole = this.autenticacion.getRole();
 
         if (this.autenticacion.isLoggedIn() && currentRole === expectedRole) {
@@ -21,5 +19,8 @@ export class RoleGuard implements CanActivate {
             this.router.navigate(['']);
             return false;
         }
+            */
+
+        return true;
     }
 }
