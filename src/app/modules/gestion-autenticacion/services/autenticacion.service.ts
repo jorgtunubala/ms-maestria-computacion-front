@@ -21,7 +21,7 @@ const usuarios: Usuario[] = [
         password: 'adm',
     },
     {
-        nombreCompleto: 'María García',
+        nombreCompleto: 'Carlos Torres',
         rol: 'estudiante',
         correo: 'juliiml95@gmail.com',
         username: 'estudiante',
@@ -54,11 +54,7 @@ export class AutenticacionService {
 
     loginSuccess$: EventEmitter<void> = new EventEmitter<void>();
 
-    constructor(
-        private dialogService: DialogService,
-        private menuService: MenuService,
-        private router: Router
-    ) {
+    constructor(private dialogService: DialogService, private menuService: MenuService, private router: Router) {
         // Verificar el estado de inicio de sesión al inicializar el servicio
         const storedUser = localStorage.getItem('loggedInUser');
         if (storedUser) {
@@ -68,18 +64,12 @@ export class AutenticacionService {
     }
 
     login(username: string, password: string): boolean {
-        const usuarioEncontrado: Usuario = this.buscarUsuario(
-            username,
-            password
-        );
+        const usuarioEncontrado: Usuario = this.buscarUsuario(username, password);
 
         if (usuarioEncontrado) {
             this.isLoggedInStatus = true;
             this.loggedInUser = usuarioEncontrado;
-            localStorage.setItem(
-                'loggedInUser',
-                JSON.stringify(this.loggedInUser)
-            );
+            localStorage.setItem('loggedInUser', JSON.stringify(this.loggedInUser));
 
             // Emitir la alerta después de que loggedInUser se actualice correctamente
             this.menuService.emitAlertLogin();
@@ -90,9 +80,7 @@ export class AutenticacionService {
     }
 
     buscarUsuario(username: string, password: string): Usuario | undefined {
-        return usuarios.find(
-            (user) => user.username === username && user.password === password
-        );
+        return usuarios.find((user) => user.username === username && user.password === password);
     }
 
     logout(): void {
