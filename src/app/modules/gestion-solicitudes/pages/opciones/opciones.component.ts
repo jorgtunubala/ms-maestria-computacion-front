@@ -5,6 +5,9 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { HttpService } from '../../services/http.service';
 import { EventoHistorial, NumeroRadicado } from '../../models/indiceModelos';
 import { SeguimientoService } from '../../services/seguimiento.service';
+import { SafeResourceUrl } from '@angular/platform-browser';
+import { UtilidadesService } from '../../services/utilidades.service';
+import { PdfService } from '../../services/pdf.service';
 
 @Component({
     selector: 'app-opciones',
@@ -14,6 +17,8 @@ import { SeguimientoService } from '../../services/seguimiento.service';
 })
 export class OpcionesComponent implements OnInit {
     radicado: string = '';
+    buscandoSolicitud = false;
+    urlPdf: SafeResourceUrl; // ELIMINAR CODIGO DE PRUEBA
 
     constructor(
         private router: Router,
@@ -21,7 +26,9 @@ export class OpcionesComponent implements OnInit {
         public radicar: RadicarService,
         private confirmationService: ConfirmationService,
         public seguimiento: SeguimientoService,
-        private messageService: MessageService
+        private messageService: MessageService,
+        private utilidades: UtilidadesService,
+        private servicioPDF: PdfService
     ) {}
 
     ngOnInit(): void {
@@ -29,41 +36,38 @@ export class OpcionesComponent implements OnInit {
     }
 
     cargarPagina() {
-        this.router.navigate([
-            '/gestionsolicitudes/portafolio/radicar/selector',
-        ]);
+        this.router.navigate(['/gestionsolicitudes/portafolio/radicar']);
     }
 
     buscarSolicitud() {
         if (this.radicado != '') {
-            this.http
-                .consultarHistorialSolicitud(this.radicado)
-                .subscribe((data: EventoHistorial[]) => {
-                    if (data && data.length > 0) {
-                        this.seguimiento.historial = data;
-                        this.seguimiento.radicado = this.radicado.toUpperCase();
-                        this.router.navigate([
-                            '/gestionsolicitudes/portafolio/seguimiento/historial',
-                        ]);
-                    } else {
-                        this.confirmationService.confirm({
-                            message:
-                                'La solicitud con número de radicado ' +
-                                this.radicado.toUpperCase() +
-                                ' no fue encontrada.',
-                            header: 'Solicitud no encontrada',
-                            icon: 'pi pi-exclamation-circle',
-                            acceptLabel: 'Aceptar',
-                            rejectVisible: false,
-                            accept: () => {
-                                this.radicado = '';
-                            },
-                            reject: () => {
-                                this.radicado = '';
-                            },
-                        });
-                    }
-                });
+            this.buscandoSolicitud = true;
+            this.http.consultarHistorialSolicitud(this.radicado.trim()).subscribe((data: EventoHistorial[]) => {
+                if (data && data.length > 0) {
+                    this.seguimiento.historial = data;
+                    this.seguimiento.radicado = this.radicado.toUpperCase();
+                    this.buscandoSolicitud = false;
+                    this.router.navigate(['/gestionsolicitudes/portafolio/seguimiento/historial']);
+                } else {
+                    this.buscandoSolicitud = false;
+                    this.confirmationService.confirm({
+                        message:
+                            'La solicitud con número de radicado ' +
+                            this.radicado.toUpperCase() +
+                            ' no fue encontrada.',
+                        header: 'Solicitud no encontrada',
+                        icon: 'pi pi-exclamation-circle',
+                        acceptLabel: 'Aceptar',
+                        rejectVisible: false,
+                        accept: () => {
+                            this.radicado = '';
+                        },
+                        reject: () => {
+                            this.radicado = '';
+                        },
+                    });
+                }
+            });
         } else {
             this.showWarn();
         }

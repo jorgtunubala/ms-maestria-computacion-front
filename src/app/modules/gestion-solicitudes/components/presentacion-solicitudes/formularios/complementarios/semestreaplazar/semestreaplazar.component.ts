@@ -10,23 +10,27 @@ import { RadicarService } from 'src/app/modules/gestion-solicitudes/services/rad
 export class SemestreaplazarComponent implements OnInit {
     formSemestreAplazar: FormGroup;
 
-    constructor(public radicar: RadicarService, private fb: FormBuilder) {
-        this.formSemestreAplazar = this.fb.group({
-            semestre: ['', Validators.required],
-        });
-    }
+    constructor(public radicar: RadicarService, private fb: FormBuilder) {}
 
     ngOnInit(): void {
-        if (this.radicar.semestreAplazamiento.trim() !== '') {
-            this.formSemestreAplazar.patchValue({
-                semestre: this.radicar.semestreAplazamiento,
-            });
+        this.formSemestreAplazar = this.fb.group({
+            semestre: ['', Validators.required],
+            motivo: ['', Validators.required],
+        });
+
+        // Verificar si ya hay datos en el servicio
+        const formData = this.radicar.formSemestreAplazar.value;
+        const hasData = Object.values(formData).some(
+            (value) => value !== null && value !== ''
+        );
+
+        if (hasData) {
+            // Cargar datos en el formulario desde el servicio
+            this.formSemestreAplazar.patchValue(formData);
         }
 
-        // Escuchar cambios en el formulario y actualizar el motivoDeSolicitud en radicar
-        this.formSemestreAplazar.valueChanges.subscribe((value) => {
-            this.radicar.semestreAplazamiento = value.semestre;
-        });
+        // Establecer el formulario en el servicio para compartirlo
+        this.radicar.formSemestreAplazar = this.formSemestreAplazar;
     }
 
     obtenerEstadoFormulario(): boolean {

@@ -5,11 +5,13 @@ import { EventoHistorial } from '../models/indiceModelos';
     providedIn: 'root',
 })
 export class SeguimientoService {
-    radicado: string = '';
+    // Número de radicado actual de la solicitud en seguimiento.
+    radicado = '';
+
+    // Historial de eventos asociados a la solicitud en seguimiento.
     historial: EventoHistorial[] = [];
 
-    constructor() {}
-
+    // Restablece el radicado y el historial de eventos a sus valores iniciales.
     restablecerValores() {
         this.radicado = '';
         this.historial = [];

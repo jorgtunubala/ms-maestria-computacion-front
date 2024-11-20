@@ -10,8 +10,8 @@ export class DatosAvalSolicitud {
 
     constructor(
         public idSolicitud: number,
-        public firmaTutor: string,
-        public firmaDirector: string,
+        public firmaTutor: boolean,
+        public firmaDirector: boolean,
         public documentoPdfSolicitud: string
     ) {}
 }

@@ -13,9 +13,15 @@ import {
     InfoActividadesReCreditos,
     EventoHistorial,
     NumeroRadicado,
+    DetallesRechazo,
+    SolicitudEnComiteResponse,
+    SolicitudEnConcejoResponse,
+    EnvioCorreoRequest,
+    InformacionRoles,
 } from '../models/indiceModelos';
 import { InfoPersonalResponse } from '../models/solicitante/infoPersonalResponse';
 import { DatosSolicitudRequest } from '../models/solicitudes/datosSolicitudRequest';
+import { UrlResolver } from '@angular/compiler';
 
 @Injectable({
     providedIn: 'root',
@@ -28,9 +34,7 @@ export class HttpService {
 
     private manejarError(error: any) {
         console.error('Ocurrió un error', error);
-        return throwError(
-            'Algo salió mal; por favor, intenta nuevamente más tarde.'
-        );
+        return throwError('Algo salió mal; por favor, intenta nuevamente más tarde.');
     }
 
     obtenerTiposDeSolicitud() {
@@ -85,24 +89,18 @@ export class HttpService {
         return this.http.post(url, objeto).pipe(catchError(this.manejarError));
     }
 
-    obtenerListaSolPendientesAval(
-        correo: string
-    ): Observable<SolicitudRecibida[]> {
+    obtenerListaSolPendientesAval(correo: string): Observable<SolicitudRecibida[]> {
         const url = `${this.apiUrl}${httpConfig.obtenerListaSolPendientesAvalUrl}${correo}`;
-        return this.http
-            .get<SolicitudRecibida[]>(url)
-            .pipe(catchError(this.manejarError));
+        return this.http.get<SolicitudRecibida[]>(url).pipe(catchError(this.manejarError));
     }
 
     obtenerInfoSolGuardada(id: number): Observable<DatosSolicitudRequest> {
         const url = `${this.apiUrl}${httpConfig.obtenerInfoSolGuardadaUrl}${id}`;
-        return this.http
-            .get<DatosSolicitudRequest>(url)
-            .pipe(catchError(this.manejarError));
+        return this.http.get<DatosSolicitudRequest>(url).pipe(catchError(this.manejarError));
     }
 
-    obtenerActividadesReCreditos() {
-        const url = `${this.apiUrlSub}${httpConfig.obtenerActividadesReCreditosUrl}`;
+    obtenerActividadesDePracticaDocente(proceso: string) {
+        const url = `${this.apiUrlSub}${httpConfig.obtenerActividadesPracticaDocente}${proceso}`;
         return this.http.get<InfoActividadesReCreditos[]>(url).pipe(
             map((respuesta) => respuesta),
             catchError(this.manejarError)
@@ -111,9 +109,7 @@ export class HttpService {
 
     consultarHistorialSolicitud(id: string): Observable<EventoHistorial[]> {
         const url = `${this.apiUrl}${httpConfig.obtenerHistorialDeSolicitudUrl}${id}`;
-        return this.http
-            .get<EventoHistorial[]>(url)
-            .pipe(catchError(this.manejarError));
+        return this.http.get<EventoHistorial[]>(url).pipe(catchError(this.manejarError));
     }
 
     consultarSolicitudesCoordinacion(estado: string) {
@@ -122,5 +118,65 @@ export class HttpService {
             map((respuesta) => respuesta),
             catchError(this.manejarError)
         );
+    }
+
+    consultarConceptoComite(idSolicitud: number) {
+        const url = `${this.apiUrl}${httpConfig.obtenerConceptoComite}${idSolicitud}`;
+        return this.http.get<SolicitudEnComiteResponse>(url).pipe(
+            map((respuesta) => respuesta),
+            catchError(this.manejarError)
+        );
+    }
+
+    guardarConceptoComite(objeto: SolicitudEnComiteResponse): Observable<any> {
+        const url = `${this.apiUrl}${httpConfig.guardarConceptoComite}`;
+        return this.http.post(url, objeto).pipe(catchError(this.manejarError));
+    }
+
+    consultarConceptoConsejo(idSolicitud: number) {
+        const url = `${this.apiUrl}${httpConfig.obtenerConceptoConsejo}${idSolicitud}`;
+        return this.http.get<SolicitudEnConcejoResponse>(url).pipe(
+            map((respuesta) => respuesta),
+            catchError(this.manejarError)
+        );
+    }
+
+    guardarConceptoConsejo(objeto: SolicitudEnConcejoResponse): Observable<any> {
+        const url = `${this.apiUrl}${httpConfig.guardarConceptoConsejo}`;
+        return this.http.post(url, objeto).pipe(catchError(this.manejarError));
+    }
+
+    rechazarSolicitud(objeto: DetallesRechazo): Observable<any> {
+        const url = `${this.apiUrl}${httpConfig.rechazarSolicitud}`;
+        return this.http.post(url, objeto).pipe(catchError(this.manejarError));
+    }
+
+    enviarCorreo(objeto: EnvioCorreoRequest): Observable<any> {
+        const url = `${httpConfig.apiGesion}${httpConfig.enviarCorreo}`;
+        return this.http.post(url, objeto).pipe(catchError(this.manejarError));
+    }
+
+    cambiarEstadoSolicitud(id: number, nuevoEstado: string): Observable<any> {
+        const url = `${this.apiUrl}${httpConfig.cambiarEstado}${id}/${nuevoEstado}`;
+        return this.http.post(url, null).pipe(catchError(this.manejarError));
+    }
+
+    consultarInfoDeRolExterno(rol: string) {
+        const url = `${httpConfig.apiGesion}${httpConfig.consultarInfoRolExterno}${rol}`;
+        return this.http.get<InformacionRoles>(url).pipe(
+            map((respuesta) => respuesta),
+            catchError(this.manejarError)
+        );
+    }
+
+    guardarInfoDeRolExterno(objeto: InformacionRoles): Observable<any> {
+        console.log(objeto);
+        const url = `${httpConfig.apiGesion}${httpConfig.guardarInfoRolExterno}`;
+        return this.http.post(url, objeto).pipe(catchError(this.manejarError));
+    }
+
+    verificarSiEsDirector(idSolicitud: number, correo: string): Observable<boolean> {
+        const url = `${httpConfig.apiUrl}${httpConfig.consultarSiEsDirector}${idSolicitud}/${correo}`;
+        return this.http.get<boolean>(url).pipe(catchError(this.manejarError));
     }
 }

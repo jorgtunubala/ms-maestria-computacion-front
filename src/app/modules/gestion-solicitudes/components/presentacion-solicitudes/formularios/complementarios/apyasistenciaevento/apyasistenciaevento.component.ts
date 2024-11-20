@@ -1,11 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import {
-    AbstractControl,
-    FormBuilder,
-    FormGroup,
-    Validators,
-} from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { RadicarService } from 'src/app/modules/gestion-solicitudes/services/radicar.service';
+import { UtilidadesService } from 'src/app/modules/gestion-solicitudes/services/utilidades.service';
 
 @Component({
     selector: 'app-apyasistenciaevento',
@@ -16,114 +12,56 @@ export class ApyasistenciaeventoComponent implements OnInit {
     formApoyoAsistEvento: FormGroup;
     tiposCuentaBancaria: string[];
     tiposCongreso: string[];
+    listaGruposInvestigacion: string[];
 
-    constructor(public radicar: RadicarService, private fb: FormBuilder) {
-        this.tiposCuentaBancaria = [
-            'Seleccione una opción',
-            'Ahorros',
-            'Corriente',
+    constructor(
+        public radicar: RadicarService,
+        private fb: FormBuilder,
+        private servicioUtilidades: UtilidadesService
+    ) {
+        this.tiposCuentaBancaria = ['Ahorros', 'Corriente'];
+        this.tiposCongreso = ['Nacional', 'Internacional'];
+        this.listaGruposInvestigacion = [
+            'Grupo de Investigación y Desarrollo en Ingeniería de Software - IDIS',
+            'Grupo de Investigación en Tecnologías de la Información - GTI',
+            'Grupo de Investigación en Inteligencia Computacional - GICO',
         ];
-        this.tiposCongreso = ['Seleccione una opción', 'Opcion 1', 'Opcion 2'];
-
-        this.formApoyoAsistEvento = this.fb.group({
-            nombreCongreso: ['', Validators.required],
-            tipoCongreso: ['', this.customValidator()],
-            tituloPublicacion: ['', Validators.required],
-            fechas: ['', Validators.required],
-            valorApoyo: ['', Validators.required],
-            nombreBanco: ['', Validators.required],
-            tipoCuenta: ['', this.customValidator()],
-            numeroCuenta: ['', Validators.required],
-            cedulaEnBanco: ['', Validators.required],
-            direccionRecidencia: ['', Validators.required],
-        });
     }
 
     ngOnInit(): void {
-        if (this.radicar.fechasEstancia.length > 0) {
-            this.formApoyoAsistEvento.patchValue({
-                fechas: this.radicar.fechasEstancia,
-            });
-        }
-        if (this.radicar.nombreCongreso.trim() !== '') {
-            this.formApoyoAsistEvento.patchValue({
-                nombreCongreso: this.radicar.nombreCongreso,
-            });
-        }
-        if (this.radicar.tipoCongreso.trim() !== '') {
-            this.formApoyoAsistEvento.patchValue({
-                tipoCongreso: this.radicar.tipoCongreso,
-            });
-        }
-        if (this.radicar.tituloPublicacion.trim() !== '') {
-            this.formApoyoAsistEvento.patchValue({
-                tituloPublicacion: this.radicar.tituloPublicacion,
-            });
-        }
-        if (this.radicar.valorApoyoEcon !== null) {
-            this.formApoyoAsistEvento.patchValue({
-                valorApoyo: this.radicar.valorApoyoEcon,
-            });
-        }
-        if (this.radicar.banco.trim() !== '') {
-            this.formApoyoAsistEvento.patchValue({
-                nombreBanco: this.radicar.banco,
-            });
-        }
-        if (this.radicar.tipoCuenta.trim() !== '') {
-            this.formApoyoAsistEvento.patchValue({
-                tipoCuenta: this.radicar.tipoCuenta,
-            });
-        }
-        if (this.radicar.numeroCuenta.trim() !== '') {
-            this.formApoyoAsistEvento.patchValue({
-                numeroCuenta: this.radicar.numeroCuenta,
-            });
-        }
-        if (this.radicar.cedulaCuentaBanco.trim() !== '') {
-            this.formApoyoAsistEvento.patchValue({
-                cedulaEnBanco: this.radicar.cedulaCuentaBanco,
-            });
-        }
-        if (this.radicar.direccion.trim() !== '') {
-            this.formApoyoAsistEvento.patchValue({
-                direccionRecidencia: this.radicar.direccion,
-            });
-        }
+        this.servicioUtilidades.configurarIdiomaCalendario();
 
-        this.formApoyoAsistEvento.valueChanges.subscribe((value) => {
-            // Verificar si value.fechas es una cadena de texto
-            if (typeof value.fechas === 'string') {
-                // Dividir el string de fechas en fechaInicio y fechaFin
-                const fechas = value.fechas
-                    .split(' - ')
-                    .map((dateString) => new Date(dateString.trim()));
-                this.radicar.fechasEstancia = fechas;
-            } else if (Array.isArray(value.fechas)) {
-                // Verificar si value.fechas es un arreglo de objetos Date
-                // Asignar el valor directamente
-                this.radicar.fechasEstancia = value.fechas;
-            }
-
-            this.radicar.nombreCongreso = value.nombreCongreso;
-            this.radicar.tipoCongreso = value.tipoCongreso;
-            this.radicar.tituloPublicacion = value.tituloPublicacion;
-            this.radicar.valorApoyoEcon = value.valorApoyo;
-            this.radicar.banco = value.nombreBanco;
-            this.radicar.tipoCuenta = value.tipoCuenta;
-            this.radicar.numeroCuenta = value.numeroCuenta;
-            this.radicar.cedulaCuentaBanco = value.cedulaEnBanco;
-            this.radicar.direccion = value.direccionRecidencia;
+        this.formApoyoAsistEvento = this.fb.group({
+            nombreCongreso: ['', Validators.required],
+            lugarEvento: ['', Validators.required],
+            tipoCongreso: ['', this.customValidator()],
+            tituloPublicacion: ['', Validators.required],
+            grupoInvestigacion: ['', Validators.required],
+            fechas: ['', Validators.required],
+            valorApoyo: ['', Validators.required],
+            entidadBancaria: ['', Validators.required],
+            tipoCuenta: ['', this.customValidator()],
+            numeroCuenta: ['', Validators.required],
+            direccionResidencia: ['', Validators.required],
         });
+
+        // Verificar si ya hay datos en el servicio
+        const formData = this.radicar.formApoyoAsistEvento.value;
+        const hasData = Object.values(formData).some((value) => value !== null && value !== '');
+
+        if (hasData) {
+            // Cargar datos en el formulario desde el servicio
+            this.formApoyoAsistEvento.patchValue(formData);
+        }
+
+        // Establecer el formulario en el servicio para compartirlo
+        this.radicar.formApoyoAsistEvento = this.formApoyoAsistEvento;
     }
 
     customValidator() {
         return (control: AbstractControl) => {
             const tipoSeleccionado: string = control.value;
-            if (
-                !tipoSeleccionado ||
-                tipoSeleccionado === 'Seleccione una opción'
-            ) {
+            if (!tipoSeleccionado || tipoSeleccionado === '') {
                 return { tipoInvalido: true };
             }
             return null;
@@ -131,10 +69,14 @@ export class ApyasistenciaeventoComponent implements OnInit {
     }
 
     validarFechas(): boolean {
+        const fechas = this.formApoyoAsistEvento.get('fechas')?.value;
+
+        // Verificar que fechas tenga exactamente 2 elementos y que ambos no sean null
         return (
-            this.radicar.fechasEstancia.length === 2 &&
-            !!this.radicar.fechasEstancia[0] &&
-            !!this.radicar.fechasEstancia[1]
+            Array.isArray(fechas) &&
+            fechas.length === 2 &&
+            !!fechas[0] && // Verifica que la primera fecha no sea null
+            !!fechas[1] // Verifica que la segunda fecha no sea null
         );
     }
 

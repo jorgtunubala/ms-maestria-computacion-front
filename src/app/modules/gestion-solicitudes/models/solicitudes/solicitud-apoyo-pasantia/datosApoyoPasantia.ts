@@ -13,7 +13,9 @@ export class DatosApoyoPasantia {
             obj['numeroCuenta'],
             obj['numeroCedulaAsociada'],
             obj['direccionResidencia'],
-            obj['documentosAdjuntos']
+            obj['documentosAdjuntos'],
+            obj['universidadResidencia'],
+            obj['grupoUniversidadResidencia']
         );
     }
 
@@ -30,6 +32,8 @@ export class DatosApoyoPasantia {
         public numeroCuenta: string,
         public numeroCedulaAsociada: string,
         public direccionResidencia: string,
-        public documentosAdjuntos: string[]
+        public documentosAdjuntos: string[],
+        public universidadResidencia: string,
+        public grupoUniversidadResidencia: string
     ) {}
 }

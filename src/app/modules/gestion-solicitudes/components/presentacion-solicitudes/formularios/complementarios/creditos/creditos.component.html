@@ -26,27 +26,15 @@
             ></button>
         </div>
 
-        <div
-            class="col-12"
-            *ngFor="
-                let actividad of radicar.actividadesSeleccionadas;
-                let i = index
-            "
-        >
+        <div class="col-12" *ngFor="let actividad of radicar.actividadesSeleccionadas; let i = index">
             <p-panel
                 ><ng-template pTemplate="header">
                     <div class="grid p-0 m-0 w-full" style="height: 20px">
-                        <div
-                            class="col-11 flex align-items-center font-bold"
-                            style="margin-top: -17px"
-                        >
+                        <div class="col-11 flex align-items-center font-bold" style="margin-top: -17px">
                             {{ i + 1 }}. {{ actividad.nombre }}
                         </div>
 
-                        <div
-                            class="col-1 flex justify-content-end"
-                            style="margin-top: -17px"
-                        >
+                        <div class="col-1 flex justify-content-end" style="margin-top: -17px">
                             <button
                                 pButton
                                 type="button"
@@ -66,53 +54,59 @@
                 </ng-container>
 
                 <ng-container *ngIf="actividad.peso">
-                    <div
-                        class="field col-12 md:col-6 mb-4"
-                        style="margin-left: 0px"
-                    >
-                        <label
-                            for="intensidadCred"
-                            class="font-semibold"
-                            style="display: block"
-                        >
-                            <ng-container
-                                *ngIf="
-                                    actividad.codigo === 'CUR_COR_SEM';
-                                    else defaultLabel
-                                "
+                    <div class="field col-12 md:col-6 mb-4" style="display: flex; align-items: center; gap: 16px">
+                        <div style="flex: 1">
+                            <label for="intensidadCred" class="font-semibold mb-3" style="display: block">
+                                <ng-container *ngIf="actividad.codigo === 'CUR_COR_SEM'; else defaultLabel">
+                                    Total horas curso
+                                </ng-container>
+                                <ng-template #defaultLabel> Intensidad horaria semanal de la asignatura </ng-template>
+                            </label>
+                            <p-inputNumber
+                                [showButtons]="true"
+                                [min]="1"
+                                [(ngModel)]="radicar.horasIngresadas[i]"
+                                (onInput)="onValueChange($event.value, i, actividad.peso, actividad.codigo, 'horas')"
+                                buttonLayout="horizontal"
+                                spinnerMode="horizontal"
+                                inputId="intensidadCred"
+                                decrementButtonClass="p-button-primary"
+                                incrementButtonClass="p-button-primary"
+                                incrementButtonIcon="pi pi-plus"
+                                decrementButtonIcon="pi pi-minus"
                             >
-                                Total horas curso
-                            </ng-container>
-                            <ng-template #defaultLabel>
-                                Intensidad horaria semanal de la asignatura
-                            </ng-template>
-                        </label>
-                        <p-inputNumber
-                            [showButtons]="true"
-                            [min]="1"
-                            [(ngModel)]="radicar.horasIngresadas[i]"
-                            (onInput)="
-                                onValueChange(
-                                    $event.value,
-                                    i,
-                                    actividad.peso,
-                                    actividad.horasAsignadas
-                                )
-                            "
-                            buttonLayout="horizontal"
-                            spinnerMode="horizontal"
-                            inputId="intensidadCred"
-                            decrementButtonClass="p-button-primary"
-                            incrementButtonClass="p-button-primary"
-                            incrementButtonIcon="pi pi-plus"
-                            decrementButtonIcon="pi pi-minus"
-                        >
-                        </p-inputNumber>
+                            </p-inputNumber>
+                        </div>
 
-                        <ng-container *ngIf="radicar.horasIngresadas[i]">
-                            &nbsp;Horas a reconocer:
-                            {{ radicar.horasIngresadas[i] * actividad.peso }}
-                        </ng-container>
+                        <div
+                            *ngIf="actividad.codigo === 'DOC_CUR_POSG' || actividad.codigo === 'DOC_CUR_PREG'"
+                            style="flex: 1"
+                        >
+                            <label for="numeroDeSemanas" class="font-semibold mb-3" style="display: block">
+                                Número de semanas del semestre
+                            </label>
+                            <p-inputNumber
+                                [showButtons]="true"
+                                [min]="1"
+                                [(ngModel)]="radicar.numSemanasIngresado[i]"
+                                (onInput)="onValueChange($event.value, i, actividad.peso, actividad.codigo, 'semanas')"
+                                buttonLayout="horizontal"
+                                spinnerMode="horizontal"
+                                inputId="numeroDeSemanas"
+                                decrementButtonClass="p-button-primary"
+                                incrementButtonClass="p-button-primary"
+                                incrementButtonIcon="pi pi-plus"
+                                decrementButtonIcon="pi pi-minus"
+                            >
+                            </p-inputNumber>
+                        </div>
+
+                        <div
+                            *ngIf="radicar.horasIngresadas[i]"
+                            style="margin-left: 10px; display: inline-block; white-space: nowrap"
+                        >
+                            &nbsp;Horas a reconocer: {{ radicar.horasAsignables[i] }}
+                        </div>
                     </div>
                 </ng-container>
 
@@ -125,10 +119,7 @@
                             background-color: rgb(248, 248, 248);
                             padding: 10px;
                         "
-                        *ngFor="
-                            let documento of actividad.documentos;
-                            let indiceDoc = index
-                        "
+                        *ngFor="let documento of actividad.documentos; let indiceDoc = index"
                     >
                         <div class="col-12 font-semibold">
                             <p>&bull; {{ documento }}</p>
@@ -140,9 +131,7 @@
                                 name="file[]"
                                 [auto]="true"
                                 [customUpload]="true"
-                                (uploadHandler)="
-                                    onUpload($event, fubauto, i, indiceDoc)
-                                "
+                                (uploadHandler)="onUpload($event, fubauto, i, indiceDoc)"
                                 accept=".pdf"
                                 chooseIcon="pi pi-upload"
                                 maxFileSize="5000000"
@@ -153,18 +142,10 @@
                         </div>
                         <div
                             class="col-12 md:col-10 flex align-content-center flex-wrap"
-                            *ngIf="
-                                radicar.adjuntosDeActividades[i].archivos[
-                                    indiceDoc
-                                ]
-                            "
+                            *ngIf="radicar.adjuntosDeActividades[i].archivos[indiceDoc]"
                         >
                             <i class="pi pi-paperclip mr-1"></i>
-                            {{
-                                radicar.adjuntosDeActividades[i].archivos[
-                                    indiceDoc
-                                ].name
-                            }}
+                            {{ radicar.adjuntosDeActividades[i].archivos[indiceDoc].name }}
                         </div>
                     </div>
                 </ng-container>
@@ -178,10 +159,7 @@
                             background-color: rgb(248, 248, 248);
                             padding: 10px;
                         "
-                        *ngFor="
-                            let requisito of actividad.enlaces;
-                            let indiceEnlace = index
-                        "
+                        *ngFor="let requisito of actividad.enlaces; let indiceEnlace = index"
                     >
                         <div class="col-12 font-semibold">
                             <p>&bull; {{ requisito }}</p>
@@ -194,16 +172,21 @@
                                 type="text"
                                 pInputText
                                 placeholder="Enlace publico al repositorio donde se aloja el material"
-                                [(ngModel)]="
-                                    radicar.adjuntosDeActividades[i].enlaces[
-                                        indiceEnlace
-                                    ]
-                                "
-                                (onChange)="
-                                    agregarEnlace(i, $event, indiceEnlace)
-                                "
+                                [(ngModel)]="radicar.adjuntosDeActividades[i].enlaces[indiceEnlace]"
+                                (onChange)="agregarEnlace(i, $event, indiceEnlace)"
                             />
                         </div>
+
+                        <p
+                            *ngIf="
+                                radicar.adjuntosDeActividades[i].enlaces[indiceEnlace] &&
+                                !utilidades.validarUrlSegura(radicar.adjuntosDeActividades[i].enlaces[indiceEnlace])
+                            "
+                            class="ml-3"
+                            style="color: red"
+                        >
+                            URL inválido. No cumple con los criterios de seguridad admitidos
+                        </p>
                     </div>
                 </ng-container>
             </p-panel>

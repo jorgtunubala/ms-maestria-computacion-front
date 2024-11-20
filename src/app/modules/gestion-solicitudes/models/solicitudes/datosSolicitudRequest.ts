@@ -1,18 +1,4 @@
-import {
-    DatosSolicitudAplazamiento,
-    DatosSolHomologPostRequest,
-    InfoAsingSimple,
-    DatosComunSolicitud,
-    DatosSolicitudCursarAsignatura,
-    DatosAsignaturaProgramasExt,
-    DatosSolicitudAvalPasantia,
-    DatosApoyoPasantia,
-    DatosReconoCreditos,
-    DatosApoyoCongreso,
-    DatosApoyoPublicacion,
-    DatosReCreditosPracticaDocente,
-    DatosAvalPracticaDResponse,
-} from '../indiceModelos';
+import * as Modelos from '../indiceModelos';
 
 export class DatosSolicitudRequest {
     static nuevoDatosSolicitudRequest(obj: Object) {
@@ -29,23 +15,25 @@ export class DatosSolicitudRequest {
             obj['datosApoyoEconomicoCongreso'],
             obj['datosApoyoEconomicoPublicacion'],
             obj['datosActividadDocente'],
-            obj['datosAvalComite']
+            obj['datosAvalComite'],
+            obj['datoSolicitudBeca']
         );
     }
 
     constructor(
-        public datosComunSolicitud: DatosComunSolicitud,
-        public datosSolicitudHomologacion: DatosSolHomologPostRequest,
-        public datosSolicitudAplazarSemestre: DatosSolicitudAplazamiento,
-        public datosSolicitudCursarAsignaturas: DatosAsignaturaProgramasExt,
-        public dadicionCancelacionAsignatura: InfoAsingSimple,
-        public datoAvalPasantiaInv: DatosSolicitudAvalPasantia,
-        public datosApoyoEconomico: DatosApoyoPasantia,
-        public datosReconocimientoCreditos: DatosReconoCreditos,
+        public datosComunSolicitud: Modelos.DatosComunSolicitud,
+        public datosSolicitudHomologacion: Modelos.DatosSolHomologPostRequest,
+        public datosSolicitudAplazarSemestre: Modelos.DatosSolicitudAplazamiento,
+        public datosSolicitudCursarAsignaturas: Modelos.DatosAsignaturaProgramasExt,
+        public dadicionCancelacionAsignatura: Modelos.InfoAsingSimple,
+        public datoAvalPasantiaInv: Modelos.DatosSolicitudAvalPasantia,
+        public datosApoyoEconomico: Modelos.DatosApoyoPasantia,
+        public datosReconocimientoCreditos: Modelos.DatosReconoCreditos,
         public datosAvalSeminario: any,
-        public datosApoyoEconomicoCongreso: DatosApoyoCongreso,
-        public datosApoyoEconomicoPublicacion: DatosApoyoPublicacion,
-        public datosActividadDocente: DatosReCreditosPracticaDocente[],
-        public datosAvalComite: DatosAvalPracticaDResponse[]
+        public datosApoyoEconomicoCongreso: Modelos.DatosApoyoCongreso,
+        public datosApoyoEconomicoPublicacion: Modelos.DatosApoyoPublicacion,
+        public datosActividadDocente: Modelos.DatosReCreditosPracticaDocente[],
+        public datosAvalComite: Modelos.DatosAvalPracticaDResponse[],
+        public datoSolicitudBeca: Modelos.DatosSolicitudBecaDescuento
     ) {}
 }
