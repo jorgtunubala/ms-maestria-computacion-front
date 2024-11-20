@@ -5,7 +5,7 @@ import { ErrorComponent } from './core/components/error/error.component';
 import { NotfoundComponent } from './core/components/notfound/notfound.component';
 import { AccessComponent } from './core/components/access/access.component';
 import { HomeComponent } from './core/components/home/home.component';
-import { DynamicloginComponent } from './modules/gestion-autenticacion/components/dynamiclogin/dynamiclogin.component';
+
 @NgModule({
     imports: [
         RouterModule.forRoot(

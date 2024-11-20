@@ -15,7 +15,7 @@ export class AuthGuard implements CanActivate {
         if (this.autenticacion.isLoggedIn()) {
             return true;
         } else {
-            this.autenticacion.openLoginDialog();
+            this.autenticacion.login();
             return false;
         }
     }

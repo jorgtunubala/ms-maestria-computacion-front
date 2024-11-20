@@ -9,8 +9,13 @@ interface Usuario {
     username: string;
     email: string;
     role: string[];
+    phoneNumber: string;
+    academicCode: string;
+    firstName: string;
+    lastName: string;
+    idType: string;
+    idNumber: string;
 }
-
 @Component({
     selector: 'app-topbar',
     templateUrl: './app.topbar.component.html',
@@ -30,10 +35,15 @@ export class AppTopBarComponent implements OnInit {
         this.initializeMenuItems();
         // Suscribirse a cambios en el estado de autenticación
         this.menuService.alertLogin$.subscribe(() => {
-            const user: Usuario | null = this.autenticacion.loggedInUser;
+            const user: Usuario | null = this.autenticacion.getLoggedInUser();
             if (user) {
                 this.initializeMenuItems();
             }
+        });
+
+        // Suscribirse al evento de logout
+        this.autenticacion.logoutSuccess$.subscribe(() => {
+            this.initializeMenuItems();
         });
     }
 
@@ -50,7 +60,14 @@ export class AppTopBarComponent implements OnInit {
     initializeMenuItems() {
         // Crear una copia profunda de los elementos del menú originales
         this.items = JSON.parse(JSON.stringify(originalMenuItems));
-        // Actualizar el menú según el estado de autenticación
+
+        // Asigna el comando de login al botón LOGIN
+        this.items.forEach((item) => {
+            if (item.label === 'LOGIN') {
+                item.command = () => this.autenticacion.login();
+            }
+        });
+
         if (this.autenticacion.isLoggedIn()) {
             this.updateMenuForLoggedInUser();
         } else {
@@ -66,7 +83,11 @@ export class AppTopBarComponent implements OnInit {
             this.items = this.items.map((item) => {
                 if (item.label === 'LOGIN') {
                     return {
-                        label: user.username.toUpperCase(),
+                        label: `${user.firstName
+                            .split(' ')[0]
+                            .toUpperCase()} ${user.lastName
+                            .split(' ')[0]
+                            .toUpperCase()}`,
                         icon: 'pi pi-fw pi-user',
                         items: [
                             {

@@ -10,6 +10,10 @@ import { AppComponent } from './core/pages/app.component';
 import { AppTopBarComponent } from './core/components/topbar/app.topbar.component';
 import { AppFooterComponent } from './core/components/footer/app.footer.component';
 
+import { AngularFireModule } from '@angular/fire/compat';
+import { AngularFireAuthModule } from '@angular/fire/compat/auth';
+import { environment } from '../environments/environment';
+
 import { MenuService } from './core/services/app.menu.service';
 import { ConfigService } from './core/services/app.config.service';
 import { AppMainComponent } from './core/components/main/app.main.component';
@@ -37,7 +41,9 @@ import { AuthInterceptor } from './shared/config/interceptor';
         SharedModule,
         GestionEstudiantesModule,
         ReactiveFormsModule,
-        PdfViewerModule
+        PdfViewerModule,
+        AngularFireModule.initializeApp(environment.firebaseConfig),
+        AngularFireAuthModule,
     ],
     declarations: [
         AppComponent,
