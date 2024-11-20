@@ -5,8 +5,10 @@ export class DatosApoyoPublicacion {
             obj['tipoEvento'],
             obj['fechaInicio'],
             obj['fechaFin'],
+            obj['finalidadApoyo'],
             obj['idDirectorGrupo'],
             obj['nombreDirectorGrupo'],
+            obj['grupoInvestigacion'],
             obj['tituloPublicacion'],
             obj['valorApoyo'],
             obj['entidadBancaria'],
@@ -14,7 +16,10 @@ export class DatosApoyoPublicacion {
             obj['numeroCuenta'],
             obj['numeroCedulaAsociada'],
             obj['direccionResidencia'],
-            obj['documentosAdjuntos']
+            obj['documentosAdjuntos'],
+            obj['informacionPago'],
+            obj['nombreRevista'],
+            obj['lugarEvento']
         );
     }
 
@@ -23,8 +28,10 @@ export class DatosApoyoPublicacion {
         public tipoEvento: string,
         public fechaInicio: string,
         public fechaFin: string,
+        public finalidadApoyo: string,
         public idDirectorGrupo: string,
         public nombreDirectorGrupo: string,
+        public grupoInvestigacion: string,
         public tituloPublicacion: string,
         public valorApoyo: number,
         public entidadBancaria: string,
@@ -32,6 +39,9 @@ export class DatosApoyoPublicacion {
         public numeroCuenta: string,
         public numeroCedulaAsociada: string,
         public direccionResidencia: string,
-        public documentosAdjuntos: string[]
+        public documentosAdjuntos: string[],
+        public informacionPago: string,
+        public nombreRevista: string,
+        public lugarEvento: string
     ) {}
 }

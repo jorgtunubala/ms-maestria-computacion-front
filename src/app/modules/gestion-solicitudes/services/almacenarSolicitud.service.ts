@@ -1,27 +1,11 @@
 import { Injectable } from '@angular/core';
-import {
-    AsignaturaExterna,
-    AsignaturaHomologPost,
-    DatosApoyoCongreso,
-    DatosApoyoPasantia,
-    DatosApoyoPublicacion,
-    DatosActividadPracticaDocente,
-    DatosCursarAsignaturaDto,
-    DatosReconoCreditos,
-    DatosSolHomologPostSave,
-    DatosSolicitudAplazamiento,
-    DatosSolicitudAvalPasantia,
-    DatosSolicitudCancelacionAsignatura,
-    DatosSolicitudCursarAsignatura,
-    FormHomologPost,
-    SolicitudSave,
-    DatosAvalPracticaDocente,
-} from '../models/indiceModelos';
+import * as Modelos from '../models/indiceModelos';
 import { HttpService } from './http.service';
 import { RadicarService } from './radicar.service';
 import { HttpClient } from '@angular/common/http';
 import { InfoAsingAdicionCancelacion } from '../models/solicitudes/solicitud-adic-cancel-asig/infoAsignAdicionCancelacion';
 import { catchError, map, throwError } from 'rxjs';
+import { UtilidadesService } from './utilidades.service';
 
 @Injectable({
     providedIn: 'root',
@@ -32,31 +16,25 @@ export class AlmacenarSolicitudService {
     constructor(
         public radicar: RadicarService,
         public http: HttpService,
-        public httpService: HttpClient
+        public httpService: HttpClient,
+        private utilidades: UtilidadesService
     ) {}
 
+    // Almacena una solicitud en la base de datos y retorna el resultado como una promesa de tipo string.
     async almacenarSolicitudEnBD(): Promise<string> {
         // Crear una nueva promesa que resuelve una cadena
         return new Promise<string>(async (resolver, rechazar) => {
             let resultado: string = null;
-
-            // Convertir la firma del solicitante a Base64
-            this.firmaSolicitante = await this.convertirABase64(
-                this.radicar.firmaSolicitante
-            );
 
             // Función para manejar la respuesta del observable
             const manejarRespuesta = (observable) => {
                 observable
                     .pipe(
                         map((respuesta: any) => {
-                            return typeof respuesta === 'string'
-                                ? respuesta
-                                : JSON.stringify(respuesta);
+                            return typeof respuesta === 'string' ? respuesta : JSON.stringify(respuesta);
                         }),
                         catchError((error: any) => {
                             if (error.error.text) {
-                                // Devuelve la cadena de texto en caso de que no sea un JSON
                                 return [error.error.text];
                             }
                             return throwError(error);
@@ -74,10 +52,7 @@ export class AlmacenarSolicitudService {
             };
 
             // Función para manejar diferentes tipos de solicitudes
-            const manejarSolicitud = async (
-                codigoSolicitud: string,
-                reunirDatosFn: () => Promise<any>
-            ) => {
+            const manejarSolicitud = async (reunirDatosFn: () => Promise<any>) => {
                 const datosSolicitud = await reunirDatosFn();
                 const observable = this.http.guardarSolicitud(datosSolicitud);
                 manejarRespuesta(observable);
@@ -94,142 +69,146 @@ export class AlmacenarSolicitudService {
                 AV_PASA_INV: this.reunirDatosSolAvalPasant,
                 AP_ECON_INV: this.reunirDatosSolApoyoPasantia,
                 AP_ECON_ASI: this.reunirDatosSolApoyoCongreso,
-                PA_PUBL_EVE: this.reunirDatosSolApoyoPublicacion,
-                RE_CRED_PAS: this.reunirDatosSolRecCredPracticaDocente,
-                RE_CRED_DIS: this.reunirDatosSolRecCreditosConLink,
-                PR_CURS_TEO: this.reunirDatosSolRecCreditosConLink,
-                AS_CRED_MAT: this.reunirDatosSolRecCreditosConLink,
-                AS_CRED_DO: this.reunirDatosSolRecCreditosSinLink,
-                RE_CRED_SEM: this.reunirDatosSolRecCreditosSinLink,
-                AS_CRED_MON: this.reunirDatosSolRecCreditosSinLink,
-                TG_PREG_POS: this.reunirDatosSolRecCreditosSinLink,
-                JU_PREG_POS: this.reunirDatosSolRecCreditosSinLink,
-                EV_ANTE_PRE: this.reunirDatosSolRecCreditosSinLink,
-                EV_PROD_INT: this.reunirDatosSolRecCreditosSinLink,
-                EV_INFO_SAB: this.reunirDatosSolRecCreditosSinLink,
-                PA_COMI_PRO: this.reunirDatosSolRecCreditosSinLink,
-                OT_ACTI_APO: this.reunirDatosSolRecCreditosSinLink,
-                RE_CRED_PUB: this.reunirDatosSolRecCreditosSinLink,
-                AV_SEMI_ACT: this.reunirDatosSolAvalSeminario,
+                PA_PUBL_EVE: this.reunirDatosSolApoyoPublicacionInscripcion,
+                RE_CRED_PR_DOC: this.reunirDatosSolRecCredPracticaDocente,
+                RE_CRED_PAS: this.reunirDatosSolRecCreditosPasantia,
+                RE_CRED_PUB: this.reunirDatosSolRecCreditosPublicacion,
                 AV_COMI_PR: this.reunirDatosAvalPractDocente,
+                SO_BECA: this.reunirDatosSolBecaDescuento,
             };
 
             // Obtener el código de solicitud actual
-            const codigoSolicitud =
-                this.radicar.tipoSolicitudEscogida.codigoSolicitud;
+            const codigoSolicitud = this.radicar.tipoSolicitudEscogida.codigoSolicitud;
 
             // Si el código de solicitud existe en el mapa, manejar la solicitud correspondiente
             if (mapaSolicitudes[codigoSolicitud]) {
-                await manejarSolicitud(
-                    codigoSolicitud,
-                    mapaSolicitudes[codigoSolicitud].bind(this)
-                );
+                await manejarSolicitud(mapaSolicitudes[codigoSolicitud].bind(this));
             } else {
                 resolver(resultado);
             }
         });
     }
 
-    async reunirDatosSolAdicion(): Promise<SolicitudSave> {
-        const asignaturasParaAdicionar: InfoAsingAdicionCancelacion[] =
-            this.radicar.datosAsignAdiCancel.map((item) => ({
+    // Reúne los datos para una solicitud de adición de asignatura.
+    async reunirDatosSolAdicion(): Promise<Modelos.SolicitudSave> {
+        const asignaturasParaAdicionar: InfoAsingAdicionCancelacion[] = this.radicar.datosAsignAdiCancel.map(
+            (item) => ({
                 nombreAsignatura: item.nombreAsignatura,
+                grupo: item.grupoAsignatura,
                 idDocente: item.docente.id,
-            }));
+            })
+        );
 
         return this.construirObjAGuardar('AD_ASIG', asignaturasParaAdicionar);
     }
 
-    async reunirDatosSolCancelAsig(): Promise<SolicitudSave> {
-        const asignaturas: InfoAsingAdicionCancelacion[] =
-            this.radicar.datosAsignAdiCancel.map((item) => ({
-                nombreAsignatura: item.nombreAsignatura,
-                idDocente: item.docente.id,
-            }));
+    // Reúne los datos para una solicitud de beca o descuento.
+    async reunirDatosSolBecaDescuento(): Promise<Modelos.SolicitudSave> {
+        const tipo = this.radicar.formSolicitudBecaDescuento.get('tipoBeca')?.value || '';
+        const justificacion = this.radicar.formSolicitudBecaDescuento.get('justificacion')?.value || '';
+        const documentoAdjunto = this.radicar.documentosAdjuntos[0] || null;
 
-        const infoCancelacion: DatosSolicitudCancelacionAsignatura = {
+        // Convertimos a base64 solo si hay un documento adjunto
+        const formatoDiligenciado = documentoAdjunto
+            ? await this.utilidades.convertirFileABase64(documentoAdjunto)
+            : '';
+
+        // Creamos el objeto a guardar con los valores extraídos
+        const infoBecaDescuento: Modelos.DatosSolicitudBecaDescuento = {
+            formatoSolicitudBeca: formatoDiligenciado,
+            tipo,
+            motivo: justificacion,
+        };
+
+        return this.construirObjAGuardar('SO_BECA', infoBecaDescuento);
+    }
+
+    // Reúne los datos para una solicitud de cancelación de asignatura.
+    async reunirDatosSolCancelAsig(): Promise<Modelos.SolicitudSave> {
+        const asignaturas: InfoAsingAdicionCancelacion[] = this.radicar.datosAsignAdiCancel.map((item) => ({
+            nombreAsignatura: item.nombreAsignatura,
+            grupo: item.grupoAsignatura,
+            idDocente: item.docente.id,
+        }));
+
+        const infoCancelacion: Modelos.DatosSolicitudCancelacionAsignatura = {
             listaAsignaturas: asignaturas,
             motivo: this.radicar.motivoDeSolicitud,
+            documentoAdjunto: this.radicar.documentosAdjuntos[0]
+                ? await this.utilidades.convertirFileABase64(this.radicar.documentosAdjuntos[0])
+                : null,
         };
 
         return this.construirObjAGuardar('CA_ASIG', infoCancelacion);
     }
 
-    async reunirDatosSolCurAsigExternas(): Promise<SolicitudSave> {
-        const asignaturasExternas: AsignaturaExterna[] = [];
+    // Reúne los datos para una solicitud de cursar asignaturas externas.
+    async reunirDatosSolCurAsigExternas(): Promise<Modelos.SolicitudSave> {
+        // Convertir los datos de asignaturas externas en un array de promesas
+        const asignaturasExternas = await Promise.all(
+            this.radicar.datosAsignaturasExternas.map(async (asignatura) => ({
+                programaProcedencia: asignatura.programa,
+                institutoProcedencia: asignatura.institucion,
+                nombreAsignatura: asignatura.nombre,
+                numeroCreditos: asignatura.creditos,
+                intensidadHoraria: asignatura.intensidad,
+                contenidoProgramatico: await this.utilidades.convertirFileABase64(asignatura.contenidos),
+                codigoAsignatura: asignatura.codigo,
+                grupo: asignatura.grupo,
+                nombreDocente: asignatura.docente,
+                tituloDocente: asignatura.tituloDocente,
+                cartaAceptacion: await this.utilidades.convertirFileABase64(asignatura.cartaAceptacion),
+            }))
+        );
 
-        for (
-            let index = 0;
-            index < this.radicar.datosAsignaturasExternas.length;
-            index++
-        ) {
-            const datosAsignatura: AsignaturaExterna = {
-                programaProcedencia:
-                    this.radicar.datosAsignaturasExternas[index].programa,
-                institutoProcedencia:
-                    this.radicar.datosAsignaturasExternas[index].institucion,
-                nombreAsignatura:
-                    this.radicar.datosAsignaturasExternas[index].nombre,
-                numeroCreditos:
-                    this.radicar.datosAsignaturasExternas[index].creditos,
-                intensidadHoraria:
-                    this.radicar.datosAsignaturasExternas[index].intensidad,
-                contenidoProgramatico: await this.convertirABase64(
-                    this.radicar.datosAsignaturasExternas[index].contenidos
-                ),
-                codigoAsignatura:
-                    this.radicar.datosAsignaturasExternas[index].codigo,
-                grupo: this.radicar.datosAsignaturasExternas[index].grupo,
-                nombreDocente:
-                    this.radicar.datosAsignaturasExternas[index].docente,
-                tituloDocente:
-                    this.radicar.datosAsignaturasExternas[index].tituloDocente,
-                cartaAceptacion: await this.convertirABase64(
-                    this.radicar.datosAsignaturasExternas[index].cartaAceptacion
-                ),
-            };
-
-            asignaturasExternas.push(datosAsignatura);
-        }
-
-        const datos: DatosCursarAsignaturaDto = {
+        // Construir el objeto de solicitud con los datos
+        const datos: Modelos.DatosCursarAsignaturaDto = {
             motivo: this.radicar.motivoDeSolicitud,
             listaAsignaturasCursar: asignaturasExternas,
         };
 
-        const infoSolicitada: DatosSolicitudCursarAsignatura = {
+        const infoSolicitada: Modelos.DatosSolicitudCursarAsignatura = {
             datosCursarAsignaturaDto: datos,
         };
 
         return this.construirObjAGuardar('CU_ASIG', infoSolicitada);
     }
 
-    async reunirDatosSolAplazamiento(): Promise<SolicitudSave> {
-        const datos: DatosSolicitudAplazamiento = {
-            semestre: this.radicar.semestreAplazamiento,
-            motivo: this.radicar.motivoDeSolicitud,
-        };
+    // Reúne los datos para una solicitud de aplazamiento de semestre.
+    async reunirDatosSolAplazamiento(): Promise<Modelos.SolicitudSave> {
+        const { semestre = '', motivo = '' } = this.radicar.formSemestreAplazar.getRawValue();
+
+        const documentoAdjunto = this.radicar.documentosAdjuntos[0]
+            ? await this.utilidades.convertirFileABase64(this.radicar.documentosAdjuntos[0])
+            : null;
+
+        const datos: Modelos.DatosSolicitudAplazamiento = { semestre, motivo, documentoAdjunto };
 
         return this.construirObjAGuardar('AP_SEME', datos);
     }
 
-    async reunirDatosSolAvalPasant(): Promise<SolicitudSave> {
+    // Reúne los datos para una solicitud de aval pasantia de investigación.
+    async reunirDatosSolAvalPasant(): Promise<Modelos.SolicitudSave> {
         const docsAdjuntos = await this.convertirDocumentosAdjuntos();
 
-        const datos: DatosSolicitudAvalPasantia = {
+        const datos: Modelos.DatosSolicitudAvalPasantia = {
             lugarPasantia: this.radicar.lugarEstancia,
             fechaInicio: this.formatearDate(this.radicar.fechasEstancia[0]),
             fechaFin: this.formatearDate(this.radicar.fechasEstancia[1]),
             documentosAdjuntos: docsAdjuntos,
+            universidadResidencia: this.radicar.UniversidadExternaPasantia,
+            grupoUniversidadResidencia: this.radicar.grupoInvestigacionExternoPanatia,
+            nombreDocenteExterno: this.radicar.docenteExternoPas,
         };
 
         return this.construirObjAGuardar('AV_PASA_INV', datos);
     }
 
+    // Reúne los datos para una solicitud de apoyo económico para pasantia.
     async reunirDatosSolApoyoPasantia() {
         const docsAdjuntos = await this.convertirDocumentosAdjuntos();
 
-        const datos: DatosApoyoPasantia = {
+        const datos: Modelos.DatosApoyoPasantia = {
             lugarPasantia: this.radicar.lugarEstancia,
             fechaInicio: this.formatearDate(this.radicar.fechasEstancia[0]),
             fechaFin: this.formatearDate(this.radicar.fechasEstancia[1]),
@@ -243,148 +222,199 @@ export class AlmacenarSolicitudService {
             numeroCedulaAsociada: this.radicar.cedulaCuentaBanco,
             direccionResidencia: this.radicar.direccion,
             documentosAdjuntos: docsAdjuntos,
+            universidadResidencia: this.radicar.UniversidadExternaPasantia,
+            grupoUniversidadResidencia: this.radicar.grupoInvestigacionExternoPanatia,
         };
 
         return this.construirObjAGuardar('AP_ECON_INV', datos);
     }
 
+    // Reúne los datos para una solicitud de cursar apoyo economico para asistencia a congresos.
     async reunirDatosSolApoyoCongreso() {
         const docsAdjuntos = await this.convertirDocumentosAdjuntos();
 
-        const datos: DatosApoyoCongreso = {
-            nombreCongreso: this.radicar.nombreCongreso,
-            tipoCongreso: this.radicar.tipoCongreso,
-            fechaInicio: this.formatearDate(this.radicar.fechasEstancia[0]),
-            fechaFin: this.formatearDate(this.radicar.fechasEstancia[1]),
+        const {
+            nombreCongreso,
+            tipoCongreso,
+            fechas,
+            tituloPublicacion,
+            valorApoyo,
+            entidadBancaria,
+            tipoCuenta,
+            numeroCuenta,
+            numeroCedulaAsociada,
+            direccionResidencia,
+            grupoInvestigacion,
+            lugarEvento,
+        } = this.radicar.formApoyoAsistEvento.getRawValue();
+
+        const [fechaInicio, fechaFin] = [
+            this.utilidades.extraerFechaDeRange(fechas, 0, '-', 1),
+            this.utilidades.extraerFechaDeRange(fechas, 1, '-', 1),
+        ];
+
+        const datos: Modelos.DatosApoyoCongreso = {
+            nombreCongreso,
+            tipoCongreso,
+            fechaInicio,
+            fechaFin,
             idDirectorGrupo: this.radicar.director.id,
             nombreDirectorGrupo: null,
-            tituloPublicacion: this.radicar.tituloPublicacion,
-            valorApoyo: this.radicar.valorApoyoEcon,
-            entidadBancaria: this.radicar.banco,
-            tipoCuenta: this.radicar.tipoCuenta,
-            numeroCuenta: this.radicar.numeroCuenta,
-            numeroCedulaAsociada: this.radicar.cedulaCuentaBanco,
-            direccionResidencia: this.radicar.direccion,
+            tituloPublicacion,
+            valorApoyo,
+            entidadBancaria,
+            tipoCuenta,
+            numeroCuenta,
+            numeroCedulaAsociada,
+            direccionResidencia,
             documentosAdjuntos: docsAdjuntos,
+            grupoInvestigacion,
+            lugarEvento,
         };
 
         return this.construirObjAGuardar('AP_ECON_ASI', datos);
     }
 
-    async reunirDatosSolApoyoPublicacion() {
-        const docsAdjuntos = await this.convertirDocumentosAdjuntos();
+    // Reúne los datos para una solicitud de pago de publicación o incripción.
+    async reunirDatosSolApoyoPublicacionInscripcion(): Promise<Modelos.SolicitudSave> {
+        const documentosAdjuntos = await this.convertirDocumentosAdjuntos();
 
-        const datos: DatosApoyoPublicacion = {
-            nombreEvento: this.radicar.nombreCongreso,
-            tipoEvento: this.radicar.tipoCongreso,
-            fechaInicio: this.formatearDate(this.radicar.fechasEstancia[0]),
-            fechaFin: this.formatearDate(this.radicar.fechasEstancia[1]),
+        // Atributos comunes a ambos tipos de apoyo (publicación e inscripción)
+        const datosComunes = {
             idDirectorGrupo: this.radicar.director.id,
             nombreDirectorGrupo: null,
-            tituloPublicacion: this.radicar.tituloPublicacion,
             valorApoyo: this.radicar.valorApoyoEcon,
             entidadBancaria: this.radicar.banco,
             tipoCuenta: this.radicar.tipoCuenta,
             numeroCuenta: this.radicar.numeroCuenta,
             numeroCedulaAsociada: this.radicar.cedulaCuentaBanco,
             direccionResidencia: this.radicar.direccion,
-            documentosAdjuntos: docsAdjuntos,
+            documentosAdjuntos,
+            grupoInvestigacion: this.radicar.grupoInvestigacion,
+            finalidadApoyo: this.radicar.tipoApoyo,
+            informacionPago: this.radicar.InfoDePago,
         };
 
+        // Si el tipo de apoyo es "publicacion", completa los datos específicos para una publicación
+        const datosEspecificos =
+            this.radicar.tipoApoyo === 'publicacion'
+                ? {
+                      nombreEvento: null,
+                      tipoEvento: this.radicar.tipoCongreso,
+                      fechaInicio: null,
+                      fechaFin: null,
+                      tituloPublicacion: this.radicar.tituloPublicacion,
+                      nombreRevista: this.radicar.nombreRevistaLibro,
+                      lugarEvento: null,
+                  }
+                : // En caso contrario "inscripcion", completa los datos específicos para una inscripción
+                  {
+                      nombreEvento: this.radicar.nombreCongreso,
+                      tipoEvento: null,
+                      fechaInicio: this.formatearDate(this.radicar.fechasEstancia[0]),
+                      fechaFin: this.formatearDate(this.radicar.fechasEstancia[1]),
+                      tituloPublicacion: null,
+                      nombreRevista: null,
+                      lugarEvento: this.radicar.lugarEstancia,
+                  };
+
+        // Combina los datos comunes y específicos en un solo objeto
+        const datos: Modelos.DatosApoyoPublicacion = { ...datosComunes, ...datosEspecificos };
+
+        // Construye y retorna el objeto de solicitud utilizando 'PA_PUBL_EVE' como identificador de tipo de solicitud
         return this.construirObjAGuardar('PA_PUBL_EVE', datos);
     }
 
-    async reunirDatosSolAvalSeminario() {
+    // Reúne los datos para una solicitud de reconociminto de creditos publicación.
+    async reunirDatosSolRecCreditosPublicacion() {
         const docsAdjuntos = await this.convertirDocumentosAdjuntos();
 
-        const datos = {
+        const datos: Modelos.DatosReconoCreditos = {
             documentosAdjuntos: docsAdjuntos,
+            enlacesAdjuntos: this.radicar.enlacesAdjuntos,
         };
 
-        return this.construirObjAGuardar('AV_SEMI_ACT', datos);
+        return this.construirObjAGuardar('RE_CRED_PUB', datos);
     }
 
-    async reunirDatosSolRecCreditosSinLink() {
-        const docsAdjuntos = await this.convertirDocumentosAdjuntos();
-
-        const datos: DatosReconoCreditos = {
-            documentosAdjuntos: docsAdjuntos,
-        };
-
-        return this.construirObjAGuardar('RE_CRED', datos);
-    }
-
-    async reunirDatosSolRecCreditosConLink() {
+    // Reúne los datos para una solicitud de reconociminto de creditos pasantia.
+    async reunirDatosSolRecCreditosPasantia() {
         const documentos = await Promise.all(
             this.radicar.documentosAdjuntos.map(
-                async (documento: any) => await this.convertirABase64(documento)
+                async (documento: any) => await this.utilidades.convertirFileABase64(documento)
             )
         );
 
         documentos.push(this.radicar.enlaceMaterialAudiovisual);
 
-        const datos: DatosReconoCreditos = {
+        const datos: Modelos.DatosReconoCreditos = {
             documentosAdjuntos: documentos,
+            enlacesAdjuntos: this.radicar.enlacesAdjuntos,
         };
 
-        return this.construirObjAGuardar('RE_CRED', datos);
+        return this.construirObjAGuardar('RE_CRED_PAS', datos);
     }
 
+    // Reúne los datos para una solicitud de aval actividades de practica docente.
     async reunirDatosAvalPractDocente() {
-        const datos: DatosAvalPracticaDocente[] =
-            this.radicar.actividadesSeleccionadas.map((actividad, index) => {
+        const datos = await Promise.all(
+            this.radicar.actividadesSeleccionadas.map(async (actividad, index) => {
                 const intensidad = this.radicar.horasIngresadas[index] || 0;
 
                 return {
                     codigoSubtipo: actividad.codigo,
                     intensidadHoraria: intensidad,
                     horasReconocer: this.radicar.horasAsignables[index],
+                    descripcionActividad: this.radicar.descripcionesActividades[index],
+                    documentoAdjunto:
+                        actividad.codigo === 'CUR_COR_SEM'
+                            ? await this.utilidades.convertirFileABase64(this.radicar.documentosAdjuntos[index])
+                            : null,
                 };
-            });
+            })
+        );
 
         return this.construirObjAGuardar('AV_COMI_PR', datos);
     }
 
+    // Reúne los datos para una solicitud de reconocimiento de créditos actividades de practica docente.
     async reunirDatosSolRecCredPracticaDocente() {
-        const datos: DatosActividadPracticaDocente[] = await Promise.all(
-            this.radicar.actividadesSeleccionadas.map(
-                async (actividad, index) => {
-                    const docsAdjuntos = await Promise.all(
-                        this.radicar.adjuntosDeActividades[index].archivos.map(
-                            (archivo) => this.convertirABase64(archivo)
-                        )
-                    );
+        const datos: Modelos.DatosActividadPracticaDocente[] = await Promise.all(
+            this.radicar.actividadesSeleccionadas.map(async (actividad, index) => {
+                const docsAdjuntos = await Promise.all(
+                    this.radicar.adjuntosDeActividades[index].archivos.map((archivo) =>
+                        this.utilidades.convertirFileABase64(archivo)
+                    )
+                );
 
-                    return {
-                        codigoSubtipo: actividad.codigo,
-                        intensidadHoraria: this.radicar.horasIngresadas[index],
-                        horasReconocer: this.radicar.horasAsignables[index],
-                        documentosAdjuntos: docsAdjuntos,
-                        enlacesAdjuntos:
-                            this.radicar.adjuntosDeActividades[index].enlaces,
-                    };
-                }
-            )
+                return {
+                    codigoSubtipo: actividad.codigo,
+                    intensidadHoraria: this.radicar.horasIngresadas[index],
+                    horasReconocer: this.radicar.horasAsignables[index],
+                    documentosAdjuntos: docsAdjuntos,
+                    enlacesAdjuntos: this.radicar.adjuntosDeActividades[index].enlaces,
+                };
+            })
         );
 
-        return this.construirObjAGuardar('RE_CRED_PAS', datos);
+        console.log(datos);
+        return this.construirObjAGuardar('RE_CRED_PR_DOC', datos);
     }
 
-    async reunirDatosSolHomolog(): Promise<SolicitudSave> {
-        const asignaturasAHomologar: AsignaturaHomologPost[] = [];
+    // Reúne los datos para una solicitud de homologacion de asignaturas.
+    async reunirDatosSolHomolog(): Promise<Modelos.SolicitudSave> {
+        const asignaturasAHomologar: Modelos.AsignaturaHomologPost[] = [];
         const conversionesBase64: Promise<string>[] = [];
 
         for (const asignatura of this.radicar.datosAsignaturasAHomologar) {
             const contenido = asignatura?.contenidos;
             if (contenido) {
                 conversionesBase64.push(
-                    this.convertirABase64(contenido)
+                    this.utilidades
+                        .convertirFileABase64(contenido)
                         .then((base64String) => base64String?.toString())
                         .catch((error) => {
-                            console.error(
-                                'Error al convertir a base64:',
-                                error
-                            );
+                            console.error('Error al convertir a base64:', error);
                             return null;
                         })
                 );
@@ -393,36 +423,26 @@ export class AlmacenarSolicitudService {
 
         const base64Contents = await Promise.all(conversionesBase64);
 
-        for (
-            let index = 0;
-            index < this.radicar.datosAsignaturasAHomologar.length;
-            index++
-        ) {
-            const datos: AsignaturaHomologPost = {
-                nombreAsignatura:
-                    this.radicar.datosAsignaturasAHomologar[index].asignatura,
-                numeroCreditos:
-                    this.radicar.datosAsignaturasAHomologar[index].creditos,
-                intensidadHoraria:
-                    this.radicar.datosAsignaturasAHomologar[index].intensidad,
-                calificacion:
-                    this.radicar.datosAsignaturasAHomologar[index].calificacion,
+        for (let index = 0; index < this.radicar.datosAsignaturasAHomologar.length; index++) {
+            const datos: Modelos.AsignaturaHomologPost = {
+                nombreAsignatura: this.radicar.datosAsignaturasAHomologar[index].asignatura,
+                numeroCreditos: this.radicar.datosAsignaturasAHomologar[index].creditos,
+                intensidadHoraria: this.radicar.datosAsignaturasAHomologar[index].intensidad,
+                calificacion: this.radicar.datosAsignaturasAHomologar[index].calificacion,
                 contenidoProgramatico: base64Contents[index],
             };
             asignaturasAHomologar.push(datos);
         }
 
-        const datosHomologacion: FormHomologPost = {
-            programaProcedencia:
-                this.radicar.datosInstitucionHomologar.programa,
-            institucionProcedencia:
-                this.radicar.datosInstitucionHomologar.institucion,
+        const datosHomologacion: Modelos.FormHomologPost = {
+            programaProcedencia: this.radicar.datosInstitucionHomologar.programa,
+            institucionProcedencia: this.radicar.datosInstitucionHomologar.institucion,
             listaAsignaturas: asignaturasAHomologar,
         };
 
         const documentosAdjuntos = await this.convertirDocumentosAdjuntos();
 
-        const datosSolHomologacion: DatosSolHomologPostSave = {
+        const datosSolHomologacion: Modelos.DatosSolHomologPostSave = {
             datosHomologacionDto: datosHomologacion,
             documentosAdjuntos: documentosAdjuntos,
         };
@@ -430,63 +450,39 @@ export class AlmacenarSolicitudService {
         return this.construirObjAGuardar('HO_ASIG', datosSolHomologacion);
     }
 
-    async convertirABase64(archivo: File): Promise<string | null> {
-        return new Promise((resolve, reject) => {
-            const lector = new FileReader();
-
-            lector.readAsDataURL(archivo);
-
-            lector.onload = () => {
-                if (typeof lector.result === 'string') {
-                    const nombre = archivo.name;
-                    const contenidoBase64 = lector.result.split(',')[1];
-                    const base64ConNombre = `${nombre}:${contenidoBase64}`;
-                    resolve(base64ConNombre);
-                } else {
-                    reject(null);
-                }
-            };
-
-            lector.onerror = () => {
-                reject(null);
-            };
-        });
-    }
-
-    async construirObjAGuardar(
-        tipo: string,
-        infoEspecifica: any
-    ): Promise<SolicitudSave> {
-        const infoSolicitud: SolicitudSave = {
+    async construirObjAGuardar(tipo: string, infoEspecifica: any): Promise<Modelos.SolicitudSave> {
+        const infoSolicitud: Modelos.SolicitudSave = {
             idTipoSolicitud: this.radicar.tipoSolicitudEscogida.idSolicitud,
-            idEstudiante: this.radicar.datosSolicitante.id,
+            idEstudiante: this.radicar.formInfoPersonal.get('id').value,
             idTutor: this.radicar.tutor.id,
             datosHomologacion: tipo === 'HO_ASIG' ? infoEspecifica : null,
             datosAdicionAsignatura: tipo === 'AD_ASIG' ? infoEspecifica : null,
             datosCancelarAsignatura: tipo === 'CA_ASIG' ? infoEspecifica : null,
             datosAplazarSemestre: tipo === 'AP_SEME' ? infoEspecifica : null,
             datosCursarAsignatura: tipo === 'CU_ASIG' ? infoEspecifica : null,
-            datosAvalPasantiaInv:
-                tipo === 'AV_PASA_INV' ? infoEspecifica : null,
+            datosAvalPasantiaInv: tipo === 'AV_PASA_INV' ? infoEspecifica : null,
             datosApoyoEconomico: tipo === 'AP_ECON_INV' ? infoEspecifica : null,
-            datosReconocimientoCreditos:
-                tipo === 'RE_CRED' ? infoEspecifica : null,
+            datosReconocimientoCreditos: tipo === 'RE_CRED_PAS' || tipo === 'RE_CRED_PUB' ? infoEspecifica : null,
             datosAvalSeminario: tipo === 'AV_SEMI_ACT' ? infoEspecifica : null,
-            datosApoyoEconomicoCongreso:
-                tipo === 'AP_ECON_ASI' ? infoEspecifica : null,
-            datosApoyoEconomicoPublicacion:
-                tipo === 'PA_PUBL_EVE' ? infoEspecifica : null,
-            datosActividadDocenteRequest:
-                tipo === 'RE_CRED_PAS' ? infoEspecifica : null,
+            datosApoyoEconomicoCongreso: tipo === 'AP_ECON_ASI' ? infoEspecifica : null,
+            datosApoyoEconomicoPublicacion: tipo === 'PA_PUBL_EVE' ? infoEspecifica : null,
+            datosActividadDocenteRequest: tipo === 'RE_CRED_PR_DOC' ? infoEspecifica : null,
             datosAvalComite: tipo === 'AV_COMI_PR' ? infoEspecifica : null,
+            datosSolicitudBeca: tipo === 'SO_BECA' ? infoEspecifica : null,
             requiereFirmaDirector:
-                tipo === 'AP_ECON_INV' || tipo === 'ApoyoEconomico'
-                    ? true
-                    : false,
-            firmaEstudiante: this.firmaSolicitante,
-            oficioPdf: await this.convertirABase64(
-                this.radicar.oficioDeSolicitud
-            ),
+                tipo === 'AP_ECON_INV' || tipo === 'AP_ECON_ASI' || tipo === 'PA_PUBL_EVE' ? true : false,
+            idDirector:
+                tipo === 'AP_ECON_ASI' || tipo === 'AP_ECON_INV' || tipo === 'PA_PUBL_EVE'
+                    ? this.radicar.director.id
+                    : null,
+            firmaEstudiante: true,
+            oficioPdf: await this.utilidades.convertirFileABase64(this.radicar.oficioDeSolicitud),
+            numPaginaTutor: this.radicar.firmaTutorPag,
+            numPaginaDirector: this.radicar.firmaDirectorPag,
+            posXTutor: this.radicar.firmaTutorX,
+            posYTutor: this.radicar.firmaTutorY,
+            posXDirector: this.radicar.firmaDirectorX,
+            posYDirector: this.radicar.firmaDirectorY,
         };
 
         console.log(infoSolicitud);
@@ -494,14 +490,13 @@ export class AlmacenarSolicitudService {
     }
 
     async convertirDocumentosAdjuntos(): Promise<string[]> {
-        const documentosAdjuntosPromises: Promise<string>[] =
-            this.radicar.documentosAdjuntos.map(async (adjunto) => {
-                if (adjunto instanceof File) {
-                    return await this.convertirABase64(adjunto);
-                } else {
-                    return Promise.resolve(null);
-                }
-            });
+        const documentosAdjuntosPromises: Promise<string>[] = this.radicar.documentosAdjuntos.map(async (adjunto) => {
+            if (adjunto instanceof File) {
+                return await this.utilidades.convertirFileABase64(adjunto);
+            } else {
+                return Promise.resolve(null);
+            }
+        });
 
         return Promise.all(documentosAdjuntosPromises);
     }

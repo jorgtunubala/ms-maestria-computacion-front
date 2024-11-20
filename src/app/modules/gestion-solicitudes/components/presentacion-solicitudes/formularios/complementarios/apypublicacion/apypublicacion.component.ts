@@ -1,11 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import {
-    AbstractControl,
-    FormBuilder,
-    FormGroup,
-    Validators,
-} from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RadicarService } from 'src/app/modules/gestion-solicitudes/services/radicar.service';
+import { UtilidadesService } from 'src/app/modules/gestion-solicitudes/services/utilidades.service';
 
 @Component({
     selector: 'app-apypublicacion',
@@ -16,15 +12,15 @@ export class ApypublicacionComponent implements OnInit {
     formApoyoPagoPublic: FormGroup;
     tiposCuentaBancaria: string[];
     tiposCongreso: string[];
+    listaGruposInvestigacion: string[];
 
-    constructor(public radicar: RadicarService, private fb: FormBuilder) {
-        this.tiposCuentaBancaria = [
-            'Seleccione una opción',
-            'Ahorros',
-            'Corriente',
-        ];
+    constructor(
+        public radicar: RadicarService,
+        private fb: FormBuilder,
+        private servicioUtilidades: UtilidadesService
+    ) {
+        this.tiposCuentaBancaria = ['Ahorros', 'Corriente'];
         this.tiposCongreso = [
-            'Seleccione una opción',
             'Articulo en revista indexada categoría A1 o A2 de Publindex',
             'Articulo en revista indexada categoría B de Publindex',
             'Articulo en revista indexada categoría C de Publindex',
@@ -33,39 +29,47 @@ export class ApypublicacionComponent implements OnInit {
             'Articulo en memoria de evento arbitrario nacional con ISBN',
         ];
 
+        this.listaGruposInvestigacion = [
+            'Grupo de Investigación y Desarrollo en Ingeniería de Software - IDIS',
+            'Grupo de Investigación en Tecnologías de la Información - GTI',
+            'Grupo de Investigación en Inteligencia Computacional - GICO',
+        ];
+
         this.formApoyoPagoPublic = this.fb.group({
-            nombreCongreso: ['', Validators.required],
             tipoCongreso: ['', this.customValidator()],
+            nombreRevista: [''],
             tituloPublicacion: ['', Validators.required],
-            fechas: ['', Validators.required],
+            grupoInvestigacion: ['', this.customValidator],
             valorApoyo: ['', Validators.required],
             nombreBanco: ['', Validators.required],
             tipoCuenta: ['', this.customValidator()],
-            numeroCuenta: ['', Validators.required],
-            cedulaEnBanco: ['', Validators.required],
+            numeroCuenta: ['', this.customValidator()],
             direccionRecidencia: ['', Validators.required],
+            infoDePago: ['', Validators.required],
         });
     }
 
     ngOnInit(): void {
-        if (this.radicar.fechasEstancia.length > 0) {
-            this.formApoyoPagoPublic.patchValue({
-                fechas: this.radicar.fechasEstancia,
-            });
-        }
-        if (this.radicar.nombreCongreso.trim() !== '') {
-            this.formApoyoPagoPublic.patchValue({
-                nombreCongreso: this.radicar.nombreCongreso,
-            });
-        }
+        this.servicioUtilidades.configurarIdiomaCalendario();
+
         if (this.radicar.tipoCongreso.trim() !== '') {
             this.formApoyoPagoPublic.patchValue({
                 tipoCongreso: this.radicar.tipoCongreso,
             });
         }
+        if (this.radicar.nombreRevistaLibro.trim() !== '') {
+            this.formApoyoPagoPublic.patchValue({
+                nombreRevista: this.radicar.nombreRevistaLibro,
+            });
+        }
         if (this.radicar.tituloPublicacion.trim() !== '') {
             this.formApoyoPagoPublic.patchValue({
                 tituloPublicacion: this.radicar.tituloPublicacion,
+            });
+        }
+        if (this.radicar.grupoInvestigacion.trim() !== '') {
+            this.formApoyoPagoPublic.patchValue({
+                grupoInvestigacion: this.radicar.grupoInvestigacion,
             });
         }
         if (this.radicar.valorApoyoEcon !== null) {
@@ -88,62 +92,40 @@ export class ApypublicacionComponent implements OnInit {
                 numeroCuenta: this.radicar.numeroCuenta,
             });
         }
-        if (this.radicar.cedulaCuentaBanco.trim() !== '') {
-            this.formApoyoPagoPublic.patchValue({
-                cedulaEnBanco: this.radicar.cedulaCuentaBanco,
-            });
-        }
         if (this.radicar.direccion.trim() !== '') {
             this.formApoyoPagoPublic.patchValue({
                 direccionRecidencia: this.radicar.direccion,
             });
         }
 
-        this.formApoyoPagoPublic.valueChanges.subscribe((value) => {
-            // Verificar si value.fechas es una cadena de texto
-            if (typeof value.fechas === 'string') {
-                // Dividir el string de fechas en fechaInicio y fechaFin
-                const fechas = value.fechas
-                    .split(' - ')
-                    .map((dateString) => new Date(dateString.trim()));
-                this.radicar.fechasEstancia = fechas;
-            } else if (Array.isArray(value.fechas)) {
-                // Verificar si value.fechas es un arreglo de objetos Date
-                // Asignar el valor directamente
-                this.radicar.fechasEstancia = value.fechas;
-            }
+        if (this.radicar.InfoDePago.trim() !== '') {
+            this.formApoyoPagoPublic.patchValue({
+                infoDePago: this.radicar.InfoDePago,
+            });
+        }
 
-            this.radicar.nombreCongreso = value.nombreCongreso;
+        this.formApoyoPagoPublic.valueChanges.subscribe((value) => {
             this.radicar.tipoCongreso = value.tipoCongreso;
+            this.radicar.nombreRevistaLibro = value.nombreRevista;
             this.radicar.tituloPublicacion = value.tituloPublicacion;
+            this.radicar.grupoInvestigacion = value.grupoInvestigacion;
             this.radicar.valorApoyoEcon = value.valorApoyo;
             this.radicar.banco = value.nombreBanco;
             this.radicar.tipoCuenta = value.tipoCuenta;
             this.radicar.numeroCuenta = value.numeroCuenta;
-            this.radicar.cedulaCuentaBanco = value.cedulaEnBanco;
             this.radicar.direccion = value.direccionRecidencia;
+            this.radicar.InfoDePago = value.infoDePago;
         });
     }
 
     customValidator() {
         return (control: AbstractControl) => {
             const tipoSeleccionado: string = control.value;
-            if (
-                !tipoSeleccionado ||
-                tipoSeleccionado === 'Seleccione una opción'
-            ) {
+            if (!tipoSeleccionado || tipoSeleccionado === '') {
                 return { tipoInvalido: true };
             }
             return null;
         };
-    }
-
-    validarFechas(): boolean {
-        return (
-            this.radicar.fechasEstancia.length === 2 &&
-            !!this.radicar.fechasEstancia[0] &&
-            !!this.radicar.fechasEstancia[1]
-        );
     }
 
     obtenerEstadoFormulario(): boolean {

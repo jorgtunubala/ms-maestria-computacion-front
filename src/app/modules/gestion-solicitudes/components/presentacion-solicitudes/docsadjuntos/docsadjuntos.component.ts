@@ -1,7 +1,7 @@
-import { Component, HostListener, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, EventEmitter, HostListener, OnInit, Output } from '@angular/core';
 import { RadicarService } from '../../../services/radicar.service';
 import { MessageService } from 'primeng/api';
+import { UtilidadesService } from '../../../services/utilidades.service';
 
 @Component({
     selector: 'app-docsadjuntos',
@@ -10,6 +10,8 @@ import { MessageService } from 'primeng/api';
     providers: [MessageService],
 })
 export class DocsAdjuntosComponent implements OnInit {
+    @Output() cambioDePaso = new EventEmitter<number>();
+
     @HostListener('window:beforeunload', ['$event'])
     beforeUnloadHander(event: Event) {
         event.returnValue = true;
@@ -18,25 +20,22 @@ export class DocsAdjuntosComponent implements OnInit {
 
     constructor(
         public radicar: RadicarService,
-        private router: Router,
+        public utilidades: UtilidadesService,
         private messageService: MessageService
     ) {}
 
     ngOnInit(): void {
+        console.log('HOLA');
         try {
             this.radicar.requisitosSolicitudEscogida.documentosRequeridos;
+            console.log(this.radicar.requisitosSolicitudEscogida);
         } catch (error) {
             console.error('Se produjo un error:', error);
 
             // Verificar si el error es del tipo TypeError y si contiene la cadena 'documentosRequeridos'
-            if (
-                error instanceof TypeError &&
-                error.message.includes('documentosRequeridos')
-            ) {
+            if (error instanceof TypeError && error.message.includes('documentosRequeridos')) {
                 // Redirigir al usuario a una ruta específica
-                this.router.navigate([
-                    '/gestionsolicitudes/portafolio/radicar/selector',
-                ]);
+                //this.router.navigate(['/gestionsolicitudes/portafolio/radicar/selector']);
             } else {
                 // Manejar otros errores de manera apropiada
                 console.error('Error no esperado:', error);
@@ -45,10 +44,37 @@ export class DocsAdjuntosComponent implements OnInit {
     }
 
     onUpload(event, fubauto, indice) {
+        /*
+        console.log(indice);
+        console.log(
+            '' +
+                this.radicar.requisitosSolicitudEscogida.documentosRequeridos[
+                    indice
+                ].nombre
+        );
         for (let doc of event.files) {
             this.radicar.documentosAdjuntos[indice] = doc;
         }
 
+        fubauto.clear();
+        */
+        for (let doc of event.files) {
+            // Obtener el nombre del archivo original y la extensión
+            const originalName = doc.name;
+            const fileExtension = originalName.split('.').pop();
+
+            // Obtener el nuevo nombre del archivo
+            const nuevoNombre = this.radicar.requisitosSolicitudEscogida.documentosRequeridos[indice].nombreAcortado;
+            const nuevoNombreConExtension = `${nuevoNombre}.${fileExtension}`;
+
+            const renamedFile = new File([doc], nuevoNombreConExtension, {
+                type: 'application/pdf', // Establece el tipo MIME correcto para un PDF
+            });
+            // Actualizar la lista de documentos adjuntos
+            this.radicar.documentosAdjuntos[indice] = renamedFile;
+        }
+
+        // Limpiar el componente de subida de archivos
         fubauto.clear();
     }
 
@@ -56,46 +82,51 @@ export class DocsAdjuntosComponent implements OnInit {
         this.radicar.documentosAdjuntos[indice] = undefined;
     }
 
-    validarDocsCompletos(): boolean {
+    validarDocsYEnlcesCompletos(): boolean {
+        let estadoValidacion = true;
+
+        // Verificar que los requisitos no sean undefined
         if (
-            [
-                'RE_CRED_PAS',
-                'RE_CRED_DIS',
-                'PR_CURS_TEO',
-                'AS_CRED_MAT',
-            ].includes(this.radicar.tipoSolicitudEscogida.codigoSolicitud)
+            !this.radicar.requisitosSolicitudEscogida ||
+            !this.radicar.requisitosSolicitudEscogida.documentosRequeridos ||
+            !this.radicar.requisitosSolicitudEscogida.enlacesRequeridos
         ) {
-            if (
-                this.radicar.documentosAdjuntos.length !==
-                this.radicar.requisitosSolicitudEscogida.documentosRequeridos
-                    .length -
-                    1
-            ) {
-                return false;
-            }
+            return false;
+        }
 
-            if (this.radicar.enlaceMaterialAudiovisual == '') {
-                return false;
-            }
-        } else {
-            // Verifica si los tamaños son iguales
+        for (let index = 0; index < this.radicar.requisitosSolicitudEscogida.documentosRequeridos.length; index++) {
+            const requisito = this.radicar.requisitosSolicitudEscogida.documentosRequeridos[index];
             if (
-                this.radicar.documentosAdjuntos.length !==
-                this.radicar.requisitosSolicitudEscogida.documentosRequeridos
-                    .length
+                requisito.adjuntarDocumento &&
+                !requisito.nombre.includes('(si aplica)') &&
+                !requisito.nombre.includes('(opcional)')
             ) {
-                return false;
+                const nombreAcortado = requisito.nombreAcortado;
+                const archivoEncontrado = this.radicar.documentosAdjuntos.some(
+                    (doc) => doc && doc.name === `${nombreAcortado}.pdf`
+                );
+
+                if (!archivoEncontrado) {
+                    return false;
+                }
             }
         }
 
-        // Verifica si todas las casillas de documentosAdjuntos están llenas
-        for (const documento of this.radicar.documentosAdjuntos) {
-            if (!documento) {
-                return false;
+        for (let index = 0; index < this.radicar.requisitosSolicitudEscogida.enlacesRequeridos.length; index++) {
+            if (
+                !this.radicar.requisitosSolicitudEscogida.enlacesRequeridos[index].includes('(si aplica)') &&
+                !this.radicar.requisitosSolicitudEscogida.enlacesRequeridos[index].includes('(opcional)')
+            ) {
+                if (
+                    this.radicar.enlacesAdjuntos[index] == null ||
+                    !this.utilidades.validarUrlSegura(this.radicar.enlacesAdjuntos[index])
+                ) {
+                    return false;
+                }
             }
         }
 
-        return true; // Si pasa ambas verificaciones, devuelve true
+        return estadoValidacion;
     }
 
     showWarn() {
@@ -107,18 +138,14 @@ export class DocsAdjuntosComponent implements OnInit {
     }
 
     navigateToNext() {
-        if (this.validarDocsCompletos()) {
-            this.router.navigate([
-                '/gestionsolicitudes/portafolio/radicar/resumen',
-            ]);
+        if (this.validarDocsYEnlcesCompletos()) {
+            this.cambioDePaso.emit(1); // Avanzar al siguiente paso
         } else {
             this.showWarn();
         }
     }
 
     navigateToBack() {
-        this.router.navigate([
-            '/gestionsolicitudes/portafolio/radicar/formulario',
-        ]);
+        this.cambioDePaso.emit(-1); // Retroceder al paso anterior
     }
 }

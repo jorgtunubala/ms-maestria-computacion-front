@@ -1,6 +1,9 @@
+import { gestion_solicitudes } from 'src/environments/environment';
+
 export const httpConfig = {
-    apiUrl: 'http://localhost:8095/msmaestriac/gestionSolicitud',
-    apiUrlSub: 'http://localhost:8095/msmaestriac/gestionSubtipos',
+    apiUrl: `${gestion_solicitudes.api_url}/gestionSolicitud`,
+    apiUrlSub: `${gestion_solicitudes.api_url}/gestionSubtipos`,
+    apiGesion: `${gestion_solicitudes.api_url}`,
     obtenerTiposDeSolicitudUrl: '/tiposSolicitud',
     obtenerRequisitosDeSolicitudUrl: '/requisitoSolicitud/',
     obtenerInfoPersonalSolicitanteUrl: '/obtenerInfoPersonal/',
@@ -9,8 +12,17 @@ export const httpConfig = {
     guardarAvalesSolicitudUrl: '/save/firmas',
     obtenerListaSolPendientesAvalUrl: '/obtener-solicitudes-pendientes/',
     obtenerInfoSolGuardadaUrl: '/obtener-datos-solicitud/',
-    obtenerActividadesReCreditosUrl: '/subTiposSolicitud/9',
+    obtenerActividadesPracticaDocente: '/subTiposSolicitud/',
     obtenerHistorialDeSolicitudUrl: '/historial/solicitud/',
-    obtenerSolicitudesCoordinacion:
-        '/obtener-solicitudes-pendientes-coordinador/',
+    obtenerSolicitudesCoordinacion: '/obtener-solicitudes-pendientes-coordinador/',
+    obtenerConceptoComite: '/obtener-solicitudes-en-comite/',
+    obtenerConceptoConsejo: '/obtener-solicitudes-en-concejo/',
+    guardarConceptoComite: '/save-solicitud-en-comite',
+    cambiarEstado: '/save/solicitud/',
+    guardarConceptoConsejo: '/save-solicitud-en-concejo',
+    rechazarSolicitud: '/rechazar-solicitud',
+    enviarCorreo: '/gestionEnvioCorreo/send-email',
+    consultarInfoRolExterno: '/gestion/rol-informacion/buscar?cargo=',
+    guardarInfoRolExterno: '/gestion/rol-informacion/guardar',
+    consultarSiEsDirector: '/solicitud/requiere-director/',
 };

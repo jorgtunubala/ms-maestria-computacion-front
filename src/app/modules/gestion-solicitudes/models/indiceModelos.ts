@@ -37,3 +37,14 @@ export { DatosAvalPracticaDocente } from './solicitudes/solicitud-aval-pract-doc
 export { DatosAvalPracticaDResponse } from './solicitudes/solicitud-aval-pract-docente/datosAvalPracticaDResponse';
 export { EventoHistorial } from './historial/eventoHistorial';
 export { NumeroRadicado } from './historial/numeroRadicado';
+export { DocumentoRequerido } from './requisitos/documentoRequerido';
+export { DatosSolicitudBecaDescuento } from './solicitudes/solicitud-beca-descuento/datosSolicitudBecaDescuento';
+export { DetallesRechazo } from './gestion/detallesRechazo';
+export { SolicitudEnComiteResponse } from './gestion/solicitudEnComite';
+export { SolicitudEnConcejoResponse } from './gestion/solicitudEnConcejo';
+export { AprobarAsignaturas } from './gestion/aprobarAsignaturas';
+export { EnvioCorreoRequest } from './gestion/envioCorreo';
+export { AprobarHomologacion } from './gestion/aprobarHomologacion';
+export { AprobarAsignaturasExt } from './gestion/aprobarAsignaturasExt';
+export { AprobarAvalComite } from './gestion/aprobarAvalComite';
+export { InformacionRoles } from './gestion/InformacionRoles';

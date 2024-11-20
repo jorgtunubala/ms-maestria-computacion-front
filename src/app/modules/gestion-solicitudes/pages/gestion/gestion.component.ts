@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { MenuItem } from 'primeng/api';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { InfoCoordinadorComponent } from '../../components/presentacion-solicitudes/formularios/complementarios/info-coordinador/info-coordinador.component';
+import { InfoPresidenteConsejoComponent } from '../../components/presentacion-solicitudes/formularios/complementarios/info-presidente-consejo/info-presidente-consejo.component';
 
 @Component({
     selector: 'app-gestion',
@@ -11,7 +14,7 @@ export class GestionComponent implements OnInit {
     itemstab: MenuItem[];
     activeItem: MenuItem;
 
-    constructor() {}
+    constructor(private dialogService: DialogService) {}
 
     ngOnInit(): void {
         this.fetchMenuGestion();
@@ -31,18 +34,25 @@ export class GestionComponent implements OnInit {
                     },
                     {
                         label: 'Rechazadas',
-                        routerLink: 'visor',
+                        routerLink: 'buzon/rechazadas',
                         icon: 'pi pi-fw pi-times',
                     },
-                    { label: 'Eliminadas', icon: 'pi pi-fw pi-trash' },
                 ],
             },
             {
                 label: 'En tramite',
                 icon: 'pi pi-fw pi-pencil',
                 items: [
-                    { label: 'En comite', icon: 'pi pi-fw pi-users' },
-                    { label: 'En consejo', icon: 'pi pi-fw pi-users' },
+                    {
+                        label: 'En comite',
+                        routerLink: 'buzon/comite',
+                        icon: 'pi pi-fw pi-users',
+                    },
+                    {
+                        label: 'En consejo',
+                        routerLink: 'buzon/consejo',
+                        icon: 'pi pi-fw pi-users',
+                    },
                 ],
             },
             {
@@ -51,6 +61,7 @@ export class GestionComponent implements OnInit {
                 items: [
                     {
                         label: 'Resueltas',
+                        routerLink: 'buzon/resueltas',
                         icon: 'pi pi-fw pi-check-circle',
                     },
                 ],
@@ -66,6 +77,12 @@ export class GestionComponent implements OnInit {
                             {
                                 label: 'Coordninador(a)',
                                 icon: 'pi pi-fw pi-user-edit',
+                                command: () => this.openDialog('coordinador'),
+                            },
+                            {
+                                label: 'Decano Consejo',
+                                icon: 'pi pi-fw pi-user-edit',
+                                command: () => this.openDialog('presidente'),
                             },
                         ],
                     },
@@ -82,5 +99,29 @@ export class GestionComponent implements OnInit {
                 ],
             },
         ];
+    }
+
+    openDialog(cargo: string) {
+        let ref: DynamicDialogRef;
+
+        if (cargo === 'coordinador') {
+            ref = this.dialogService.open(InfoCoordinadorComponent, {
+                header: 'Editar información del Coordinador',
+                width: '70%',
+            });
+        }
+
+        if (cargo === 'presidente') {
+            ref = this.dialogService.open(InfoPresidenteConsejoComponent, {
+                header: 'Editar información del Presidente del Consejo',
+                width: '70%',
+            });
+        }
+
+        ref.onClose.subscribe((data) => {
+            if (data) {
+                // Manejar los datos que regresen del diálogo, si es necesario
+            }
+        });
     }
 }
