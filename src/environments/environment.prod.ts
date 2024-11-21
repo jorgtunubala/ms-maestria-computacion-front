@@ -22,27 +22,22 @@ export const gestion_autenticacion = {
     api_url: 'https://apptest.unicauca.edu.co:4410',
 };
 
-export const dev_login = {
-    production: true,
-    api_url: 'https://apptest.unicauca.edu.co:4415',
-};
-
 export const gestion_expertos = {
     production: true,
-    api_url: 'https://apptest.unicauca.edu.co:4416',
+    api_url: 'https://apptest.unicauca.edu.co:4402/api/',
 };
 
 export const gestion_egresados = {
     production: true,
-    api_url: 'https://apptest.unicauca.edu.co:4417',
+    api_url: 'https://apptest.unicauca.edu.co:4403/api/',
 };
 
 export const gestion_trabajo_grado = {
     production: true,
-    api_url: 'https://apptest.unicauca.edu.co:4418',
+    api_url: 'https://apptest.unicauca.edu.co:4401/api/',
 };
 
 export const gestion_docentes_estudiantes = {
     production: true,
-    api_url: 'https://apptest.unicauca.edu.co:4419',
+    api_url: 'https://apptest.unicauca.edu.co:4402/api/',
 };

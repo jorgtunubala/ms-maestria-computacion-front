@@ -1,3 +1,5 @@
+import * as pdfMake from 'pdfmake/build/pdfmake';
+import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 import {
     Component,
     ElementRef,
@@ -12,9 +14,9 @@ import {
     FormGroup,
     Validators,
 } from '@angular/forms';
-import { Router } from '@angular/router';
 import { MessageService, SelectItem } from 'primeng/api';
 import { DialogService } from 'primeng/dynamicdialog';
+import { Subscription, firstValueFrom } from 'rxjs';
 import { Mensaje, Rol, TipoRol } from 'src/app/core/enums/enums';
 import { mapResponseException } from 'src/app/core/utils/exception-util';
 import {
@@ -27,9 +29,8 @@ import { BuscadorDocentesComponent } from 'src/app/shared/components/buscador-do
 import { BuscadorExpertosComponent } from 'src/app/shared/components/buscador-expertos/buscador-expertos.component';
 import { Estudiante } from 'src/app/modules/gestion-estudiantes/models/estudiante';
 import { Orientador } from '../../../models/orientador';
-import { PdfService } from 'src/app/shared/services/pdf.service';
 import { TrabajoDeGradoService } from '../../../services/trabajoDeGrado.service';
-import { Subscription } from 'rxjs';
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 @Component({
     selector: 'documento-formatoA',
@@ -39,37 +40,38 @@ import { Subscription } from 'rxjs';
 export class DocumentoFormatoAComponent implements OnInit {
     @Output() formReady = new EventEmitter<FormGroup>();
     @Output() formatoAPdfGenerated = new EventEmitter<File>();
+    @ViewChild('formatoA') formatoA!: ElementRef;
 
     formatoAForm: FormGroup;
-
-    @ViewChild('formatoA') formatoA!: ElementRef;
 
     private estudianteSubscription: Subscription;
     private tituloSubscription: Subscription;
     private evaluadorInternoSubscription: Subscription;
     private evaluadorExternoSubscription: Subscription;
 
-    loading = false;
+    loading: boolean = false;
 
-    tipoSeleccionado = '';
-    rolSeleccionado = '';
+    tipoSeleccionado: string = '';
+    rolSeleccionado: string = '';
+
+    firmaTutor: string | ArrayBuffer;
+    logoFacultad: string;
+    logoIcontec: string;
+    assetHeader: string;
+    assetCalidad: string;
 
     fechaActual: Date;
-    firmaEstudiante: string | ArrayBuffer;
-    firmaTutor: string | ArrayBuffer;
-    estudianteSeleccionado: Estudiante = {};
 
+    estudianteSeleccionado: Estudiante = {};
     orientadores: Orientador[] = [];
     roles: SelectItem[] = enumToSelectItems(Rol);
     tipos: SelectItem[] = enumToSelectItems(TipoRol);
 
     constructor(
         private fb: FormBuilder,
-        private router: Router,
         private dialogService: DialogService,
         private messageService: MessageService,
-        private trabajoDeGradoService: TrabajoDeGradoService,
-        private pdfService: PdfService
+        private trabajoDeGradoService: TrabajoDeGradoService
     ) {}
 
     get titulo(): FormControl {
@@ -160,7 +162,10 @@ export class DocumentoFormatoAComponent implements OnInit {
 
     initForm(): void {
         this.formatoAForm = this.fb.group({
-            asunto: [null, Validators.required],
+            asunto: [
+                'SOLICITUD PARA PRESENTACIÓN DE EXAMEN DE VALORACIÓN AL COMITÉ DE PROGRAMA DE MAESTRÍA EN COMPUTACIÓN',
+                Validators.required,
+            ],
             titulo: [null, Validators.required],
             estudiante: [null, Validators.required],
             orientador: [null, Validators.required],
@@ -168,15 +173,43 @@ export class DocumentoFormatoAComponent implements OnInit {
             tipo: [null, Validators.required],
             evaluadorInterno: [null, Validators.required],
             evaluadorExterno: [null, Validators.required],
-            firmaEstudiante: [null, Validators.required],
             firmaTutor: [null, Validators.required],
         });
 
-        this.formatoAForm.get('titulo').disable();
-        this.formatoAForm.get('estudiante').disable();
-        this.formatoAForm.get('evaluadorInterno').disable();
-        this.formatoAForm.get('evaluadorExterno').disable();
         this.formReady.emit(this.formatoAForm);
+
+        var assetHeader = new Image();
+        assetHeader.src = 'assets/layout/images/asset-header.jpg';
+        assetHeader.onload = () => {
+            this.assetHeader = this.getBase64Image(assetHeader);
+        };
+
+        var logoFacultad = new Image();
+        logoFacultad.src = 'assets/layout/images/logoFacultad.png';
+        logoFacultad.onload = () => {
+            this.logoFacultad = this.getBase64Image(logoFacultad);
+        };
+
+        var assetCalidad = new Image();
+        assetCalidad.src = 'assets/layout/images/asset-calidad.png';
+        assetCalidad.onload = () => {
+            this.assetCalidad = this.getBase64Image(assetCalidad);
+        };
+
+        var logoIcontec = new Image();
+        logoIcontec.src = 'assets/layout/images/logosIcontec.png';
+        logoIcontec.onload = () => {
+            this.logoIcontec = this.getBase64Image(logoIcontec);
+        };
+    }
+
+    getBase64Image(img: HTMLImageElement) {
+        var canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        var ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+        return canvas.toDataURL('image/png');
     }
 
     ngOnDestroy() {
@@ -194,53 +227,233 @@ export class DocumentoFormatoAComponent implements OnInit {
         }
     }
 
-    onCancel() {
-        this.router.navigate(['examen-de-valoracion/solicitud']);
+    generateDocDefinition() {
+        const formValues = this.formatoAForm.value;
+        const fechaActual = new Date().toLocaleDateString();
+
+        return {
+            content: [
+                {
+                    image: this.assetHeader,
+                    width: 600,
+                    height: 20,
+                    margin: [0, -40, 0, 0],
+                    alignment: 'center',
+                    opacity: 0.6,
+                },
+                {
+                    image: this.logoFacultad,
+                    width: 180,
+                    height: 90,
+                    margin: [0, 10, 0, 20],
+                    alignment: 'left',
+                    opacity: 0.6,
+                },
+                {
+                    text: 'SOLICITUD EXAMEN DE VALORACIÓN',
+                    style: 'header',
+                    alignment: 'center',
+                },
+                {
+                    text: `Popayán, ${fechaActual}`,
+                    style: 'subheader',
+                    alignment: 'center',
+                },
+                {
+                    columns: [
+                        { text: 'FORMATO A:', style: 'label', width: '25%' },
+                        {
+                            text: formValues.asunto,
+                            style: 'value',
+                            width: '75%',
+                        },
+                    ],
+                    margin: [0, 10, 0, 10],
+                },
+                {
+                    columns: [
+                        { text: 'TITULO:', style: 'label', width: '25%' },
+                        {
+                            text: formValues.titulo,
+                            style: 'value',
+                            width: '75%',
+                        },
+                    ],
+                    margin: [0, 10, 0, 10],
+                },
+                {
+                    columns: [
+                        {
+                            text: 'TUTORES Y ASESORES',
+                            style: 'label',
+                            width: '20%',
+                        },
+                        {
+                            stack: [
+                                ...this.orientadores.map((orientador) => ({
+                                    text: `${
+                                        orientador.nombres
+                                    } (${this.formatText(orientador.rol)})`,
+                                    margin: [25, 10, 0, 0],
+                                })),
+                            ],
+                            width: '70%',
+                        },
+                    ],
+                    margin: [0, 10, 0, 10],
+                },
+                {
+                    columns: [
+                        {
+                            text: 'EVALUADORES SUGERIDOS:',
+                            style: 'label',
+                            width: '25%',
+                        },
+                        {
+                            stack: [
+                                {
+                                    text: `${this.docente.value.nombres}, ${this.docente.value.universidad}, ${this.docente.value.correo} (Interno)`,
+                                    style: 'value',
+                                },
+                                {
+                                    text: `${this.experto.value.nombres}, ${this.experto.value.universidad}, ${this.experto.value.correo} (Externo)`,
+                                    style: 'value',
+                                },
+                            ],
+                            width: '70%',
+                        },
+                    ],
+                    margin: [0, 10, 0, 10],
+                },
+                {
+                    columns: [
+                        { text: 'FIRMA:', style: 'label', width: '25%' },
+                        {
+                            image: this.firmaTutor,
+                            width: 80,
+                            height: 60,
+                            margin: [0, 5, 0, 0],
+                            alignment: 'left',
+                            style: 'value',
+                        },
+                    ],
+                    margin: [0, 10, 0, 10],
+                },
+            ],
+            footer: (currentPage, pageCount) => {
+                return {
+                    columns: [
+                        {
+                            stack: [
+                                {
+                                    image: this.assetCalidad,
+                                    width: 100,
+                                    height: 80,
+                                    alignment: 'left',
+                                    opacity: 0.6,
+                                },
+                            ],
+                            width: 'auto',
+                        },
+                        {
+                            stack: [
+                                {
+                                    text: 'Carrera 2 No. 15N esquina-Sector Tulcán\nPopayán-Cauca-Colombia\nTeléfono: 6028209800 ext. 2100 ó 2101\ndecafiet&#64;unicauca.edu.co | www.unicauca.edu.co',
+                                    alignment: 'center',
+                                    fontSize: 8,
+                                    color: '#1f497d',
+                                    opacity: 0.6,
+                                    margin: [-40, 20, 0, 0],
+                                },
+                            ],
+                            width: '*',
+                            alignment: 'center',
+                        },
+                        {
+                            stack: [
+                                {
+                                    image: this.logoIcontec,
+                                    width: 70,
+                                    height: 40,
+                                    alignment: 'right',
+                                    opacity: 0.6,
+                                    margin: [0, 20, 40, 0],
+                                },
+                            ],
+                            width: 'auto',
+                        },
+                    ],
+                    margin: [40, -60, 0, 0],
+                };
+            },
+            styles: {
+                header: {
+                    fontSize: 18,
+                    bold: true,
+                    margin: [0, 0, 0, 10],
+                },
+                subheader: {
+                    fontSize: 12,
+                    bold: true,
+                    margin: [0, 0, 0, 10],
+                },
+                label: {
+                    fontSize: 12,
+                    bold: true,
+                    margin: [0, 10, 0, 2],
+                },
+                value: {
+                    fontSize: 12,
+                    margin: [0, 10, 0, 0],
+                },
+            },
+        };
     }
 
-    onAdjuntar() {
+    onInsertar() {
         if (this.formatoAForm.invalid) {
             this.handleWarningMessage(Mensaje.REGISTRE_CAMPOS_OBLIGATORIOS);
             return;
-        } else {
-            const content = document.getElementById('formatoA');
-            this.pdfService.generatePDF(content, '').then((pdfBlob: Blob) => {
-                const file = new File(
-                    [pdfBlob],
-                    `${this.estudianteSeleccionado.codigo} - formatoA.pdf`,
-                    {
-                        type: 'application/pdf',
-                    }
-                );
-                this.formatoAPdfGenerated.emit(file);
-                this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
-            });
         }
+        const docDefinition = this.generateDocDefinition();
+        pdfMake.createPdf(docDefinition).getBlob((pdfBlob: Blob) => {
+            const file = new File(
+                [pdfBlob],
+                `${this.estudianteSeleccionado.codigo} - formatoA.pdf`,
+                {
+                    type: 'application/pdf',
+                }
+            );
+            this.formatoAPdfGenerated.emit(file);
+            this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
+        });
     }
 
     onDownload() {
+        this.loading = true;
         if (this.formatoAForm.invalid) {
+            this.loading = false;
             this.handleWarningMessage(Mensaje.REGISTRE_CAMPOS_OBLIGATORIOS);
             return;
-        } else {
-            const content = document.getElementById('formatoA');
-            this.pdfService.generatePDF(content, null).then((pdfBlob: Blob) => {
-                const file = new File(
-                    [pdfBlob],
-                    `${this.estudianteSeleccionado.codigo} - formatoA.pdf`,
-                    {
-                        type: 'application/pdf',
-                    }
-                );
-                const link = document.createElement('a');
-                link.download = file.name;
-                link.href = URL.createObjectURL(file);
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
-            });
         }
+        const docDefinition = this.generateDocDefinition();
+        pdfMake.createPdf(docDefinition).getBlob((pdfBlob: Blob) => {
+            const file = new File(
+                [pdfBlob],
+                `${this.estudianteSeleccionado.codigo} - formatoA.pdf`,
+                {
+                    type: 'application/pdf',
+                }
+            );
+            const link = document.createElement('a');
+            link.download = file.name;
+            link.href = URL.createObjectURL(file);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
+            this.loading = false;
+        });
     }
 
     getFormControl(formControlName: string): FormControl {
@@ -258,9 +471,7 @@ export class DocumentoFormatoAComponent implements OnInit {
         if (file) {
             const reader = new FileReader();
             reader.onload = () => {
-                if (fieldName === 'firmaEstudiante') {
-                    this.firmaEstudiante = reader.result as string;
-                } else if (fieldName === 'firmaTutor') {
+                if (fieldName === 'firmaTutor') {
                     this.firmaTutor = reader.result as string;
                 }
             };
@@ -274,15 +485,17 @@ export class DocumentoFormatoAComponent implements OnInit {
     showBuscadorExpertos() {
         return this.dialogService.open(BuscadorExpertosComponent, {
             header: 'Seleccionar experto',
-            width: '40%',
+            width: '60%',
+            styleClass: 'custom-experto-dialog',
         });
     }
 
     mapOrientadorLabel(orientador: any) {
         return {
             id: orientador.id,
-            nombre: orientador.nombre,
-            apellido: orientador.apellido,
+            nombres:
+                orientador.nombres ??
+                orientador.nombre + ' ' + orientador.apellido,
             correo: orientador.correo ?? orientador.correoElectronico,
             rol: this.rolSeleccionado,
             tipo: this.tipoSeleccionado,
@@ -292,31 +505,42 @@ export class DocumentoFormatoAComponent implements OnInit {
     showBuscadorDocentes() {
         return this.dialogService.open(BuscadorDocentesComponent, {
             header: 'Seleccionar docente',
-            width: '40%',
+            width: '60%',
+            styleClass: 'custom-docente-dialog',
         });
     }
     nombreCompletoEstudiante(e: any) {
         return `${e.nombre} ${e.apellido}`;
     }
 
-    onSeleccionarOrientador(tipo: string): void {
-        const ref =
-            tipo === 'INTERNO'
-                ? this.showBuscadorDocentes()
-                : this.showBuscadorExpertos();
+    async onSeleccionarOrientador(tipo: string): Promise<void> {
+        try {
+            const ref =
+                tipo === 'INTERNO'
+                    ? this.showBuscadorDocentes()
+                    : this.showBuscadorExpertos();
 
-        ref.onClose.subscribe({
-            next: (response) => {
-                if (response) {
-                    const orientador =
-                        tipo === 'INTERNO'
-                            ? this.mapOrientadorLabel(response)
-                            : this.mapOrientadorLabel(response);
-                    this.orientador.setValue(orientador);
-                    this.orientadores.push(orientador);
+            const response = await firstValueFrom(ref.onClose);
+            if (response) {
+                const orientador = this.mapOrientadorLabel(response);
+                if (
+                    this.orientadores.some((o) => o.id === orientador.id) ||
+                    this.docente.value?.nombres == orientador.nombres ||
+                    this.experto.value?.nombres == orientador.nombres
+                ) {
+                    this.messageService.add({
+                        severity: 'warn',
+                        summary: 'Advertencia',
+                        detail: 'Este orientador ya está seleccionado.',
+                    });
+                    return;
                 }
-            },
-        });
+                this.orientador.setValue(orientador);
+                this.orientadores.push(orientador);
+            }
+        } catch (error) {
+            console.error('Error al seleccionar orientador:', error);
+        }
     }
 
     handlerResponseException(response: any) {

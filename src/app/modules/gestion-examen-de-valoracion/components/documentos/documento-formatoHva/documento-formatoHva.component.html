@@ -1,495 +1,328 @@
 <p-panel>
     <div id="formatoHva">
-        <div class="header px-8">
-            <table class="p-datatable p-component header-table">
-                <tr class="header-title">
-                    <td>
-                        <img
-                            src="assets/layout/images/logoUnicauca.png"
-                            alt="Logo Unicauca"
-                            width="80px"
-                            height="140px"
-                        />
-                    </td>
-                    <td colspan="2">
-                        <h1 class="text-lg">
-                            Gestión Académica Gestión de Facultades y Programas
-                            Académicos Estudio Hoja de Vida Académica para Grado
-                        </h1>
-                    </td>
-                </tr>
-                <tr class="header-desc">
-                    <td>
-                        <span>Código: PM-FO-4-FOR-27</span>
-                    </td>
-                    <td>
-                        <span>Versión: 1</span>
-                    </td>
-                    <td>
-                        <span>Fecha Vigencia: 30-04-2019</span>
-                    </td>
-                </tr>
-            </table>
-        </div>
-        <form [formGroup]="formatoHvaForm">
-            <div class="container mt-4 px-8">
-                <div class="flex align-items-center">
-                    <div>
-                        <label for="fecha-dia">Fecha:</label>
-                        <input
-                            pInputText
-                            [maxLength]="250"
-                            class="p-inputtext-md ml-2"
-                            type="text"
-                            id="fecha-dia"
-                            placeholder="Día"
-                            formControlName="dia"
-                        />
-                    </div>
-                    <div class="ml-2">
-                        <input
-                            pInputText
-                            [maxLength]="250"
-                            class="p-inputtext-md"
-                            type="text"
-                            placeholder="Mes"
-                            formControlName="mes"
-                        />
-                    </div>
-                    <div class="ml-2">
-                        <input
-                            pInputText
-                            [maxLength]="250"
-                            class="p-inputtext-md"
-                            type="text"
-                            placeholder="Año"
-                            formControlName="anio"
-                        />
-                    </div>
-                </div>
-                <div class="flex align-items-center mt-2">
-                    <div class="flex align-items-center">
-                        <label class="mr-2" for="periodoi">Periodo I:</label>
-                        <p-checkbox
-                            formControlName="periodoi"
-                            [binary]="true"
-                            inputId="periodoi"
-                        ></p-checkbox>
-                    </div>
-                    <div class="flex align-items-center ml-2">
-                        <label class="mr-2" for="periodoii">Periodo II:</label>
-                        <p-checkbox
-                            formControlName="periodoii"
-                            [binary]="true"
-                            inputId="periodoii"
-                        ></p-checkbox>
-                    </div>
-                    <div class="ml-2">
-                        <label for="anio">Año</label>
-                        <input
-                            pInputText
-                            [maxLength]="250"
-                            class="p-inputtext-md ml-2"
-                            type="text"
-                            formControlName="anioPeriodo"
-                        />
-                    </div>
-                </div>
+        <div class="flex flex-column w-full mb-4 header-logo">
+            <img
+                src="assets/layout/images/asset-header.jpg"
+                alt="Asset Header"
+                class="header-image"
+            />
+            <div class="flex justify-content-start logo-container">
+                <img
+                    src="assets/layout/images/logoFacultad.png"
+                    alt="Logo Facultad"
+                    class="logo-image"
+                />
             </div>
-            <div class="container mt-2 px-8">
-                <div class="flex align-items-center justify-content-start mt-2">
-                    <label
-                        class="label-required"
-                        style="text-wrap: nowrap"
-                        for="facultad"
-                        >Facultad:</label
+        </div>
+        <div class="px-1 lg:px-8">
+            <form class="p-fluid" [formGroup]="formatoHvaForm">
+                <div class="flex flex-column mt-4">
+                    <label class="font-semibold mb-2" for="titulo"
+                        >Título:</label
                     >
                     <input
                         pInputText
-                        class="w-full ml-2"
                         type="text"
-                        id="facultad"
-                        formControlName="facultad"
+                        id="titulo"
+                        formControlName="titulo"
                         readonly
                     />
                 </div>
-
-                <div class="flex align-items-center justify-content-start mt-2">
-                    <label
-                        class="label-required"
-                        style="text-wrap: nowrap"
-                        for="programa"
-                        >Programa:</label
+                <div class="flex flex-column mt-4">
+                    <label class="font-semibold mb-2" for="estudiante"
+                        >Estudiante:</label
                     >
                     <input
                         pInputText
-                        class="w-full ml-2"
                         type="text"
-                        id="programa"
-                        formControlName="programa"
+                        id="estudiante"
+                        formControlName="estudiante"
                         readonly
                     />
                 </div>
-
-                <div class="flex align-items-center justify-content-start mt-2">
+                <div class="flex flex-column mt-4">
                     <label
-                        class="label-required"
-                        style="text-wrap: nowrap"
-                        for="nombre-estudiante"
-                        >Nombre del Estudiante:</label
-                    >
-                    <input
-                        pInputText
-                        class="w-full ml-2"
-                        type="text"
-                        id="nombre-estudiante"
-                        formControlName="nombreEstudiante"
-                        readonly
-                    />
-                </div>
-
-                <div class="flex align-items-center justify-content-start mt-2">
-                    <label style="text-wrap: nowrap" for="cedula"
-                        >Cédula de Ciudadanía:</label
-                    >
-                    <input
-                        pInputText
-                        class="w-full ml-2"
-                        type="text"
-                        id="cedula"
-                        formControlName="cedulaCiudadania"
-                    />
-                </div>
-
-                <div class="flex align-items-center justify-content-start mt-2">
-                    <label style="text-wrap: nowrap" for="lugar-expedicion"
-                        >Lugar de Expedición:</label
-                    >
-                    <input
-                        pInputText
-                        class="w-full ml-2"
-                        type="text"
-                        id="lugar-expedicion"
-                        formControlName="lugarExpedicion"
-                    />
-                </div>
-
-                <div class="flex align-items-center justify-content-start mt-2">
-                    <label style="text-wrap: nowrap" for="codigo"
+                        class="label-required font-semibold mb-2"
+                        for="codigo"
                         >Código:</label
                     >
                     <input
                         pInputText
-                        class="w-full ml-2"
                         type="text"
                         id="codigo"
                         formControlName="codigo"
                     />
                 </div>
-
-                <div class="flex align-items-center justify-content-start mt-2">
-                    <label style="text-wrap: nowrap" for="telefono-fijo"
-                        >Teléfono Fijo:</label
-                    >
-                    <input
-                        pInputText
-                        class="w-full ml-2"
-                        type="text"
-                        id="telefono-fijo"
-                        formControlName="telefonoFijo"
-                    />
+                <div class="flex flex-column mt-4">
                     <label
-                        style="text-wrap: nowrap"
-                        class="ml-4"
-                        for="telefono-celular"
-                        >Teléfono Celular:</label
+                        class="label-required font-semibold mb-2"
+                        for="planEstudios"
+                        >Plan de Estudios:</label
                     >
                     <input
                         pInputText
-                        class="w-full ml-2"
                         type="text"
-                        id="telefono-celular"
-                        formControlName="telefonoCelular"
+                        id="planEstudios"
+                        formControlName="planEstudios"
                     />
                 </div>
-
-                <div class="flex align-items-center justify-content-start mt-2">
-                    <label style="text-wrap: nowrap" for="codigo-saber-pro"
-                        >Código Pruebas SABER PRO:</label
-                    >
-                    <input
-                        pInputText
-                        class="w-full ml-2"
-                        type="text"
-                        id="codigo-saber-pro"
-                        formControlName="codigoSaberPro"
-                    />
-                </div>
-
-                <div class="flex align-items-center justify-content-start mt-2">
-                    <label style="text-wrap: nowrap" for="residencia"
-                        >Residencia Actual:</label
-                    >
-                    <input
-                        pInputText
-                        class="w-full ml-2"
-                        type="text"
-                        id="residencia"
-                        formControlName="residenciaActual"
-                    />
-                </div>
-
-                <div class="flex align-items-center justify-content-start mt-2">
-                    <label style="text-wrap: nowrap" for="departamento"
-                        >Departamento:</label
-                    >
-                    <input
-                        pInputText
-                        class="w-full ml-2"
-                        type="text"
-                        id="departamento"
-                        formControlName="departamento"
-                    />
-                </div>
-                <div class="flex align-items-center justify-content-start mt-2">
-                    <label style="text-wrap: nowrap" for="municipio"
-                        >Municipio:</label
-                    >
-                    <input
-                        pInputText
-                        class="w-full ml-2"
-                        type="text"
-                        id="municipio"
-                        formControlName="municipio"
-                    />
-                    <label style="text-wrap: nowrap" class="ml-4" for="email"
-                        >Email:</label
-                    >
-                    <input
-                        pInputText
-                        class="w-full ml-2"
-                        type="email"
-                        id="email"
-                        formControlName="email"
-                    />
-                </div>
-            </div>
-            <div class="field grid mt-4 mr-8">
-                <span class="col-9 text-right align-self-start">
-                    <b>Firma Estudiante</b>
-                </span>
-                <div class="col-3 text-center p-0">
-                    <p-fileUpload
-                        name="firmaEstudiante"
-                        chooseIcon="pi pi-file"
-                        accept=".png"
-                        chooseLabel="Seleccionar"
-                        class="w-full max-w-30rem"
-                        previewWidth="100"
-                        [auto]="true"
-                        (onSelect)="onFirmaChange($event, 'firmaEstudiante')"
-                    >
-                        <ng-template
-                            let-file
-                            pTemplate="file"
-                            data-file="firma"
-                        >
-                            <div *ngIf="firmaEstudiante">
-                                <img
-                                    [src]="firmaEstudiante"
-                                    alt="Vista Previa de la Firma"
-                                    style="
-                                        min-height: 120px;
-                                        min-width: 150px;
-                                        width: 100%;
-                                        height: 100%;
-                                    "
-                                />
-                            </div>
-                        </ng-template>
-                    </p-fileUpload>
-                </div>
-            </div>
-            <div class="container px-8">
-                <div class="flex align-items-center">
-                    <div>
-                        <label for="fecha-dia">Fecha:</label>
-                        <input
-                            pInputText
-                            [maxLength]="250"
-                            class="p-inputtext-md ml-2"
-                            type="text"
-                            id="fecha-dia"
-                            placeholder="Día"
-                            formControlName="dia"
-                        />
-                    </div>
-                    <div class="ml-2">
-                        <input
-                            pInputText
-                            [maxLength]="250"
-                            class="p-inputtext-md"
-                            type="text"
-                            placeholder="Mes"
-                            formControlName="mes"
-                        />
-                    </div>
-                    <div class="ml-2">
-                        <input
-                            pInputText
-                            [maxLength]="250"
-                            class="p-inputtext-md"
-                            type="text"
-                            placeholder="Año"
-                            formControlName="anio"
-                        />
-                    </div>
-                </div>
-            </div>
-            <div class="mt-2 px-8">
-                <h2 class="mt-2 text-center text-lg">
-                    Diligenciamiento exclusivo por la Facultad
-                </h2>
-                <div style="max-width: 80%" class="mt-4">
-                    <div class="input-group-inline">
-                        <label
-                            class="label-required line-height-3"
-                            for="program"
-                            >El Coordinador del programa de:</label
+                <div class="flex flex-wrap mt-4 gap-4">
+                    <div class="flex-1">
+                        <label class="font-semibold mb-2" for="director"
+                            >Director:</label
                         >
                         <input
                             pInputText
-                            class="ml-2"
                             type="text"
-                            id="program"
-                            [value]="formatoHvaForm.get('programa')?.value"
+                            id="director"
+                            formControlName="director"
                             readonly
+                            class="w-full p-inputtext"
                         />
                     </div>
-                    <div>
-                        <span class="line-height-3"
-                            >Estudio la petición hecha por el alumno (a):
-                            {{ this.estudianteSeleccionado?.nombre }}
-                            {{ this.estudianteSeleccionado?.apellido }}</span
-                        >
-                        <div class="flex align-items-center">
-                            <span class="line-height-3">
-                                y certifica que ha aprobado todas las
-                                asignaturas y requisitos académicos y los que
-                                establece la Universidad para optar al título
-                                de:
-                                <input
-                                    pInputText
-                                    class="ml-2"
-                                    type="text"
-                                    id="title"
-                                    formControlName="titulo"
-                                />
-                            </span>
-                        </div>
-                    </div>
-                    <div>
-                        <span class="line-height-3"
-                            >En consecuencia recomienda continuar con los
-                            trámites de expedición de Paz y Salvo General para
-                            su graduación.</span
-                        >
-                    </div>
-                    <div>
-                        <label
-                            for="coordinator"
-                            class="label-required line-height-3"
-                            >Nombre Coordinador Programa:</label
+                    <div class="flex-1">
+                        <label class="font-semibold mb-2" for="codirector"
+                            >Codirector:</label
                         >
                         <input
                             pInputText
-                            class="ml-2"
                             type="text"
-                            id="coordinator"
-                            formControlName="nombreCoordinador"
+                            id="codirector"
+                            formControlName="codirector"
+                            readonly
+                            class="w-full p-inputtext"
+                        />
+                    </div>
+                    <div class="flex-1">
+                        <label class="font-semibold mb-2" for="coordinador"
+                            >Coordinador:</label
+                        >
+                        <input
+                            pInputText
+                            type="text"
+                            id="coordinador"
+                            class="w-full p-inputtext"
+                            formControlName="coordinador"
                         />
                     </div>
                 </div>
-            </div>
-            <div class="field grid mt-4 mr-8">
-                <span class="col-9 text-right align-self-start">
-                    <b>Firma</b>
-                </span>
-                <div class="col-3 text-center p-0">
-                    <p-fileUpload
-                        name="firmaCoordinador"
-                        chooseIcon="pi pi-file"
-                        accept=".png"
-                        chooseLabel="Seleccionar"
-                        class="w-full max-w-30rem"
-                        previewWidth="100"
-                        [auto]="true"
-                        (onSelect)="onFirmaChange($event, 'firmaCoordinador')"
+
+                <div class="flex flex-column mt-4 max-w-20rem">
+                    <label
+                        class="label-required font-semibold mb-2"
+                        for="fechaRevision"
+                        >Fecha de Revisión:</label
                     >
-                        <ng-template
-                            let-file
-                            pTemplate="file"
-                            data-file="firma"
-                        >
-                            <div *ngIf="firmaCoordinador">
-                                <img
-                                    [src]="firmaCoordinador"
-                                    alt="Vista Previa de la Firma"
-                                    style="
-                                        min-height: 120px;
-                                        min-width: 150px;
-                                        width: 100%;
-                                        height: 100%;
-                                    "
-                                />
-                            </div>
-                        </ng-template>
-                    </p-fileUpload>
+                    <p-calendar
+                        id="fechaRevision"
+                        formControlName="fechaRevision"
+                        [showIcon]="true"
+                        dateFormat="dd.mm.yy"
+                    ></p-calendar>
                 </div>
-            </div>
-        </form>
-        <div
-            class="flex flex-row align-items-center justify-content-center footer-logo footer-content"
-        >
-            <img
-                src="assets/layout/images/logosIcontec.png"
-                alt="Logo Icontec"
-                width="200px"
-                height="140px"
-            />
+                <div
+                    class="flex flex-column mt-4 p-4 border-round border-1 border-gray-300 bg-white shadow-2"
+                >
+                    <h2 class="text-2xl font-semibold mb-4">
+                        Configuración de Formación
+                    </h2>
+                    <div class="mb-4">
+                        <label class="label-required"
+                            >Seleccionar Semestre:</label
+                        >
+                        <p-dropdown
+                            placeholder="Seleccione el semestre"
+                            styleClass="p-inputtext-md w-full max-w-35rem mt-2"
+                            optionLabel="label"
+                            [options]="semestres"
+                            (onChange)="onSemestreChange($event)"
+                            pTooltip="Seleccione el semestre en el que se impartirá la asignatura"
+                            tooltipPosition="top"
+                        ></p-dropdown>
+                    </div>
+                    <div class="mb-4">
+                        <label class="label-required"
+                            >Tipo de Área de Formación:</label
+                        >
+                        <p-dropdown
+                            placeholder="Seleccione el tipo de área"
+                            styleClass="p-inputtext-md w-full max-w-35rem mt-2"
+                            optionLabel="label"
+                            [options]="tiposAreaFormacion"
+                            (onChange)="onAreaFormacionChange($event)"
+                            pTooltip="Seleccione el tipo de área de formación correspondiente"
+                            tooltipPosition="top"
+                        ></p-dropdown>
+                    </div>
+                    <div
+                        *ngFor="
+                            let area of areasFormacionControls;
+                            let areaIndex = index
+                        "
+                    >
+                        <p-card class="w-full p-0">
+                            <div class="card-title bg-blue-100 p-2">
+                                <div
+                                    class="flex justify-content-between align-items-center"
+                                >
+                                    <span class="font-semibold text-lg">
+                                        {{ area.get("tipo").value?.label }} -
+                                        {{
+                                            area.get("semestre").value?.label
+                                        }}</span
+                                    >
+                                    <button
+                                        pButton
+                                        icon="pi pi-trash"
+                                        class="p-button-danger"
+                                        (click)="removeAreaFormacion(areaIndex)"
+                                        pTooltip="Eliminar área de formación"
+                                        tooltipPosition="top"
+                                    ></button>
+                                </div>
+                            </div>
+                            <div class="p-2">
+                                <div class="mb-2">
+                                    <label class="label-required"
+                                        >Seleccionar Asignatura:</label
+                                    >
+                                    <p-dropdown
+                                        placeholder="Seleccione la asignatura"
+                                        styleClass="p-inputtext-md w-full mt-2"
+                                        optionLabel="nombre"
+                                        [options]="asignaturas"
+                                        (onChange)="
+                                            onAsignaturaChange(
+                                                areaIndex,
+                                                $event.value
+                                            )
+                                        "
+                                        pTooltip="Seleccione una asignatura para esta área"
+                                        tooltipPosition="top"
+                                    ></p-dropdown>
+                                </div>
+                                <div
+                                    class="card-data flex flex-column row-gap-2"
+                                >
+                                    <div
+                                        class="flex flex-row align-items-center justify-content-between p-2 border-round border-1 border-gray-300 bg-gray-50"
+                                        *ngFor="
+                                            let asignatura of area.get(
+                                                'asignaturas'
+                                            ).controls;
+                                            let i = index
+                                        "
+                                    >
+                                        <span>
+                                            {{ asignatura.get("nombre").value }}
+                                            -
+                                            {{
+                                                asignatura.get("creditos").value
+                                            }}
+                                            créditos
+                                        </span>
+                                        <button
+                                            pButton
+                                            icon="pi pi-times"
+                                            class="p-button-secondary"
+                                            (click)="
+                                                removeAsignatura(areaIndex, i)
+                                            "
+                                            pTooltip="Eliminar asignatura"
+                                            tooltipPosition="top"
+                                        ></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </p-card>
+                    </div>
+                </div>
+                <div class="flex flex-column mt-4">
+                    <label
+                        class="label-required font-semibold mb-2"
+                        for="pruebaSuperada"
+                        >Prueba de Suficiencia en Idioma Extranjero:</label
+                    >
+                    <p-dropdown
+                        id="pruebaSuperada"
+                        formControlName="pruebaSuperada"
+                        [options]="pruebaSuperadaOptions"
+                        optionLabel="label"
+                        placeholder="Seleccione"
+                    ></p-dropdown>
+                </div>
+                <div class="flex flex-column mt-4">
+                    <label
+                        class="label-required font-semibold mb-2"
+                        for="minimoArticulo"
+                        >Mínimo Artículo:</label
+                    >
+                    <input
+                        pInputText
+                        type="text"
+                        id="minimoArticulo"
+                        formControlName="minimoArticulo"
+                    />
+                </div>
+                <div class="flex flex-column mt-4">
+                    <label
+                        class="label-required font-semibold mb-2"
+                        for="creditosCumplidos"
+                        >Créditos Cumplidos:</label
+                    >
+                    <input
+                        pInputText
+                        type="text"
+                        id="creditosCumplidos"
+                        formControlName="creditosCumplidos"
+                    />
+                </div>
+                <div class="footer-logo mt-8">
+                    <img
+                        src="assets/layout/images/asset-calidad.png"
+                        alt="Asset Calidad"
+                        width="140px"
+                        height="100px"
+                    />
+                    <div
+                        class="flex flex-column align-items-center justify-content-center"
+                    >
+                        <span>
+                            Carrera 2 No. 15N esquina-Sector Tulcán
+                            Popayán-Cauca-Colombia Teléfono: 6028209800 ext.
+                            2100 ó 2101. decafiet&#64;unicauca.edu.co |
+                            <strong>www.unicauca.edu.co</strong>
+                        </span>
+                    </div>
+                    <img
+                        src="assets/layout/images/logosIcontec.png"
+                        alt="Logo Icontec"
+                        width="120px"
+                        height="80px"
+                    />
+                </div>
+            </form>
             <div
-                class="flex flex-column align-items-center justify-content-center footer-text"
+                class="flex align-items-center justify-content-end mt-4 column-gap-2"
             >
-                <span>Por una Universidad de excelencia y solidaria</span>
-                <hr />
-                <strong>
-                    Facultad de Ingeniería Electrónica y Telecomunicaciones Cra
-                    2 No. 4N-140 Edif. de Ingenierías - Sector Tulcán Popayán -
-                    Cauca - Colombia Conmutador 8209800 Ext. 2145
-                    maestriacomputacion@unicauca.edu.co - www.unicauca.edu.co
-                    www.unicauca.edu.co/maestriacomputación
-                </strong>
+                <button
+                    pButton
+                    type="button"
+                    icon="pi pi-upload"
+                    label="Insertar"
+                    pTooltip="Haz clic para insertar el documento en el área de carga de archivos."
+                    tooltipPosition="top"
+                    (click)="onInsertar()"
+                ></button>
+                <button
+                    pButton
+                    type="button"
+                    icon="pi pi-download"
+                    label="Descargar"
+                    (click)="onDownload()"
+                    [loading]="loading"
+                ></button>
             </div>
-        </div>
-        <div
-            class="flex align-items-center justify-content-end mt-4 column-gap-2"
-        >
-            <button
-                pButton
-                type="button"
-                icon="pi pi-paperclip"
-                label="Adjuntar"
-                (click)="onAdjuntar()"
-                [loading]="loading"
-            ></button>
-            <button
-                pButton
-                type="button"
-                icon="pi pi-download"
-                label="Descargar"
-                (click)="onDownload()"
-                [loading]="loading"
-            ></button>
         </div>
     </div>
 </p-panel>

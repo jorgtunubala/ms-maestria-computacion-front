@@ -1,10 +1,39 @@
+.spinner {
+    transform: translate(-50%, 50%);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+}
+
 @media (max-width: 1440px) {
     .bandeja-title {
         font-size: 2rem;
     }
 }
 
+@media (max-width: 1240px) {
+    ::ng-deep.custom-estudiante-dialog {
+        width: 60% !important;
+    }
+}
+
+@media (max-width: 1024px) {
+    ::ng-deep.custom-estudiante-dialog {
+        width: 70% !important;
+    }
+}
+
+@media (max-width: 900px) {
+    ::ng-deep.custom-estudiante-dialog {
+        width: 80% !important;
+    }
+}
+
 @media (max-width: 768px) {
+    ::ng-deep.custom-estudiante-dialog {
+        width: 90% !important;
+    }
+
     .col-label,
     .col-input {
         flex: 0 0 100%;

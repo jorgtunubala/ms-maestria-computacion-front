@@ -1,11 +1,11 @@
-.header-logo {
-    opacity: 0.6;
-}
-
 .header-image {
     width: 100%;
     height: auto;
     display: block;
+}
+
+.header-logo {
+    opacity: 0.6;
 }
 
 .logo-container {
@@ -14,15 +14,15 @@
 }
 
 .logo-image {
-    max-width: 100%;
     height: 140px;
+    max-width: 100%;
     object-fit: contain;
 }
 
 .footer-logo {
+    align-items: center;
     display: flex;
     flex-direction: row;
-    align-items: center;
     justify-content: center;
     opacity: 0.6;
     width: 100%;
@@ -44,15 +44,12 @@
 }
 
 @media (max-width: 768px) {
+    .col-input,
     .col-label {
-        text-align: left !important;
-        margin-bottom: 10px;
-    }
-
-    .col-label,
-    .col-input {
         flex: 0 0 100%;
+        margin-bottom: 10px;
         max-width: 100%;
+        text-align: left !important;
     }
 }
 
