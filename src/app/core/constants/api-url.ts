@@ -1,6 +1,5 @@
 import {
     environment,
-    dev_login,
     gestion_solicitudes,
     gestion_autenticacion,
     gestion_expertos,
@@ -11,10 +10,6 @@ import {
 
 export function backend(path: string): string {
     return environment.api_url.concat(path);
-}
-
-export function backendAuth(path: string): string {
-    return dev_login.api_url.concat(path);
 }
 
 export function backendGestionExpertos(path: string): string {

@@ -114,7 +114,7 @@ export class AutenticacionService {
 
                     // Almacenar el beared token proporcionado por el backend
                     const tokenOriginal = response.tokenOriginal;
-                    localStorage.setItem('tokenOriginal', tokenOriginal);
+                    localStorage.setItem('token', tokenOriginal);
 
                     this.isLoggedInStatus = true;
 
@@ -187,5 +187,9 @@ export class AutenticacionService {
         return this.loggedInUser
             ? this.loggedInUser.role.includes(role)
             : false;
+    }
+
+    getToken(): string | null {
+        return localStorage.getItem('token');
     }
 }

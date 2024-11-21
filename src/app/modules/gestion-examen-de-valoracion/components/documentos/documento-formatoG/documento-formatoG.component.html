@@ -1,5 +1,5 @@
 <p-panel>
-    <div id="formatoF">
+    <div id="formatoG">
         <div class="flex flex-column w-full mb-4 header-logo">
             <img
                 src="assets/layout/images/asset-header.jpg"
@@ -14,19 +14,52 @@
                 />
             </div>
         </div>
-        <div class="mt-4 px-1 md:px-4 lg:px-8">
-            <form [formGroup]="formatoFForm">
+        <div class="mt-4 px-1 lg:px-8">
+            <form [formGroup]="formatoGForm">
                 <div class="field grid justify-content-start">
-                    <label class="col-3 col-label font-semibold" for="titulo"
-                        >Titulo</label
+                    <label
+                        class="col-2 col-label label-required font-semibold"
+                        for="consecutivo"
+                        >Consecutivo</label
                     >
-                    <div class="col-9 col-input">
+                    <div class="col-10">
                         <input
                             pInputText
+                            class="p-inputtext-md col-input"
                             type="text"
-                            id="titulo"
-                            class="p-inputtext-md w-full"
-                            formControlName="titulo"
+                            id="consecutivo"
+                            formControlName="consecutivo"
+                        />
+                    </div>
+                </div>
+
+                <div class="field grid justify-content-start">
+                    <label class="col-2 col-label font-semibold" for="facultad"
+                        >Facultad</label
+                    >
+                    <div class="col-10">
+                        <input
+                            pInputText
+                            class="p-inputtext-md col-input w-full"
+                            type="text"
+                            id="facultad"
+                            formControlName="facultad"
+                            readonly
+                        />
+                    </div>
+                </div>
+
+                <div class="field grid justify-content-start">
+                    <label class="col-2 col-label font-semibold" for="programa"
+                        >Programa</label
+                    >
+                    <div class="col-10">
+                        <input
+                            pInputText
+                            class="p-inputtext-md col-input w-full"
+                            type="text"
+                            id="programa"
+                            formControlName="programa"
                             readonly
                         />
                     </div>
@@ -34,16 +67,33 @@
 
                 <div class="field grid justify-content-start">
                     <label
-                        class="col-3 col-label font-semibold"
-                        for="estudiante"
-                        >Estudiante</label
+                        class="col-2 col-label label-required font-semibold"
+                        for="coordinador"
+                        >Coordinador(a)</label
                     >
-                    <div class="col-9 col-input">
+                    <div class="col-10">
                         <input
                             pInputText
+                            class="p-inputtext-md col-input w-full"
+                            type="text"
+                            id="coordinador"
+                            formControlName="coordinador"
+                        />
+                    </div>
+                </div>
+
+                <div class="field grid justify-content-start">
+                    <label
+                        class="col-2 col-label font-semibold"
+                        for="estudiante"
+                        >Nombre del estudiante</label
+                    >
+                    <div class="col-10">
+                        <input
+                            pInputText
+                            class="p-inputtext-md col-input w-full"
                             type="text"
                             id="estudiante"
-                            class="p-inputtext-md w-full"
                             formControlName="estudiante"
                             readonly
                         />
@@ -51,15 +101,15 @@
                 </div>
 
                 <div class="field grid justify-content-start">
-                    <label class="col-3 col-label font-semibold" for="director"
-                        >Director</label
+                    <label class="col-2 col-label font-semibold" for="director"
+                        >Nombre del director</label
                     >
-                    <div class="col-9 col-input">
+                    <div class="col-10">
                         <input
                             pInputText
+                            class="p-inputtext-md col-input w-full"
                             type="text"
                             id="director"
-                            class="p-inputtext-md w-full"
                             formControlName="director"
                             readonly
                         />
@@ -68,68 +118,11 @@
 
                 <div class="field grid justify-content-start">
                     <label
-                        class="col-3 col-label font-semibold"
-                        for="trabajoCumple"
-                        >A) El trabajo cumple con las condiciones de
-                        entrega?</label
-                    >
-                    <div
-                        class="col-9 flex justify-content-start align-items-center"
-                    >
-                        <div class="flex align-items-center column-gap-2">
-                            <label for="trabajoCumpleSi">SI</label>
-                            <p-checkbox
-                                type="checkbox"
-                                formControlName="trabajoCumpleSi"
-                                [binary]="true"
-                                inputId="trabajoCumpleSi"
-                            ></p-checkbox>
-                            <label for="trabajoCumpleNo">NO</label>
-                            <p-checkbox
-                                type="checkbox"
-                                formControlName="trabajoCumpleNo"
-                                [binary]="true"
-                                inputId="trabajoCumpleNo"
-                            ></p-checkbox>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="field grid justify-content-start">
-                    <label
-                        class="col-3 col-label font-semibold"
-                        for="documentoTerminado"
-                        >B) Documentos y anexos completamente terminados?</label
-                    >
-                    <div
-                        class="col-9 flex justify-content-start align-items-center"
-                    >
-                        <div class="flex align-items-center column-gap-2">
-                            <label for="documentoTerminadoSi">SI</label>
-                            <p-checkbox
-                                type="checkbox"
-                                formControlName="documentoTerminadoSi"
-                                [binary]="true"
-                                inputId="documentoTerminadoSi"
-                            ></p-checkbox>
-                            <label for="documentoTerminadoNo">NO</label>
-                            <p-checkbox
-                                type="checkbox"
-                                formControlName="documentoTerminadoNo"
-                                [binary]="true"
-                                inputId="documentoTerminadoNo"
-                            ></p-checkbox>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="field grid justify-content-start">
-                    <label
-                        class="col-3 label-required font-semibold"
+                        class="col-2 col-label label-required font-semibold"
                         for="observaciones"
                         >Observaciones</label
                     >
-                    <div class="col-9 col-input">
+                    <div class="col-10">
                         <textarea
                             pInputTextarea
                             [maxLength]="250"
@@ -141,71 +134,65 @@
                 </div>
 
                 <div class="field grid justify-content-start">
-                    <label class="col-3 col-label font-semibold"
-                        >Jurados sugeridos y datos de contacto</label
+                    <label class="col-2 col-label font-semibold"
+                        >Jurado Interno</label
                     >
-                    <div
-                        *ngIf="
-                            juradoExternoSeleccionado &&
-                            juradoInternoSeleccionado
-                        "
-                        class="col-9"
-                    >
-                        <div
-                            class="flex flex-column justify-content-start align-items-start column-gap-4"
-                        >
-                            <span
-                                >{{ juradoExternoSeleccionado?.nombres }},
-                                {{ juradoExternoSeleccionado?.correo }},
-                                {{
-                                    juradoExternoSeleccionado?.universidad
-                                }}</span
-                            >
-                            <span
-                                >{{ juradoInternoSeleccionado.nombres }},
-                                {{ juradoInternoSeleccionado?.correo }},
-                                {{
-                                    juradoInternoSeleccionado?.universidad
-                                }}</span
-                            >
-                        </div>
+                    <div class="col-10">
+                        <p-card class="w-full m-0">
+                            <div class="flex">
+                                <span>{{
+                                    juradoInternoSeleccionado?.nombres ??
+                                        juradoInternoSeleccionado?.nombre +
+                                            " " +
+                                            juradoInternoSeleccionado?.apellido
+                                }}</span>
+                            </div>
+                        </p-card>
                     </div>
                 </div>
-
                 <div class="field grid justify-content-start">
-                    <label class="col-3 col-label font-semibold" for="fecha"
-                        >FECHA</label
+                    <label class="col-2 col-label font-semibold"
+                        >Jurado Externo</label
                     >
-                    <div class="col-9 col-input">
-                        <span> {{ fechaActual | date : "dd/MM/yyyy" }} </span>
+                    <div class="col-10">
+                        <p-card class="w-full m-0">
+                            <div class="flex">
+                                <span>{{
+                                    juradoExternoSeleccionado?.nombres ??
+                                        juradoExternoSeleccionado?.nombre +
+                                            " " +
+                                            juradoExternoSeleccionado?.apellido
+                                }}</span>
+                            </div>
+                        </p-card>
                     </div>
                 </div>
 
                 <div class="field grid mt-4">
-                    <span
-                        class="col-12 xl:col-9 xl:mb-0 mb-2 text-left xl:text-right"
-                    >
-                        <b>Firma Director</b>
+                    <span class="col-12 lg:col-9 text-right">
+                        <b>Firma Coordinador(a)</b>
                     </span>
-                    <div class="col-12 xl:col-3 xl:text-right text-center">
+                    <div class="col-12 lg:col-3 text-right lg:text-center">
                         <p-fileUpload
-                            name="firmaDirector"
+                            name="firmaCoordinador"
                             chooseIcon="pi pi-file"
                             accept=".png, .jpg, .jpeg"
                             chooseLabel="Seleccionar"
                             class="w-full max-w-30rem"
                             previewWidth="100"
                             [auto]="true"
-                            (onSelect)="onFirmaChange($event, 'firmaDirector')"
+                            (onSelect)="
+                                onFirmaChange($event, 'firmaCoordinador')
+                            "
                         >
                             <ng-template
                                 let-file
                                 pTemplate="file"
                                 data-file="firma"
                             >
-                                <div *ngIf="firmaDirector">
+                                <div *ngIf="firmaCoordinador">
                                     <img
-                                        [src]="firmaDirector"
+                                        [src]="firmaCoordinador"
                                         alt="Vista Previa de la Firma"
                                         style="
                                             min-height: 120px;

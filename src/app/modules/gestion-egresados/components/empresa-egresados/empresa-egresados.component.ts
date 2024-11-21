@@ -7,6 +7,7 @@ import {
 } from '@angular/forms';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { MessageService, SelectItem } from 'primeng/api';
+import { firstValueFrom } from 'rxjs';
 import { EmpresaService } from '../../services/empresas.service';
 import { Mensaje } from 'src/app/core/enums/enums';
 import {
@@ -78,41 +79,51 @@ export class EmpresaEgresadoComponent implements OnInit {
         return this.empresaForm.get(formControlName) as FormControl;
     }
 
-    addEmpresa() {
+    async addEmpresa() {
         this.loading = true;
-        this.empresaService
-            .addEmpresa(this.empresaForm.value)
-            .subscribe({
-                next: () => this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO),
-                error: (e) => this.handleErrorResponse(e),
-                complete: () => this.closeDialog(),
-            })
-            .add(() => (this.loading = false));
+        try {
+            await firstValueFrom(
+                this.empresaService.addEmpresa(this.empresaForm.value)
+            );
+            this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
+        } catch (e) {
+            this.handleErrorResponse(e);
+        } finally {
+            this.loading = false;
+            this.closeDialog();
+        }
     }
 
-    loadDataForEdit(id: number) {
-        this.empresaService.getEmpresa(id).subscribe({
-            next: (response) => {
-                this.setValuesForm(response);
-                this.empresaForm
-                    .get('idEstudiante')
-                    .setValue(this.config.data?.estudianteId);
-            },
-            error: (e) => this.handleErrorResponse(e),
-        });
+    async loadDataForEdit(id: number): Promise<void> {
+        try {
+            const response = await firstValueFrom(
+                this.empresaService.getEmpresa(id)
+            );
+            this.setValuesForm(response);
+            this.empresaForm
+                .get('idEstudiante')
+                ?.setValue(this.config.data?.estudianteId);
+        } catch (e) {
+            this.handleErrorResponse(e);
+        }
     }
 
-    updateEmpresa() {
+    async updateEmpresa(): Promise<void> {
         this.loading = true;
-        this.empresaService
-            .updateEmpresa(this.empresaId, this.empresaForm.value)
-            .subscribe({
-                next: () =>
-                    this.handleSuccessMessage(Mensaje.ACTUALIZACION_EXITOSA),
-                error: (e) => this.handleErrorResponse(e),
-                complete: () => this.closeDialog(),
-            })
-            .add(() => (this.loading = false));
+        try {
+            await firstValueFrom(
+                this.empresaService.updateEmpresa(
+                    this.empresaId,
+                    this.empresaForm.value
+                )
+            );
+            this.handleSuccessMessage(Mensaje.ACTUALIZACION_EXITOSA);
+        } catch (e) {
+            this.handleErrorResponse(e);
+        } finally {
+            this.loading = false;
+            this.closeDialog();
+        }
     }
 
     onCancel(): void {

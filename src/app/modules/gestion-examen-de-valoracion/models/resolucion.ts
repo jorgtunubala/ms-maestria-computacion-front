@@ -1,5 +1,5 @@
 export interface Resolucion {
-    idGeneracionResolucion?: number;
+    id?: number;
     titulo?: string;
     director?: string;
     codirector?: string;
@@ -7,7 +7,7 @@ export interface Resolucion {
     linkSolicitudComite?: string;
     numeroActaSolicitudComite?: string;
     fechaActaSolicitudComite?: string;
-    linkSolicitudConsejoFacultad?: string;
-    numeroActaConsejoFacultad?: string;
-    fechaActaConsejoFacultad?: string;
+    linkSolicitudConsejo?: string;
+    numeroActaConsejo?: string;
+    fechaActaConsejo?: string;
 }

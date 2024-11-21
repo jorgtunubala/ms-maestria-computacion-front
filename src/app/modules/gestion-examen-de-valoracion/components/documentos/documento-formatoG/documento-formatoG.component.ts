@@ -29,31 +29,29 @@ import { ResolucionService } from '../../../services/resolucion.service';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 @Component({
-    selector: 'documento-formatoF',
-    templateUrl: 'documento-formatoF.component.html',
-    styleUrls: ['documento-formatoF.component.scss'],
+    selector: 'documento-formatoG',
+    templateUrl: 'documento-formatoG.component.html',
+    styleUrls: ['documento-formatoG.component.scss'],
 })
-export class DocumentoFormatoFComponent implements OnInit {
-    @Input() trabajoDeGradoId: number;
-    @Input() juradoExternoSeleccionado: any;
+export class DocumentoFormatoGComponent implements OnInit {
+    @Input() trabajoDeGradoId: any;
     @Input() juradoInternoSeleccionado: any;
+    @Input() juradoExternoSeleccionado: any;
     @Output() formReady = new EventEmitter<FormGroup>();
-    @Output() formatoFPdfGenerated = new EventEmitter<File>();
+    @Output() formatoGPdfGenerated = new EventEmitter<File>();
 
-    @ViewChild('formatoF') formatoF!: ElementRef;
+    @ViewChild('formatoG') formatoG!: ElementRef;
 
-    private estudianteSubscription: Subscription;
-    private tituloSubscription: Subscription;
+    estudianteSubscription: Subscription;
+    tituloSubscription: Subscription;
 
-    formatoFForm: FormGroup;
+    formatoGForm: FormGroup;
 
     loading: boolean = false;
 
     estudianteSeleccionado: any;
 
-    fechaActual: Date;
-
-    firmaDirector: string;
+    firmaCoordinador: string;
     logoFacultad: string;
     logoIcontec: string;
     assetHeader: string;
@@ -66,16 +64,16 @@ export class DocumentoFormatoFComponent implements OnInit {
         private resolucionService: ResolucionService
     ) {}
 
-    get titulo(): FormControl {
-        return this.formatoFForm.get('titulo') as FormControl;
+    get estudiante(): FormControl {
+        return this.formatoGForm.get('estudiante') as FormControl;
     }
 
-    get estudiante(): FormControl {
-        return this.formatoFForm.get('estudiante') as FormControl;
+    get titulo(): FormControl {
+        return this.formatoGForm.get('titulo') as FormControl;
     }
 
     get director(): FormControl {
-        return this.formatoFForm.get('director') as FormControl;
+        return this.formatoGForm.get('director') as FormControl;
     }
 
     async loadDirector() {
@@ -95,7 +93,6 @@ export class DocumentoFormatoFComponent implements OnInit {
 
     ngOnInit() {
         this.initForm();
-        this.fechaActual = new Date();
 
         this.tituloSubscription =
             this.trabajoDeGradoService.tituloSeleccionadoSubject$.subscribe({
@@ -112,9 +109,13 @@ export class DocumentoFormatoFComponent implements OnInit {
                 next: (response) => {
                     if (response) {
                         this.estudianteSeleccionado = response;
-                        this.estudiante.setValue(
-                            this.nombreCompletoEstudiante(response)
-                        );
+                        this.formatoGForm
+                            .get('estudiante')
+                            .setValue(
+                                this.nombreCompletoEstudiante(
+                                    this.estudianteSeleccionado
+                                )
+                            );
                     }
                 },
                 error: (e) => this.handlerResponseException(e),
@@ -126,19 +127,30 @@ export class DocumentoFormatoFComponent implements OnInit {
     }
 
     initForm(): void {
-        this.formatoFForm = this.fb.group({
-            titulo: [null, Validators.required],
+        const today = new Date();
+        const dia = today.getDate();
+        const mes = today.getMonth() + 1;
+        const anio = today.getFullYear();
+
+        const fecha = `${dia} de ${mes} de ${anio}`;
+
+        this.formatoGForm = this.fb.group({
+            consecutivo: ['MC/013', Validators.required],
+            fecha: [fecha, Validators.required],
+            facultad: [
+                'Ingeniería Electrónica y Telecomunicaciones',
+                Validators.required,
+            ],
+            programa: ['Maestría en Computación', Validators.required],
+            coordinador: [null, Validators.required],
             estudiante: [null, Validators.required],
+            titulo: [null, Validators.required],
             director: [null, Validators.required],
-            trabajoCumpleSi: [false, Validators.required],
-            trabajoCumpleNo: [false, Validators.required],
-            documentoTerminadoNo: [false, Validators.required],
-            documentoTerminadoSi: [false, Validators.required],
             observaciones: [null],
-            firmaDirector: [null, Validators.required],
+            firmaCoordinador: [null, Validators.required],
         });
 
-        this.formReady.emit(this.formatoFForm);
+        this.formReady.emit(this.formatoGForm);
 
         var assetHeader = new Image();
         assetHeader.src = 'assets/layout/images/asset-header.jpg';
@@ -163,30 +175,6 @@ export class DocumentoFormatoFComponent implements OnInit {
         logoIcontec.onload = () => {
             this.logoIcontec = this.getBase64Image(logoIcontec);
         };
-        this.initValueChangeHandlers();
-    }
-
-    initValueChangeHandlers(): void {
-        this.addToggleHandler('trabajoCumpleSi', 'trabajoCumpleNo');
-        this.addToggleHandler('trabajoCumpleNo', 'trabajoCumpleSi');
-        this.addToggleHandler('documentoTerminadoSi', 'documentoTerminadoNo');
-        this.addToggleHandler('documentoTerminadoNo', 'documentoTerminadoSi');
-    }
-
-    addToggleHandler(controlName: string, oppositeControlName: string): void {
-        this.formatoFForm.get(controlName).valueChanges.subscribe({
-            next: (response) => {
-                if (typeof response === 'boolean') {
-                    const oppositeControl =
-                        this.formatoFForm.get(oppositeControlName);
-                    if (response) {
-                        oppositeControl.disable({ emitEvent: false });
-                    } else {
-                        oppositeControl.enable({ emitEvent: false });
-                    }
-                }
-            },
-        });
     }
 
     getBase64Image(img: HTMLImageElement) {
@@ -199,11 +187,11 @@ export class DocumentoFormatoFComponent implements OnInit {
     }
 
     ngOnDestroy() {
-        if (this.tituloSubscription) {
-            this.tituloSubscription.unsubscribe();
-        }
         if (this.estudianteSubscription) {
             this.estudianteSubscription.unsubscribe();
+        }
+        if (this.tituloSubscription) {
+            this.tituloSubscription.unsubscribe();
         }
     }
 
@@ -213,19 +201,19 @@ export class DocumentoFormatoFComponent implements OnInit {
         if (file) {
             const reader = new FileReader();
             reader.onload = () => {
-                if (fieldName === 'firmaDirector') {
-                    this.firmaDirector = reader.result as string;
+                if (fieldName === 'firmaCoordinador') {
+                    this.firmaCoordinador = reader.result as string;
                 }
             };
             reader.readAsDataURL(file);
             const patchObject = {};
             patchObject[fieldName] = file;
-            this.formatoFForm.patchValue(patchObject);
+            this.formatoGForm.patchValue(patchObject);
         }
     }
 
     generateDocDefinition() {
-        const formValues = this.formatoFForm.value;
+        const formValues = this.formatoGForm.value;
         const fechaActual = new Date().toLocaleDateString();
 
         return {
@@ -247,15 +235,30 @@ export class DocumentoFormatoFComponent implements OnInit {
                     opacity: 0.6,
                 },
                 {
+                    text: formValues.consecutivo,
+                    style: 'subheader',
+                    alignment: 'left',
+                },
+                {
                     text: 'TESIS DE POSGRADO',
                     style: 'subheader',
                     alignment: 'center',
                 },
                 {
                     columns: [
-                        { text: 'FORMATO F:', style: 'label', width: '25%' },
+                        { text: 'FORMATO G:', style: 'label', width: '25%' },
                         {
-                            text: 'REMISION DEL DOCUMENTO FINAL AL COMITÉ DE PROGRAMA POR EL DIRECTOR RESPECTIVO',
+                            text: 'REMISION DEL TRABAJO FINAL AL CONSEJO DE FACULTAD POR EL COORDINADOR DEL COMITÉ DEL PROGRAMA',
+                            style: 'value',
+                            width: '75%',
+                        },
+                    ],
+                },
+                {
+                    columns: [
+                        { text: 'PROGRAMA:', style: 'label', width: '25%' },
+                        {
+                            text: formValues.programa,
                             style: 'value',
                             width: '75%',
                         },
@@ -293,61 +296,16 @@ export class DocumentoFormatoFComponent implements OnInit {
                     margin: [0, 0, 0, 20],
                 },
                 {
-                    text: 'A) EL TRABAJO CUMPLE CON LAS CONDICIONES DE ENTREGA? SI (  ) NO (  )',
-                    style: 'label',
-                },
-                {
-                    columns: [
-                        { text: 'SI', style: 'value', width: '10%' },
-                        {
-                            text: formValues.trabajoCumpleSi ? '( X )' : '(  )',
-                            style: 'value',
-                            width: '10%',
-                        },
-                        { text: 'NO', style: 'value', width: '10%' },
-                        {
-                            text: formValues.trabajoCumpleNo ? '( X )' : '(  )',
-                            style: 'value',
-                            width: '10%',
-                        },
-                    ],
-                },
-                {
-                    text: 'B) DOCUMENTO Y ANEXOS COMPLETAMENTE TERMINADOS? SI (  ) NO (  )',
-                    style: 'label',
-                },
-                {
-                    columns: [
-                        { text: 'SI', style: 'value', width: '10%' },
-                        {
-                            text: formValues.documentoTerminadoSi
-                                ? '( X )'
-                                : '(  )',
-                            style: 'value',
-                            width: '10%',
-                        },
-                        { text: 'NO', style: 'value', width: '10%' },
-                        {
-                            text: formValues.documentoTerminadoNo
-                                ? '( X )'
-                                : '(  )',
-                            style: 'value',
-                            width: '10%',
-                        },
-                    ],
-                    margin: [0, 0, 0, 20],
-                },
-                { text: 'OBSERVACIONES:', style: 'label' },
-                {
-                    text: formValues?.observaciones || '',
-                    style: 'value',
-                },
-                {
                     text: 'JURADOS SUGERIDOS Y DATOS DE CONTACTO:',
                     style: 'label',
                 },
                 {
-                    text: `${this.juradoInternoSeleccionado?.nombres}, ${this.juradoInternoSeleccionado?.correo}, ${this.juradoInternoSeleccionado?.universidad}\n${this.juradoExternoSeleccionado?.nombres}, ${this.juradoExternoSeleccionado?.correo}, ${this.juradoExternoSeleccionado?.universidad}`,
+                    text: `Jurado Interno: ${this.juradoInternoSeleccionado?.nombres}, ${this.juradoInternoSeleccionado?.correo}, ${this.juradoInternoSeleccionado?.universidad}\nJurado Externo: ${this.juradoExternoSeleccionado?.nombres}, ${this.juradoExternoSeleccionado?.correo}, ${this.juradoExternoSeleccionado?.universidad}`,
+                    style: 'value',
+                },
+                { text: 'OBSERVACIONES:', style: 'label' },
+                {
+                    text: formValues?.observaciones || '',
                     style: 'value',
                 },
                 {
@@ -365,7 +323,7 @@ export class DocumentoFormatoFComponent implements OnInit {
                     columns: [
                         { text: 'FIRMA:', style: 'label', width: '25%' },
                         {
-                            image: this.firmaDirector,
+                            image: this.firmaCoordinador,
                             width: 80,
                             height: 60,
                             margin: [0, 5, 0, 0],
@@ -373,6 +331,21 @@ export class DocumentoFormatoFComponent implements OnInit {
                             style: 'value',
                         },
                     ],
+                },
+                {
+                    columns: [
+                        { text: '', width: '25%' },
+                        {
+                            text: `Dra. ${formValues.coordinador} (Coordinadora Comité de Programa)`,
+                            width: '75%',
+                        },
+                    ],
+                },
+                {
+                    text: 'Anexo: Revisión de Historia académica del estudiante e historia académica de SIMCA (2 folios).',
+                    style: 'small',
+                    alignment: 'justify',
+                    margin: [0, 20, 0, 0],
                 },
             ],
             footer: (currentPage, pageCount) => {
@@ -441,13 +414,16 @@ export class DocumentoFormatoFComponent implements OnInit {
                     fontSize: 12,
                     margin: [0, 10, 0, 0],
                 },
+                small: {
+                    fontSize: 10,
+                },
             },
         };
     }
 
     onDownload() {
         this.loading = true;
-        if (this.formatoFForm.invalid) {
+        if (this.formatoGForm.invalid) {
             this.loading = false;
             this.handleWarningMessage(Mensaje.REGISTRE_CAMPOS_OBLIGATORIOS);
             return;
@@ -456,7 +432,7 @@ export class DocumentoFormatoFComponent implements OnInit {
         pdfMake.createPdf(docDefinition).getBlob((pdfBlob: Blob) => {
             const file = new File(
                 [pdfBlob],
-                `${this.estudianteSeleccionado.codigo} - formatoF.pdf`,
+                `${this.estudianteSeleccionado.codigo} - formatoG.pdf`,
                 {
                     type: 'application/pdf',
                 }
@@ -473,7 +449,7 @@ export class DocumentoFormatoFComponent implements OnInit {
     }
 
     onInsertar() {
-        if (this.formatoFForm.invalid) {
+        if (this.formatoGForm.invalid) {
             this.handleWarningMessage(Mensaje.REGISTRE_CAMPOS_OBLIGATORIOS);
             return;
         }
@@ -481,14 +457,18 @@ export class DocumentoFormatoFComponent implements OnInit {
         pdfMake.createPdf(docDefinition).getBlob((pdfBlob: Blob) => {
             const file = new File(
                 [pdfBlob],
-                `${this.estudianteSeleccionado.codigo} - formatoF.pdf`,
+                `${this.estudianteSeleccionado.codigo} - formatoG.pdf`,
                 {
                     type: 'application/pdf',
                 }
             );
-            this.formatoFPdfGenerated.emit(file);
+            this.formatoGPdfGenerated.emit(file);
             this.handleSuccessMessage(Mensaje.GUARDADO_EXITOSO);
         });
+    }
+
+    getFormControl(formControlName: string): FormControl {
+        return this.formatoGForm.get(formControlName) as FormControl;
     }
 
     nombreCompletoEstudiante(e: any) {

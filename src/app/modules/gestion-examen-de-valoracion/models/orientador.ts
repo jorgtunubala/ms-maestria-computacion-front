@@ -1,8 +1,6 @@
-import { Persona } from "./persona";
-
 export interface Orientador {
     id?: number;
-    persona?: Persona;
+    nombres?: string;
     rol?: string;
     tipo?: string;
 }

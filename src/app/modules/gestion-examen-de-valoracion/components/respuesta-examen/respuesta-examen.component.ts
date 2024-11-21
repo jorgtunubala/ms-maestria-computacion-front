@@ -2,7 +2,7 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
-import { Subscription, catchError, of } from 'rxjs';
+import { Subscription, catchError, firstValueFrom, of } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 import { Docente } from 'src/app/modules/gestion-docentes/models/docente';
 import { Estudiante } from 'src/app/modules/gestion-estudiantes/models/estudiante';
@@ -12,12 +12,11 @@ import {
     infoMessage,
     warnMessage,
 } from 'src/app/core/utils/message-util';
-import { RespuestaService } from '../../services/respuesta.service';
+import { AutenticacionService } from 'src/app/modules/gestion-autenticacion/services/autenticacion.service';
 import { Experto } from '../../models/experto';
-import { mapResponseException } from 'src/app/core/utils/exception-util';
+import { RespuestaService } from '../../services/respuesta.service';
 import { ResolucionService } from '../../services/resolucion.service';
 import { TrabajoDeGradoService } from '../../services/trabajoDeGrado.service';
-import { AutenticacionService } from 'src/app/modules/gestion-autenticacion/services/autenticacion.service';
 
 @Component({
     selector: 'app-respuesta-examen',
@@ -30,20 +29,24 @@ export class RespuestaExamenComponent implements OnInit {
     private estudianteSubscription: Subscription;
     private tituloSubscription: Subscription;
     private trabajoSeleccionadoSubscription: Subscription;
-    private resolucionValidSubscription: Subscription;
     private resolucionSubscription: Subscription;
+    private resolucionValidSubscription: Subscription;
+    private resolucionCreatedSubscription: Subscription;
     private respuestaValidSubscription: Subscription;
     private sustentacionSubscription: Subscription;
     private evaluadorInternoSubscription: Subscription;
     private evaluadorExternoSubscription: Subscription;
 
     editMode: boolean = false;
+    displayMessage: boolean = false;
     isLoading: boolean;
+    isSending: boolean;
     isRespuestaValid: boolean = false;
     isResolucionValid: boolean = false;
+    isResolucionCreated: boolean = false;
 
-    role: string[];
     estado: string;
+    tituloSeleccionado: string;
 
     trabajoDeGradoId: number;
     solicitudId: number;
@@ -53,18 +56,18 @@ export class RespuestaExamenComponent implements OnInit {
 
     respuestaForm: FormGroup;
 
-    selectedFiles: { [key: string]: any } = {};
-    anexosFiles: File[] = [];
+    anexosFilesExpertos: { [key: string]: any } = {};
+    anexosFilesDocentes: { [key: string]: any } = {};
     anexosBase64: { linkAnexo: string }[] = [];
+    estados: string[] = ['APROBADO', 'APLAZADO', 'NO_APROBADO'];
     evaluacionDocenteIds: number[] = [];
     evaluacionExpertoIds: number[] = [];
+    role: string[];
+    selectedFiles: { [key: string]: any } = {};
 
-    tituloSeleccionado: string;
-    estudianteSeleccionado: Estudiante = {};
-    expertoSeleccionado: Experto;
-    docenteSeleccionado: Docente;
-
-    estados: string[] = ['APROBADO', 'APLAZADO', 'NO_APROBADO'];
+    estudianteSeleccionado: Estudiante | any = {};
+    expertoSeleccionado: Experto | any;
+    docenteSeleccionado: Docente | any;
 
     constructor(
         private router: Router,
@@ -144,6 +147,30 @@ export class RespuestaExamenComponent implements OnInit {
                                     this.estado = response.estado;
                                     this.trabajoDeGradoId = response.id;
 
+                                    this.resolucionCreatedSubscription =
+                                        this.resolucionService
+                                            .getResolucionDocente(
+                                                this.trabajoDeGradoId
+                                            )
+                                            .pipe(
+                                                catchError(() => {
+                                                    return of(null);
+                                                })
+                                            )
+                                            .subscribe({
+                                                next: (response) => {
+                                                    if (
+                                                        response?.id &&
+                                                        response?.titulo &&
+                                                        response?.linkAnteproyectoFinal &&
+                                                        response?.linkSolicitudComite
+                                                    ) {
+                                                        this.isResolucionCreated =
+                                                            true;
+                                                    }
+                                                },
+                                            });
+
                                     this.resolucionValidSubscription =
                                         this.resolucionService
                                             .getResolucionCoordinadorFase3(
@@ -157,15 +184,14 @@ export class RespuestaExamenComponent implements OnInit {
                                             .subscribe({
                                                 next: (response) => {
                                                     if (
-                                                        response?.numeroActaConsejoFacultad &&
-                                                        response?.fechaActaConsejoFacultad
+                                                        response?.numeroActaConsejo &&
+                                                        response?.fechaActaConsejo
                                                     ) {
                                                         this.isResolucionValid =
                                                             true;
                                                     }
                                                 },
                                             });
-                                    resolve();
 
                                     this.respuestaValidSubscription =
                                         this.respuestaService
@@ -211,6 +237,7 @@ export class RespuestaExamenComponent implements OnInit {
                                                     }
                                                 },
                                             });
+                                    resolve();
                                 }
                             },
                             error: (e) => {
@@ -286,7 +313,7 @@ export class RespuestaExamenComponent implements OnInit {
         ]);
     }
 
-    setup(fieldName: string, formGroup: string) {
+    async setup(fieldName: string, formGroup: string): Promise<void> {
         const agregarArchivo = (file: File, key: string) => {
             if (!Array.isArray(this.selectedFiles[key])) {
                 this.selectedFiles[key] = [];
@@ -295,168 +322,102 @@ export class RespuestaExamenComponent implements OnInit {
             archivosExistentes.push(file);
         };
 
+        const handleFile = async (fileString: string | any[], key: string) => {
+            if (Array.isArray(fileString)) {
+                for (const anexo of fileString) {
+                    try {
+                        const response = await firstValueFrom(
+                            this.trabajoDeGradoService.getFile(anexo.linkAnexo)
+                        );
+                        if (response) {
+                            const byteCharacters = atob(response);
+                            const byteNumbers = new Array(
+                                byteCharacters.length
+                            );
+                            for (let i = 0; i < byteCharacters.length; i++) {
+                                byteNumbers[i] = byteCharacters.charCodeAt(i);
+                            }
+                            const byteArray = new Uint8Array(byteNumbers);
+                            const file = new File([byteArray], fieldName, {
+                                type: response.type,
+                            });
+                            agregarArchivo(file, key);
+                        }
+                    } catch (e) {
+                        this.handlerResponseException(e);
+                    }
+                }
+            } else {
+                try {
+                    const response = await firstValueFrom(
+                        this.trabajoDeGradoService.getFile(fileString)
+                    );
+                    if (response) {
+                        const byteCharacters = atob(response);
+                        const byteNumbers = new Array(byteCharacters.length);
+                        for (let i = 0; i < byteCharacters.length; i++) {
+                            byteNumbers[i] = byteCharacters.charCodeAt(i);
+                        }
+                        const byteArray = new Uint8Array(byteNumbers);
+                        const file = new File([byteArray], fieldName, {
+                            type: response.type,
+                        });
+                        this.selectedFiles[key] = file;
+                    }
+                } catch (e) {
+                    this.handlerResponseException(e);
+                }
+            }
+        };
+
         if (
             this.evaluacionExpertoIds?.length > 0 &&
-            formGroup == 'expertoEvaluaciones'
+            formGroup === 'expertoEvaluaciones'
         ) {
-            this.evaluacionExpertoIds.forEach((_: number, index: number) => {
-                if (fieldName == 'anexos') {
+            for (const [index, _] of this.evaluacionExpertoIds.entries()) {
+                if (fieldName === 'anexos') {
                     const fileString = this.expertoEvaluaciones
                         ?.at(index)
                         ?.get(`${fieldName}${index}`).value;
-                    for (let anexo of fileString) {
-                        this.trabajoDeGradoService
-                            .getFile(anexo.linkAnexo)
-                            .subscribe({
-                                next: (response: any) => {
-                                    if (response) {
-                                        const byteCharacters = atob(response);
-                                        const byteNumbers = new Array(
-                                            byteCharacters.length
-                                        );
-                                        for (
-                                            let i = 0;
-                                            i < byteCharacters.length;
-                                            i++
-                                        ) {
-                                            byteNumbers[i] =
-                                                byteCharacters.charCodeAt(i);
-                                        }
-                                        const byteArray = new Uint8Array(
-                                            byteNumbers
-                                        );
-                                        const file = new File(
-                                            [byteArray],
-                                            fieldName,
-                                            { type: response.type }
-                                        );
-
-                                        agregarArchivo(
-                                            file,
-                                            `expertoEvaluaciones.${
-                                                fieldName + index
-                                            }`
-                                        );
-                                    }
-                                },
-                                error: (e) => this.handlerResponseException(e),
-                            });
-                    }
+                    await handleFile(
+                        fileString,
+                        `expertoEvaluaciones.${fieldName}${index}`
+                    );
                 } else {
                     const fileString = this.expertoEvaluaciones
                         ?.at(index)
                         ?.get(`${fieldName}${index}`).value;
-                    this.trabajoDeGradoService.getFile(fileString).subscribe({
-                        next: (response: any) => {
-                            if (response) {
-                                const byteCharacters = atob(response);
-                                const byteNumbers = new Array(
-                                    byteCharacters.length
-                                );
-                                for (
-                                    let i = 0;
-                                    i < byteCharacters.length;
-                                    i++
-                                ) {
-                                    byteNumbers[i] =
-                                        byteCharacters.charCodeAt(i);
-                                }
-                                const byteArray = new Uint8Array(byteNumbers);
-                                const file = new File([byteArray], fieldName, {
-                                    type: response.type,
-                                });
-
-                                this.selectedFiles[
-                                    `expertoEvaluaciones.${fieldName + index}`
-                                ] = file;
-                            }
-                        },
-                        error: (e) => this.handlerResponseException(e),
-                    });
+                    await handleFile(
+                        fileString,
+                        `expertoEvaluaciones.${fieldName}${index}`
+                    );
                 }
-            });
+            }
         }
 
         if (
             this.evaluacionDocenteIds?.length > 0 &&
-            formGroup == 'docenteEvaluaciones'
+            formGroup === 'docenteEvaluaciones'
         ) {
-            this.evaluacionDocenteIds.forEach((_: number, index: number) => {
-                if (fieldName == 'anexos') {
+            for (const [index, _] of this.evaluacionDocenteIds.entries()) {
+                if (fieldName === 'anexos') {
                     const fileString = this.docenteEvaluaciones
                         ?.at(index)
                         ?.get(`${fieldName}${index}`).value;
-                    for (let anexo of fileString) {
-                        this.trabajoDeGradoService
-                            .getFile(anexo.linkAnexo)
-                            .subscribe({
-                                next: (response: any) => {
-                                    if (response) {
-                                        const byteCharacters = atob(response);
-                                        const byteNumbers = new Array(
-                                            byteCharacters.length
-                                        );
-                                        for (
-                                            let i = 0;
-                                            i < byteCharacters.length;
-                                            i++
-                                        ) {
-                                            byteNumbers[i] =
-                                                byteCharacters.charCodeAt(i);
-                                        }
-                                        const byteArray = new Uint8Array(
-                                            byteNumbers
-                                        );
-                                        const file = new File(
-                                            [byteArray],
-                                            fieldName,
-                                            { type: response.type }
-                                        );
-
-                                        agregarArchivo(
-                                            file,
-                                            `docenteEvaluaciones.${
-                                                fieldName + index
-                                            }`
-                                        );
-                                    }
-                                },
-                                error: (e) => this.handlerResponseException(e),
-                            });
-                    }
+                    await handleFile(
+                        fileString,
+                        `docenteEvaluaciones.${fieldName}${index}`
+                    );
                 } else {
                     const fileString = this.docenteEvaluaciones
                         ?.at(index)
                         ?.get(`${fieldName}${index}`).value;
-                    this.trabajoDeGradoService.getFile(fileString).subscribe({
-                        next: (response: any) => {
-                            if (response) {
-                                const byteCharacters = atob(response);
-                                const byteNumbers = new Array(
-                                    byteCharacters.length
-                                );
-                                for (
-                                    let i = 0;
-                                    i < byteCharacters.length;
-                                    i++
-                                ) {
-                                    byteNumbers[i] =
-                                        byteCharacters.charCodeAt(i);
-                                }
-                                const byteArray = new Uint8Array(byteNumbers);
-                                const file = new File([byteArray], fieldName, {
-                                    type: response.type,
-                                });
-
-                                this.selectedFiles[
-                                    `docenteEvaluaciones.${fieldName + index}`
-                                ] = file;
-                            }
-                        },
-                        error: (e) => this.handlerResponseException(e),
-                    });
+                    await handleFile(
+                        fileString,
+                        `docenteEvaluaciones.${fieldName}${index}`
+                    );
                 }
-            });
+            }
         }
     }
 
@@ -464,7 +425,6 @@ export class RespuestaExamenComponent implements OnInit {
         this.respuestaForm = this.fb.group({
             expertoEvaluaciones: this.fb.array([]),
             docenteEvaluaciones: this.fb.array([]),
-            estadoFinalizado: [false, Validators.required],
             observacion: [null],
         });
 
@@ -473,20 +433,13 @@ export class RespuestaExamenComponent implements OnInit {
 
     checkEstados() {
         switch (this.estado) {
-            case EstadoProceso.PENDIENTE_RESULTADO_EXAMEN_DE_VALORACION:
-                this.messageService.add({
-                    severity: 'warn',
-                    summary: 'Advertencia',
-                    detail: EstadoProceso.PENDIENTE_RESULTADO_EXAMEN_DE_VALORACION,
-                });
-                break;
             case EstadoProceso.EXAMEN_DE_VALORACION_CANCELADO:
                 this.messageService.add({
                     severity: 'warn',
                     summary: 'Advertencia',
                     detail: EstadoProceso.EXAMEN_DE_VALORACION_CANCELADO,
                 });
-                this.router.navigate(['examen-de-valoracion']);
+                this.displayMessage = true;
                 break;
             case EstadoProceso.EXAMEN_DE_VALORACION_APROBADO_EVALUADOR_1:
                 this.messageService.add({
@@ -507,27 +460,33 @@ export class RespuestaExamenComponent implements OnInit {
         }
     }
 
-    loadRespuestas() {
+    async loadRespuestas(): Promise<void> {
         this.isLoading = true;
         this.evaluacionExpertoIds = [];
         this.evaluacionDocenteIds = [];
         this.selectedFiles = {};
 
-        this.respuestaService
-            .getRespuestasExamen(this.trabajoDeGradoId)
-            .pipe(
-                catchError((error) => {
-                    this.handlerResponseException(error);
-                    this.isLoading = false;
-                    return of(null);
-                })
-            )
-            .subscribe({
-                next: (response) => {
-                    this.initializeFormFromResponse(response);
-                    this.isLoading = false;
-                },
-            });
+        try {
+            const response = await firstValueFrom(
+                this.respuestaService
+                    .getRespuestasExamen(this.trabajoDeGradoId)
+                    .pipe(
+                        catchError((error) => {
+                            this.handlerResponseException(error);
+                            this.isLoading = false;
+                            return of(null);
+                        })
+                    )
+            );
+
+            if (response) {
+                this.initializeFormFromResponse(response);
+            }
+        } catch (error) {
+            this.handlerResponseException(error);
+        } finally {
+            this.isLoading = false;
+        }
     }
 
     ngOnDestroy() {
@@ -545,6 +504,9 @@ export class RespuestaExamenComponent implements OnInit {
         }
         if (this.resolucionValidSubscription) {
             this.resolucionSubscription.unsubscribe();
+        }
+        if (this.resolucionCreatedSubscription) {
+            this.resolucionCreatedSubscription.unsubscribe();
         }
         if (this.respuestaValidSubscription) {
             this.resolucionSubscription.unsubscribe();
@@ -570,10 +532,7 @@ export class RespuestaExamenComponent implements OnInit {
                 this.respuestaForm.patchValue({
                     observacion: respuesta.observacion,
                 });
-                this.respuestaForm.patchValue({
-                    estadoFinalizado: respuesta.estadoFinalizado,
-                });
-
+                this.anexosFilesExpertos[indexExperto] = respuesta.anexos;
                 const evaluacionFormGroup = this.fb.group({
                     ['id']: [respuesta.id, Validators.required],
                     ['linkFormatoB' + indexExperto]: [
@@ -584,34 +543,25 @@ export class RespuestaExamenComponent implements OnInit {
                         respuesta.linkFormatoC,
                         Validators.required,
                     ],
-                    ['linkObservaciones' + indexExperto]: [
-                        respuesta.linkObservaciones,
-                        Validators.required,
-                    ],
-                    ['anexos' + indexExperto]: [
-                        respuesta.anexos,
-                        Validators.required,
-                    ],
+                    ['anexos' + indexExperto]: [respuesta.anexos],
                     ['idEvaluador' + indexExperto]: [respuesta.idEvaluador],
                     ['tipoEvaluador' + indexExperto]: [respuesta.tipoEvaluador],
                     ['respuestaExamenValoracionExperto' + indexExperto]: [
                         respuesta.respuestaExamenValoracion,
                         Validators.required,
                     ],
-                    ['fechaMaximaEntrega' + indexExperto]: [
-                        respuesta.fechaMaximaEntrega,
+                    ['asunto' + indexExperto]: [
+                        `Respuesta Examen de Valoracion ${this.estudianteSeleccionado.nombre} ${this.estudianteSeleccionado.apellido}`,
+                        Validators.required,
+                    ],
+                    ['mensaje' + indexExperto]: [
+                        `Documentos enviados por ${this.expertoSeleccionado?.nombres}`,
+                        Validators.required,
                     ],
                 });
                 this.expertoEvaluaciones.push(evaluacionFormGroup);
-                this.expertoEvaluaciones.at(indexExperto).patchValue({
-                    ['fechaMaximaEntrega' + indexExperto]:
-                        respuesta?.fechaMaximaEntrega
-                            ? new Date(respuesta.fechaMaximaEntrega)
-                            : null,
-                });
                 this.setup('linkFormatoB', 'expertoEvaluaciones');
                 this.setup('linkFormatoC', 'expertoEvaluaciones');
-                this.setup('linkObservaciones', 'expertoEvaluaciones');
                 this.setup('anexos', 'expertoEvaluaciones');
                 indexExperto++;
             }
@@ -623,9 +573,7 @@ export class RespuestaExamenComponent implements OnInit {
                 this.respuestaForm.patchValue({
                     observacion: respuesta.observacion,
                 });
-                this.respuestaForm.patchValue({
-                    estadoFinalizado: respuesta.estadoFinalizado,
-                });
+                this.anexosFilesDocentes[indexDocente] = respuesta.anexos;
                 const evaluacionFormGroup = this.fb.group({
                     ['id']: [respuesta.id, Validators.required],
                     ['linkFormatoB' + indexDocente]: [
@@ -636,34 +584,25 @@ export class RespuestaExamenComponent implements OnInit {
                         respuesta.linkFormatoC,
                         Validators.required,
                     ],
-                    ['linkObservaciones' + indexDocente]: [
-                        respuesta.linkObservaciones,
-                        Validators.required,
-                    ],
-                    ['anexos' + indexDocente]: [
-                        respuesta.anexos,
-                        Validators.required,
-                    ],
+                    ['anexos' + indexDocente]: [respuesta.anexos],
                     ['idEvaluador' + indexDocente]: [respuesta.idEvaluador],
                     ['tipoEvaluador' + indexDocente]: [respuesta.tipoEvaluador],
                     ['respuestaExamenValoracionDocente' + indexDocente]: [
                         respuesta.respuestaExamenValoracion,
                         Validators.required,
                     ],
-                    ['fechaMaximaEntrega' + indexDocente]: [
-                        respuesta.fechaMaximaEntrega,
+                    ['asunto' + indexDocente]: [
+                        `Respuesta Examen de Valoracion ${this.estudianteSeleccionado.nombre} ${this.estudianteSeleccionado.apellido}`,
+                        Validators.required,
+                    ],
+                    ['mensaje' + indexDocente]: [
+                        `Documentos enviados por ${this.docenteSeleccionado?.nombres}`,
+                        Validators.required,
                     ],
                 });
                 this.docenteEvaluaciones.push(evaluacionFormGroup);
-                this.docenteEvaluaciones.at(indexDocente).patchValue({
-                    ['fechaMaximaEntrega' + indexDocente]:
-                        respuesta?.fechaMaximaEntrega
-                            ? new Date(respuesta.fechaMaximaEntrega)
-                            : null,
-                });
                 this.setup('linkFormatoB', 'docenteEvaluaciones');
                 this.setup('linkFormatoC', 'docenteEvaluaciones');
-                this.setup('linkObservaciones', 'docenteEvaluaciones');
                 this.setup('anexos', 'docenteEvaluaciones');
                 indexDocente++;
             }
@@ -719,6 +658,28 @@ export class RespuestaExamenComponent implements OnInit {
         const anexosKey = `${formArrayName}.anexos${indexAnexos}`;
         const anexos = this.selectedFiles[anexosKey];
 
+        if (formArrayName === 'expertoEvaluaciones') {
+            if (
+                this.anexosFilesExpertos[indexAnexos] &&
+                this.anexosFilesExpertos[indexAnexos][indexFiles]
+            ) {
+                this.anexosFilesExpertos[indexAnexos].splice(indexFiles, 1);
+                if (this.anexosFilesExpertos[indexAnexos].length === 0) {
+                    delete this.anexosFilesExpertos[indexAnexos];
+                }
+            }
+        } else if (formArrayName === 'docenteEvaluaciones') {
+            if (
+                this.anexosFilesDocentes[indexAnexos] &&
+                this.anexosFilesDocentes[indexAnexos][indexFiles]
+            ) {
+                this.anexosFilesDocentes[indexAnexos].splice(indexFiles, 1);
+                if (this.anexosFilesDocentes[indexAnexos].length === 0) {
+                    delete this.anexosFilesDocentes[indexAnexos];
+                }
+            }
+        }
+
         if (Array.isArray(anexos)) {
             anexos.splice(indexFiles, 1);
         }
@@ -736,6 +697,23 @@ export class RespuestaExamenComponent implements OnInit {
     }
     //#endregion
 
+    async envioRespuesta(): Promise<void> {
+        const data = {
+            observacion: this.respuestaForm.get('observacion').value,
+        };
+        try {
+            await firstValueFrom(
+                this.respuestaService.insertarInformacionCancelado(
+                    this.trabajoDeGradoId,
+                    data
+                )
+            );
+            this.router.navigate(['examen-de-valoracion']);
+        } catch (e) {
+            this.messageService.add(errorMessage(e?.error?.mensaje));
+        }
+    }
+
     isExamenCreado(formArrayName: string, index: number): boolean {
         let evaluacion: any;
         if (formArrayName == 'expertoEvaluaciones') {
@@ -749,24 +727,6 @@ export class RespuestaExamenComponent implements OnInit {
         return false;
     }
 
-    showObservacion(): boolean {
-        if (this.docenteEvaluaciones.length > 0) {
-            const index = this.docenteEvaluaciones.length - 1;
-            const docenteValue = this.docenteEvaluaciones
-                .at(index)
-                .get('respuestaExamenValoracionDocente' + index)?.value;
-            return ['APLAZADO', 'NO_APROBADO'].includes(docenteValue);
-        }
-        if (this.expertoEvaluaciones.length > 0) {
-            const index = this.expertoEvaluaciones.length - 1;
-            const expertoValue = this.expertoEvaluaciones
-                .at(index)
-                .get('respuestaExamenValoracionExperto' + index)?.value;
-            return ['APLAZADO', 'NO_APROBADO'].includes(expertoValue);
-        }
-        return false;
-    }
-
     mapEvaluacion(formArrayName: string, index: number) {
         const evaluacion = this[formArrayName].at(index).value;
         const i = index;
@@ -774,7 +734,6 @@ export class RespuestaExamenComponent implements OnInit {
         return {
             linkFormatoB: evaluacion['linkFormatoB' + i],
             linkFormatoC: evaluacion['linkFormatoC' + i],
-            linkObservaciones: evaluacion['linkObservaciones' + i],
             anexos: evaluacion['anexos' + i],
             tipoEvaluador: evaluacion['tipoEvaluador' + i],
             idEvaluador: evaluacion['idEvaluador' + i],
@@ -782,7 +741,8 @@ export class RespuestaExamenComponent implements OnInit {
                 formArrayName === 'expertoEvaluaciones'
                     ? evaluacion['respuestaExamenValoracionExperto' + i]
                     : evaluacion['respuestaExamenValoracionDocente' + i],
-            fechaMaximaEntrega: evaluacion['fechaMaximaEntrega' + i],
+            asunto: evaluacion['asunto' + i],
+            mensaje: evaluacion['mensaje' + i],
         };
     }
 
@@ -794,29 +754,59 @@ export class RespuestaExamenComponent implements OnInit {
             );
             return;
         }
-        this.isLoading = true;
+
+        if (!this[formArrayName].at(index).dirty) {
+            this.messageService.clear();
+            this.messageService.add(
+                warnMessage('No se han realizado cambios.')
+            );
+            return;
+        }
+
+        if (
+            this.estado ==
+                EstadoProceso.EXAMEN_DE_VALORACION_APROBADO_EVALUADOR_2 ||
+            this.isResolucionCreated == true
+        ) {
+            this.messageService.add(
+                errorMessage('No puedes modificar los datos.')
+            );
+            return;
+        }
+        this.isSending = true;
         const respuestaId =
             formArrayName === 'expertoEvaluaciones'
                 ? this.evaluacionExpertoIds[index]
                 : this.evaluacionDocenteIds[index];
+
         const evaluacionData = this.mapEvaluacion(formArrayName, index);
 
-        if (evaluacionData.respuestaExamenValoracion == 'APROBADO')
-            evaluacionData.fechaMaximaEntrega = '';
+        const {
+            expertoEvaluaciones: omitExperto,
+            docenteEvaluaciones: omitDocente,
+            ...restFormValues
+        } = this.respuestaForm.value;
+        const { asunto, mensaje, ...restEvaluacionData } = evaluacionData;
 
         const respuestaMail = {
             envioEmail: {
-                asunto: 'Envio respuesta evaluadores',
-                mensaje:
-                    'Buenos dias, envio documentos enviados por el evaluador Mage',
+                asunto,
+                mensaje,
             },
         };
 
-        const { [formArrayName]: omit, ...rest } = this.respuestaForm.value;
-        const castBit = {
-            ...rest,
-            estadoFinalizado: Number(rest.estadoFinalizado),
+        const respuestaData = {
+            ...restFormValues,
+            ...restEvaluacionData,
+            ...respuestaMail,
         };
+
+        const anexosFiles =
+            this.selectedFiles[`${formArrayName}.anexos${index}`];
+
+        const anexos = anexosFiles
+            ? await this.formatFileString(anexosFiles, 'anexos')
+            : null;
 
         const formatoB = await this.formatFileString(
             this.selectedFiles[`${formArrayName}.linkFormatoB${index}`],
@@ -828,45 +818,61 @@ export class RespuestaExamenComponent implements OnInit {
             'linkFormatoC'
         );
 
-        evaluacionData.linkFormatoB = formatoB;
-        evaluacionData.linkFormatoC = formatoC;
+        respuestaData.anexos = anexos;
+        respuestaData.linkFormatoB = formatoB;
+        respuestaData.linkFormatoC = formatoC;
+        respuestaData.linkFormatoC = formatoC;
+        try {
+            const response = await firstValueFrom(
+                this.respuestaService
+                    .updateRespuestaExamen(respuestaId, respuestaData)
+                    .pipe(
+                        catchError((error) => {
+                            this.handlerResponseException(error);
+                            this.isSending = false;
+                            return of(null);
+                        })
+                    )
+            );
 
-        this.respuestaService
-            .updateRespuestaExamen(respuestaId, {
-                ...castBit,
-                ...evaluacionData,
-                ...respuestaMail,
-            })
-            .subscribe({
-                next: (response) => {
-                    if (response) {
-                        this.trabajoDeGradoService.setRespuestaSeleccionada(
-                            response
-                        );
-                        this[formArrayName]
-                            .at(this[formArrayName].length - 1)
-                            .patchValue({
-                                id: response.id,
-                            });
-                    }
-                },
-                error: (e) => {
-                    this.handlerResponseException(e);
-                },
-                complete: () => {
-                    this.isLoading = false;
-                    this.messageService.add(
-                        infoMessage(Aviso.RESPUESTA_ACTUALIZADA_CORRECTAMENTE)
-                    );
-                    this.router.navigate(['examen-de-valoracion']);
-                },
-            });
+            if (response) {
+                this.trabajoDeGradoService.setRespuestaSeleccionada(response);
+                this[formArrayName]
+                    .at(this[formArrayName].length - 1)
+                    .patchValue({
+                        id: response.id,
+                    });
+            }
+
+            this.messageService.add(
+                infoMessage(Aviso.RESPUESTA_ACTUALIZADA_CORRECTAMENTE)
+            );
+            this.router.navigate(['examen-de-valoracion']);
+        } catch (error) {
+        } finally {
+            this.isSending = false;
+        }
     }
 
     async formatFileString(file: any, fileControlName: string): Promise<any> {
         try {
-            const base64 = await this.convertFileToBase64(file);
-            return `${fileControlName}.pdf-${base64}`;
+            if (fileControlName === 'anexos') {
+                const files = await Promise.all(
+                    file.map(async (anexo: any) => {
+                        const base64 = await this.convertFileToBase64(anexo);
+                        return {
+                            id: anexo.id,
+                            linkAnexo: `Anexos${uuidv4()
+                                .replace(/-/g, '')
+                                .slice(0, 4)}.pdf-${base64}`,
+                        };
+                    })
+                );
+                return files;
+            } else {
+                const base64 = await this.convertFileToBase64(file);
+                return `${fileControlName}.pdf-${base64}`;
+            }
         } catch (error) {
             console.error('Error al convertir el archivo a base64:', error);
             throw error;
@@ -900,54 +906,91 @@ export class RespuestaExamenComponent implements OnInit {
             );
             return;
         }
-        this.isLoading = true;
+        if (
+            this.estado ==
+                EstadoProceso.EXAMEN_DE_VALORACION_APROBADO_EVALUADOR_2 ||
+            this.isResolucionCreated == true
+        ) {
+            this.messageService.add(
+                errorMessage('No puedes modificar los datos.')
+            );
+            return;
+        }
+
+        this.isSending = true;
+
         const evaluacionData = this.mapEvaluacion(formArrayName, index);
+
+        const {
+            expertoEvaluaciones: omitExperto,
+            docenteEvaluaciones: omitDocente,
+            ...restFormValues
+        } = this.respuestaForm.value;
+        const { asunto, mensaje, ...restEvaluacionData } = evaluacionData;
+
         const respuestaMail = {
             envioEmail: {
-                asunto: 'Envio respuesta evaluadores',
-                mensaje:
-                    'Buenos dias, envio documentos enviados por el evaluador Mage',
+                asunto,
+                mensaje,
             },
         };
-        const { [formArrayName]: omit, ...rest } = this.respuestaForm.value;
-        const castBit = {
-            ...rest,
-            estadoFinalizado: Number(rest.estadoFinalizado),
+
+        const respuestaData = {
+            ...restFormValues,
+            ...restEvaluacionData,
+            ...respuestaMail,
         };
 
-        this.respuestaService
-            .createRespuestaExamen(
-                {
-                    ...castBit,
-                    ...evaluacionData,
-                    ...respuestaMail,
-                },
-                this.trabajoDeGradoId
-            )
-            .subscribe({
-                next: (response) => {
-                    if (response) {
-                        this.trabajoDeGradoService.setRespuestaSeleccionada(
-                            response
-                        );
-                        this[formArrayName]
-                            .at(this[formArrayName].length - 1)
-                            .patchValue({
-                                id: response.id,
-                            });
-                    }
-                },
-                error: (e) => {
-                    this.handlerResponseException(e);
-                },
-                complete: () => {
-                    this.isLoading = false;
-                    this.messageService.add(
-                        infoMessage(Aviso.RESPUESTA_GUARDADA_CORRECTAMENTE)
-                    );
-                    this.router.navigate(['examen-de-valoracion']);
-                },
-            });
+        const anexosFiles =
+            this.selectedFiles[`${formArrayName}.anexos${index}`];
+
+        const anexos = anexosFiles
+            ? await this.formatFileString(anexosFiles, 'anexos')
+            : null;
+
+        const formatoB = await this.formatFileString(
+            this.selectedFiles[`${formArrayName}.linkFormatoB${index}`],
+            'linkFormatoB'
+        );
+
+        const formatoC = await this.formatFileString(
+            this.selectedFiles[`${formArrayName}.linkFormatoC${index}`],
+            'linkFormatoC'
+        );
+
+        respuestaData.anexos = anexos;
+        respuestaData.linkFormatoB = formatoB;
+        respuestaData.linkFormatoC = formatoC;
+        respuestaData.linkFormatoC = formatoC;
+        try {
+            const response = await firstValueFrom(
+                this.respuestaService
+                    .createRespuestaExamen(respuestaData, this.trabajoDeGradoId)
+                    .pipe(
+                        catchError((error) => {
+                            this.handlerResponseException(error);
+                            return of(null);
+                        })
+                    )
+            );
+
+            if (response) {
+                this.trabajoDeGradoService.setRespuestaSeleccionada(response);
+                this[formArrayName]
+                    .at(this[formArrayName].length - 1)
+                    .patchValue({
+                        id: response.id,
+                    });
+
+                this.messageService.add(
+                    infoMessage(Aviso.RESPUESTA_GUARDADA_CORRECTAMENTE)
+                );
+                this.router.navigate(['examen-de-valoracion']);
+            }
+        } catch (error) {
+        } finally {
+            this.isSending = false;
+        }
     }
 
     agregarEvaluacion(formArrayName: string) {
@@ -967,14 +1010,7 @@ export class RespuestaExamenComponent implements OnInit {
                     null,
                     Validators.required,
                 ],
-                ['linkObservaciones' + this[formArrayName].length]: [
-                    null,
-                    Validators.required,
-                ],
-                ['anexos' + this[formArrayName].length]: [
-                    null,
-                    Validators.required,
-                ],
+                ['anexos' + this[formArrayName].length]: [null],
                 ['tipoEvaluador' + this[formArrayName].length]: [
                     formArrayName === 'expertoEvaluaciones'
                         ? 'EXTERNO'
@@ -992,7 +1028,18 @@ export class RespuestaExamenComponent implements OnInit {
                       this[formArrayName].length
                     : 'respuestaExamenValoracionDocente' +
                       this[formArrayName].length]: [null, Validators.required],
-                ['fechaMaximaEntrega' + this[formArrayName].length]: [null],
+                ['asunto' + this[formArrayName].length]: [
+                    `Respuesta Examen de Valoracion ${this.estudianteSeleccionado?.nombre} ${this.estudianteSeleccionado?.apellido}`,
+                    Validators.required,
+                ],
+                ['mensaje' + this[formArrayName].length]: [
+                    `Documentos enviados por ${
+                        formArrayName === 'expertoEvaluaciones'
+                            ? this.expertoSeleccionado?.nombres
+                            : this.docenteSeleccionado?.nombres
+                    }`,
+                    Validators.required,
+                ],
             });
             this[formArrayName].push(evaluacion);
         }
@@ -1055,7 +1102,15 @@ export class RespuestaExamenComponent implements OnInit {
         document.body.removeChild(a);
     };
 
-    getFileAndSetValue(formArrayName: string, filename: string, index: number) {
+    isValidFilePath = (filePath: string): boolean => {
+        return filePath.startsWith('./files/') && filePath.includes('.pdf');
+    };
+
+    async getFileAndSetValue(
+        formArrayName: string,
+        filename: string,
+        index: number
+    ): Promise<void> {
         let errorShown = false;
 
         const handleError = () => {
@@ -1067,25 +1122,55 @@ export class RespuestaExamenComponent implements OnInit {
             }
         };
 
-        if (filename === 'anexos') {
-            for (const anexo of this[formArrayName]
-                .at(index)
-                .get(`${filename}${index}`).value) {
-                this.trabajoDeGradoService.getFile(anexo.linkAnexo).subscribe({
-                    next: (response: string) =>
-                        this.downloadFile(response, anexo.linkAnexo, filename),
-                    error: handleError,
-                });
+        try {
+            if (filename === 'anexos') {
+                const anexos = this[formArrayName]
+                    .at(index)
+                    .get(`${filename}${index}`).value;
+                if (anexos) {
+                    for (const anexo of anexos) {
+                        const linkAnexo = anexo.linkAnexo;
+                        if (linkAnexo && this.isValidFilePath(linkAnexo)) {
+                            try {
+                                const response = await firstValueFrom(
+                                    this.trabajoDeGradoService.getFile(
+                                        linkAnexo
+                                    )
+                                );
+                                this.downloadFile(
+                                    response,
+                                    linkAnexo,
+                                    filename
+                                );
+                            } catch (error) {
+                                handleError();
+                            }
+                        } else {
+                            handleError();
+                        }
+                    }
+                } else {
+                    handleError();
+                }
+            } else {
+                const rutaArchivo = this[formArrayName]
+                    .at(index)
+                    .get(`${filename}${index}`).value;
+                if (rutaArchivo && this.isValidFilePath(rutaArchivo)) {
+                    try {
+                        const response = await firstValueFrom(
+                            this.trabajoDeGradoService.getFile(rutaArchivo)
+                        );
+                        this.downloadFile(response, rutaArchivo, filename);
+                    } catch (error) {
+                        handleError();
+                    }
+                } else {
+                    handleError();
+                }
             }
-        } else {
-            const rutaArchivo = this[formArrayName]
-                .at(index)
-                .get(`${filename}${index}`).value;
-            this.trabajoDeGradoService.getFile(rutaArchivo).subscribe({
-                next: (response: string) =>
-                    this.downloadFile(response, rutaArchivo, filename),
-                error: handleError,
-            });
+        } catch (error) {
+            handleError();
         }
     }
 
@@ -1115,12 +1200,14 @@ export class RespuestaExamenComponent implements OnInit {
         this.router.navigate(['examen-de-valoracion']);
     }
 
-    handlerResponseException(response: any) {
-        if (response.status != 500) return;
-        const mapException = mapResponseException(response.error);
-        mapException.forEach((value, _) => {
-            this.messageService.add(errorMessage(value));
-        });
+    handlerResponseException(response: any): void {
+        if (response.status === 500 || response.status === 409) {
+            const errorMsg =
+                response?.error?.mensaje ||
+                response?.error ||
+                'Error al actualizar los datos en el backend';
+            this.messageService.add(errorMessage(errorMsg));
+        }
     }
 
     isActiveIndex(): Boolean {
