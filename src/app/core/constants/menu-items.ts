@@ -40,6 +40,11 @@ export const menuItems: MenuItem[] = [
                 icon: 'pi pi-fw pi-inbox',
                 routerLink: '/gestionsolicitudes/buzon/nuevas',
             },
+            {
+                label: 'CERTIFICADOS VOTACIÓN',
+                icon: 'pi pi-fw pi-inbox',
+                routerLink: '/certificado-votacion',
+            },
         ],
     },
     {

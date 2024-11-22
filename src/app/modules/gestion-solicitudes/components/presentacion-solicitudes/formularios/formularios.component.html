@@ -218,9 +218,10 @@
     </div>
 
     <!-- Formulario Selección de un tutor -->
-    <ng-container *ngIf="!solicitudEsOtras || radicar.seRequiereTutor">
+    <ng-container *ngIf="(!solicitudEsOtras || radicar.seRequiereTutor) && radicar.tipoSolicitudEscogida.codigoSolicitud !== 'CER_VOTO'">
         <app-listatutores></app-listatutores>
     </ng-container>
+
 
     <!-- Formulario Selección de un Director -->
     <div
