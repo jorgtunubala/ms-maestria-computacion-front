@@ -36,11 +36,20 @@ export class InfopersonalComponent implements OnInit {
             id: [''],
             nombres: [{ value: '', disabled: true }, Validators.required],
             apellidos: [{ value: '', disabled: true }, Validators.required],
-            correo: [{ value: '', disabled: true }, [Validators.required, Validators.email]],
+            correo: [
+                { value: '', disabled: true },
+                [Validators.required, Validators.email],
+            ],
             celular: [{ value: '', disabled: true }, Validators.required],
-            codigoAcademico: [{ value: '', disabled: true }, Validators.required],
+            codigoAcademico: [
+                { value: '', disabled: true },
+                Validators.required,
+            ],
             tipoDocumento: [{ value: '', disabled: true }, Validators.required],
-            numeroDocumento: [{ value: '', disabled: true }, Validators.required],
+            numeroDocumento: [
+                { value: '', disabled: true },
+                Validators.required,
+            ],
         });
 
         // Verificar si ya hay datos en el servicio
@@ -64,23 +73,24 @@ export class InfopersonalComponent implements OnInit {
     obtenerInfoDeSolicitante() {
         this.gestorHttp;
 
-        this.gestorHttp.obtenerInfoPersonalSolicitante(this.auth.getLoggedInUser().email).subscribe((respuesta) => {
-            if (respuesta) {
-                console.log(respuesta.id);
+        this.gestorHttp
+            .obtenerInfoPersonalSolicitante(this.auth.getLoggedInUser().email)
+            .subscribe((respuesta) => {
+                if (respuesta) {
+                    const mappedData = {
+                        id: respuesta.id,
+                        nombres: this.auth.getLoggedInUser().firstName,
+                        apellidos: this.auth.getLoggedInUser().lastName,
+                        correo: this.auth.getLoggedInUser().email,
+                        celular: this.auth.getLoggedInUser().phoneNumber,
+                        codigoAcademico:
+                            this.auth.getLoggedInUser().academicCode,
+                        tipoDocumento: this.auth.getLoggedInUser().idType,
+                        numeroDocumento: this.auth.getLoggedInUser().idNumber,
+                    };
 
-                const mappedData = {
-                    id: respuesta.id,
-                    nombres: this.auth.getLoggedInUser().firstName,
-                    apellidos: this.auth.getLoggedInUser().lastName,
-                    correo: this.auth.getLoggedInUser().email,
-                    celular: this.auth.getLoggedInUser().phoneNumber,
-                    codigoAcademico: this.auth.getLoggedInUser().academicCode,
-                    tipoDocumento: this.auth.getLoggedInUser().idType,
-                    numeroDocumento: this.auth.getLoggedInUser().idNumber,
-                };
-
-                this.formInfoPersonal.patchValue(mappedData);
-            }
-        });
+                    this.formInfoPersonal.patchValue(mappedData);
+                }
+            });
     }
 }

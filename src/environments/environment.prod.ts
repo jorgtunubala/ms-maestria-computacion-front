@@ -19,7 +19,7 @@ export const gestion_solicitudes = {
 
 export const gestion_autenticacion = {
     production: true,
-    api_url: 'https://apptest.unicauca.edu.co:4410',
+    api_url: 'https://apptest.unicauca.edu.co:4410/api/auth/google',
 };
 
 export const gestion_expertos = {
