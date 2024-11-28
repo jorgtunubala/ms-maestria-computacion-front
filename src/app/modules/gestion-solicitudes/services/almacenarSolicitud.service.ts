@@ -31,7 +31,9 @@ export class AlmacenarSolicitudService {
                 observable
                     .pipe(
                         map((respuesta: any) => {
-                            return typeof respuesta === 'string' ? respuesta : JSON.stringify(respuesta);
+                            return typeof respuesta === 'string'
+                                ? respuesta
+                                : JSON.stringify(respuesta);
                         }),
                         catchError((error: any) => {
                             if (error.error.text) {
@@ -52,7 +54,9 @@ export class AlmacenarSolicitudService {
             };
 
             // Función para manejar diferentes tipos de solicitudes
-            const manejarSolicitud = async (reunirDatosFn: () => Promise<any>) => {
+            const manejarSolicitud = async (
+                reunirDatosFn: () => Promise<any>
+            ) => {
                 const datosSolicitud = await reunirDatosFn();
                 const observable = this.http.guardarSolicitud(datosSolicitud);
                 manejarRespuesta(observable);
@@ -78,11 +82,14 @@ export class AlmacenarSolicitudService {
             };
 
             // Obtener el código de solicitud actual
-            const codigoSolicitud = this.radicar.tipoSolicitudEscogida.codigoSolicitud;
+            const codigoSolicitud =
+                this.radicar.tipoSolicitudEscogida.codigoSolicitud;
 
             // Si el código de solicitud existe en el mapa, manejar la solicitud correspondiente
             if (mapaSolicitudes[codigoSolicitud]) {
-                await manejarSolicitud(mapaSolicitudes[codigoSolicitud].bind(this));
+                await manejarSolicitud(
+                    mapaSolicitudes[codigoSolicitud].bind(this)
+                );
             } else {
                 resolver(resultado);
             }
@@ -91,21 +98,24 @@ export class AlmacenarSolicitudService {
 
     // Reúne los datos para una solicitud de adición de asignatura.
     async reunirDatosSolAdicion(): Promise<Modelos.SolicitudSave> {
-        const asignaturasParaAdicionar: InfoAsingAdicionCancelacion[] = this.radicar.datosAsignAdiCancel.map(
-            (item) => ({
+        const asignaturasParaAdicionar: InfoAsingAdicionCancelacion[] =
+            this.radicar.datosAsignAdiCancel.map((item) => ({
                 nombreAsignatura: item.nombreAsignatura,
                 grupo: item.grupoAsignatura,
                 idDocente: item.docente.id,
-            })
-        );
+            }));
 
         return this.construirObjAGuardar('AD_ASIG', asignaturasParaAdicionar);
     }
 
     // Reúne los datos para una solicitud de beca o descuento.
     async reunirDatosSolBecaDescuento(): Promise<Modelos.SolicitudSave> {
-        const tipo = this.radicar.formSolicitudBecaDescuento.get('tipoBeca')?.value || '';
-        const justificacion = this.radicar.formSolicitudBecaDescuento.get('justificacion')?.value || '';
+        const tipo =
+            this.radicar.formSolicitudBecaDescuento.get('tipoBeca')?.value ||
+            '';
+        const justificacion =
+            this.radicar.formSolicitudBecaDescuento.get('justificacion')
+                ?.value || '';
         const documentoAdjunto = this.radicar.documentosAdjuntos[0] || null;
 
         // Convertimos a base64 solo si hay un documento adjunto
@@ -125,17 +135,20 @@ export class AlmacenarSolicitudService {
 
     // Reúne los datos para una solicitud de cancelación de asignatura.
     async reunirDatosSolCancelAsig(): Promise<Modelos.SolicitudSave> {
-        const asignaturas: InfoAsingAdicionCancelacion[] = this.radicar.datosAsignAdiCancel.map((item) => ({
-            nombreAsignatura: item.nombreAsignatura,
-            grupo: item.grupoAsignatura,
-            idDocente: item.docente.id,
-        }));
+        const asignaturas: InfoAsingAdicionCancelacion[] =
+            this.radicar.datosAsignAdiCancel.map((item) => ({
+                nombreAsignatura: item.nombreAsignatura,
+                grupo: item.grupoAsignatura,
+                idDocente: item.docente.id,
+            }));
 
         const infoCancelacion: Modelos.DatosSolicitudCancelacionAsignatura = {
             listaAsignaturas: asignaturas,
             motivo: this.radicar.motivoDeSolicitud,
             documentoAdjunto: this.radicar.documentosAdjuntos[0]
-                ? await this.utilidades.convertirFileABase64(this.radicar.documentosAdjuntos[0])
+                ? await this.utilidades.convertirFileABase64(
+                      this.radicar.documentosAdjuntos[0]
+                  )
                 : null,
         };
 
@@ -152,12 +165,17 @@ export class AlmacenarSolicitudService {
                 nombreAsignatura: asignatura.nombre,
                 numeroCreditos: asignatura.creditos,
                 intensidadHoraria: asignatura.intensidad,
-                contenidoProgramatico: await this.utilidades.convertirFileABase64(asignatura.contenidos),
+                contenidoProgramatico:
+                    await this.utilidades.convertirFileABase64(
+                        asignatura.contenidos
+                    ),
                 codigoAsignatura: asignatura.codigo,
                 grupo: asignatura.grupo,
                 nombreDocente: asignatura.docente,
                 tituloDocente: asignatura.tituloDocente,
-                cartaAceptacion: await this.utilidades.convertirFileABase64(asignatura.cartaAceptacion),
+                cartaAceptacion: await this.utilidades.convertirFileABase64(
+                    asignatura.cartaAceptacion
+                ),
             }))
         );
 
@@ -176,13 +194,20 @@ export class AlmacenarSolicitudService {
 
     // Reúne los datos para una solicitud de aplazamiento de semestre.
     async reunirDatosSolAplazamiento(): Promise<Modelos.SolicitudSave> {
-        const { semestre = '', motivo = '' } = this.radicar.formSemestreAplazar.getRawValue();
+        const { semestre = '', motivo = '' } =
+            this.radicar.formSemestreAplazar.getRawValue();
 
         const documentoAdjunto = this.radicar.documentosAdjuntos[0]
-            ? await this.utilidades.convertirFileABase64(this.radicar.documentosAdjuntos[0])
+            ? await this.utilidades.convertirFileABase64(
+                  this.radicar.documentosAdjuntos[0]
+              )
             : null;
 
-        const datos: Modelos.DatosSolicitudAplazamiento = { semestre, motivo, documentoAdjunto };
+        const datos: Modelos.DatosSolicitudAplazamiento = {
+            semestre,
+            motivo,
+            documentoAdjunto,
+        };
 
         return this.construirObjAGuardar('AP_SEME', datos);
     }
@@ -197,7 +222,8 @@ export class AlmacenarSolicitudService {
             fechaFin: this.formatearDate(this.radicar.fechasEstancia[1]),
             documentosAdjuntos: docsAdjuntos,
             universidadResidencia: this.radicar.UniversidadExternaPasantia,
-            grupoUniversidadResidencia: this.radicar.grupoInvestigacionExternoPanatia,
+            grupoUniversidadResidencia:
+                this.radicar.grupoInvestigacionExternoPanatia,
             nombreDocenteExterno: this.radicar.docenteExternoPas,
         };
 
@@ -223,7 +249,8 @@ export class AlmacenarSolicitudService {
             direccionResidencia: this.radicar.direccion,
             documentosAdjuntos: docsAdjuntos,
             universidadResidencia: this.radicar.UniversidadExternaPasantia,
-            grupoUniversidadResidencia: this.radicar.grupoInvestigacionExternoPanatia,
+            grupoUniversidadResidencia:
+                this.radicar.grupoInvestigacionExternoPanatia,
         };
 
         return this.construirObjAGuardar('AP_ECON_INV', datos);
@@ -311,15 +338,22 @@ export class AlmacenarSolicitudService {
                   {
                       nombreEvento: this.radicar.nombreCongreso,
                       tipoEvento: null,
-                      fechaInicio: this.formatearDate(this.radicar.fechasEstancia[0]),
-                      fechaFin: this.formatearDate(this.radicar.fechasEstancia[1]),
+                      fechaInicio: this.formatearDate(
+                          this.radicar.fechasEstancia[0]
+                      ),
+                      fechaFin: this.formatearDate(
+                          this.radicar.fechasEstancia[1]
+                      ),
                       tituloPublicacion: null,
                       nombreRevista: null,
                       lugarEvento: this.radicar.lugarEstancia,
                   };
 
         // Combina los datos comunes y específicos en un solo objeto
-        const datos: Modelos.DatosApoyoPublicacion = { ...datosComunes, ...datosEspecificos };
+        const datos: Modelos.DatosApoyoPublicacion = {
+            ...datosComunes,
+            ...datosEspecificos,
+        };
 
         // Construye y retorna el objeto de solicitud utilizando 'PA_PUBL_EVE' como identificador de tipo de solicitud
         return this.construirObjAGuardar('PA_PUBL_EVE', datos);
@@ -341,7 +375,8 @@ export class AlmacenarSolicitudService {
     async reunirDatosSolRecCreditosPasantia() {
         const documentos = await Promise.all(
             this.radicar.documentosAdjuntos.map(
-                async (documento: any) => await this.utilidades.convertirFileABase64(documento)
+                async (documento: any) =>
+                    await this.utilidades.convertirFileABase64(documento)
             )
         );
 
@@ -358,20 +393,25 @@ export class AlmacenarSolicitudService {
     // Reúne los datos para una solicitud de aval actividades de practica docente.
     async reunirDatosAvalPractDocente() {
         const datos = await Promise.all(
-            this.radicar.actividadesSeleccionadas.map(async (actividad, index) => {
-                const intensidad = this.radicar.horasIngresadas[index] || 0;
+            this.radicar.actividadesSeleccionadas.map(
+                async (actividad, index) => {
+                    const intensidad = this.radicar.horasIngresadas[index] || 0;
 
-                return {
-                    codigoSubtipo: actividad.codigo,
-                    intensidadHoraria: intensidad,
-                    horasReconocer: this.radicar.horasAsignables[index],
-                    descripcionActividad: this.radicar.descripcionesActividades[index],
-                    documentoAdjunto:
-                        actividad.codigo === 'CUR_COR_SEM'
-                            ? await this.utilidades.convertirFileABase64(this.radicar.documentosAdjuntos[index])
-                            : null,
-                };
-            })
+                    return {
+                        codigoSubtipo: actividad.codigo,
+                        intensidadHoraria: intensidad,
+                        horasReconocer: this.radicar.horasAsignables[index],
+                        descripcionActividad:
+                            this.radicar.descripcionesActividades[index],
+                        documentoAdjunto:
+                            actividad.codigo === 'CUR_COR_SEM'
+                                ? await this.utilidades.convertirFileABase64(
+                                      this.radicar.documentosAdjuntos[index]
+                                  )
+                                : null,
+                    };
+                }
+            )
         );
 
         return this.construirObjAGuardar('AV_COMI_PR', datos);
@@ -379,23 +419,31 @@ export class AlmacenarSolicitudService {
 
     // Reúne los datos para una solicitud de reconocimiento de créditos actividades de practica docente.
     async reunirDatosSolRecCredPracticaDocente() {
-        const datos: Modelos.DatosActividadPracticaDocente[] = await Promise.all(
-            this.radicar.actividadesSeleccionadas.map(async (actividad, index) => {
-                const docsAdjuntos = await Promise.all(
-                    this.radicar.adjuntosDeActividades[index].archivos.map((archivo) =>
-                        this.utilidades.convertirFileABase64(archivo)
-                    )
-                );
+        const datos: Modelos.DatosActividadPracticaDocente[] =
+            await Promise.all(
+                this.radicar.actividadesSeleccionadas.map(
+                    async (actividad, index) => {
+                        const docsAdjuntos = await Promise.all(
+                            this.radicar.adjuntosDeActividades[
+                                index
+                            ].archivos.map((archivo) =>
+                                this.utilidades.convertirFileABase64(archivo)
+                            )
+                        );
 
-                return {
-                    codigoSubtipo: actividad.codigo,
-                    intensidadHoraria: this.radicar.horasIngresadas[index],
-                    horasReconocer: this.radicar.horasAsignables[index],
-                    documentosAdjuntos: docsAdjuntos,
-                    enlacesAdjuntos: this.radicar.adjuntosDeActividades[index].enlaces,
-                };
-            })
-        );
+                        return {
+                            codigoSubtipo: actividad.codigo,
+                            intensidadHoraria:
+                                this.radicar.horasIngresadas[index],
+                            horasReconocer: this.radicar.horasAsignables[index],
+                            documentosAdjuntos: docsAdjuntos,
+                            enlacesAdjuntos:
+                                this.radicar.adjuntosDeActividades[index]
+                                    .enlaces,
+                        };
+                    }
+                )
+            );
 
         console.log(datos);
         return this.construirObjAGuardar('RE_CRED_PR_DOC', datos);
@@ -414,7 +462,10 @@ export class AlmacenarSolicitudService {
                         .convertirFileABase64(contenido)
                         .then((base64String) => base64String?.toString())
                         .catch((error) => {
-                            console.error('Error al convertir a base64:', error);
+                            console.error(
+                                'Error al convertir a base64:',
+                                error
+                            );
                             return null;
                         })
                 );
@@ -423,20 +474,30 @@ export class AlmacenarSolicitudService {
 
         const base64Contents = await Promise.all(conversionesBase64);
 
-        for (let index = 0; index < this.radicar.datosAsignaturasAHomologar.length; index++) {
+        for (
+            let index = 0;
+            index < this.radicar.datosAsignaturasAHomologar.length;
+            index++
+        ) {
             const datos: Modelos.AsignaturaHomologPost = {
-                nombreAsignatura: this.radicar.datosAsignaturasAHomologar[index].asignatura,
-                numeroCreditos: this.radicar.datosAsignaturasAHomologar[index].creditos,
-                intensidadHoraria: this.radicar.datosAsignaturasAHomologar[index].intensidad,
-                calificacion: this.radicar.datosAsignaturasAHomologar[index].calificacion,
+                nombreAsignatura:
+                    this.radicar.datosAsignaturasAHomologar[index].asignatura,
+                numeroCreditos:
+                    this.radicar.datosAsignaturasAHomologar[index].creditos,
+                intensidadHoraria:
+                    this.radicar.datosAsignaturasAHomologar[index].intensidad,
+                calificacion:
+                    this.radicar.datosAsignaturasAHomologar[index].calificacion,
                 contenidoProgramatico: base64Contents[index],
             };
             asignaturasAHomologar.push(datos);
         }
 
         const datosHomologacion: Modelos.FormHomologPost = {
-            programaProcedencia: this.radicar.datosInstitucionHomologar.programa,
-            institucionProcedencia: this.radicar.datosInstitucionHomologar.institucion,
+            programaProcedencia:
+                this.radicar.datosInstitucionHomologar.programa,
+            institucionProcedencia:
+                this.radicar.datosInstitucionHomologar.institucion,
             listaAsignaturas: asignaturasAHomologar,
         };
 
@@ -450,7 +511,10 @@ export class AlmacenarSolicitudService {
         return this.construirObjAGuardar('HO_ASIG', datosSolHomologacion);
     }
 
-    async construirObjAGuardar(tipo: string, infoEspecifica: any): Promise<Modelos.SolicitudSave> {
+    async construirObjAGuardar(
+        tipo: string,
+        infoEspecifica: any
+    ): Promise<Modelos.SolicitudSave> {
         const infoSolicitud: Modelos.SolicitudSave = {
             idTipoSolicitud: this.radicar.tipoSolicitudEscogida.idSolicitud,
             idEstudiante: this.radicar.formInfoPersonal.get('id').value,
@@ -460,23 +524,38 @@ export class AlmacenarSolicitudService {
             datosCancelarAsignatura: tipo === 'CA_ASIG' ? infoEspecifica : null,
             datosAplazarSemestre: tipo === 'AP_SEME' ? infoEspecifica : null,
             datosCursarAsignatura: tipo === 'CU_ASIG' ? infoEspecifica : null,
-            datosAvalPasantiaInv: tipo === 'AV_PASA_INV' ? infoEspecifica : null,
+            datosAvalPasantiaInv:
+                tipo === 'AV_PASA_INV' ? infoEspecifica : null,
             datosApoyoEconomico: tipo === 'AP_ECON_INV' ? infoEspecifica : null,
-            datosReconocimientoCreditos: tipo === 'RE_CRED_PAS' || tipo === 'RE_CRED_PUB' ? infoEspecifica : null,
+            datosReconocimientoCreditos:
+                tipo === 'RE_CRED_PAS' || tipo === 'RE_CRED_PUB'
+                    ? infoEspecifica
+                    : null,
             datosAvalSeminario: tipo === 'AV_SEMI_ACT' ? infoEspecifica : null,
-            datosApoyoEconomicoCongreso: tipo === 'AP_ECON_ASI' ? infoEspecifica : null,
-            datosApoyoEconomicoPublicacion: tipo === 'PA_PUBL_EVE' ? infoEspecifica : null,
-            datosActividadDocenteRequest: tipo === 'RE_CRED_PR_DOC' ? infoEspecifica : null,
+            datosApoyoEconomicoCongreso:
+                tipo === 'AP_ECON_ASI' ? infoEspecifica : null,
+            datosApoyoEconomicoPublicacion:
+                tipo === 'PA_PUBL_EVE' ? infoEspecifica : null,
+            datosActividadDocenteRequest:
+                tipo === 'RE_CRED_PR_DOC' ? infoEspecifica : null,
             datosAvalComite: tipo === 'AV_COMI_PR' ? infoEspecifica : null,
             datosSolicitudBeca: tipo === 'SO_BECA' ? infoEspecifica : null,
             requiereFirmaDirector:
-                tipo === 'AP_ECON_INV' || tipo === 'AP_ECON_ASI' || tipo === 'PA_PUBL_EVE' ? true : false,
+                tipo === 'AP_ECON_INV' ||
+                tipo === 'AP_ECON_ASI' ||
+                tipo === 'PA_PUBL_EVE'
+                    ? true
+                    : false,
             idDirector:
-                tipo === 'AP_ECON_ASI' || tipo === 'AP_ECON_INV' || tipo === 'PA_PUBL_EVE'
+                tipo === 'AP_ECON_ASI' ||
+                tipo === 'AP_ECON_INV' ||
+                tipo === 'PA_PUBL_EVE'
                     ? this.radicar.director.id
                     : null,
             firmaEstudiante: true,
-            oficioPdf: await this.utilidades.convertirFileABase64(this.radicar.oficioDeSolicitud),
+            oficioPdf: await this.utilidades.convertirFileABase64(
+                this.radicar.oficioDeSolicitud
+            ),
             numPaginaTutor: this.radicar.firmaTutorPag,
             numPaginaDirector: this.radicar.firmaDirectorPag,
             posXTutor: this.radicar.firmaTutorX,
@@ -485,18 +564,18 @@ export class AlmacenarSolicitudService {
             posYDirector: this.radicar.firmaDirectorY,
         };
 
-        console.log(infoSolicitud);
         return infoSolicitud;
     }
 
     async convertirDocumentosAdjuntos(): Promise<string[]> {
-        const documentosAdjuntosPromises: Promise<string>[] = this.radicar.documentosAdjuntos.map(async (adjunto) => {
-            if (adjunto instanceof File) {
-                return await this.utilidades.convertirFileABase64(adjunto);
-            } else {
-                return Promise.resolve(null);
-            }
-        });
+        const documentosAdjuntosPromises: Promise<string>[] =
+            this.radicar.documentosAdjuntos.map(async (adjunto) => {
+                if (adjunto instanceof File) {
+                    return await this.utilidades.convertirFileABase64(adjunto);
+                } else {
+                    return Promise.resolve(null);
+                }
+            });
 
         return Promise.all(documentosAdjuntosPromises);
     }
