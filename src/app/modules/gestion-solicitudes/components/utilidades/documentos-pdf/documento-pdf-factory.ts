@@ -20,6 +20,7 @@ import * as StRePa from './rec-cred-pasantia-strategy';
 import * as StRePu from './rec-cred-publicacion-strategy';
 import * as StBeca from './solicitud-becas-strategy';
 import * as StOtra from './otro-tipo-solicitud-strategy';
+import * as StReVo from './certificado-votacion-strategy';
 import { GestorService } from '../../../services/gestor.service';
 
 @Injectable({
@@ -162,6 +163,10 @@ export class DocumentoPDFFactory {
             'respuesta-comite': StOtra.RespuestaSolicitudDeOtroTipo,
         };
 
+        // Estrategias para Solicitud de Certificado de votación
+        this.estrategiasPorSolicitud['CER_VOTO'] = {
+            'carta-solicitud': StReVo.SolicitudRegistroVoto,
+        };
         // Añadir otras solicitudes...
 
         // Inicializar las estrategias para documentos sin código de solicitud
