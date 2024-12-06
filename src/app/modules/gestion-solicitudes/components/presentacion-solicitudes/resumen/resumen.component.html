@@ -8,7 +8,7 @@
 <div class="card">
     <div class="col-12 mb-4">
         <p class="text-xl font-bold mb-0"><i class="pi pi-file mr-2"></i>Final - Resumen de su solicitud</p>
-        <p>Revise, corrija y firme el oficio de la solicitud a enviar</p>
+        <p>Revise y envíe la solicitud</p>
     </div>
 
     <div class="col-12 mt-2">
@@ -21,7 +21,7 @@
         />
     </div>
 
-    <div class="w-full md:w-8 mt-4" style="margin-left: auto; margin-right: auto">
+    <div class="w-full md:w-8 mt-4" style="margin-left: auto; margin-right: auto" *ngIf="!isSolicitudTipoCerVoto()">
         <p-fieldset class="" legend="Firma">
             <div class="grid">
                 <div class="col-12">
@@ -66,7 +66,7 @@
     </div>
 
     <div class="grid grid-nogutter mt-4 justify-content-end">
-        <p-button class="mr-2" label="Atras" (click)="navigateToBack()" icon="pi pi-angle-left"></p-button>
+        <p-button class="mr-2" label="Atrás" (click)="navigateToBack()" icon="pi pi-angle-left"></p-button>
 
         <p-button label="Enviar" (click)="enviarSolicitud()" icon="pi pi-send" iconPos="right"></p-button>
     </div>

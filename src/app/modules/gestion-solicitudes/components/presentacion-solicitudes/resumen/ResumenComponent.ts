@@ -59,7 +59,23 @@ export class ResumenComponent implements OnInit {
         }
     }
 
-    ngOnInit() {}
+    ngOnInit() {
+        this.cargarVistaPreviaPDF(this.codTipoSolicitudEscogida, 'carta-solicitud', true);
+        this.validarTipoSolicitud();
+      }
+
+
+    validarTipoSolicitud() {
+        if (this.radicar.tipoSolicitudEscogida.codigoSolicitud === 'CER_VOTO') {
+          this.mostrarBtnFirmar = false;
+          this.habilitarEnvio = true;
+        }
+    }
+
+    //validación para mostrar no mostrar firme en la interfaz
+    isSolicitudTipoCerVoto(): boolean {
+        return this.radicar.tipoSolicitudEscogida.codigoSolicitud === 'CER_VOTO';
+      }
 
     cargarVistaPreviaPDF(codigoSolicitud: string | null, tipoDocumento: string, agregarMarcaDeAgua: boolean) {
         // Utiliza la fábrica para obtener la estrategia basada en el código de solicitud y tipo de documento
@@ -151,7 +167,7 @@ export class ResumenComponent implements OnInit {
             return;
         }
 
-        if (this.validarFirmaCargada()) {
+        if (this.radicar.tipoSolicitudEscogida.codigoSolicitud === 'CER_VOTO' || this.validarFirmaCargada()) {
             this.guardadoEnProceso = true;
 
             try {

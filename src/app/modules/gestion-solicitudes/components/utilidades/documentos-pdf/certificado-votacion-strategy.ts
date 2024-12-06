@@ -17,16 +17,13 @@ export class SolicitudRegistroVoto implements DocumentoPDFStrategy {
     generarDocumento(marcaDeAgua: boolean): jsPDF {
         const documento = new jsPDF({ format: 'letter' });
         const asunto = `Asunto: Solicitud de Registro de certificado votación\n`;
-        const cuerpoSolicitud = `Reciban un cordial saludo. Comedidamente me dirijo a ustedes con el fin de solicitar la adición de las asignaturas relacionadas a continuación.`;
-        const datosRemitente =`${this.servicioRadicar.formInfoPersonal.get('nombres').value} ${this.servicioRadicar.formInfoPersonal.get('apellidos').value}`;
+        const cuerpoSolicitud = ``;
+        const datosRemitente =`${this.servicioRadicar.formInfoPersonal.get('nombres').value} ${this.servicioRadicar.formInfoPersonal.get('apellidos').value} \nCódigo Academico: ${this.servicioRadicar.formInfoPersonal.get('codigoAcademico').value} \nPrograma: Maestría en computación`;
         
-        let cursorY = this.servicioPDF.agregarContenidoComun(documento, marcaDeAgua);
+        let cursorY = this.servicioPDF.agregarContenidoComun(documento, marcaDeAgua, 'coordinador');
         cursorY = this.servicioPDF.agregarAsuntoYSolicitud(documento, cursorY, asunto, cuerpoSolicitud, marcaDeAgua);
-
+        cursorY = this.servicioPDF.agregarTexto(documento, { text: datosRemitente, startY: cursorY+1, alignment: 'left' });
         const textAdjuntos = `${this.servicioRadicar.obtenerNombreArchivosAdjuntos()}`;
-
-        cursorY = this.servicioPDF.agregarDespedida(documento, cursorY, marcaDeAgua);
-        cursorY = this.servicioPDF.agregarTexto(documento, { text: datosRemitente, startY: cursorY+10, alignment: 'left' });
 
         // Añadir adjuntos
         cursorY = this.servicioPDF.agregarListadoAdjuntos(documento, cursorY, textAdjuntos, marcaDeAgua);

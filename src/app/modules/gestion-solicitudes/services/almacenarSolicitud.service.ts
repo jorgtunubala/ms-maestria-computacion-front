@@ -79,6 +79,7 @@ export class AlmacenarSolicitudService {
                 RE_CRED_PUB: this.reunirDatosSolRecCreditosPublicacion,
                 AV_COMI_PR: this.reunirDatosAvalPractDocente,
                 SO_BECA: this.reunirDatosSolBecaDescuento,
+                CER_VOTO: this.reunirDatosCertificadoVoto,
             };
 
             // Obtener el código de solicitud actual
@@ -153,6 +154,14 @@ export class AlmacenarSolicitudService {
         };
 
         return this.construirObjAGuardar('CA_ASIG', infoCancelacion);
+    }
+
+    // Reúne los datos para una solicitud de certificado de votación.
+    async reunirDatosCertificadoVoto(): Promise<Modelos.SolicitudSave> {
+        let certificado: any;
+        //captura de datos
+        
+        return this.construirObjAGuardar('CER_VOTO', certificado);
     }
 
     // Reúne los datos para una solicitud de cursar asignaturas externas.
@@ -515,10 +524,39 @@ export class AlmacenarSolicitudService {
         tipo: string,
         infoEspecifica: any
     ): Promise<Modelos.SolicitudSave> {
+        let pdfCombinado: File = null;
+        if (tipo === 'CER_VOTO') {
+            // Llama a la función combinarPDFs para combinar el oficio de solicitud con otros PDFs
+            const archivosAdicionales: File[] =
+                this.radicar.documentosAdjuntos || [];
+            pdfCombinado = await this.utilidades.combinarPDFs(
+                this.radicar.oficioDeSolicitud,
+                archivosAdicionales
+            );
+
+            if (pdfCombinado) {
+                // Crear un objeto Blob a partir del PDF combinado
+                const blob = new Blob([await pdfCombinado.arrayBuffer()], {
+                    type: 'application/pdf',
+                });
+
+                // Crear un enlace temporal para descargar el PDF
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'pdf_combinado.pdf'; // Nombre del archivo descargado
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                // Liberar el objeto URL para evitar fugas de memoria
+                URL.revokeObjectURL(url);
+            }
+        }
         const infoSolicitud: Modelos.SolicitudSave = {
             idTipoSolicitud: this.radicar.tipoSolicitudEscogida.idSolicitud,
             idEstudiante: this.radicar.formInfoPersonal.get('id').value,
-            idTutor: this.radicar.tutor.id,
+            idTutor: tipo !== 'CER_VOTO' ? this.radicar.tutor.id : null, // Solo asigna idTutor si el tipo no es CER_VOTO
             datosHomologacion: tipo === 'HO_ASIG' ? infoEspecifica : null,
             datosAdicionAsignatura: tipo === 'AD_ASIG' ? infoEspecifica : null,
             datosCancelarAsignatura: tipo === 'CA_ASIG' ? infoEspecifica : null,
@@ -553,9 +591,12 @@ export class AlmacenarSolicitudService {
                     ? this.radicar.director.id
                     : null,
             firmaEstudiante: true,
-            oficioPdf: await this.utilidades.convertirFileABase64(
-                this.radicar.oficioDeSolicitud
-            ),
+            oficioPdf:
+                tipo === 'CER_VOTO'
+                    ? await this.utilidades.convertirFileABase64(pdfCombinado)
+                    : await this.utilidades.convertirFileABase64(
+                          this.radicar.oficioDeSolicitud
+                      ),
             numPaginaTutor: this.radicar.firmaTutorPag,
             numPaginaDirector: this.radicar.firmaDirectorPag,
             posXTutor: this.radicar.firmaTutorX,
