@@ -1,6 +1,6 @@
 export const environment = {
     production: true,
-    api_url: 'https://apptest.unicauca.edu.co:4413',
+    api_url: 'https://apptest.unicauca.edu.co:4413/api/',
 
     firebaseConfig: {
         apiKey: window['env']?.FIREBASE_API_KEY || '',
@@ -14,7 +14,7 @@ export const environment = {
 
 export const gestion_solicitudes = {
     production: true,
-    api_url: 'https://apptest.unicauca.edu.co:4412',
+    api_url: 'https://apptest.unicauca.edu.co:4412/msmaestriac',
 };
 
 export const gestion_autenticacion = {
