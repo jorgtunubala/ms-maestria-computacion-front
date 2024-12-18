@@ -26,6 +26,11 @@ export const menuItems: MenuItem[] = [
                 routerLink: '/docentes',
             },
             {
+                label: 'EXPERTOS',
+                icon: 'pi pi-user',
+                routerLink:'/expertos',
+            },
+            {
                 label: 'ASIGNATURAS',
                 icon: 'pi pi-fw pi-clone',
                 routerLink: '/gestion-asignaturas',
@@ -40,6 +45,23 @@ export const menuItems: MenuItem[] = [
                 icon: 'pi pi-fw pi-inbox',
                 routerLink: '/gestionsolicitudes/buzon/nuevas',
             },
+            {
+                label:'LÍNEAS INVESTIGACIÓN',
+                icon: 'pi pi-fw pi-clone',
+                items:[
+                    {
+                        label: 'Categorías',
+                        icon: 'pi pi-fw pi-bars',
+                        routerLink:'/gestion-lineas-investigacion/categorias'
+                    },
+                    {
+                        label: 'Lienas de Investigación',
+                        icon: 'pi pi-fw pi-clone',
+                        routerLink:'/gestion-lineas-investigacion/lineas'
+                    }
+                ]
+                // routerLink:'/gestion-lineas-investigacion',
+            }
         ],
     },
     {

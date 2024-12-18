@@ -71,6 +71,37 @@ import { HomeComponent } from './core/components/home/home.component';
                                     './modules/gestion-egresados/gestion-egresados.module'
                                 ).then((m) => m.SeguimientoAEgresadosModule),
                         },
+                        {
+                            path: 'expertos',
+                            loadChildren: () =>
+                                import(
+                                    './modules/gestion-expertos/gestion-expertos.module'
+                                ).then((m) => m.GestionExpertosModule),
+                        },
+                        {
+                            path: 'gestion-lineas-investigacion',
+                            children: [
+                                {
+                                    path: 'lineas',
+                                    loadChildren: () =>
+                                        import(
+                                            './modules/gestion-lineas-investigacion/gestion-linea/gestion-lineas.module'
+                                        ).then(
+                                            (m) =>
+                                                m.GestionLineasInvestigacionModule
+                                        ),
+                                },
+                                {
+                                    path: 'categorias',
+                                    loadChildren: () =>
+                                        import(
+                                            './modules/gestion-lineas-investigacion/gestion-categoria/gestion-categorias.module'
+                                        ).then(
+                                            (m) => m.GestionCategoriasModule
+                                        ),
+                                },
+                            ],
+                        },
                     ],
                 },
 

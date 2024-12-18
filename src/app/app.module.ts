@@ -57,6 +57,7 @@ import { AuthInterceptor } from './shared/config/interceptor';
         HomeComponent,
         BandejaDocentesComponent,
         CargarDocentesComponent,
+
     ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
