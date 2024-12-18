@@ -1,0 +1,27 @@
+<p-table [value]="certificates" styleClass="p-datatable-gridlines" responsiveLayout="scroll">
+    <ng-template pTemplate="caption">Certificados de Votación</ng-template>
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Código Académico</th>
+        <th>ID Certificado</th>
+        <th>Certificado (PDF)</th>
+        <th>Fecha de Entrega</th>
+        <th>Fecha de Revisión</th>
+        <th>Estado</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-certificate>
+      <tr>
+        <td>{{ certificate.academicCode }}</td>
+        <td>{{ certificate.id }}</td>
+        <td>
+          <a [href]="certificate.certificatePdf" target="_blank">Descargar</a>
+        </td>
+        <td>{{ certificate.deliveryDate | date:'short' }}</td>
+        <td>{{ certificate.reviewDate | date:'short' }}</td>
+        <td>{{ certificate.state }}</td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="summary">Descargar todos los certificados PDF</ng-template>
+  </p-table>
+  

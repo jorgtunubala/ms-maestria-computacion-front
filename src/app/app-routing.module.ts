@@ -75,7 +75,7 @@ import { HomeComponent } from './core/components/home/home.component';
                             path: 'certificado-votacion',
                             loadChildren: () =>
                                 import(
-                                    './modules/gestion-certificado-votacion/gestion-certificado-votacion.module'
+                                    './modules/gestion-solicitudes/components/gestion-certificado-votacion/gestion-certificado-votacion.module'
                                 ).then((m) => m.GestionCertificadoVotacionModule),
                         },
                     ],

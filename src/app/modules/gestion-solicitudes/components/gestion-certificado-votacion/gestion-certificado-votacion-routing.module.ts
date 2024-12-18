@@ -1,10 +1,10 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { TramitecertificadoComponent } from './components/tramitecertificado/tramitecertificado.component';
+import { TramiteCertificadoComponent } from './components/tramitecertificado/tramitecertificado.component';
 
 const routes: Routes = [{
   path: '',
-  component: TramitecertificadoComponent
+  component: TramiteCertificadoComponent
   }];
 
 @NgModule({
