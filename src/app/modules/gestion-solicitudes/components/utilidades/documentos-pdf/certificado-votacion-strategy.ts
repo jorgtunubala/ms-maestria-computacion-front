@@ -16,7 +16,7 @@ export class SolicitudRegistroVoto implements DocumentoPDFStrategy {
 
     generarDocumento(marcaDeAgua: boolean): jsPDF {
         const documento = new jsPDF({ format: 'letter' });
-        const asunto = `Asunto: Solicitud de Registro de certificado votación\n`;
+        const asunto = `Asunto: Solicitud Registro certificado de votación`;
         const cuerpoSolicitud = ``;
         const datosRemitente =`${this.servicioRadicar.formInfoPersonal.get('nombres').value} ${this.servicioRadicar.formInfoPersonal.get('apellidos').value} \nCódigo Academico: ${this.servicioRadicar.formInfoPersonal.get('codigoAcademico').value} \nPrograma: Maestría en computación`;
         

@@ -27,6 +27,7 @@ export class HistorialComponent implements OnInit {
         'Rechazada Coordinador': { color: '#AF0000', icon: 'pi pi-ban' },
         'En comité': { color: '#0F2041', icon: 'pi pi-check-circle' },
         'En concejo': { color: '#0F2041', icon: 'pi pi-check-circle' },
+        'Aprobada': { color: '#0F2041', icon: 'pi pi-check-circle' },
         Resuelta: { color: '#0F2041', icon: 'pi pi-check-circle' },
     };
 

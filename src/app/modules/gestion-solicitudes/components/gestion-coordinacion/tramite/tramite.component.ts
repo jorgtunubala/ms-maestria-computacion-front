@@ -80,6 +80,7 @@ export class TramiteComponent implements OnInit {
 
     habilitarRespuestaSolicitantes: boolean = false;
 
+    mostrarBtnAprobar: boolean = false;
     mostrarBtnRechazar: boolean = false;
     mostrarBtnResolver: boolean = false;
 
@@ -112,6 +113,61 @@ export class TramiteComponent implements OnInit {
         this.servicioUtilidades.configurarIdiomaCalendario();
         this.cargarConceptosGuardados();
     }
+
+    isSolicitudTipoCerVoto(): boolean {
+        return this.gestor.solicitudSeleccionada?.codigoSolicitud === 'CER_VOTO';
+    }
+    
+    aprobarSolicitudCerVoto() {
+        this.confirmationService.confirm({
+            message: '¿Está seguro que desea aprobar esta solicitud?',
+            header: 'Confirmar Aprobación',
+            icon: 'pi pi-check-circle',
+            accept: () => {
+                // Hace llamado al servicio HTTP para cambiar el estado
+                this.http.cambiarEstadoSolicitud(
+                    this.gestor.solicitudSeleccionada.idSolicitud,
+                    'Aprobada'
+                ).subscribe(
+                    (response) => {
+                        this.gestor.estadoSolicitud = 'Aprobada';
+                        this.gestor.moverSolicitud(
+                            this.gestor.solicitudSeleccionada, 
+                            'AVALADA',
+                            'APROBADA'
+                        );
+                        
+                        this.confirmationService.confirm({
+                            message: 'La solicitud ha sido aprobado y se ha notificado al solicitante',
+                            header: 'Solicitud Aprobada',
+                            icon: 'pi pi-exclamation-circle',
+                            acceptLabel: 'Aceptar',
+                            rejectVisible: false,
+                            accept: () => {
+                                this.mostrarBtnAprobar = false;
+                                this.mostrarBtnRechazar = false;
+                                this.mostrarBtnResolver = false;
+                            },
+                            reject: () => {
+                                this.mostrarBtnAprobar = false;
+                                this.mostrarBtnRechazar = false;
+                                this.mostrarBtnResolver = false;
+                            },
+                        });
+                    },
+                    (error) => {
+                        // Manejo de error
+                        this.messageService.add({
+                            severity: 'error',
+                            summary: 'Error',
+                            detail: 'No se pudo aprobar la solicitud'
+                        });
+                    }
+                );
+            }
+        });
+    }
+    
 
     cargarConceptosGuardados() {
         this.http.consultarConceptoComite(this.gestor.solicitudSeleccionada.idSolicitud).subscribe(
@@ -244,7 +300,7 @@ export class TramiteComponent implements OnInit {
                 this.http.rechazarSolicitud(detalles).subscribe(
                     (resultado) => {
                         if (resultado) {
-                            this.habilitarComite = false;
+                            this.habilitarComite = false;//
                             this.rechazoEnProceso = false;
                             this.gestor.estadoSolicitud = 'Rechazada';
                             this.gestor.moverSolicitud(this.gestor.solicitudSeleccionada, 'AVALADA', 'RECHAZADA');

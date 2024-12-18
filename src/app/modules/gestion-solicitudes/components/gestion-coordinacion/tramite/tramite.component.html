@@ -18,12 +18,24 @@
                 icon="pi pi-times"
             ></button>
         </ng-container>
-
         <ng-container *ngIf="gestor.estadoSolicitud === 'RECHAZADA'">
             <button pButton pRipple label="Eliminar" icon="pi pi-trash"></button
         ></ng-container>
+        <ng-container *ngIf="gestor.estadoSolicitud !== 'Aprobado' && isSolicitudTipoCerVoto()">
+            <div style="margin-top: 10px;">
+                <button
+                    pButton
+                    pRipple
+                    label="Aprobar solicitud"
+                    class="p-button-success"
+                    icon="pi pi-check"
+                    (click)="aprobarSolicitudCerVoto()"
+                ></button>
+            </div>
+        </ng-container>        
     </div>
-    <div class="col-12">
+
+    <div class="col-12" *ngIf="!isSolicitudTipoCerVoto()">
         <p-accordion>
             <p-accordionTab header="Comité del Programa" *ngIf="habilitarComite">
                 <div style="margin-top: -15px">
