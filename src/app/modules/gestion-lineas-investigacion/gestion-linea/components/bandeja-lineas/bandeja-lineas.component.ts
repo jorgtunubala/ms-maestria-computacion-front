@@ -6,7 +6,7 @@ import { Linea } from '../../models/linea';
 import { LineaService } from '../../services/linea.service';
 import { Categoria } from '../../models/categoria';
 import { CategoriaService } from '../../../gestion-categoria/services/categoria.service';
-import { Mensaje } from 'src/app/core/enums/enums';
+import { Mensaje, TipoRol } from 'src/app/core/enums/enums';
 import { infoMessage } from 'src/app/core/utils/message-util';
 import { Subscription } from 'rxjs';
 
@@ -104,7 +104,7 @@ export class BandejaLineasComponent implements OnInit {
     onDelete(event: any, id: number) {
         this.confirmationService.confirm({
             target: event.target!,
-            message: Mensaje.CONFIRMAR_DESACTIVAR_CATEGORIA,
+            message: TipoRol.CONFIRMAR_DESACTIVAR_CATEGORIA,
             icon: PrimeIcons.EXCLAMATION_TRIANGLE,
             acceptLabel: 'Sí, eliminar',
             rejectLabel: 'No',
@@ -116,7 +116,7 @@ export class BandejaLineasComponent implements OnInit {
         this.lineaService.deleteLinea(id).subscribe({
             next: () => {
                 this.messageService.add(
-                    infoMessage(Mensaje.LINEA_DESACTIVADA_CORRECTAMENTE)
+                    infoMessage(TipoRol.LINEA_DESACTIVADA_CORRECTAMENTE)
                 );
                 this.listLineas();
             },
@@ -126,7 +126,7 @@ export class BandejaLineasComponent implements OnInit {
     cambiarEstado(event: any, linea: Linea, nuevoEstado: string) {
         this.confirmationService.confirm({
             target: event.target,
-            message: Mensaje.ESTADO_LINEA_ACTUALIZADO_CORRECTAMENTE,
+            message: TipoRol.ESTADO_LINEA_ACTUALIZADO_CORRECTAMENTE,
             icon: PrimeIcons.EXCLAMATION_TRIANGLE,
             acceptLabel: 'Si',
             rejectLabel: 'No',

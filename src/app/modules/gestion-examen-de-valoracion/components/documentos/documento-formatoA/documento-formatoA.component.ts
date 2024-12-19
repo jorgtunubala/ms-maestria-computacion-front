@@ -179,7 +179,7 @@ export class DocumentoFormatoAComponent implements OnInit {
         this.formReady.emit(this.formatoAForm);
 
         var assetHeader = new Image();
-        assetHeader.src = 'assets/layout/images/asset-header.jpg';
+        assetHeader.src = 'assets/layout/images/motivoencabezado.png';
         assetHeader.onload = () => {
             this.assetHeader = this.getBase64Image(assetHeader);
         };
@@ -191,7 +191,7 @@ export class DocumentoFormatoAComponent implements OnInit {
         };
 
         var assetCalidad = new Image();
-        assetCalidad.src = 'assets/layout/images/asset-calidad.png';
+        assetCalidad.src = 'assets/layout/images/acreditacion.png';
         assetCalidad.onload = () => {
             this.assetCalidad = this.getBase64Image(assetCalidad);
         };

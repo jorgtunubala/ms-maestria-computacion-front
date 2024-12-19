@@ -1,6 +1,6 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { MessageService } from 'primeng/api';
-import { Mensaje } from 'src/app/core/enums/enums';
+import { Mensaje, TipoRol } from 'src/app/core/enums/enums';
 import { infoMessage, errorMessage } from 'src/app/core/utils/message-util';
 import { ExpertoService } from '../../services/experto.service';
 
@@ -38,12 +38,12 @@ export class CargarExpertosComponent implements OnInit {
     this.loading = true;
     this.expertoService.uploadExpertos(this.file).subscribe({
       next: () => {
-        this.messageService.add(infoMessage(Mensaje.REGISTRO_EXPERTOS_EXITOSO))
+        this.messageService.add(infoMessage(TipoRol.REGISTRO_EXPERTOS_EXITOSO))
         this.onCargaExitosa.emit();
         this.onReset();
       },
       error: () => {
-        this.messageService.add(errorMessage(Mensaje.ERROR_CARGAR_EXPERTOS))
+        this.messageService.add(errorMessage(TipoRol.ERROR_CARGAR_EXPERTOS))
         this.onReset();
       }
     });

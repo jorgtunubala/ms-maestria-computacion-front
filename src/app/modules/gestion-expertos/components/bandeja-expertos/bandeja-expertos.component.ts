@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MessageService, ConfirmationService, PrimeIcons } from 'primeng/api';
 import { BreadcrumbService } from 'src/app/core/components/breadcrumb/app.breadcrumb.service';
-import { Mensaje } from 'src/app/core/enums/enums';
+import { Mensaje, TipoRol } from 'src/app/core/enums/enums';
 import { infoMessage } from 'src/app/core/utils/message-util';
 import { ExpertoService } from '../../services/experto.service';
 import { Experto } from '../../models/experto';
@@ -80,7 +80,7 @@ export class BandejaExpertosComponent implements OnInit {
     }
 
     onDelete(event: any, id: number) {
-        this.confirmAction(event, Mensaje.CONFIRMAR_DESACTIVAR_EXPERTO, () =>
+        this.confirmAction(event, TipoRol.CONFIRMAR_DESACTIVAR_EXPERTO, () =>
             this.deleteExperto(id)
         );
     }
@@ -89,7 +89,7 @@ export class BandejaExpertosComponent implements OnInit {
         this.expertoService.deleteExperto(id).subscribe({
             next: () => {
                 this.messageService.add(
-                    infoMessage(Mensaje.EXPERTO_DESACTIVADO_CORRECTAMENTE)
+                    infoMessage(TipoRol.EXPERTO_DESACTIVADO_CORRECTAMENTE)
                 );
                 this.listExpertos();
             },
@@ -120,7 +120,7 @@ export class BandejaExpertosComponent implements OnInit {
     cambiarEstado(event: any, experto: Experto, nuevoEstado: string) {
         this.confirmAction(
             event,
-            Mensaje.ESTADO_EXPERTO_ACTUALIZADO_CORRECTAMENTE,
+            TipoRol.ESTADO_EXPERTO_ACTUALIZADO_CORRECTAMENTE,
             () => this.cambiarEstadoExperto(experto, nuevoEstado)
         );
     }

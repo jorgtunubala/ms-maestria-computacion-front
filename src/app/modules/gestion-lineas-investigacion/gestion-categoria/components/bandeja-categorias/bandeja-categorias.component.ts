@@ -5,7 +5,7 @@ import { BreadcrumbService } from 'src/app/core/components/breadcrumb/app.breadc
 import { Categoria } from '../../models/categoria';
 import { CategoriaService } from '../../services/categoria.service';
 import { infoMessage } from 'src/app/core/utils/message-util';
-import { Mensaje } from 'src/app/core/enums/enums';
+import { Mensaje, TipoRol } from 'src/app/core/enums/enums';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -89,7 +89,7 @@ export class BandejaCategoriasComponent implements OnInit {
     onDelete(event: any, id: number) {
         this.confirmationService.confirm({
             target: event.target!,
-            message: Mensaje.CONFIRMAR_DESACTIVAR_CATEGORIA,
+            message: TipoRol.CONFIRMAR_DESACTIVAR_CATEGORIA,
             icon: PrimeIcons.EXCLAMATION_TRIANGLE,
             acceptLabel: 'Sí, eliminar',
             rejectLabel: 'No',
@@ -101,7 +101,7 @@ export class BandejaCategoriasComponent implements OnInit {
         this.categoriaService.deleteCategoria(id).subscribe({
             next: () => {
                 this.messageService.add(
-                    infoMessage(Mensaje.CATEGORIA_DESACTIVADA_CORRECTAMENTE)
+                    infoMessage(TipoRol.CATEGORIA_DESACTIVADA_CORRECTAMENTE)
                 );
                 this.listCategorias();
             },
@@ -112,7 +112,7 @@ export class BandejaCategoriasComponent implements OnInit {
     cambiarEstado(event: any, categoria: Categoria, nuevoEstado: string) {
         this.confirmationService.confirm({
             target: event.target,
-            message: Mensaje.ESTADO_CATEGORIA_ACTUALIZADO_CORRECTAMENTE,
+            message: TipoRol.ESTADO_CATEGORIA_ACTUALIZADO_CORRECTAMENTE,
             icon: PrimeIcons.EXCLAMATION_TRIANGLE,
             acceptLabel: 'Si',
             rejectLabel: 'No',
