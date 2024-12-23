@@ -114,10 +114,11 @@ export class TramiteComponent implements OnInit {
         this.cargarConceptosGuardados();
     }
 
+    //valida si la solicitud es certificado de votacion
     isSolicitudTipoCerVoto(): boolean {
         return this.gestor.solicitudSeleccionada?.codigoSolicitud === 'CER_VOTO';
     }
-    
+
     aprobarSolicitudCerVoto() {
         this.confirmationService.confirm({
             message: '¿Está seguro que desea aprobar esta solicitud?',
@@ -136,7 +137,7 @@ export class TramiteComponent implements OnInit {
                             'AVALADA',
                             'APROBADA'
                         );
-                        
+
                         this.confirmationService.confirm({
                             message: 'La solicitud ha sido aprobado y se ha notificado al solicitante',
                             header: 'Solicitud Aprobada',
@@ -311,10 +312,12 @@ export class TramiteComponent implements OnInit {
                                 acceptLabel: 'Aceptar',
                                 rejectVisible: false,
                                 accept: () => {
+                                    this.mostrarBtnAprobar = false;
                                     this.mostrarBtnRechazar = false;
                                     this.mostrarBtnResolver = false;
                                 },
                                 reject: () => {
+                                    this.mostrarBtnAprobar = false;
                                     this.mostrarBtnRechazar = false;
                                     this.mostrarBtnResolver = false;
                                 },
@@ -634,6 +637,7 @@ export class TramiteComponent implements OnInit {
 
         switch (this.gestor.estadoSolicitud) {
             case 'Avalada':
+                this.mostrarBtnAprobar = true;
                 this.mostrarBtnRechazar = true;
                 this.habilitarComite = true;
                 this.habilitarTramiteGenerico = this.gestor.solicitudSeleccionada.codigoSolicitud === 'SO_OTRA';
