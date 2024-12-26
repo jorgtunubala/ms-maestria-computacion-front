@@ -65,6 +65,7 @@ import { ToastModule } from 'primeng/toast';
         HomeComponent,
         BandejaDocentesComponent,
         CargarDocentesComponent,
+
     ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
