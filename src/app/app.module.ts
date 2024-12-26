@@ -30,6 +30,10 @@ import { BandejaDocentesComponent } from './modules/gestion-docentes/components/
 import { CargarDocentesComponent } from './modules/gestion-docentes/components/cargar-docentes/cargar-docentes.component';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { AuthInterceptor } from './shared/config/interceptor';
+import { TableModule } from 'primeng/table';
+import { ButtonModule } from 'primeng/button';
+import { ToastModule } from 'primeng/toast';
+
 @NgModule({
     imports: [
         BrowserModule,
@@ -44,6 +48,10 @@ import { AuthInterceptor } from './shared/config/interceptor';
         PdfViewerModule,
         AngularFireModule.initializeApp(environment.firebaseConfig),
         AngularFireAuthModule,
+        TableModule,
+        ButtonModule,
+        ToastModule,
+        HttpClientModule
     ],
     declarations: [
         AppComponent,
