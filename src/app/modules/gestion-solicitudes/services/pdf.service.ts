@@ -646,7 +646,10 @@ export class PdfService {
             textDestinatario = `${
                 this.servicioGestor.InfoDecano.titulo
             }\n${this.servicioGestor.InfoDecano.nombreCompleto.toUpperCase()}\nPresidente Consejo\nFacultad de Ingeniería Electrónica y Telecomunicaciones\nUniversidad del Cauca\n`;
+        }else if (destinatario === 'coordinador') {
+            textDestinatario = `${""}`;
         }
+
         // Agregar el primer bloque de texto dinámico
         let cursorY = this.agregarTexto(doc, {
             text: textLugarFecha,
@@ -757,6 +760,7 @@ export class PdfService {
                     .value,
             email: this.servicioRadicar.formInfoPersonal.get('correo').value,
             cell: this.servicioRadicar.formInfoPersonal.get('celular').value,
+            code: this.servicioRadicar.formInfoPersonal.get('codigoAcademico').value,
         };
 
         if (this.servicioRadicar.firmaSolicitante) {

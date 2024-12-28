@@ -322,6 +322,9 @@ export class FormulariosComponent implements OnInit {
                     this.formBecaDescuento.validarFormulario() && this.formListaTutores.obtenerEstadoFormulario();
 
                 break;
+                case 'CER_VOTO':
+                    estadoGeneral = true
+                    break;
             case 'SO_OTRA':
                 const esRequeridoTutor = this.radicar.seRequiereTutor;
                 const esRequeridoDirector = this.radicar.seRequieraDirector;
@@ -335,6 +338,7 @@ export class FormulariosComponent implements OnInit {
             default:
                 estadoGeneral = this.formListaTutores.obtenerEstadoFormulario();
                 break;
+
         }
 
         return estadoGeneral;

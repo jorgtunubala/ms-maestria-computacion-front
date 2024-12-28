@@ -101,6 +101,7 @@ export class VisorComponent implements OnInit, OnDestroy {
             case 'En comité':
             case 'En concejo':
             case 'Resuelta':
+            case 'Aprobada':
                 this.mostrarGestor = true;
                 break;
 

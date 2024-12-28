@@ -87,4 +87,19 @@ export enum Rol {
 export enum TipoRol {
     INTERNO = 'Interno',
     EXTERNO = 'Externo',
+
+
+    REGISTRO_EXPERTOS_EXITOSO = 'Expertos cargados exitosamente',
+    ERROR_CARGAR_EXPERTOS = 'Carga de docentes fallida. Verifica los datos e intenta nuevamente',
+    CONFIRMAR_DESACTIVAR_EXPERTO = '¿Está seguro de desactivar este experto?',
+    EXPERTO_DESACTIVADO_CORRECTAMENTE = 'Experto desactivado correctamente',
+    ESTADO_EXPERTO_ACTUALIZADO_CORRECTAMENTE = '¿Está seguro de cambiar el estado del experto?',
+
+    CONFIRMAR_DESACTIVAR_CATEGORIA = '¿Está seguro de desactivar esta categoría?',
+    CATEGORIA_DESACTIVADA_CORRECTAMENTE = 'Categoría desactivada correctamente',
+    ESTADO_CATEGORIA_ACTUALIZADO_CORRECTAMENTE = '¿Está seguro de cambiar el estado de la categoría?',
+
+    CONFIRMAR_DESACTIVAR_LINEA = '¿Está seguro de desactivar esta línea de investigación?',
+    LINEA_DESACTIVADA_CORRECTAMENTE = 'Línea desactivada correctamente',
+    ESTADO_LINEA_ACTUALIZADO_CORRECTAMENTE = '¿Está seguro de cambiar el estado de la línea de investigación?',
 }

@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { PrimeNGConfig } from 'primeng/api';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { PDFDocument } from 'pdf-lib';
+
 
 @Injectable({
     providedIn: 'root',
@@ -125,5 +127,39 @@ export class UtilidadesService {
         return isNaN(numberValue)
             ? '0,00'
             : numberValue.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    // Función para combinar PDFs
+    async combinarPDFs(
+        archivoPrincipal: File,
+        otrosArchivos: File[]
+    ): Promise<File | null> {
+        try {
+            // Leer el archivo principal
+            const principalBytes = await archivoPrincipal.arrayBuffer();
+            const principalPDF = await PDFDocument.load(principalBytes);
+
+            // Iterar sobre los otros archivos y fusionarlos
+            for (const archivo of otrosArchivos) {
+                const archivoBytes = await archivo.arrayBuffer();
+                const otroPDF = await PDFDocument.load(archivoBytes);
+                const paginas = await principalPDF.copyPages(
+                    otroPDF,
+                    otroPDF.getPageIndices()
+                );
+                paginas.forEach((pagina) => principalPDF.addPage(pagina));
+            }
+
+            // Guardar el PDF combinado como un array de bytes
+            const pdfBytes = await principalPDF.save();
+            const nuevoPDF = new File([pdfBytes], 'archivo_combinado.pdf', {
+                type: 'application/pdf',
+            });
+
+            return nuevoPDF;
+        } catch (error) {
+            console.error('Error combinando PDFs:', error);
+            return null;
+        }
     }
 }
