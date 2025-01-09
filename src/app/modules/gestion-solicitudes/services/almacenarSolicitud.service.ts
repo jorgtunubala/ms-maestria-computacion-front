@@ -544,7 +544,7 @@ export class AlmacenarSolicitudService {
                 const url = URL.createObjectURL(blob);
                 const link = document.createElement('a');
                 link.href = url;
-                link.download = 'pdf_combinado.pdf'; // Nombre del archivo descargado
+                link.download = 'certificado-votacion.pdf'; // Nombre del archivo descargado
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
