@@ -20,13 +20,24 @@
       strokeWidth="4"
       animationDuration=".5s">
     </p-progressSpinner>
+    
+    <!-- Selector de período académico -->
+    <p-dropdown
+      [(ngModel)]="selectedPeriod"
+      [options]="academicPeriods"
+      placeholder="Seleccionar Período"
+      [showClear]="true"
+      (onChange)="filterByPeriod()"
+    ></p-dropdown>
+  
+    <!-- Botón de descarga -->
     <p-button 
       icon="pi pi-download" 
       label="Descargar Certificados Aprobados" 
       (onClick)="downloadApprovedCertificates()"
       [disabled]="!hasApprovedCertificates() || downloading">
     </p-button>
-  </div>
+  </div>  
  </div>
 
  <p-table 

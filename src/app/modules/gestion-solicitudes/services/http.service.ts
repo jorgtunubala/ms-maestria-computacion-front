@@ -179,4 +179,5 @@ export class HttpService {
         const url = `${httpConfig.apiUrl}${httpConfig.consultarSiEsDirector}${idSolicitud}/${correo}`;
         return this.http.get<boolean>(url).pipe(catchError(this.manejarError));
     }
+
 }

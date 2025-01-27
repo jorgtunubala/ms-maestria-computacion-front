@@ -26,5 +26,7 @@ export const httpConfig = {
     guardarInfoRolExterno: '/gestion/rol-informacion/guardar',
     consultarSiEsDirector: '/solicitud/requiere-director/',
     obtenerCertificadosVotos: '/gestionSolicitud/obtener-solicitudes-certificado-votacion',
-    descargarCertificadosVotos: '/gestionSolicitud/documentos-certificado-votacion/zip'
+    descargarCertificadosVotos: '/gestionSolicitud/documentos-certificado-votacion/zip',
+    periodosIngreso: '/obtener-estudiantes-periodo-ingreso'
+
 };

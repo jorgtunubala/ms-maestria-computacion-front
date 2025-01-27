@@ -10,6 +10,7 @@ export interface CertificadoVotacion {
   estado: string;
   fecha_creacion: string;
   fecha_modificacion: string;
+  periodoIngreso: string;
 }
 
 export interface DocumentoCertificadoVotacion {
@@ -56,8 +57,9 @@ export class CertificadoVotacionService {
     );
   }
 
-  private handleError(error: any) {
-    console.error('Ocurrió un error:', error);
-    return throwError(() => 'Algo salió mal; por favor, intente nuevamente más tarde.');
-  }
+  obtenerPeriodosAcademicos(): Observable<string[]> {
+    const url = `${httpConfig.apiUrl}${httpConfig.periodosIngreso}`;
+    return this.http.get<string[]>(url).pipe(catchError(this.manejarError));
+  }  
+  
 }
