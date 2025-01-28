@@ -124,6 +124,7 @@ export class TramiteComponent implements OnInit {
             message: '¿Está seguro que desea aprobar esta solicitud?',
             header: 'Confirmar Aprobación',
             icon: 'pi pi-check-circle',
+            acceptLabel: 'Si',
             accept: () => {
                 // Hace llamado al servicio HTTP para cambiar el estado
                 this.http.cambiarEstadoSolicitud(
