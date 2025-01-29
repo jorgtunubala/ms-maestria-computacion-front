@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CertificadoVotacionService, CertificadoVotacion } from '../../services/certificado-votacion.service';
+import { CertificadoVotacionService, CertificadoVotacion, AcademicPeriod } from '../../services/certificado-votacion.service';
 import { MessageService } from 'primeng/api';
 import { saveAs } from 'file-saver';
 
@@ -9,14 +9,17 @@ import { saveAs } from 'file-saver';
   styleUrls: ['./tramitecertificado.component.scss'],
   providers: [MessageService],
 })
+
+
 export class TramiteCertificadoComponent implements OnInit {
   certificates: CertificadoVotacion[] = [];
   filteredCertificates: CertificadoVotacion[] = [];
   academicPeriods: { label: string; value: string }[] = [];
-  selectedPeriod: string | null = null;
+  selectedPeriod: AcademicPeriod | null = null;
   searchTerm: string = '';
   loading: boolean = false;
   downloading: boolean = false;
+  originalPeriodData: any[] = [];
 
   constructor(
     private certificadoService: CertificadoVotacionService,
@@ -55,10 +58,12 @@ export class TramiteCertificadoComponent implements OnInit {
 
   loadAcademicPeriods(): void {
     this.certificadoService.obtenerPeriodosAcademicos().subscribe({
-      next: (response: string[]) => {
-        this.academicPeriods = response.map((periodo) => ({
+      next: (response: any[]) => {
+        this.originalPeriodData = response; // Guardamos la respuesta completa
+        const uniquePeriods = [...new Set(response.map(item => item.fecha_ingreso))].sort();
+        this.academicPeriods = uniquePeriods.map(periodo => ({
           label: periodo,
-          value: periodo,
+          value: periodo
         }));
       },
       error: (error) => {
@@ -66,59 +71,80 @@ export class TramiteCertificadoComponent implements OnInit {
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: 'Error al cargar los períodos académicos',
+          detail: 'Error al cargar los períodos académicos'
         });
-      },
+      }
     });
   }
 
   filterCertificates(): void {
-    this.filteredCertificates = this.certificates.filter((cert) =>
-      cert.id_Estudiante.toString().includes(this.searchTerm)
-    );
-
-    this.filterByPeriod();
-  }
-
-  filterByPeriod(): void {
-    if (!this.selectedPeriod) {
-      this.filteredCertificates = this.certificates;
-      return;
+    let filtered = this.certificates;
+  
+    // Primero aplicamos el filtro por período si hay uno seleccionado
+    if (this.selectedPeriod) {
+      const studentIdsForPeriod = this.originalPeriodData
+        .filter(item => item.fecha_ingreso === this.selectedPeriod?.value)
+        .map(item => item.id);
+  
+      filtered = filtered.filter(cert => 
+        studentIdsForPeriod.includes(cert.id_Estudiante)
+      );
     }
-
-    this.filteredCertificates = this.certificates.filter(
-      (cert) => cert.periodoIngreso === this.selectedPeriod
-    );
-
-    if (this.filteredCertificates.length === 0) {
+  
+    // Luego aplicamos el filtro por término de búsqueda
+    if (this.searchTerm) {
+      filtered = filtered.filter((cert) =>
+        cert.id_Estudiante.toString().includes(this.searchTerm.trim())
+      );
+    }
+  
+    this.filteredCertificates = filtered;
+  
+    if (filtered.length === 0 && (this.searchTerm || this.selectedPeriod)) {
       this.messageService.add({
         severity: 'warn',
         summary: 'Sin resultados',
-        detail: `No se encontraron certificados para el período ${this.selectedPeriod}`,
+        detail: 'No se encontraron certificados con los filtros aplicados'
       });
     }
+  }
+
+  filterByPeriod(): void {
+    this.filterCertificates();
   }
 
   // Descargar certificados aprobados
   downloadApprovedCertificates() {
-    const approvedCerts = this.certificates.filter(
+    // Usamos filteredCertificates para respetar los filtros actuales
+    const approvedCerts = this.filteredCertificates.filter(
       (cert) => cert.estado === 'Aprobada'
     );
+
     if (!approvedCerts.length) {
       this.messageService.add({
         severity: 'warn',
         summary: 'Advertencia',
-        detail: 'No hay certificados aprobados para descargar',
+        detail: this.selectedPeriod 
+          ? `No hay certificados aprobados para el período ${this.selectedPeriod.value}`
+          : 'No hay certificados aprobados para descargar',
       });
       return;
     }
 
-    this.downloading = true; // Activar el indicador de descarga
+    this.downloading = true;
     this.loading = true;
-    this.certificadoService.downloadCertificado().subscribe({
+
+    // Obtenemos los IDs de los certificados aprobados para enviarlos al backend
+    const approvedIds = approvedCerts.map(cert => cert.id_Certificado);
+
+    this.certificadoService.downloadCertificado({
+      period: this.selectedPeriod?.value || null,
+      certificateIds: approvedIds,
+    }).subscribe({
       next: (blob: Blob) => {
         const fecha = new Date().toISOString().split('T')[0];
-        const fileName = `certificados_aprobados_${fecha}.zip`;
+        const periodText = this.selectedPeriod ? `_${this.selectedPeriod.value}` : '';
+        const fileName = `certificados_aprobados${periodText}_${fecha}.zip`;
         saveAs(blob, fileName);
 
         this.messageService.add({
@@ -137,7 +163,7 @@ export class TramiteCertificadoComponent implements OnInit {
       },
       complete: () => {
         this.loading = false;
-        this.downloading = false; // Desactivar el indicador de descarga
+        this.downloading = false;
       },
     });
   }
