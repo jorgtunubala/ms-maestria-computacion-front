@@ -115,11 +115,8 @@ export class TramiteCertificadoComponent implements OnInit {
 
   // Descargar certificados aprobados
   downloadApprovedCertificates() {
-    // Usamos filteredCertificates para respetar los filtros actuales
-    const approvedCerts = this.filteredCertificates.filter(
-      (cert) => cert.estado === 'Aprobada'
-    );
-
+    const approvedCerts = this.filteredCertificates.filter(cert => cert.estado === 'Aprobada');
+  
     if (!approvedCerts.length) {
       this.messageService.add({
         severity: 'warn',
@@ -130,23 +127,35 @@ export class TramiteCertificadoComponent implements OnInit {
       });
       return;
     }
-
+  
     this.downloading = true;
     this.loading = true;
-
-    // Obtenemos los IDs de los certificados aprobados para enviarlos al backend
-    const approvedIds = approvedCerts.map(cert => cert.id_Certificado);
-
+  
+    // Usar el período directamente como viene del selector
+    const period = this.selectedPeriod?.value || null;
+  
+    // Convertir los IDs a números y filtrar los null
+    const approvedIds = approvedCerts
+      .map(cert => cert.id_Certificado)
+      .filter(id => id != null)
+      .map(id => parseInt(id));
+  
     this.certificadoService.downloadCertificado({
-      period: this.selectedPeriod?.value || null,
+      period: period,
       certificateIds: approvedIds,
     }).subscribe({
       next: (blob: Blob) => {
         const fecha = new Date().toISOString().split('T')[0];
-        const periodText = this.selectedPeriod ? `_${this.selectedPeriod.value}` : '';
+        const periodText = period ? `_${period}` : '';
         const fileName = `certificados_aprobados${periodText}_${fecha}.zip`;
-        saveAs(blob, fileName);
-
+        
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        link.click();
+        window.URL.revokeObjectURL(url);
+  
         this.messageService.add({
           severity: 'success',
           summary: 'Éxito',
@@ -158,7 +167,7 @@ export class TramiteCertificadoComponent implements OnInit {
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: 'Error al descargar los certificados',
+          detail: 'Error al descargar los certificados: ' + error.message,
         });
       },
       complete: () => {
