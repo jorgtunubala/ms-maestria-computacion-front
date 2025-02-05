@@ -1,6 +1,6 @@
 export const environment = {
     production: true,
-    api_url: 'https://apptest.unicauca.edu.co:4413',
+    api_url: 'https://apptest.unicauca.edu.co:4413/api/',
 
     firebaseConfig: {
         apiKey: window['env']?.FIREBASE_API_KEY || '',
@@ -14,7 +14,7 @@ export const environment = {
 
 export const gestion_solicitudes = {
     production: true,
-    api_url: 'https://apptest.unicauca.edu.co:4412',
+    api_url: 'https://apptest.unicauca.edu.co:4412/msmaestriac',
 };
 
 export const gestion_autenticacion = {
@@ -24,20 +24,20 @@ export const gestion_autenticacion = {
 
 export const gestion_expertos = {
     production: true,
-    api_url: 'https://apptest.unicauca.edu.co:4402/api/',
+    api_url: 'https://apptest.unicauca.edu.co:4414/api/',
 };
 
 export const gestion_egresados = {
     production: true,
-    api_url: 'https://apptest.unicauca.edu.co:4403/api/',
+    api_url: 'https://apptest.unicauca.edu.co:4417/api/',
 };
 
 export const gestion_trabajo_grado = {
     production: true,
-    api_url: 'https://apptest.unicauca.edu.co:4401/api/',
+    api_url: 'https://apptest.unicauca.edu.co:4419/api/',
 };
 
 export const gestion_docentes_estudiantes = {
     production: true,
-    api_url: 'https://apptest.unicauca.edu.co:4402/api/',
+    api_url: 'https://apptest.unicauca.edu.co:4414/api/',
 };
