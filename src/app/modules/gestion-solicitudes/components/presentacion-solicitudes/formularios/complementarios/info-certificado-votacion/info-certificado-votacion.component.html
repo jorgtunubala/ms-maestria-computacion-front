@@ -1,0 +1,57 @@
+<div class="p-4">
+    <form [formGroup]="formInfoCertificadoVotacion">
+        <div class="grid mt-3 custom-container">
+            <div class="col-12 md:col-8">
+                <span class="p-float-label mt-3">
+                    <p-dropdown 
+                        formControlName="nombreCompleto" 
+                        class="w-full custom-dropdown" 
+                        inputId="nombreCoordinador" 
+                        [options]="tiposSolicitud" 
+                        [autoDisplayFirst]="false" 
+                        [filter]="true" 
+                        [showClear]="true"
+                        [style]="{
+                            'max-width': '100%',
+                            'min-height': '2.5rem'
+                        }"
+                        [panelStyle]="{
+                            'max-height': '250px',
+                            'width': '100%',    
+                            'z-index': '1000',
+                            'overflow-y': 'auto'
+                        }">
+                    </p-dropdown>
+                    <label for="nombreCoordinador">Tipo de Solicitud</label>
+                </span>
+            </div>
+            <div class="col-12 md:col-2">
+                <span class="p-float-label mt-3">
+                    <p-calendar 
+                        formControlName="titulo" 
+                        class="w-full" 
+                        inputId="tituloCoordinador"
+                        [showIcon]="true">
+                    </p-calendar>
+                    <label for="tituloCoordinador">Fecha Académica</label>
+                </span>
+            </div>
+            <div class="col-12 md:col-2">
+                <span class="p-float-label mt-3">
+                    <p-calendar 
+                        formControlName="pronombre" 
+                        class="w-full" 
+                        inputId="pronombre"
+                        [showIcon]="true">
+                    </p-calendar>
+                    <label for="pronombre">Fecha Pronombre</label>
+                </span>
+            </div>
+        </div>
+    </form>
+    <div class="grid grid-nogutter mt-4 justify-content-end gap-1" style="display: flex; align-items: center">
+        <p *ngIf="showWarning" style="color: red; margin-right: auto">Por favor, llene todos los campos.</p>
+        <button type="button" pButton label="Guardar" icon="pi pi-check" (click)="guardarInfo()"></button>
+        <button type="button" pButton label="Cancelar" icon="pi pi-times" (click)="cancelar()"></button>
+    </div>
+</div>

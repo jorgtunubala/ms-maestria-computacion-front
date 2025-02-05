@@ -3,6 +3,8 @@ import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/fo
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import { HttpService } from 'src/app/modules/gestion-solicitudes/services/http.service';
 import { InformacionRoles } from 'src/app/modules/gestion-solicitudes/models/indiceModelos';
+import { catchError, map } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
     selector: 'app-info-certificado-votacion',
@@ -10,41 +12,52 @@ import { InformacionRoles } from 'src/app/modules/gestion-solicitudes/models/ind
     styleUrls: ['./info-certificado-votacion.component.scss'],
 })
 export class InfoCertificadoVotacionComponent implements OnInit {
-    formInfoCoordinador: FormGroup;
-    showWarning: boolean = false; // Flag para mostrar advertencia
-    pronombres: { label: string; value: string }[]; // Cambiado para usar label y value
+    formInfoCertificadoVotacion: FormGroup;
+    showWarning: boolean = false;
+    tiposSolicitud: { label: string; value: string }[] = [];
 
-    constructor(private fb: FormBuilder, private http: HttpService, public ref: DynamicDialogRef) {
-        this.pronombres = [
-            { label: 'Sr.', value: 'sr.' },
-            { label: 'Sra.', value: 'sra.' },
-        ];
-    }
+    constructor(private fb: FormBuilder, private http: HttpService, public ref: DynamicDialogRef) {}
 
     ngOnInit(): void {
-        this.formInfoCoordinador = this.fb.group({
-            nombreCompleto: ['', Validators.required],
+        this.formInfoCertificadoVotacion = this.fb.group({
+            nombreCompleto: ['', Validators.required], // Ahora es tipo solicitud
             titulo: ['', Validators.required],
             pronombre: ['', this.customValidator()],
         });
 
-        // Verificar si ya hay datos en la base de datos
+        this.cargarTiposDeSolicitud(); // Llamada para obtener los tipos de solicitud
+
         this.http.consultarInfoDeRolExterno('coordinador').subscribe(
             (data: InformacionRoles) => {
                 if (data) {
-                    // Si hay datos, los cargamos en el formulario
-                    const formData = {
+                    this.formInfoCertificadoVotacion.patchValue({
                         nombreCompleto: data.nombreCompleto,
                         titulo: data.titulo,
-                        pronombre: data.tratamiento, // Asegurarse de que coincida con los valores 'el' o 'ella'
-                    };
-                    this.formInfoCoordinador.patchValue(formData);
+                        pronombre: data.tratamiento,
+                    });
                 }
             },
             (error) => {
                 console.error('Error al obtener la información del coordinador:', error);
             }
         );
+    }
+
+    cargarTiposDeSolicitud() {
+        this.http.obtenerTiposDeSolicitud().pipe(
+            map((respuesta) => 
+                respuesta.map((solicitud) => ({
+                    label: solicitud.nombreSolicitud,
+                    value: solicitud.codigoSolicitud,
+                }))
+            ),
+            catchError((error) => {
+                console.error('Error al obtener los tipos de solicitud:', error);
+                return of([]);
+            })
+        ).subscribe((tipos) => {
+            this.tiposSolicitud = tipos;
+        });
     }
 
     customValidator() {
@@ -58,22 +71,22 @@ export class InfoCertificadoVotacionComponent implements OnInit {
     }
 
     obtenerEstadoFormulario(): boolean {
-        return this.formInfoCoordinador.valid;
+        return this.formInfoCertificadoVotacion.valid;
     }
 
     guardarInfo() {
-        if (this.formInfoCoordinador.valid) {
+        if (this.formInfoCertificadoVotacion.valid) {
             const infoRoles: InformacionRoles = {
                 cargo: 'Coordinador',
-                nombreCompleto: this.formInfoCoordinador.get('nombreCompleto').value,
-                titulo: this.formInfoCoordinador.get('titulo').value,
-                tratamiento: this.formInfoCoordinador.get('pronombre').value,
+                nombreCompleto: this.formInfoCertificadoVotacion.get('nombreCompleto').value,
+                titulo: this.formInfoCertificadoVotacion.get('titulo').value,
+                tratamiento: this.formInfoCertificadoVotacion.get('pronombre').value,
             };
 
             this.http.guardarInfoDeRolExterno(infoRoles).subscribe(
                 (response) => {
                     console.log('Información guardada correctamente:', response);
-                    this.ref.close(); // Cierra el diálogo
+                    this.ref.close();
                 },
                 (error) => {
                     console.error('Error al guardar la información:', error);
@@ -85,6 +98,6 @@ export class InfoCertificadoVotacionComponent implements OnInit {
     }
 
     cancelar() {
-        this.ref.close(); // Cierra el diálogo sin enviar datos
+        this.ref.close();
     }
 }

@@ -1,0 +1,21 @@
+.custom-container {
+    border: 1px solid #ddd;
+    border-radius: 9px;
+    background-color: #f8f8f8;
+    padding: 50px;
+}
+
+/* Ajuste del dropdown */
+.custom-dropdown .p-dropdown-panel {
+    max-height: 1000px !important; /* Evita que el menú sea demasiado largo */
+    overflow-y: auto !important; /* Agrega scroll si es necesario */
+}
+
+/* Asegurar que el dropdown se muestre correctamente */
+.p-dropdown {
+    width: 100% !important; /* Hacer que el dropdown ocupe todo el ancho disponible */
+}
+
+.p-dropdown-panel {
+    z-index: 1050 !important; /* Asegura que se muestre sobre otros elementos */
+}
