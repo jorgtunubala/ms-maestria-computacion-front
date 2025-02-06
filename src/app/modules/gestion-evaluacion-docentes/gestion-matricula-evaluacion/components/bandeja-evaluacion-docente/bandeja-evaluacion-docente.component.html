@@ -1,0 +1,109 @@
+<p-panel header="Evaluaciones docente">
+    <!-- Botón para agregar evaluación -->
+    <div class="text-right mb-3">
+        <button
+            pButton
+            icon="pi pi-plus"
+            label="Agregar evaluación"
+            (click)="onAddEvaluation()"
+        ></button>
+    </div>
+
+    <!-- Mensaje condicional -->
+    <p-message
+        *ngIf="!hasActiveEvaluations"
+        severity="error"
+        text="No existe una evaluación activa"
+    ></p-message>
+    <p-message
+        *ngIf="hasActiveEvaluations"
+        severity="success"
+        text="Existe una evaluación activa"
+    ></p-message>
+
+    <!-- Tabla de evaluaciones -->
+    <p-table
+        #tableEvaluaciones
+        [value]="evaluaciones"
+        [paginator]="true"
+        [rows]="5"
+        [totalRecords]="totalRecords"
+        [lazy]="true"
+        (onLazyLoad)="loadEvaluations($event)"
+        [style]="{ 'margin-top': '1em' }"
+        [sortField]="'anio'"
+        [sortOrder]="1"
+    >
+        <ng-template pTemplate="header">
+            <tr>
+                <th scope="col">Año <p-sortIcon field="anio"></p-sortIcon></th>
+                <th scope="col" pSortableColumn="anio">
+                    Año <p-sortIcon field="anio"></p-sortIcon>
+                </th>
+                <th scope="col" pSortableColumn="nombre">
+                    Nombre cuestionario <p-sortIcon field="nombre"></p-sortIcon>
+                </th>
+                <th scope="col" pSortableColumn="asignaturasEvaluadas">
+                    Cantidad de asignaturas evaluadas
+                    <p-sortIcon field="asignaturasEvaluadas"></p-sortIcon>
+                </th>
+                <th scope="col" pSortableColumn="estado">
+                    Estado <p-sortIcon field="estado"></p-sortIcon>
+                </th>
+                <th scope="col">Opciones</th>
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-evaluacion>
+            <!-- Aplicar la clase 'active-row' si la evaluación está activa -->
+            <tr [ngClass]="{ 'active-row': evaluacion.estado === 'ACTIVO' }">
+                <td>{{ evaluacion.periodo }}</td>
+                <td>{{ evaluacion.anio }}</td>
+                <td>{{ evaluacion.nombre }}</td>
+                <td>{{ evaluacion.asignaturasEvaluadas }}</td>
+                <td>{{ evaluacion.estado }}</td>
+
+                <!-- Botones para activar/desactivar -->
+                <td>
+                    <button
+                        *ngIf="evaluacion.estado === 'ACTIVO'"
+                        pButton
+                        pTooltip="Desactivar"
+                        icon="pi pi-times"
+                        class="p-button-rounded p-button-text p-button-danger"
+                        (click)="confirmarCambioEstado($event, evaluacion, 'INACTIVO')"
+                    ></button>
+                    <button
+                        *ngIf="evaluacion.estado === 'INACTIVO'"
+                        pButton
+                        pTooltip="Habilitar"
+                        icon="pi pi-check"
+                        class="p-button-rounded p-button-text p-button-success"
+                        (click)="confirmarCambioEstado($event, evaluacion, 'ACTIVO')"
+                    ></button>
+
+                    <!-- Ícono para ver estadísticas -->
+                    <button
+                        pButton
+                        icon="pi pi-chart-bar"
+                        class="p-button-rounded p-button-text"
+                        [routerLink]="[
+                            '/gestion-matricula-evaluacion/estadistica',
+                            evaluacion.id
+                        ]"
+                        pTooltip="Ver estadísticas"
+                    ></button>
+
+                    <!-- Confirmación de cambio de estado (justo debajo del botón) -->
+                    <p-confirmPopup></p-confirmPopup>
+                </td>
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td colspan="6">No se encontraron registros</td>
+            </tr>
+        </ng-template>
+    </p-table>
+</p-panel>
