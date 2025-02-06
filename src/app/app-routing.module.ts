@@ -49,6 +49,43 @@ import { HomeComponent } from './core/components/home/home.component';
                                     './modules/gestion-solicitudes/gestion-solicitudes.module'
                                 ).then((m) => m.GestionSolicitudesModule),
                         },
+                        {
+                            path: 'gestion-evaluacion-docente',
+                            children: [
+                                {
+                                    path: 'preguntas',
+                                    loadChildren: () =>
+                                        import(
+                                            './modules/gestion-evaluacion-docentes/gestion-preguntas/gestion-preguntas.module'
+                                        ).then((m) => m.GestionPreguntasModule),
+                                },
+                                {
+                                    path: 'cuestionarios',
+                                    loadChildren: () =>
+                                        import(
+                                            './modules/gestion-evaluacion-docentes/gestion-cuestionarios/gestion-cuestionarios-routing.module'
+                                        ).then(
+                                            (m) =>
+                                                m.GestionCuestionariosRoutingModule
+                                        ),
+                                },
+                            ],
+                        },
+                        {
+                            path: 'gestion-matricula-evaluacion',
+                            loadChildren: () =>
+                                import(
+                                    './modules/gestion-evaluacion-docentes/gestion-matricula-evaluacion/gestion-evaluacion.module'
+                                ).then((m) => m.GestionEvaluacionModule),
+                        },
+
+                        {
+                            path: 'evaluacion-docente',
+                            loadChildren: () =>
+                                import(
+                                    './modules/gestion-evaluacion-docentes/evaluacion-docente/evaluacion-docente.module'
+                                ).then((m) => m.EvaluacionDocenteModule),
+                        },
                     ],
                 },
                 { path: 'pages/error', component: ErrorComponent },

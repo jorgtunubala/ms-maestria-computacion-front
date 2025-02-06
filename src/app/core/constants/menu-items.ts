@@ -35,11 +35,37 @@ export const menuItems: MenuItem[] = [
                 icon: 'pi pi-fw pi-inbox',
                 routerLink: '/gestionsolicitudes/buzon',
             },
+            {
+                label: 'CUESTIONARIO DE EVALUACIÓN',
+                icon: 'pi pi-fw pi-inbox',
+                items: [
+                    {
+                        label: 'Preguntas Evaluación',
+                        icon: 'pi pi-fw pi-question',
+                        routerLink: '/gestion-evaluacion-docente/preguntas',
+                    },
+                    {
+                        label: 'Cuestionarios de Evaluación',
+                        icon: 'pi pi-fw pi-file',
+                        routerLink: '/gestion-evaluacion-docente/cuestionarios',
+                    },
+                ],
+                // routerLink: '/gestion-evaluaciondocente',
+                
+            },
         ],
     },
     {
         label: 'MATRICULAS',
         icon: 'pi pi-fw pi-id-card',
+        items: [
+            {
+                label: 'Evaluación Docente',
+                icon: 'pi pi-fw pi-id-card',
+                routerLink: '/gestion-matricula-evaluacion',
+            },
+            
+        ],
     },
     {
         label: 'SOLICITUDES',
