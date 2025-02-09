@@ -86,9 +86,9 @@ export class GestionComponent implements OnInit {
                                 command: () => this.openDialog('presidente'),
                             },
                             {
-                                label: 'Habilitar Solicitudes',
+                                label: 'Habilitar registro Certificado votación',
                                 icon: 'pi pi-fw pi-user-edit',
-                                command: () => this.openDialog('tipo solicitud'),
+                                command: () => this.openDialog('certificado votacion'),
                             },
 
                         ],
@@ -125,9 +125,9 @@ export class GestionComponent implements OnInit {
             });
         }
 
-        if (cargo === 'tipo solicitud') {   
+        if (cargo === 'certificado votacion') {   
             ref = this.dialogService.open(InfoCertificadoVotacionComponent, {
-                header: 'Editar fecha de la solicitud',
+                header: 'Editar fecha de registro certificado votación',
                 width: '70%',
             });
         }

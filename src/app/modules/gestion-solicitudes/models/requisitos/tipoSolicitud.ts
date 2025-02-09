@@ -15,8 +15,8 @@ export class TipoSolicitud {
         public idSolicitud: number,
         public codigoSolicitud: string,
         public nombreSolicitud: string,
-        public fechaInicio: Timestamp,
-        public fechaFinal: Timestamp,
+        public fechaInicio: string,
+        public fechaFinal: string,
 
     ) {}
 }

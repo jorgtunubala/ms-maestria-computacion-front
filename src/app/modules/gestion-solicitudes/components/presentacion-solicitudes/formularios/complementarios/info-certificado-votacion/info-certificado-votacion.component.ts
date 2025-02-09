@@ -1,10 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import { HttpService } from 'src/app/modules/gestion-solicitudes/services/http.service';
-import { InformacionRoles } from 'src/app/modules/gestion-solicitudes/models/indiceModelos';
-import { catchError, map } from 'rxjs/operators';
-import { of } from 'rxjs';
 
 @Component({
     selector: 'app-info-certificado-votacion',
@@ -14,82 +11,46 @@ import { of } from 'rxjs';
 export class InfoCertificadoVotacionComponent implements OnInit {
     formInfoCertificadoVotacion: FormGroup;
     showWarning: boolean = false;
-    tiposSolicitud: { label: string; value: string }[] = [];
 
     constructor(private fb: FormBuilder, private http: HttpService, public ref: DynamicDialogRef) {}
 
     ngOnInit(): void {
         this.formInfoCertificadoVotacion = this.fb.group({
-            nombreCompleto: ['', Validators.required], // Ahora es tipo solicitud
+            nombreCompleto: [{ value: 'Registro certificado votación', disabled: true }, Validators.required],
             titulo: ['', Validators.required],
-            pronombre: ['', this.customValidator()],
+            pronombre: ['', Validators.required],
         });
-
-        this.cargarTiposDeSolicitud(); // Llamada para obtener los tipos de solicitud
-
-        this.http.consultarInfoDeRolExterno('coordinador').subscribe(
-            (data: InformacionRoles) => {
-                if (data) {
-                    this.formInfoCertificadoVotacion.patchValue({
-                        nombreCompleto: data.nombreCompleto,
-                        titulo: data.titulo,
-                        pronombre: data.tratamiento,
-                    });
-                }
-            },
-            (error) => {
-                console.error('Error al obtener la información del coordinador:', error);
-            }
-        );
-    }
-
-    cargarTiposDeSolicitud() {
-        this.http.obtenerTiposDeSolicitud().pipe(
-            map((respuesta) => 
-                respuesta.map((solicitud) => ({
-                    label: solicitud.nombreSolicitud,
-                    value: solicitud.codigoSolicitud,
-                }))
-            ),
-            catchError((error) => {
-                console.error('Error al obtener los tipos de solicitud:', error);
-                return of([]);
-            })
-        ).subscribe((tipos) => {
-            this.tiposSolicitud = tipos;
-        });
-    }
-
-    customValidator() {
-        return (control: AbstractControl) => {
-            const tipoSeleccionado: string = control.value;
-            if (!tipoSeleccionado || tipoSeleccionado === '') {
-                return { tipoInvalido: true };
-            }
-            return null;
-        };
-    }
-
-    obtenerEstadoFormulario(): boolean {
-        return this.formInfoCertificadoVotacion.valid;
     }
 
     guardarInfo() {
         if (this.formInfoCertificadoVotacion.valid) {
-            const infoRoles: InformacionRoles = {
-                cargo: 'Coordinador',
-                nombreCompleto: this.formInfoCertificadoVotacion.get('nombreCompleto').value,
-                titulo: this.formInfoCertificadoVotacion.get('titulo').value,
-                tratamiento: this.formInfoCertificadoVotacion.get('pronombre').value,
+            const fechaInicio = this.formInfoCertificadoVotacion.get('titulo').value;
+            const fechaFinal = this.formInfoCertificadoVotacion.get('pronombre').value;
+
+            if (!fechaInicio || !fechaFinal) {
+                this.showWarning = true;
+                return;
+            }
+
+            // Construcción del objeto de la petición con valores fijos
+            const body = {
+                idSolicitud: 32,
+                codigo: "CERT_VOTO",
+                nombre: "Registro de certificado de votación",
+                fechaInicio: fechaInicio.toISOString().split('T')[0],
+                fechaFinal: fechaFinal.toISOString().split('T')[0]
             };
 
-            this.http.guardarInfoDeRolExterno(infoRoles).subscribe(
+            console.log('Body enviado:', body);
+
+            // Enviar la petición al servicio HTTP
+            this.http.guardarFechaSolicitud(body).subscribe(
                 (response) => {
-                    console.log('Información guardada correctamente:', response);
+                    console.log('Fechas actualizadas correctamente:', response);
                     this.ref.close();
                 },
                 (error) => {
-                    console.error('Error al guardar la información:', error);
+                    console.error('Error al actualizar las fechas:', error);
                 }
             );
         } else {

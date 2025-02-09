@@ -46,9 +46,11 @@ export class HttpService {
         );
     }
     
-    guardarFechaSolicitud(objeto: TipoSolicitud): Observable<any> {
+    guardarFechaSolicitud(body: any): Observable<any> {
         const url = `${this.apiUrl}${httpConfig.guardarFechasSolicitudUrl}`;
-        return this.http.post(url, objeto).pipe(catchError(this.manejarError));
+        const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+        return this.http.put(url, body, { headers }).pipe(catchError(this.manejarError));
+
     }
         
 

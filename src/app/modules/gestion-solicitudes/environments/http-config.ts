@@ -10,7 +10,7 @@ export const httpConfig = {
     obtenerTutoresYDirectoresUrl: '/obtenerTutores',
     guardarSolicitudUrl: '/save',
     guardarAvalesSolicitudUrl: '/save/firmas',
-    guardarFechasSolicitudUrl: '/save/fechas',
+    guardarFechasSolicitudUrl: '/update/fechas',
     obtenerListaSolPendientesAvalUrl: '/obtener-solicitudes-pendientes/',
     obtenerInfoSolGuardadaUrl: '/obtener-datos-solicitud/',
     obtenerActividadesPracticaDocente: '/subTiposSolicitud/',
