@@ -30,22 +30,6 @@
                             {{ requisitosSolicitudEscogida.descripcion }}
                         </p>
                     </section>
-                    <!-- Mostrar entrada de fecha para CER_VOTO -->
-                    <section class="mb-3" *ngIf="tipoSolicitudEscogida.codigoSolicitud === 'CER_VOTO'">
-                        <h2 class="font-semibold text-base text-justify">
-                            Configurar fecha límite para la solicitud
-                        </h2>
-                        <p-calendar
-                            [(ngModel)]="fechaLimite"
-                            [showIcon]="true"
-                            placeholder="Seleccione la fecha límite"
-                            [locale]="es"
-                            (onSelect)="validarFechaHabilitada()"
-                        ></p-calendar>
-                        <p *ngIf="!solicitudHabilitada && fechaLimite" class="text-red-500">
-                            La fecha límite ha pasado. Por favor seleccione una fecha futura.
-                        </p>
-                    </section>
                     <section class="mb-3" *ngIf="requisitosSolicitudEscogida.articulo">
                         <p class="text-justify">
                             {{ requisitosSolicitudEscogida.articulo }}
