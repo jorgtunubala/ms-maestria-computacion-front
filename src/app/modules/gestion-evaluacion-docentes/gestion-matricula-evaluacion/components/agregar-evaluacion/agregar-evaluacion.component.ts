@@ -11,9 +11,11 @@ import { MessageService } from 'primeng/api';
 })
 export class AgregarEvaluacionComponent implements OnInit {
     evaluacion: any = {
-        periodo: null,
         anio: null,
+        periodo: null,
         cuestionario: null,
+        fecha_inicio: null,
+        fecha_fin: null
     };
     selectedYear: Date | null = null;
     cuestionarios: any[] = [];
@@ -35,28 +37,21 @@ export class AgregarEvaluacionComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.cuestionarios = [
-            { label: 'Seleccionar cuestionario', value: null },
-        ];
+        this.cuestionarios = [{ label: 'Seleccionar cuestionario', value: null }];
         this.loadCuestionarios();
     }
 
     loadCuestionarios(): void {
-        this.cuestionarioService.listCuestionarios().subscribe(
-            (data: Cuestionario[]) => {
+        this.cuestionarioService.listCuestionarios().subscribe({
+            next: (data: Cuestionario[]) => {
                 this.cuestionarios = data.map((c) => ({
                     label: c.nombre,
                     value: c.id,
                 }));
-                this.cuestionarios.unshift({
-                    label: 'Seleccionar cuestionario',
-                    value: null,
-                });
+                this.cuestionarios.unshift({ label: 'Seleccionar cuestionario', value: null });
             },
-            (error) => {
-                console.error('Error al cargar los cuestionarios', error);
-            }
-        );
+            error: (error) => console.error('Error al cargar los cuestionarios', error)
+        });
     }
 
     onYearSelect(event: Date) {
@@ -72,30 +67,22 @@ export class AgregarEvaluacionComponent implements OnInit {
             return;
         }
 
-        this.matriculaEvaluacionService
-            .obtenerEvaluacionMetadata(anio, periodo)
-            .subscribe(
-                (data) => {
-                    this.mostrarDetalles = true;
-                    this.evaluacionExistente = data.evaluacionActiva || false;
-
-                    this.areasFormacion = data.areasFormacion;
-                    this.cantidadEstudiantesRegistrados =
-                        data.cantidadEstudiantesResgistrados;
-                },
-                (error) => {
-                    console.error(
-                        'Error al obtener los detalles de la evaluación:',
-                        error
-                    );
-                }
-            );
+        this.matriculaEvaluacionService.obtenerEvaluacionMetadata(anio, periodo).subscribe({
+            next: (data) => {
+                this.mostrarDetalles = true;
+                this.evaluacionExistente = data?.evaluacionActiva || false;
+                this.areasFormacion = data?.areasFormacion ?? [];
+                this.cantidadEstudiantesRegistrados = data?.cantidadEstudiantesResgistrados ?? 0;
+            },
+            error: (error) => console.error('Error al obtener los detalles de la evaluación:', error)
+        });
     }
 
     registrarEvaluacion() {
-        const { anio, periodo, cuestionario } = this.evaluacion;
+        const { anio, periodo, cuestionario, fecha_inicio, fecha_fin } = this.evaluacion;
 
-        if (!anio || !periodo || !cuestionario) {
+        // Validación de campos
+        if (!anio || !periodo || !cuestionario || !fecha_inicio || !fecha_fin) {
             this.messageService.add({
                 severity: 'warn',
                 summary: 'Campos incompletos',
@@ -104,27 +91,43 @@ export class AgregarEvaluacionComponent implements OnInit {
             return;
         }
 
+        // Validar que fecha_fin no sea menor que fecha_inicio
+        if (new Date(fecha_fin) < new Date(fecha_inicio)) {
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Error en fechas',
+                detail: 'La fecha de fin no puede ser menor que la fecha de inicio.',
+            });
+            return;
+        }
+
         const body = {
             anio,
             periodo,
             id_cuestionario: cuestionario,
+            fecha_inicio: fecha_inicio.toLocaleDateString('es-ES'),
+            fecha_fin: fecha_fin.toLocaleDateString('es-ES')
         };
 
         this.loading = true;
         this.matriculaEvaluacionService.registrarEvaluacion(body).subscribe({
-            next: () => {
+            next: (response) => {
                 this.messageService.add({
                     severity: 'success',
-                    summary: 'Éxito',
-                    detail: 'La evaluación se registró correctamente.',
+                    summary: 'Evaluación Registrada',
+                    detail: `La evaluación con el cuestionario "${response?.nombreCuestionario}" se registró exitosamente para el año ${response?.anio} y período ${response?.periodo}.`
                 });
             },
             error: (error) => {
                 console.error('Error al registrar la evaluación:', error);
+
+                // 📌 Extraer el mensaje de error si está disponible
+                const errorMessage = error?.error?.message ?? 'Ocurrió un error inesperado.';
+
                 this.messageService.add({
                     severity: 'error',
-                    summary: 'Error',
-                    detail: 'Hubo un problema al registrar la evaluación.',
+                    summary: 'Error al registrar',
+                    detail: errorMessage,
                 });
             },
             complete: () => {

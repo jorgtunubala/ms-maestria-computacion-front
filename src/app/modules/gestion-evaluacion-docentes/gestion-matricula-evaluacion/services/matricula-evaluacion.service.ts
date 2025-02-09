@@ -21,10 +21,17 @@ export class MatriculaEvaluacionService {
         return this.http.get<any>(url, { headers: getHeaders() });
     }
 
-    registrarEvaluacion(body: { anio: number; periodo: number; id_cuestionario: number }): Observable<any> {
+    registrarEvaluacion(body: {
+        anio: number;
+        periodo: number;
+        id_cuestionario: number;
+        fecha_inicio: string;
+        fecha_fin: string;
+    }): Observable<any> {
         const url = backend('evaluacion');
         return this.http.post<any>(url, body, { headers: getHeaders() });
     }
+
 
     actualizarEstadoEvaluacion(id: number, estado: string): Observable<string> {
         const url = backend(`evaluacion/${id}`);
