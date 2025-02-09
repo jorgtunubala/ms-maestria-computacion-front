@@ -7,7 +7,7 @@
       </div>
     </div>
 
-    <!-- Tabla de docentes -->
+    <!-- Tabla con el listado de docentes -->
     <p-table [value]="docentes" class="docentes-table">
       <ng-template pTemplate="header">
         <tr>
@@ -25,10 +25,10 @@
       </ng-template>
     </p-table>
 
-    <!-- Evaluación del docente actual -->
+    <!-- Sección de evaluación del docente seleccionado -->
     <div *ngIf="currentDocente !== null && docentes && docentes[currentDocente]" class="evaluacion-container">
       <div class="card">
-        <!-- Conditional display inside the card -->
+        <!-- Contenido condicional dentro de la tarjeta -->
         <ng-container *ngIf="!docentes[currentDocente]?.completado; else evaluacionCompletada">
           <h3 class="asignatura">Asignatura - {{ docentes[currentDocente]?.asignatura }}</h3>
           <h4 class="docente-evaluar">Docente a evaluar - {{ docentes[currentDocente]?.nombre }}</h4>
@@ -38,9 +38,9 @@
         </ng-template>
       </div>
 
-      <!-- Display questions and "Guardar" button only if evaluation is not completed -->
+      <!-- Mostrar preguntas y botón "Guardar" solo si la evaluación no está completada -->
       <ng-container *ngIf="!docentes[currentDocente]?.completado">
-        <!-- Tabla de preguntas -->
+        <!-- Tabla de criterios de evaluación -->
         <p-table [value]="preguntas" class="evaluacion-table">
           <ng-template pTemplate="header">
             <tr>
@@ -61,12 +61,27 @@
           </ng-template>
         </p-table>
 
-        <div class="flex justify-content-end">
+        <!-- Sección de Observaciones con validación -->
+        <div class="mt-4">
+          <h4 class="text-xl font-medium mb-2">Observación (opcional)</h4>
+          <div class="field w-full">
+            <textarea id="observacion" [(ngModel)]="evaluaciones[currentDocente].observacion"
+              class="w-full min-h-12rem p-3 border-round" rows="5" pInputTextarea maxlength="255"
+              placeholder="Escribe una observación si lo deseas..."></textarea>
+          </div>
+
+          <!-- Contador de caracteres -->
+          <p class="text-right text-sm text-gray-500">
+            {{ evaluaciones[currentDocente].observacion.length }}/255 caracteres
+          </p>
+        </div>
+
+        <!-- Contenedor del botón de guardar -->
+        <div class="flex justify-content-end mt-3">
           <button pButton type="button" label="Guardar" (click)="guardarRespuestas()"
             [disabled]="!allQuestionsAnswered"></button>
         </div>
       </ng-container>
     </div>
-
   </div>
 </p-panel>

@@ -75,16 +75,18 @@ export class EvaluacionDocenteComponent implements OnInit {
   }
 
   inicializarEvaluaciones() {
-    this.evaluaciones = []; 
+    this.evaluaciones = [];
     this.docentes.forEach((docente) => {
       const evaluacion = {
         docente: docente.nombre,
         asignatura: docente.asignatura,
         respuestas: Array(this.preguntas.length).fill(null),
+        observacion: ''
       };
       this.evaluaciones.push(evaluacion);
     });
   }
+
 
   mostrarPrimeroSinEvaluar() {
     const index = this.docentes.findIndex((docente) => !docente.completado);
@@ -103,13 +105,18 @@ export class EvaluacionDocenteComponent implements OnInit {
       return;
     }
 
+    // Validar longitud de la observación antes de enviar
+    const observacion = this.evaluaciones[this.currentDocente].observacion.trim();
+    if (observacion.length > 255) {
+      console.error('La observación supera los 255 caracteres permitidos.');
+      return;
+    }
+
     const respuestas = this.evaluaciones[this.currentDocente].respuestas
       .map((valor, index) => {
         const idPregunta = this.preguntas[index]?.id;
         if (!idPregunta) {
-          console.error(
-            `Error: La pregunta con índice ${index} no tiene un ID válido.`
-          );
+          console.error(`Error: La pregunta con índice ${index} no tiene un ID válido.`);
           return null;
         }
         return { idPregunta: idPregunta, valor };
@@ -120,6 +127,7 @@ export class EvaluacionDocenteComponent implements OnInit {
       idEstudiante: +this.idEstudiante,
       idEvaluacionCursoDocente: this.idEvaluacionCursoActual,
       respuestas,
+      observacion: observacion,
     };
 
     if (!respuestas.length) {
@@ -139,6 +147,8 @@ export class EvaluacionDocenteComponent implements OnInit {
       },
     });
   }
+
+
 
   get docentesEvaluados() {
     return this.docentes.filter((d) => d.completado).length;
