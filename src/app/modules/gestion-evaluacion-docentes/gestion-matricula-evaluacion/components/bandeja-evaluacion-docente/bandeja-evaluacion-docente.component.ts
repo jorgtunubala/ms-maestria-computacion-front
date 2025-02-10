@@ -17,9 +17,9 @@ export class BandejaEvaluacionDocenteComponent implements OnInit {
     constructor(
         private readonly router: Router,
         private readonly matriculaEvaluacionService: MatriculaEvaluacionService,
-        private confirmationService: ConfirmationService,
-        private messageService: MessageService
-    ) { }
+        private readonly confirmationService: ConfirmationService,
+        private readonly messageService: MessageService
+    ) {}
 
     ngOnInit() {
         this.loadEvaluations({ first: 0, rows: 5 });
@@ -32,18 +32,17 @@ export class BandejaEvaluacionDocenteComponent implements OnInit {
             (data: any[]) => {
                 this.evaluaciones = data.map((evaluacion) => ({
                     id: evaluacion.id,
-                    periodo: +evaluacion.periodo, // Convertir a número
-                    anio: +evaluacion.anio, // Convertir a número
-                    nombre: evaluacion.nombreCuestionario || '', // Asegurar string
-                    asignaturasEvaluadas: +evaluacion.cantidadAsignaturas, // Convertir a número
-                    estado: evaluacion.estado || '', // Asegurar string
-                    fechaCreacion: evaluacion.fechaCreacion ? new Date(evaluacion.fechaCreacion) : null,
-                    fechaInicio: evaluacion.fechaInicio ? this.convertirFecha(evaluacion.fechaInicio) : null,
-                    fechaFin: evaluacion.fechaFin ? this.convertirFecha(evaluacion.fechaFin) : null,
+                    periodo: evaluacion.periodo,
+                    anio: evaluacion.anio,
+                    nombre: evaluacion.nombreCuestionario,
+                    asignaturasEvaluadas: evaluacion.cantidadAsignaturas,
+                    estado: evaluacion.estado,
                 }));
 
                 this.totalRecords = this.evaluaciones.length;
-                this.hasActiveEvaluations = this.evaluaciones.some((e) => e.estado === 'ACTIVO');
+                this.hasActiveEvaluations = this.evaluaciones.some(
+                    (e) => e.estado === 'ACTIVO'
+                );
                 this.loading = false;
             },
             () => {
@@ -52,12 +51,16 @@ export class BandejaEvaluacionDocenteComponent implements OnInit {
         );
     }
 
-    convertirFecha(fechaString: string): Date {
-        const partes = fechaString.split('/');
-        return new Date(+partes[2], +partes[1] - 1, +partes[0]); // Formato (YYYY, MM, DD)
-    }
-
     confirmarCambioEstado(event: Event, evaluacion: any, nuevoEstado: string) {
+        if (nuevoEstado === 'ACTIVO' && this.hasActiveEvaluations) {
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Acción no permitida',
+                detail: 'Ya existe una evaluación activa. Desactive la evaluación actual antes de activar otra.',
+            });
+            return;
+        }
+
         const mensaje =
             nuevoEstado === 'ACTIVO'
                 ? '¿Estás seguro de que deseas activar esta evaluación?'
@@ -78,6 +81,7 @@ export class BandejaEvaluacionDocenteComponent implements OnInit {
 
     updateEstado(evaluacion: any, estado: string) {
         this.loading = true;
+
         this.matriculaEvaluacionService
             .actualizarEstadoEvaluacion(evaluacion.id, estado)
             .subscribe(
@@ -87,6 +91,7 @@ export class BandejaEvaluacionDocenteComponent implements OnInit {
                         (e) => e.estado === 'ACTIVO'
                     );
                     this.loading = false;
+
                     this.messageService.add({
                         severity: 'success',
                         summary: 'Éxito',
