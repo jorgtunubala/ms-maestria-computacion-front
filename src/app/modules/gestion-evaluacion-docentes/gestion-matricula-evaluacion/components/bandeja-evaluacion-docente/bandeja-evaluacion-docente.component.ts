@@ -32,23 +32,29 @@ export class BandejaEvaluacionDocenteComponent implements OnInit {
             (data: any[]) => {
                 this.evaluaciones = data.map((evaluacion) => ({
                     id: evaluacion.id,
-                    periodo: evaluacion.periodo,
-                    anio: evaluacion.anio,
-                    nombre: evaluacion.nombreCuestionario,
-                    asignaturasEvaluadas: evaluacion.cantidadAsignaturas,
-                    estado: evaluacion.estado,
+                    periodo: +evaluacion.periodo, // Convertir a número
+                    anio: +evaluacion.anio, // Convertir a número
+                    nombre: evaluacion.nombreCuestionario || '', // Asegurar string
+                    asignaturasEvaluadas: +evaluacion.cantidadAsignaturas, // Convertir a número
+                    estado: evaluacion.estado || '', // Asegurar string
+                    fechaCreacion: evaluacion.fechaCreacion ? new Date(evaluacion.fechaCreacion) : null,
+                    fechaInicio: evaluacion.fechaInicio ? this.convertirFecha(evaluacion.fechaInicio) : null,
+                    fechaFin: evaluacion.fechaFin ? this.convertirFecha(evaluacion.fechaFin) : null,
                 }));
 
                 this.totalRecords = this.evaluaciones.length;
+                this.hasActiveEvaluations = this.evaluaciones.some((e) => e.estado === 'ACTIVO');
                 this.loading = false;
-                this.hasActiveEvaluations = this.evaluaciones.some(
-                    (e) => e.estado === 'ACTIVO'
-                );
             },
             () => {
                 this.loading = false;
             }
         );
+    }
+
+    convertirFecha(fechaString: string): Date {
+        const partes = fechaString.split('/');
+        return new Date(+partes[2], +partes[1] - 1, +partes[0]); // Formato (YYYY, MM, DD)
     }
 
     confirmarCambioEstado(event: Event, evaluacion: any, nuevoEstado: string) {
@@ -99,8 +105,6 @@ export class BandejaEvaluacionDocenteComponent implements OnInit {
     }
 
     onAddEvaluation() {
-        this.router.navigate([
-            '/gestion-matricula-evaluacion/agregar-evaluacion',
-        ]);
+        this.router.navigate(['/gestion-matricula-evaluacion/agregar-evaluacion']);
     }
 }
