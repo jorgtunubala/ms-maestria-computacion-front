@@ -3,6 +3,7 @@ import { MenuItem } from 'primeng/api';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { InfoCoordinadorComponent } from '../../components/presentacion-solicitudes/formularios/complementarios/info-coordinador/info-coordinador.component';
 import { InfoPresidenteConsejoComponent } from '../../components/presentacion-solicitudes/formularios/complementarios/info-presidente-consejo/info-presidente-consejo.component';
+import { InfoCertificadoVotacionComponent} from '../../components/presentacion-solicitudes/formularios/complementarios/info-certificado-votacion/info-certificado-votacion.component';
 
 @Component({
     selector: 'app-gestion',
@@ -84,6 +85,12 @@ export class GestionComponent implements OnInit {
                                 icon: 'pi pi-fw pi-user-edit',
                                 command: () => this.openDialog('presidente'),
                             },
+                            {
+                                label: 'Habilitar registro Certificado votación',
+                                icon: 'pi pi-fw pi-user-edit',
+                                command: () => this.openDialog('certificado votacion'),
+                            },
+
                         ],
                     },
                     {
@@ -114,6 +121,13 @@ export class GestionComponent implements OnInit {
         if (cargo === 'presidente') {
             ref = this.dialogService.open(InfoPresidenteConsejoComponent, {
                 header: 'Editar información del Presidente del Consejo',
+                width: '70%',
+            });
+        }
+
+        if (cargo === 'certificado votacion') {   
+            ref = this.dialogService.open(InfoCertificadoVotacionComponent, {
+                header: 'Editar fecha de registro certificado votación',
                 width: '70%',
             });
         }

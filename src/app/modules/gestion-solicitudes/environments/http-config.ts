@@ -10,6 +10,7 @@ export const httpConfig = {
     obtenerTutoresYDirectoresUrl: '/obtenerTutores',
     guardarSolicitudUrl: '/save',
     guardarAvalesSolicitudUrl: '/save/firmas',
+    guardarFechasSolicitudUrl: '/update/fechas',
     obtenerListaSolPendientesAvalUrl: '/obtener-solicitudes-pendientes/',
     obtenerInfoSolGuardadaUrl: '/obtener-datos-solicitud/',
     obtenerActividadesPracticaDocente: '/subTiposSolicitud/',
@@ -26,5 +27,7 @@ export const httpConfig = {
     guardarInfoRolExterno: '/gestion/rol-informacion/guardar',
     consultarSiEsDirector: '/solicitud/requiere-director/',
     obtenerCertificadosVotos: '/gestionSolicitud/obtener-solicitudes-certificado-votacion',
-    descargarCertificadosVotos: '/gestionSolicitud/documentos-certificado-votacion/zip'
+    descargarCertificadosVotos: '/gestionSolicitud/documentos-certificado-votacion/zip',
+    periodosIngreso: '/obtener-estudiantes-periodo-ingreso'
+
 };

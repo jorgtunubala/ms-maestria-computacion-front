@@ -41,6 +41,7 @@ import { FormulariorechazoComponent } from './components/gestion-coordinacion/co
 import { ApyinscripcionComponent } from './components/presentacion-solicitudes/formularios/complementarios/apyinscripcion/apyinscripcion.component';
 import { InfoCoordinadorComponent } from './components/presentacion-solicitudes/formularios/complementarios/info-coordinador/info-coordinador.component';
 import { InfoPresidenteConsejoComponent } from './components/presentacion-solicitudes/formularios/complementarios/info-presidente-consejo/info-presidente-consejo.component';
+import { InfoCertificadoVotacionComponent } from './components/presentacion-solicitudes/formularios/complementarios/info-certificado-votacion/info-certificado-votacion.component';
 import { RadicadorComponent } from './pages/radicador/radicador.component';
 import { OtrasolicitudComponent } from './components/presentacion-solicitudes/formularios/complementarios/otrasolicitud/otrasolicitud.component';
 
@@ -82,6 +83,7 @@ import { OtrasolicitudComponent } from './components/presentacion-solicitudes/fo
         ApyinscripcionComponent,
         InfoCoordinadorComponent,
         InfoPresidenteConsejoComponent,
+        InfoCertificadoVotacionComponent,
         RadicadorComponent,
         OtrasolicitudComponent,
     ],

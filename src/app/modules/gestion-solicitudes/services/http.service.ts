@@ -18,6 +18,7 @@ import {
     SolicitudEnConcejoResponse,
     EnvioCorreoRequest,
     InformacionRoles,
+    TipoSolicitud,
 } from '../models/indiceModelos';
 import { InfoPersonalResponse } from '../models/solicitante/infoPersonalResponse';
 import { DatosSolicitudRequest } from '../models/solicitudes/datosSolicitudRequest';
@@ -44,6 +45,14 @@ export class HttpService {
             catchError(this.manejarError)
         );
     }
+    
+    guardarFechaSolicitud(body: any): Observable<any> {
+        const url = `${this.apiUrl}${httpConfig.guardarFechasSolicitudUrl}`;
+        const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+        return this.http.put(url, body, { headers }).pipe(catchError(this.manejarError));
+
+    }
+        
 
     obtenerRequisitosDeSolicitud(codigo: string) {
         const url = `${this.apiUrl}${httpConfig.obtenerRequisitosDeSolicitudUrl}${codigo}`;
@@ -179,4 +188,5 @@ export class HttpService {
         const url = `${httpConfig.apiUrl}${httpConfig.consultarSiEsDirector}${idSolicitud}/${correo}`;
         return this.http.get<boolean>(url).pipe(catchError(this.manejarError));
     }
+
 }
