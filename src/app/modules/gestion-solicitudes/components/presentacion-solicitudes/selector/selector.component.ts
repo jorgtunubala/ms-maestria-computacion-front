@@ -44,23 +44,37 @@ export class SelectorComponent implements OnInit {
                         this.tiposDeSolicitud.push(...respuesta.filter(tipo => tipo.codigoSolicitud === "SO_OTRA"));
                         break;
     
-                    case "ROLE_ESTUDIANTE":
-                        const fechaActual = new Date().toISOString().split('T')[0]; // Fecha actual en formato YYYY-MM-DD
-    
-                        // Filtrar solo CER_VOTO si la fecha está dentro del rango permitido
-                        const solicitudesEstudiante = respuesta.filter(tipo => {
-                            if (tipo.codigoSolicitud === "CER_VOTO") {
-                                return fechaActual >= tipo.fechaInicio && fechaActual <= tipo.fechaFinal;
-                            }
-                            return true; // Incluir todas las demás solicitudes
-                        });
-    
-                        this.tiposDeSolicitud.push(...solicitudesEstudiante);
-                        break;
-    
-                    default:
-                        console.warn(`Rol no reconocido: ${rol}`);
-                        break;
+                        case "ROLE_ESTUDIANTE":
+                            // Obtener la fecha desde un servidor en Bogotá
+                            fetch("https://www.timeapi.io/api/Time/current/zone?timeZone=America/Bogota")
+                                .then(response => response.json())
+                                .then(data => {
+                                    let fechaBogota = data.date;
+            
+                                    // Convertir de MM/DD/YYYY a YYYY-MM-DD
+                                    const [month, day, year] = fechaBogota.split("/");
+                                    fechaBogota = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+
+                                    console.log("Fecha oficial de Bogotá:", fechaBogota);
+                                    
+
+                                    const solicitudesEstudiante = respuesta.filter(tipo => {
+                                        if (tipo.codigoSolicitud === "CER_VOTO") {
+                                            return fechaBogota >= tipo.fechaInicio && fechaBogota <= tipo.fechaFinal;
+                                        }
+                                        return true;
+                                    });
+
+                                    // Asignar un nuevo array en lugar de modificar el existente
+                                    this.tiposDeSolicitud = [...this.tiposDeSolicitud, ...solicitudesEstudiante];
+                                })
+                                .catch(error => console.error("Error al obtener la fecha de Bogotá:", error));
+
+                            break;
+                        
+                        default:
+                            console.warn(`Rol no reconocido: ${rol}`);
+                            break;                        
                 }
             });
     
