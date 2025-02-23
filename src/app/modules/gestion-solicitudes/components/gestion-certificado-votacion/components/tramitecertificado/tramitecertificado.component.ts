@@ -10,12 +10,12 @@ import { saveAs } from 'file-saver';
   providers: [MessageService],
 })
 
-
 export class TramiteCertificadoComponent implements OnInit {
   certificates: CertificadoVotacion[] = [];
   filteredCertificates: CertificadoVotacion[] = [];
   academicPeriods: { label: string; value: string }[] = [];
   selectedPeriod: AcademicPeriod | null = null;
+  latestPeriodLabel: string = 'Seleccionar Período';
   searchTerm: string = '';
   loading: boolean = false;
   downloading: boolean = false;
@@ -31,17 +31,23 @@ export class TramiteCertificadoComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadCertificates();
-    this.loadAcademicPeriods();
-  }
-
-  loadCertificates(): void {
+    this.loadCertificates(() => {
+      this.loadAcademicPeriods();
+    });
+  }   
+  
+  loadCertificates(callback?: () => void): void {
     this.loading = true;
     this.certificadoService.obtenerCertificado().subscribe({
       next: (response) => {
         this.certificates = response || [];
-        this.filteredCertificates = this.certificates;
+        this.filteredCertificates = [...this.certificates];
         this.loading = false;
+  
+        // Llamar al callback si existe
+        if (callback) {
+          callback();
+        }
       },
       error: (error) => {
         console.error('Error al cargar certificados:', error);
@@ -54,17 +60,34 @@ export class TramiteCertificadoComponent implements OnInit {
         this.loading = false;
       },
     });
-  }
+  }  
 
   loadAcademicPeriods(): void {
     this.certificadoService.obtenerPeriodosAcademicos().subscribe({
       next: (response: any[]) => {
-        this.originalPeriodData = response; // Guardamos la respuesta completa
-        const uniquePeriods = [...new Set(response.map(item => item.fecha_ingreso))].sort();
+        this.originalPeriodData = response;
+  
+        // Obtener y ordenar períodos de forma descendente
+        const uniquePeriods = [...new Set(response.map(item => item.fecha_ingreso))]
+          .sort((a, b) => b.localeCompare(a));
+  
         this.academicPeriods = uniquePeriods.map(periodo => ({
           label: periodo,
           value: periodo
         }));
+  
+        // Esperar un ciclo de detección de cambios antes de asignar el período
+        if (this.academicPeriods.length > 0) {
+          setTimeout(() => {
+            this.selectedPeriod = { ...this.academicPeriods[0] }; // Copia segura del objeto
+            this.latestPeriodLabel = `${this.selectedPeriod.label}`;
+  
+            // Dispara manualmente el evento de selección para actualizar la vista
+            this.filterByPeriod();
+          }, 0);
+        } else {
+          console.warn("⚠️ No hay períodos académicos disponibles.");
+        }
       },
       error: (error) => {
         console.error('Error al cargar períodos académicos:', error);
@@ -75,7 +98,7 @@ export class TramiteCertificadoComponent implements OnInit {
         });
       }
     });
-  }
+  }  
 
   filterCertificates(): void {
     let filtered = this.certificates;
@@ -114,16 +137,26 @@ export class TramiteCertificadoComponent implements OnInit {
   }
 
   // Descargar certificados aprobados
-  downloadApprovedCertificates() {
+  downloadApprovedCertificates() {  
+    if (!this.selectedPeriod || !this.selectedPeriod.value) {
+      console.warn("⚠️ Intento de descargar sin un período válido.");
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Advertencia',
+        detail: 'No se ha seleccionado un período válido',
+      });
+      return;
+    }
+    
+    this.filterCertificates();
+  
     const approvedCerts = this.filteredCertificates.filter(cert => cert.estado === 'Aprobada');
   
     if (!approvedCerts.length) {
       this.messageService.add({
         severity: 'warn',
         summary: 'Advertencia',
-        detail: this.selectedPeriod 
-          ? `No hay certificados aprobados para el período ${this.selectedPeriod.value}`
-          : 'No hay certificados aprobados para descargar',
+        detail: `No hay certificados aprobados para el período ${this.selectedPeriod.value}`,
       });
       return;
     }
@@ -131,24 +164,20 @@ export class TramiteCertificadoComponent implements OnInit {
     this.downloading = true;
     this.loading = true;
   
-    // Usar el período directamente como viene del selector
-    const period = this.selectedPeriod?.value || null;
-  
-    // Convertir los IDs a números y filtrar los null
+    const period = this.selectedPeriod.value;  
     const approvedIds = approvedCerts
       .map(cert => cert.id_Certificado)
       .filter(id => id != null)
       .map(id => parseInt(id));
-  
+    
     this.certificadoService.downloadCertificado({
       period: period,
       certificateIds: approvedIds,
     }).subscribe({
       next: (blob: Blob) => {
         const fecha = new Date().toISOString().split('T')[0];
-        const periodText = period ? `_${period}` : '';
-        const fileName = `certificados_aprobados${periodText}_${fecha}.zip`;
-        
+        const fileName = `certificados_aprobados_${period}_${fecha}.zip`;
+  
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
@@ -175,5 +204,5 @@ export class TramiteCertificadoComponent implements OnInit {
         this.downloading = false;
       },
     });
-  }
+  }  
 }
