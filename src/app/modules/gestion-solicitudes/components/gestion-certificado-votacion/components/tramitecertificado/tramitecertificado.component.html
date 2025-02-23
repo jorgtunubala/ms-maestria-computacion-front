@@ -42,10 +42,17 @@
  </div>
 
  <p-table 
-   [value]="filteredCertificates" 
-   [loading]="loading"
-   styleClass="p-datatable-gridlines" 
-   responsiveLayout="scroll">
+  [value]="filteredCertificates" 
+  [loading]="loading"
+  styleClass="p-datatable-gridlines" 
+  responsiveLayout="scroll"
+  [paginator]="true" 
+  [rows]="10" 
+  [rowsPerPageOptions]="[5, 10, 20]"
+  [value]="filteredCertificates" 
+  [loading]="loading"
+  styleClass="p-datatable-gridlines" 
+  responsiveLayout="scroll">
    <ng-template pTemplate="caption">
      Certificados de Votación
    </ng-template>
