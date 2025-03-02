@@ -46,21 +46,15 @@ export class SelectorComponent implements OnInit {
     
                         case "ROLE_ESTUDIANTE":
                             // Obtener la fecha desde un servidor en Bogotá
-                            fetch("https://www.timeapi.io/api/Time/current/zone?timeZone=America/Bogota")
-                                .then(response => response.json())
-                                .then(data => {
-                                    let fechaBogota = data.date;
-            
-                                    // Convertir de MM/DD/YYYY a YYYY-MM-DD
-                                    const [month, day, year] = fechaBogota.split("/");
-                                    fechaBogota = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-
-                                    console.log("Fecha oficial de Bogotá:", fechaBogota);
-                                    
-
+                            this.gestorHttp.fechaActual().subscribe(
+                                (fechaBogota) => {
+                                    // Convertir la fecha actual en string 'YYYY-MM-DD'
+                                    const fechaActualString = `${fechaBogota.year}-${fechaBogota.month.toString().padStart(2, '0')}-${fechaBogota.day.toString().padStart(2, '0')}`;
+                        
                                     const solicitudesEstudiante = respuesta.filter(tipo => {
                                         if (tipo.codigoSolicitud === "CER_VOTO") {
-                                            return fechaBogota >= tipo.fechaInicio && fechaBogota <= tipo.fechaFinal;
+
+                                            return fechaActualString >= tipo.fechaInicio && fechaActualString <= tipo.fechaFinal;
                                         }
                                         return true;
                                     });
@@ -68,8 +62,6 @@ export class SelectorComponent implements OnInit {
                                     // Asignar un nuevo array en lugar de modificar el existente
                                     this.tiposDeSolicitud = [...this.tiposDeSolicitud, ...solicitudesEstudiante];
                                 })
-                                .catch(error => console.error("Error al obtener la fecha de Bogotá:", error));
-
                             break;
                         
                         default:

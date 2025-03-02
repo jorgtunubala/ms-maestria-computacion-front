@@ -28,6 +28,6 @@ export const httpConfig = {
     obtenerCertificadosVotos: '/gestionSolicitud/obtener-solicitudes-certificado-votacion',
     descargarCertificadosVotos: '/gestionSolicitud/documentos-certificado-votacion/zip',
     periodosIngreso: '/obtener-estudiantes-periodo-ingreso',
-    guardarFechasSolicitudUrl: '/update/fechas'
-
+    guardarFechasSolicitudUrl: '/update/fechas',
+    fechaActual: '/fechaActual'
 };
