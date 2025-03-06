@@ -50,7 +50,7 @@ export class SelectorComponent implements OnInit {
                                 (fechaBogota) => {
                                     // Convertir la fecha actual en string 'YYYY-MM-DD'
                                     const fechaActualString = `${fechaBogota.year}-${fechaBogota.month.toString().padStart(2, '0')}-${fechaBogota.day.toString().padStart(2, '0')}`;
-                        
+
                                     const solicitudesEstudiante = respuesta.filter(tipo => {
                                         if (tipo.codigoSolicitud === "CER_VOTO") {
 

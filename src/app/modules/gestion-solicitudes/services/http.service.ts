@@ -50,7 +50,6 @@ export class HttpService {
         const url = `${this.apiUrl}${httpConfig.guardarFechasSolicitudUrl}`;
         const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
         return this.http.put(url, body, { headers }).pipe(catchError(this.manejarError));
-
     }    
 
     obtenerRequisitosDeSolicitud(codigo: string) {

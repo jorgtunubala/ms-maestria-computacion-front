@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CertificadoVotacionService, CertificadoVotacion, AcademicPeriod } from '../../services/certificado-votacion.service';
-import { MessageService } from 'primeng/api';
+import { MessageService, ConfirmationService } from 'primeng/api';
 import { saveAs } from 'file-saver';
 
 @Component({
@@ -20,10 +20,12 @@ export class TramiteCertificadoComponent implements OnInit {
   loading: boolean = false;
   downloading: boolean = false;
   originalPeriodData: any[] = [];
+  isUpdating: boolean = false;
 
   constructor(
     private certificadoService: CertificadoVotacionService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private confirmationService: ConfirmationService
   ) {}
 
   hasApprovedCertificates(): boolean {
@@ -31,9 +33,7 @@ export class TramiteCertificadoComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadCertificates(() => {
-      this.loadAcademicPeriods();
-    });
+    this.loadCertificates();
   }   
   
   loadCertificates(callback?: () => void): void {
@@ -59,44 +59,6 @@ export class TramiteCertificadoComponent implements OnInit {
         this.certificates = [];
         this.loading = false;
       },
-    });
-  }  
-
-  loadAcademicPeriods(): void {
-    this.certificadoService.obtenerPeriodosAcademicos().subscribe({
-      next: (response: any[]) => {
-        this.originalPeriodData = response;
-  
-        // Obtener y ordenar períodos de forma descendente
-        const uniquePeriods = [...new Set(response.map(item => item.fecha_ingreso))]
-          .sort((a, b) => b.localeCompare(a));
-  
-        this.academicPeriods = uniquePeriods.map(periodo => ({
-          label: periodo,
-          value: periodo
-        }));
-  
-        // Esperar un ciclo de detección de cambios antes de asignar el período
-        if (this.academicPeriods.length > 0) {
-          setTimeout(() => {
-            this.selectedPeriod = { ...this.academicPeriods[0] }; // Copia segura del objeto
-            this.latestPeriodLabel = `${this.selectedPeriod.label}`;
-  
-            // Dispara manualmente el evento de selección para actualizar la vista
-            this.filterByPeriod();
-          }, 0);
-        } else {
-          console.warn("⚠️ No hay períodos académicos disponibles.");
-        }
-      },
-      error: (error) => {
-        console.error('Error al cargar períodos académicos:', error);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Error al cargar los períodos académicos'
-        });
-      }
     });
   }  
 
@@ -135,6 +97,63 @@ export class TramiteCertificadoComponent implements OnInit {
   filterByPeriod(): void {
     this.filterCertificates();
   }
+  /*
+  descargarcertificados(){      
+    this.filterCertificates();
+  
+    const approvedCerts = this.filteredCertificates.filter(cert => cert.estado === 'Aprobada');
+    const estudianteActivo = this.filteredCertificates.filter(cert => cert.estadoEstudiante === 'ACTIVO');
+
+    if (!approvedCerts.length && estudianteActivo.length) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Advertencia',
+        detail: `No hay certificados aprobados para el período`,
+      });
+      return;
+    }
+  
+    this.downloading = true;
+    this.loading = true;
+  
+    const estado = estudianteActivo
+    const approvedIds = approvedCerts
+    this.certificadoService.downloadCertificado({
+      estado_estudiante: estado,
+      certificateIds: approvedIds, 
+    }).subscribe({
+      next: (blob: Blob) => {
+        const fecha = new Date().toISOString().split('T')[0];
+        const fileName = `certificados_aprobados_${fecha}.zip`;
+  
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        link.click();
+        window.URL.revokeObjectURL(url);
+  
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Éxito',
+          detail: 'Certificados descargados correctamente',
+        });
+      },
+      error: (error) => {
+        console.error('Error al descargar los certificados:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Error al descargar los certificados: ' + error.message,
+        });
+      },
+      complete: () => {
+        this.loading = false;
+        this.downloading = false;
+      },
+    });
+  }
+    */
 
   // Descargar certificados aprobados
   downloadApprovedCertificates() {  
@@ -151,12 +170,13 @@ export class TramiteCertificadoComponent implements OnInit {
     this.filterCertificates();
   
     const approvedCerts = this.filteredCertificates.filter(cert => cert.estado === 'Aprobada');
-  
+    const estudianteActivo = this.filteredCertificates.filter(cert => cert.estadoEstudiante === 'ACTIVO');
+
     if (!approvedCerts.length) {
       this.messageService.add({
         severity: 'warn',
         summary: 'Advertencia',
-        detail: `No hay certificados aprobados para el período ${this.selectedPeriod.value}`,
+        detail: `No hay certificados aprobados para el período`,
       });
       return;
     }
@@ -171,7 +191,7 @@ export class TramiteCertificadoComponent implements OnInit {
       .map(id => parseInt(id));
     
     this.certificadoService.downloadCertificado({
-      period: period,
+      estado_estudiante: period,
       certificateIds: approvedIds,
     }).subscribe({
       next: (blob: Blob) => {
@@ -203,6 +223,63 @@ export class TramiteCertificadoComponent implements OnInit {
         this.loading = false;
         this.downloading = false;
       },
+    });
+  }  
+
+  expireCertificates(): void {
+    if (this.isUpdating) return; // Evitar ejecuciones repetidas
+    this.isUpdating = true;
+  
+    if (this.filteredCertificates.length === 0) {
+      this.messageService.add({ severity: 'warn', summary: 'Atención', detail: 'No hay certificados para vencer.' });
+      this.isUpdating = false;
+      return;
+    }
+  
+    // Solo necesitamos hacer una llamada ya que vencemos todos los certificados
+    const body = { codigo: '32', estado: 'vencido' };
+  
+    this.certificadoService.actualizarEstadoSolicitud(body).subscribe({
+      next: (response) => {
+        this.messageService.add({ 
+          severity: 'success', 
+          summary: 'Éxito', 
+          detail: 'Todos los certificados han sido vencidos correctamente' 
+        });
+        
+        // Actualizar la lista después de la operación exitosa
+        this.loadCertificates(() => {
+          this.filterCertificates(); // Aplicar filtros nuevamente
+        });
+      },
+      error: (error) => {
+        console.error('Error al vencer los certificados:', error);
+        this.messageService.add({ 
+          severity: 'error', 
+          summary: 'Error', 
+          detail: 'Error al vencer los certificados: ' + error.message 
+        });
+      },
+      complete: () => {
+        this.isUpdating = false;
+      }
+    });
+  }
+
+  confirmExpireCertificates(): void {
+    console.log("Se ejecuta confirmExpireCertificates");
+    this.confirmationService.confirm({
+      message: '<div style="white-space: pre-line">¿Estás seguro de que deseas vencer TODOS los certificados?<br><br>Esta acción no se puede revertir y los estudiantes con los certificados aprobados tendrán que enviar nuevamente la solicitud</div>',
+      header: 'Confirmación',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Si',
+      accept: () => {
+        console.log("Se aceptó la confirmación");
+        this.expireCertificates();
+      },
+      reject: () => {
+        console.log("Se rechazó la confirmación");
+      }
     });
   }  
 }
