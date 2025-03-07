@@ -227,12 +227,14 @@ export class TramiteCertificadoComponent implements OnInit {
   }  
 
   expireCertificates(): void {
-    if (this.isUpdating) return; // Evitar ejecuciones repetidas
+    if (this.isUpdating) return;
     this.isUpdating = true;
-  
+    this.loading = true;
+
     if (this.filteredCertificates.length === 0) {
       this.messageService.add({ severity: 'warn', summary: 'Atención', detail: 'No hay certificados para vencer.' });
       this.isUpdating = false;
+      this.loading = false;
       return;
     }
   
@@ -241,16 +243,16 @@ export class TramiteCertificadoComponent implements OnInit {
   
     this.certificadoService.actualizarEstadoSolicitud(body).subscribe({
       next: (response) => {
-        this.messageService.add({ 
-          severity: 'success', 
-          summary: 'Éxito', 
-          detail: 'Todos los certificados han sido vencidos correctamente' 
-        });
-        
         // Actualizar la lista después de la operación exitosa
         this.loadCertificates(() => {
           this.filterCertificates(); // Aplicar filtros nuevamente
-        });
+        
+          this.messageService.add({ 
+            severity: 'success', 
+            summary: 'Éxito', 
+            detail: 'Todos los certificados han sido vencidos correctamente' 
+          });
+        });  
       },
       error: (error) => {
         console.error('Error al vencer los certificados:', error);
@@ -259,8 +261,7 @@ export class TramiteCertificadoComponent implements OnInit {
           summary: 'Error', 
           detail: 'Error al vencer los certificados: ' + error.message 
         });
-      },
-      complete: () => {
+        this.loading = false;
         this.isUpdating = false;
       }
     });
