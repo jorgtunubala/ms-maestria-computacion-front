@@ -18,7 +18,7 @@ export class TramiteCertificadoComponent implements OnInit {
   latestPeriodLabel: string = 'Seleccionar Período';
   searchTerm: string = '';
   loading: boolean = false;
-  downloading: boolean = false;
+  downloading: boolean;
   originalPeriodData: any[] = [];
   isUpdating: boolean = false;
 
@@ -97,18 +97,18 @@ export class TramiteCertificadoComponent implements OnInit {
   filterByPeriod(): void {
     this.filterCertificates();
   }
-  /*
+  
   descargarcertificados(){      
     this.filterCertificates();
   
-    const approvedCerts = this.filteredCertificates.filter(cert => cert.estado === 'Aprobada');
-    const estudianteActivo = this.filteredCertificates.filter(cert => cert.estadoEstudiante === 'ACTIVO');
+    const certificadosAprobados = this.filteredCertificates.filter(cert => cert.estado === 'Aprobada');
+    const estudiantesActivos = this.filteredCertificates.filter(cert => cert.estadoEstudiante === 'ACTIVO');
 
-    if (!approvedCerts.length && estudianteActivo.length) {
+    if (!certificadosAprobados.length || estudiantesActivos.length) {
       this.messageService.add({
         severity: 'warn',
         summary: 'Advertencia',
-        detail: `No hay certificados aprobados para el período`,
+        detail: `No hay certificados aprobados y/o estudiantes activos`,
       });
       return;
     }
@@ -116,11 +116,9 @@ export class TramiteCertificadoComponent implements OnInit {
     this.downloading = true;
     this.loading = true;
   
-    const estado = estudianteActivo
-    const approvedIds = approvedCerts
     this.certificadoService.downloadCertificado({
-      estado_estudiante: estado,
-      certificateIds: approvedIds, 
+      estado_solicitud: 'Aprobada', 
+      estado_estudiante: 'ACTIVO'
     }).subscribe({
       next: (blob: Blob) => {
         const fecha = new Date().toISOString().split('T')[0];
@@ -153,79 +151,7 @@ export class TramiteCertificadoComponent implements OnInit {
       },
     });
   }
-    */
-
-  // Descargar certificados aprobados
-  downloadApprovedCertificates() {  
-    if (!this.selectedPeriod || !this.selectedPeriod.value) {
-      console.warn("⚠️ Intento de descargar sin un período válido.");
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'Advertencia',
-        detail: 'No se ha seleccionado un período válido',
-      });
-      return;
-    }
     
-    this.filterCertificates();
-  
-    const approvedCerts = this.filteredCertificates.filter(cert => cert.estado === 'Aprobada');
-    const estudianteActivo = this.filteredCertificates.filter(cert => cert.estadoEstudiante === 'ACTIVO');
-
-    if (!approvedCerts.length) {
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'Advertencia',
-        detail: `No hay certificados aprobados para el período`,
-      });
-      return;
-    }
-  
-    this.downloading = true;
-    this.loading = true;
-  
-    const period = this.selectedPeriod.value;  
-    const approvedIds = approvedCerts
-      .map(cert => cert.id_Certificado)
-      .filter(id => id != null)
-      .map(id => parseInt(id));
-    
-    this.certificadoService.downloadCertificado({
-      estado_estudiante: period,
-      certificateIds: approvedIds,
-    }).subscribe({
-      next: (blob: Blob) => {
-        const fecha = new Date().toISOString().split('T')[0];
-        const fileName = `certificados_aprobados_${period}_${fecha}.zip`;
-  
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = fileName;
-        link.click();
-        window.URL.revokeObjectURL(url);
-  
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Éxito',
-          detail: 'Certificados descargados correctamente',
-        });
-      },
-      error: (error) => {
-        console.error('Error al descargar los certificados:', error);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Error al descargar los certificados: ' + error.message,
-        });
-      },
-      complete: () => {
-        this.loading = false;
-        this.downloading = false;
-      },
-    });
-  }  
-
   expireCertificates(): void {
     if (this.isUpdating) return;
     this.isUpdating = true;
@@ -268,19 +194,14 @@ export class TramiteCertificadoComponent implements OnInit {
   }
 
   confirmExpireCertificates(): void {
-    console.log("Se ejecuta confirmExpireCertificates");
     this.confirmationService.confirm({
       message: '<div style="white-space: pre-line">¿Estás seguro de que deseas vencer TODOS los certificados?<br><br>Esta acción no se puede revertir y los estudiantes con los certificados aprobados tendrán que enviar nuevamente la solicitud</div>',
       header: 'Confirmación',
       icon: 'pi pi-exclamation-triangle',
       acceptLabel: 'Si',
       accept: () => {
-        console.log("Se aceptó la confirmación");
         this.expireCertificates();
       },
-      reject: () => {
-        console.log("Se rechazó la confirmación");
-      }
     });
   }  
 }
