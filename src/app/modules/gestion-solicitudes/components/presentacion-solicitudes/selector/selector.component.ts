@@ -15,6 +15,7 @@ export class SelectorComponent implements OnInit {
     tiposDeSolicitud: TipoSolicitud[];
     tipoSolicitudEscogida: TipoSolicitud;
     requisitosSolicitudEscogida: RequisitosSolicitud;
+    carga: boolean = false;
 
     constructor(public radicar: RadicarService, private gestorHttp: HttpService, 
         private autenticacionService: AutenticacionService) {}
@@ -45,6 +46,7 @@ export class SelectorComponent implements OnInit {
                         break;
     
                         case "ROLE_ESTUDIANTE":
+                            this.carga = true;
                             // Obtener la fecha desde un servidor en Bogotá
                             this.gestorHttp.fechaActual().subscribe(
                                 (fechaBogota) => {
@@ -61,7 +63,10 @@ export class SelectorComponent implements OnInit {
 
                                     // Asignar un nuevo array en lugar de modificar el existente
                                     this.tiposDeSolicitud = [...this.tiposDeSolicitud, ...solicitudesEstudiante];
-                                })
+                                    this.carga = false;
+                                },
+                                () => { this.carga = false; }
+                            );
                             break;
                         
                         default:
