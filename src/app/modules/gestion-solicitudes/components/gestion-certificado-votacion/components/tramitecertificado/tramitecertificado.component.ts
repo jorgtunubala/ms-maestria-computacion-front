@@ -13,13 +13,9 @@ import { saveAs } from 'file-saver';
 export class TramiteCertificadoComponent implements OnInit {
   certificates: CertificadoVotacion[] = [];
   filteredCertificates: CertificadoVotacion[] = [];
-  academicPeriods: { label: string; value: string }[] = [];
-  selectedPeriod: AcademicPeriod | null = null;
-  latestPeriodLabel: string = 'Seleccionar Período';
   searchTerm: string = '';
   loading: boolean = false;
   downloading: boolean;
-  originalPeriodData: any[] = [];
   isUpdating: boolean = false;
 
   constructor(
@@ -61,46 +57,8 @@ export class TramiteCertificadoComponent implements OnInit {
       },
     });
   }  
-
-  filterCertificates(): void {
-    let filtered = this.certificates;
-  
-    // Primero aplicamos el filtro por período si hay uno seleccionado
-    if (this.selectedPeriod) {
-      const studentIdsForPeriod = this.originalPeriodData
-        .filter(item => item.fecha_ingreso === this.selectedPeriod?.value)
-        .map(item => item.id);
-  
-      filtered = filtered.filter(cert => 
-        studentIdsForPeriod.includes(cert.id_Estudiante)
-      );
-    }
-  
-    // Luego aplicamos el filtro por término de búsqueda
-    if (this.searchTerm) {
-      filtered = filtered.filter((cert) =>
-        cert.id_Estudiante.toString().includes(this.searchTerm.trim())
-      );
-    }
-  
-    this.filteredCertificates = filtered;
-  
-    if (filtered.length === 0 && (this.searchTerm || this.selectedPeriod)) {
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'Sin resultados',
-        detail: 'No se encontraron certificados con los filtros aplicados'
-      });
-    }
-  }
-
-  filterByPeriod(): void {
-    this.filterCertificates();
-  }
   
   descargarcertificados(){      
-    this.filterCertificates();
-  
     const certificadosAprobados = this.filteredCertificates.filter(cert => cert.estado === 'Aprobada');
     const estudiantesActivos = this.filteredCertificates.filter(cert => cert.estadoEstudiante === 'ACTIVO');
 
@@ -170,9 +128,7 @@ export class TramiteCertificadoComponent implements OnInit {
     this.certificadoService.actualizarEstadoSolicitud(body).subscribe({
       next: (response) => {
         // Actualizar la lista después de la operación exitosa
-        this.loadCertificates(() => {
-          this.filterCertificates(); // Aplicar filtros nuevamente
-        
+        this.loadCertificates(() => {        
           this.messageService.add({ 
             severity: 'success', 
             summary: 'Éxito', 

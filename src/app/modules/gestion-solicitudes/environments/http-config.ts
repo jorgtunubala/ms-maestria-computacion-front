@@ -27,7 +27,6 @@ export const httpConfig = {
     consultarSiEsDirector: '/solicitud/requiere-director/',
     obtenerCertificadosVotos: '/gestionSolicitud/obtener-solicitudes-certificado-votacion',
     descargarCertificadosVotos: '/gestionSolicitud/documentos-certificado-votacion/zip',
-    obtenerestadoEstudiante: '/obtener-estado-estudiantes',
     guardarFechasSolicitudUrl: '/update/fechas',
     fechaActual: '/fechaActual',
     actualizarEstadoSolicitud: '/actualizar-estado-solicitud-cervoto'
