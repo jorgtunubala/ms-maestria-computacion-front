@@ -15,6 +15,7 @@ export class SelectorComponent implements OnInit {
     tiposDeSolicitud: TipoSolicitud[];
     tipoSolicitudEscogida: TipoSolicitud;
     requisitosSolicitudEscogida: RequisitosSolicitud;
+    carga: boolean = false;
 
     constructor(public radicar: RadicarService, private gestorHttp: HttpService, 
         private autenticacionService: AutenticacionService) {}
@@ -44,23 +45,33 @@ export class SelectorComponent implements OnInit {
                         this.tiposDeSolicitud.push(...respuesta.filter(tipo => tipo.codigoSolicitud === "SO_OTRA"));
                         break;
     
-                    case "ROLE_ESTUDIANTE":
-                        const fechaActual = new Date().toISOString().split('T')[0]; // Fecha actual en formato YYYY-MM-DD
-    
-                        // Filtrar solo CER_VOTO si la fecha está dentro del rango permitido
-                        const solicitudesEstudiante = respuesta.filter(tipo => {
-                            if (tipo.codigoSolicitud === "CER_VOTO") {
-                                return fechaActual >= tipo.fechaInicio && fechaActual <= tipo.fechaFinal;
-                            }
-                            return true; // Incluir todas las demás solicitudes
-                        });
-    
-                        this.tiposDeSolicitud.push(...solicitudesEstudiante);
-                        break;
-    
-                    default:
-                        console.warn(`Rol no reconocido: ${rol}`);
-                        break;
+                        case "ROLE_ESTUDIANTE":
+                            this.carga = true;
+                            // Obtener la fecha desde un servidor en Bogotá
+                            this.gestorHttp.fechaActual().subscribe(
+                                (fechaBogota) => {
+                                    // Convertir la fecha actual en string 'YYYY-MM-DD'
+                                    const fechaActualString = `${fechaBogota.year}-${fechaBogota.month.toString().padStart(2, '0')}-${fechaBogota.day.toString().padStart(2, '0')}`;
+
+                                    const solicitudesEstudiante = respuesta.filter(tipo => {
+                                        if (tipo.codigoSolicitud === "CER_VOTO") {
+
+                                            return fechaActualString >= tipo.fechaInicio && fechaActualString <= tipo.fechaFinal;
+                                        }
+                                        return true;
+                                    });
+
+                                    // Asignar un nuevo array en lugar de modificar el existente
+                                    this.tiposDeSolicitud = [...this.tiposDeSolicitud, ...solicitudesEstudiante];
+                                    this.carga = false;
+                                },
+                                () => { this.carga = false; }
+                            );
+                            break;
+                        
+                        default:
+                            console.warn(`Rol no reconocido: ${rol}`);
+                            break;                        
                 }
             });
     

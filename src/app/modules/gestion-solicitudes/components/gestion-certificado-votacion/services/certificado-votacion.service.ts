@@ -10,7 +10,7 @@ export interface CertificadoVotacion {
   estado: string;
   fecha_creacion: string;
   fecha_modificacion: string;
-  periodoIngreso: string;
+  estadoEstudiante: string;
 }
 
 export interface DocumentoCertificadoVotacion {
@@ -43,14 +43,14 @@ export class CertificadoVotacionService {
     );
   }
 
-  downloadCertificado(params: { period: string | null; certificateIds: number[] }): Observable<Blob> {
+  downloadCertificado(params: { estado_solicitud: string, estado_estudiante: string }): Observable<Blob> {
     const url = `${httpConfig.apiGesion}${httpConfig.descargarCertificadosVotos}`;
     
     const headers = new HttpHeaders({
       'Accept': 'application/zip',
       'Content-Type': 'application/json'
     });
-
+  
     return this.http.post(url, params, {
       responseType: 'blob',
       headers: headers
@@ -69,10 +69,10 @@ export class CertificadoVotacionService {
     return throwError(() => new Error(errorMessage));
   }
   
-
-  obtenerPeriodosAcademicos(): Observable<string[]> {
-    const url = `${httpConfig.apiUrl}${httpConfig.periodosIngreso}`;
-    return this.http.get<string[]>(url).pipe(catchError(this.manejarError));
-  }  
+  actualizarEstadoSolicitud(body: any): Observable<any> {
+    const url = `${this.apiUrl}${httpConfig.actualizarEstadoSolicitud}`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    return this.http.put(url, body, { headers }).pipe(catchError(this.manejarError));
+  } 
   
 }

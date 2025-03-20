@@ -73,9 +73,7 @@ export class InfoCertificadoVotacionComponent implements OnInit {
                 acceptLabel: 'Si',
                 accept: () => {
                     const body = {
-                        idSolicitud: 32,
-                        codigo: "CERT_VOTO",
-                        nombre: "Registro de certificado de votación",
+                        codigo: "CER_VOTO",
                         fechaInicio: fechaInicio.toISOString().split('T')[0],
                         fechaFinal: fechaFinal.toISOString().split('T')[0]
                     };

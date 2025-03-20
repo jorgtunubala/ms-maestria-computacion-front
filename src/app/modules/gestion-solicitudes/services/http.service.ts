@@ -50,9 +50,7 @@ export class HttpService {
         const url = `${this.apiUrl}${httpConfig.guardarFechasSolicitudUrl}`;
         const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
         return this.http.put(url, body, { headers }).pipe(catchError(this.manejarError));
-
-    }
-        
+    }    
 
     obtenerRequisitosDeSolicitud(codigo: string) {
         const url = `${this.apiUrl}${httpConfig.obtenerRequisitosDeSolicitudUrl}${codigo}`;
@@ -97,6 +95,13 @@ export class HttpService {
         const url = `${this.apiUrl}${httpConfig.guardarAvalesSolicitudUrl}`;
         return this.http.post(url, objeto).pipe(catchError(this.manejarError));
     }
+
+    fechaActual(): Observable<{ year: number; month: number; day: number }> {
+        const url = `${httpConfig.apiUrl}${httpConfig.fechaActual}`;
+        return this.http.get<{ year: number; month: number; day: number }>(url).pipe(
+          catchError(this.manejarError)
+        );
+    }  
 
     obtenerListaSolPendientesAval(correo: string): Observable<SolicitudRecibida[]> {
         const url = `${this.apiUrl}${httpConfig.obtenerListaSolPendientesAvalUrl}${correo}`;
