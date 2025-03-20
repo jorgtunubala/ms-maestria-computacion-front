@@ -58,6 +58,28 @@ export class TramiteCertificadoComponent implements OnInit {
     });
   }  
   
+  filterCertificates(event?: KeyboardEvent): void {
+    if (event && event.key !== 'Enter') return;
+  
+    const search = this.searchTerm.trim();
+    if (!search) {
+      this.filteredCertificates = [...this.certificates]; // Restablece la lista original si el campo está vacío
+      return;
+    }
+  
+    this.filteredCertificates = this.certificates.filter(cert =>
+      cert.id_Estudiante.toString().includes(search)
+    );
+  
+    if (this.filteredCertificates.length === 0) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Sin resultados',
+        detail: 'No se encontraron certificados con el código digitado'
+      });
+    }
+  }
+  
   descargarcertificados(){      
     const certificadosAprobados = this.filteredCertificates.filter(cert => cert.estado === 'Aprobada');
     const estudiantesActivos = this.filteredCertificates.filter(cert => cert.estadoEstudiante === 'ACTIVO');
