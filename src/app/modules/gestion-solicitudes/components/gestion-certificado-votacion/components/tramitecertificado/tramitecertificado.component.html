@@ -9,6 +9,7 @@
        pInputText 
        type="text" 
        [(ngModel)]="searchTerm" 
+       (keydown)="filterCertificates($event)"
        placeholder="Buscar por código estudiante" 
        class="w-full"/>
    </span>
