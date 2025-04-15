@@ -6,6 +6,7 @@ import {
     gestion_egresados,
     gestion_trabajo_grado,
     gestion_docentes_estudiantes,
+    evaluacion_docente,
 } from 'src/environments/environment';
 
 export function backend(path: string): string {
@@ -34,4 +35,8 @@ export function backendGestionSolicitudes(path: string): string {
 
 export function backendGestionAutenticacion(path: string): string {
     return gestion_autenticacion.api_url.concat(path);
+}
+
+export function backendEvalucionDocente(path: string): string {
+    return evaluacion_docente.api_url.concat(path);
 }

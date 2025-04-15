@@ -109,6 +109,42 @@ import { HomeComponent } from './core/components/home/home.component';
                                 },
                             ],
                         },
+                        {
+                            path: 'gestion-evaluacion-docente',
+                            children: [
+                                {
+                                    path: 'preguntas',
+                                    loadChildren: () =>
+                                        import(
+                                            './modules/gestion-evaluacion-docentes/gestion-preguntas/gestion-preguntas.module'
+                                        ).then((m) => m.GestionPreguntasModule),
+                                },
+                                {
+                                    path: 'cuestionarios',
+                                    loadChildren: () =>
+                                        import(
+                                            './modules/gestion-evaluacion-docentes/gestion-cuestionarios/gestion-cuestionarios-routing.module'
+                                        ).then(
+                                            (m) =>
+                                                m.GestionCuestionariosRoutingModule
+                                        ),
+                                },
+                            ],
+                        },
+                        {
+                            path: 'evaluacion-docente',
+                            loadChildren: () =>
+                                import(
+                                    './modules/gestion-evaluacion-docentes/evaluacion-docente/evaluacion-docente.module'
+                                ).then((m) => m.EvaluacionDocenteModule),
+                        },
+                        {
+                            path: 'gestion-matricula-evaluacion',
+                            loadChildren: () =>
+                                import(
+                                    './modules/gestion-evaluacion-docentes/gestion-matricula-evaluacion/gestion-evaluacion.module'
+                                ).then((m) => m.GestionEvaluacionModule),
+                        },
                     ],
                 },
 
@@ -122,4 +158,4 @@ import { HomeComponent } from './core/components/home/home.component';
     ],
     exports: [RouterModule],
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

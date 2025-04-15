@@ -65,7 +65,22 @@ export const menuItems: MenuItem[] = [
                         routerLink:'/gestion-lineas-investigacion/lineas'
                     }
                 ]
-                // routerLink:'/gestion-lineas-investigacion',
+            },
+            {
+                label: 'CUESTIONARIO DE EVALUACIÓN',
+                icon: 'pi pi-fw pi-inbox',
+                items: [
+                    {
+                        label: 'Preguntas Evaluación',
+                        icon: 'pi pi-fw pi-question',
+                        routerLink: '/gestion-evaluacion-docente/preguntas',
+                    },
+                    {
+                        label: 'Cuestionarios de Evaluación',
+                        icon: 'pi pi-fw pi-file',
+                        routerLink: '/gestion-evaluacion-docente/cuestionarios',
+                    },
+                ],
             }
         ],
     },

@@ -11,6 +11,14 @@ export enum Mensaje {
     CONFIRMAR_ELIMINAR_DOCENTE = '¿Está seguro de eliminar este docente?',
     ACTUALIZACION_EXITOSA = 'El registro fue actualizado exitosamente',
     GUARDADO_EXITOSO = 'Los datos han sido guardados exitosamente',
+
+    CONFIRMAR_DESACTIVAR_PREGUNTA = "¿Está seguro de desactivar esta pregunta?",
+    PREGUNTA_DESACTIVADA_CORRECTAMENTE = "Pregunta desactivada correctamente",
+    ESTADO_PREGUNTA_ACTUALIZADO_CORRECTAMENTE = "Estado de la pregunta actualizado correctamente",
+
+    CONFIRMAR_DESACTIVAR_CUESTIONARIO = "¿Está seguro de desactivar este cuestionario?",
+    CUESTIONARIO_DESACTIVADO_CORRECTAMENTE   = "Cuestionario desactivado correctamente",
+    ESTADO_CUESTIONARIO_ACTUALIZADO_CORRECTAMENTE = "Estado del cuestionario actualizado correctamente",
 }
 
 export enum Aviso {

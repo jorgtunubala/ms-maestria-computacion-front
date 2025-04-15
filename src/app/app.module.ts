@@ -33,6 +33,8 @@ import { AuthInterceptor } from './shared/config/interceptor';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
+import { GestionCuestionariosModule } from './modules/gestion-evaluacion-docentes/gestion-cuestionarios/gestion-cuestionarios.module';
+import { GestionPreguntasModule } from './modules/gestion-evaluacion-docentes/gestion-preguntas/gestion-preguntas.module';
 
 @NgModule({
     imports: [
@@ -51,7 +53,9 @@ import { ToastModule } from 'primeng/toast';
         TableModule,
         ButtonModule,
         ToastModule,
-        HttpClientModule
+        HttpClientModule,
+        GestionCuestionariosModule,
+        GestionPreguntasModule,
     ],
     declarations: [
         AppComponent,
